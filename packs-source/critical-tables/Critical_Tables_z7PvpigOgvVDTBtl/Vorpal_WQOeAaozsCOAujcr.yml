@@ -1,0 +1,281 @@
+_id: WQOeAaozsCOAujcr
+_key: '!tables!WQOeAaozsCOAujcr'
+_stats:
+  compendiumSource: null
+  coreVersion: '13.351'
+  createdTime: 1768594132767
+  duplicateSource: null
+  exportSource: null
+  lastModifiedBy: mLW1zeZBsSCEsXlw
+  modifiedTime: 1768595870048
+  systemId: pf1
+  systemVersion: '11.9'
+description: <p>A random table created from the contents of the Vorpal Folder.</p>
+displayRoll: false
+flags:
+  core: {}
+  scene-packer:
+    hash: fde0fc155c7b622dedca10ed88be2977bceafb5d
+    sourceId: RollTable.WQOeAaozsCOAujcr
+folder: z7PvpigOgvVDTBtl
+formula: 1d12
+img: icons/svg/d20-grey.svg
+name: Vorpal
+ownership:
+  default: 0
+  mLW1zeZBsSCEsXlw: 3
+replacement: true
+results:
+  - _id: mJxGFnM9J2AQNK2d
+    _key: '!tables.results!WQOeAaozsCOAujcr.mJxGFnM9J2AQNK2d'
+    _stats:
+      compendiumSource: null
+      coreVersion: '13.351'
+      duplicateSource: null
+      exportSource: null
+      lastModifiedBy: null
+      systemId: pf1
+      systemVersion: '11.9'
+    description: ''
+    documentUuid: Compendium.pf1-critical-effects.critical-effects.JournalEntry.bHSabTomMZKCTsyK
+    drawn: false
+    flags: {}
+    img: icons/svg/d20-black.svg
+    name: Beheaded
+    range:
+      - 1
+      - 1
+    type: document
+    weight: 1
+  - _id: XfNwPvwqBURigeMG
+    _key: '!tables.results!WQOeAaozsCOAujcr.XfNwPvwqBURigeMG'
+    _stats:
+      compendiumSource: null
+      coreVersion: '13.351'
+      duplicateSource: null
+      exportSource: null
+      lastModifiedBy: null
+      systemId: pf1
+      systemVersion: '11.9'
+    description: ''
+    documentUuid: Compendium.pf1-critical-effects.critical-effects.JournalEntry.a8TDCs13Htd5xPLM
+    drawn: false
+    flags: {}
+    img: icons/svg/d20-black.svg
+    name: Disemboweled
+    range:
+      - 2
+      - 2
+    type: document
+    weight: 1
+  - _id: ck7ktP9Nj7Y5hBei
+    _key: '!tables.results!WQOeAaozsCOAujcr.ck7ktP9Nj7Y5hBei'
+    _stats:
+      compendiumSource: null
+      coreVersion: '13.351'
+      duplicateSource: null
+      exportSource: null
+      lastModifiedBy: null
+      systemId: pf1
+      systemVersion: '11.9'
+    description: ''
+    documentUuid: Compendium.pf1-critical-effects.critical-effects.JournalEntry.zyW8ks7QZpsyMQIG
+    drawn: false
+    flags: {}
+    img: icons/svg/d20-black.svg
+    name: Finger Tipped
+    range:
+      - 3
+      - 3
+    type: document
+    weight: 1
+  - _id: IpxlzRCHehCBGZ2u
+    _key: '!tables.results!WQOeAaozsCOAujcr.IpxlzRCHehCBGZ2u'
+    _stats:
+      compendiumSource: null
+      coreVersion: '13.351'
+      duplicateSource: null
+      exportSource: null
+      lastModifiedBy: null
+      systemId: pf1
+      systemVersion: '11.9'
+    description: ''
+    documentUuid: Compendium.pf1-critical-effects.critical-effects.JournalEntry.X188ktYbvUrCKBC8
+    drawn: false
+    flags: {}
+    img: icons/svg/d20-black.svg
+    name: Lost Fingers
+    range:
+      - 4
+      - 4
+    type: document
+    weight: 1
+  - _id: 7xuMI5ROpadUJVL7
+    _key: '!tables.results!WQOeAaozsCOAujcr.7xuMI5ROpadUJVL7'
+    _stats:
+      compendiumSource: null
+      coreVersion: '13.351'
+      duplicateSource: null
+      exportSource: null
+      lastModifiedBy: null
+      systemId: pf1
+      systemVersion: '11.9'
+    description: ''
+    documentUuid: Compendium.pf1-critical-effects.critical-effects.JournalEntry.x4vRUZcgO59LXzRS
+    drawn: false
+    flags: {}
+    img: icons/svg/d20-black.svg
+    name: Lost Toes
+    range:
+      - 5
+      - 5
+    type: document
+    weight: 1
+  - _id: H3KvFjXRYGHtNprM
+    _key: '!tables.results!WQOeAaozsCOAujcr.H3KvFjXRYGHtNprM'
+    _stats:
+      compendiumSource: null
+      coreVersion: '13.351'
+      duplicateSource: null
+      exportSource: null
+      lastModifiedBy: null
+      systemId: pf1
+      systemVersion: '11.9'
+    description: ''
+    documentUuid: Compendium.pf1-critical-effects.critical-effects.JournalEntry.t95qn4UetOgOY4II
+    drawn: false
+    flags: {}
+    img: icons/svg/d20-black.svg
+    name: Scalped
+    range:
+      - 6
+      - 6
+    type: document
+    weight: 1
+  - _id: TJYZvYxd7gZ9w848
+    _key: '!tables.results!WQOeAaozsCOAujcr.TJYZvYxd7gZ9w848'
+    _stats:
+      compendiumSource: null
+      coreVersion: '13.351'
+      duplicateSource: null
+      exportSource: null
+      lastModifiedBy: null
+      systemId: pf1
+      systemVersion: '11.9'
+    description: ''
+    documentUuid: Compendium.pf1-critical-effects.critical-effects.JournalEntry.tqtKfHXPcsvFgWPJ
+    drawn: false
+    flags: {}
+    img: icons/svg/d20-black.svg
+    name: Severed Arm
+    range:
+      - 7
+      - 7
+    type: document
+    weight: 1
+  - _id: WAlknLk6qGdldcoW
+    _key: '!tables.results!WQOeAaozsCOAujcr.WAlknLk6qGdldcoW'
+    _stats:
+      compendiumSource: null
+      coreVersion: '13.351'
+      duplicateSource: null
+      exportSource: null
+      lastModifiedBy: null
+      systemId: pf1
+      systemVersion: '11.9'
+    description: ''
+    documentUuid: Compendium.pf1-critical-effects.critical-effects.JournalEntry.BRLJj5TaMLOFx5mO
+    drawn: false
+    flags: {}
+    img: icons/svg/d20-black.svg
+    name: Severed Ear
+    range:
+      - 8
+      - 8
+    type: document
+    weight: 1
+  - _id: GEiuhTFEawjVc3Du
+    _key: '!tables.results!WQOeAaozsCOAujcr.GEiuhTFEawjVc3Du'
+    _stats:
+      compendiumSource: null
+      coreVersion: '13.351'
+      duplicateSource: null
+      exportSource: null
+      lastModifiedBy: null
+      systemId: pf1
+      systemVersion: '11.9'
+    description: ''
+    documentUuid: Compendium.pf1-critical-effects.critical-effects.JournalEntry.oBDPL2TP39uGGRDv
+    drawn: false
+    flags: {}
+    img: icons/svg/d20-black.svg
+    name: Severed Foot
+    range:
+      - 9
+      - 9
+    type: document
+    weight: 1
+  - _id: SqVSTtYdkcTYnYvd
+    _key: '!tables.results!WQOeAaozsCOAujcr.SqVSTtYdkcTYnYvd'
+    _stats:
+      compendiumSource: null
+      coreVersion: '13.351'
+      duplicateSource: null
+      exportSource: null
+      lastModifiedBy: null
+      systemId: pf1
+      systemVersion: '11.9'
+    description: ''
+    documentUuid: Compendium.pf1-critical-effects.critical-effects.JournalEntry.U7ZaSv2MQ66JmjlU
+    drawn: false
+    flags: {}
+    img: icons/svg/d20-black.svg
+    name: Severed Hand
+    range:
+      - 10
+      - 10
+    type: document
+    weight: 1
+  - _id: z6zBV3cppgbnLzzg
+    _key: '!tables.results!WQOeAaozsCOAujcr.z6zBV3cppgbnLzzg'
+    _stats:
+      compendiumSource: null
+      coreVersion: '13.351'
+      duplicateSource: null
+      exportSource: null
+      lastModifiedBy: null
+      systemId: pf1
+      systemVersion: '11.9'
+    description: ''
+    documentUuid: Compendium.pf1-critical-effects.critical-effects.JournalEntry.85pnlTt4vnHwXUfP
+    drawn: false
+    flags: {}
+    img: icons/svg/d20-black.svg
+    name: Severed Leg
+    range:
+      - 11
+      - 11
+    type: document
+    weight: 1
+  - _id: 8ELyB1VwC0umHhyi
+    _key: '!tables.results!WQOeAaozsCOAujcr.8ELyB1VwC0umHhyi'
+    _stats:
+      compendiumSource: null
+      coreVersion: '13.351'
+      duplicateSource: null
+      exportSource: null
+      lastModifiedBy: null
+      systemId: pf1
+      systemVersion: '11.9'
+    description: ''
+    documentUuid: Compendium.pf1-critical-effects.critical-effects.JournalEntry.62OCa015Fk6cACjc
+    drawn: false
+    flags: {}
+    img: icons/svg/d20-black.svg
+    name: Severed Nose
+    range:
+      - 12
+      - 12
+    type: document
+    weight: 1
+sort: 100049

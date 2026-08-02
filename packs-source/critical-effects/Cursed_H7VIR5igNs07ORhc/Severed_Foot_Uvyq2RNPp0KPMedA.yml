@@ -1,0 +1,56 @@
+_id: Uvyq2RNPp0KPMedA
+_key: '!journal!Uvyq2RNPp0KPMedA'
+_stats:
+  compendiumSource: null
+  coreVersion: '13.351'
+  createdTime: 1768594155663
+  duplicateSource: null
+  exportSource: null
+  lastModifiedBy: mLW1zeZBsSCEsXlw
+  modifiedTime: 1768594155663
+  systemId: pf1
+  systemVersion: '11.9'
+categories: []
+flags:
+  scene-packer:
+    hash: 1b927557690f630580640e535fe79b6b148261d0
+    sourceId: JournalEntry.Uvyq2RNPp0KPMedA
+folder: H7VIR5igNs07ORhc
+name: Severed Foot
+ownership:
+  default: 0
+  mLW1zeZBsSCEsXlw: 3
+pages:
+  - _id: bk8rZI7jLmZcrTXe
+    _key: '!journal.pages!Uvyq2RNPp0KPMedA.bk8rZI7jLmZcrTXe'
+    _stats:
+      compendiumSource: JournalEntry.ycm7IyIqQGZWrnbU.JournalEntryPage.bk8rZI7jLmZcrTXe
+      coreVersion: '13.351'
+      duplicateSource: null
+      exportSource: null
+      lastModifiedBy: null
+      systemId: pf1
+      systemVersion: '11.9'
+    category: null
+    flags:
+      core: {}
+    image: {}
+    name: Effect
+    ownership:
+      default: -1
+      mLW1zeZBsSCEsXlw: 3
+    sort: 0
+    src: null
+    system: {}
+    text:
+      content: <p>Lose a foot and gain 1d6 bleed. Roll randomly to see which foot is affected.</p><p></p><p><span style="font-family:Signika, sans-serif">A -4 penalty is applied to AC, movement is reduced to 5 feet (or half normal with the use of crutches), you cannot run or charge, and any skills requiring footwork automatically fail.</span></p><p></p><p>A severed foot is cut somewhere between the ankle and knee.</p><p></p><p>If the foot can be recovered, it can be reattached by making a DC 25 Heal check within 10 minutes of the loss, followed by 35 HP of healing dedicated to the foot <span style="font-family:Signika, sans-serif">(dedicated healing does not heal hit point damage).</span></p><p></p><p><span style="font-family:Signika, sans-serif">Bleed damage is applied at the beginning of each turn until stopped with a DC 15 Heal check or receiving 1 or more points of hit point healing.</span></p><p></p><p>Partial to total use of a lost foot can be regained via the use of a prosthesis.</p>
+      format: 1
+      markdown: ''
+    title:
+      level: 1
+      show: true
+    type: text
+    video:
+      controls: true
+      volume: 0.5
+sort: 0

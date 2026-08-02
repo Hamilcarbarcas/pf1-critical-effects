@@ -1,0 +1,56 @@
+_id: t1tzz2PBI6Pmq2ww
+_key: '!journal!t1tzz2PBI6Pmq2ww'
+_stats:
+  compendiumSource: null
+  coreVersion: '13.351'
+  createdTime: 1768594160167
+  duplicateSource: null
+  exportSource: null
+  lastModifiedBy: mLW1zeZBsSCEsXlw
+  modifiedTime: 1768594160167
+  systemId: pf1
+  systemVersion: '11.9'
+categories: []
+flags:
+  scene-packer:
+    hash: a69ba8abb3ad2f6324562fed9da25dd55e5e0710
+    sourceId: JournalEntry.t1tzz2PBI6Pmq2ww
+folder: 5ZuUAU3uoQ1icTV6
+name: Broken Leg
+ownership:
+  default: 0
+  mLW1zeZBsSCEsXlw: 3
+pages:
+  - _id: aZzabxWD6nzW2OsI
+    _key: '!journal.pages!t1tzz2PBI6Pmq2ww.aZzabxWD6nzW2OsI'
+    _stats:
+      compendiumSource: JournalEntry.lQRYxLJ6feesJiC2.JournalEntryPage.aZzabxWD6nzW2OsI
+      coreVersion: '13.351'
+      duplicateSource: null
+      exportSource: null
+      lastModifiedBy: null
+      systemId: pf1
+      systemVersion: '11.9'
+    category: null
+    flags:
+      core: {}
+    image: {}
+    name: Effect
+    ownership:
+      default: -1
+      mLW1zeZBsSCEsXlw: 3
+    sort: 0
+    src: null
+    system: {}
+    text:
+      content: <p><span style="font-family:Signika, sans-serif">Gain the broken leg condition. Roll randomly to determine which leg is affected.</span></p><p style="box-sizing:border-box;user-select:text;margin:0.5em 0px;min-height:1rem;color:rgb(25, 24, 19);font-family:Signika, sans-serif;font-size:14px;font-style:normal;font-variant-ligatures:normal;font-variant-caps:normal;font-weight:400;letter-spacing:normal;orphans:2;text-indent:0px;text-transform:none;white-space:normal;widows:2;word-spacing:0px;-webkit-text-stroke-width:0px;text-decoration-thickness:initial;text-decoration-style:initial;text-decoration-color:initial;text-align:start"></p><p style="box-sizing:border-box;user-select:text;margin:0.5em 0px;color:rgb(25, 24, 19);font-family:Signika, sans-serif;font-size:14px;font-style:normal;font-variant-ligatures:normal;font-variant-caps:normal;font-weight:400;letter-spacing:normal;orphans:2;text-indent:0px;text-transform:none;white-space:normal;widows:2;word-spacing:0px;-webkit-text-stroke-width:0px;text-decoration-thickness:initial;text-decoration-style:initial;text-decoration-color:initial;text-align:start"><span style="font-family:Signika, sans-serif">A -4 penalty is applied to AC, movement rates are halved, you cannot run or charge, and any skills requiring footwork are made with disadvantage.</span></p><p style="box-sizing:border-box;user-select:text;margin:0.5em 0px;min-height:1rem;color:rgb(25, 24, 19);font-family:Signika, sans-serif;font-size:14px;font-style:normal;font-variant-ligatures:normal;font-variant-caps:normal;font-weight:400;letter-spacing:normal;orphans:2;text-indent:0px;text-transform:none;white-space:normal;widows:2;word-spacing:0px;-webkit-text-stroke-width:0px;text-decoration-thickness:initial;text-decoration-style:initial;text-decoration-color:initial;text-align:start"></p><p style="box-sizing:border-box;user-select:text;margin:0.5em 0px;color:rgb(25, 24, 19);font-family:Signika, sans-serif;font-size:14px;font-style:normal;font-variant-ligatures:normal;font-variant-caps:normal;font-weight:400;letter-spacing:normal;orphans:2;text-indent:0px;text-transform:none;white-space:normal;widows:2;word-spacing:0px;-webkit-text-stroke-width:0px;text-decoration-thickness:initial;text-decoration-style:initial;text-decoration-color:initial;text-align:start"><span style="font-family:Signika, sans-serif">A broken leg can be healed by making a DC 15 Heal check to set the bone, followed by 15 HP of healing dedicated to the break (dedicated healing does not heal hit point damage).</span></p>
+      format: 1
+      markdown: ''
+    title:
+      level: 1
+      show: true
+    type: text
+    video:
+      controls: true
+      volume: 0.5
+sort: 0

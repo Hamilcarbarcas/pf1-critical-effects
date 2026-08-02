@@ -1,0 +1,113 @@
+_id: N3ehmj703dZzmgFU
+_key: '!tables!N3ehmj703dZzmgFU'
+_stats:
+  compendiumSource: null
+  coreVersion: '13.351'
+  createdTime: 1768594132767
+  duplicateSource: null
+  exportSource: null
+  lastModifiedBy: mLW1zeZBsSCEsXlw
+  modifiedTime: 1768596442667
+  systemId: pf1
+  systemVersion: '11.9'
+description: ''
+displayRoll: false
+flags:
+  core: {}
+  scene-packer:
+    hash: 45219fd664f2e52a2ae639f5232135d918de1fbe
+    sourceId: RollTable.N3ehmj703dZzmgFU
+folder: z7PvpigOgvVDTBtl
+formula: 1d6
+img: icons/svg/d20-grey.svg
+name: Piercing
+ownership:
+  default: 0
+  mLW1zeZBsSCEsXlw: 3
+replacement: true
+results:
+  - _id: cJhY20Vzjyantriq
+    _key: '!tables.results!N3ehmj703dZzmgFU.cJhY20Vzjyantriq'
+    _stats:
+      compendiumSource: null
+      coreVersion: '13.351'
+      duplicateSource: null
+      exportSource: null
+      lastModifiedBy: null
+      systemId: pf1
+      systemVersion: '11.9'
+    description: ''
+    documentUuid: Compendium.pf1-critical-effects.critical-tables.RollTable.nruAWAc1IW4c9OWe
+    drawn: false
+    flags: {}
+    img: icons/svg/d20-grey.svg
+    name: Piercing - Arms
+    range:
+      - 1
+      - 2
+    type: document
+    weight: 2
+  - _id: OKFAR05pcaDmKGWv
+    _key: '!tables.results!N3ehmj703dZzmgFU.OKFAR05pcaDmKGWv'
+    _stats:
+      compendiumSource: null
+      coreVersion: '13.351'
+      duplicateSource: null
+      exportSource: null
+      lastModifiedBy: null
+      systemId: pf1
+      systemVersion: '11.9'
+    description: ''
+    documentUuid: Compendium.pf1-critical-effects.critical-tables.RollTable.hA5LfeUOWBUfsiqM
+    drawn: false
+    flags: {}
+    img: icons/svg/d20-grey.svg
+    name: Piercing - Legs
+    range:
+      - 3
+      - 4
+    type: document
+    weight: 2
+  - _id: DOQhdxRtbWItZnWq
+    _key: '!tables.results!N3ehmj703dZzmgFU.DOQhdxRtbWItZnWq'
+    _stats:
+      compendiumSource: null
+      coreVersion: '13.351'
+      duplicateSource: null
+      exportSource: null
+      lastModifiedBy: null
+      systemId: pf1
+      systemVersion: '11.9'
+    description: ''
+    documentUuid: Compendium.pf1-critical-effects.critical-tables.RollTable.xaSHDqAsKc8Fwkt4
+    drawn: false
+    flags: {}
+    img: icons/svg/d20-grey.svg
+    name: Piercing - Torso
+    range:
+      - 5
+      - 5
+    type: document
+    weight: 1
+  - _id: k5ksD08oquBc8rlD
+    _key: '!tables.results!N3ehmj703dZzmgFU.k5ksD08oquBc8rlD'
+    _stats:
+      compendiumSource: null
+      coreVersion: '13.351'
+      duplicateSource: null
+      exportSource: null
+      lastModifiedBy: null
+      systemId: pf1
+      systemVersion: '11.9'
+    description: ''
+    documentUuid: Compendium.pf1-critical-effects.critical-tables.RollTable.guWjpvL9RxLaek4x
+    drawn: false
+    flags: {}
+    img: icons/svg/d20-grey.svg
+    name: Piercing - Head
+    range:
+      - 6
+      - 6
+    type: document
+    weight: 1
+sort: 50000

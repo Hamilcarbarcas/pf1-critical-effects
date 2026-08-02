@@ -1,0 +1,27 @@
+_id: tVUTkl3bEc0g8gw8
+_key: '!tables!tVUTkl3bEc0g8gw8'
+_stats:
+  compendiumSource: null
+  coreVersion: '13.351'
+  createdTime: 1768594132767
+  duplicateSource: null
+  exportSource: null
+  lastModifiedBy: mLW1zeZBsSCEsXlw
+  modifiedTime: 1768594132767
+  systemId: pf1
+  systemVersion: '11.9'
+description: ''
+displayRoll: true
+flags:
+  scene-packer:
+    hash: e281f237b3eeab7e3c2880e7d33c174cb6adbd5b
+folder: z7PvpigOgvVDTBtl
+formula: ''
+img: icons/svg/d20-grey.svg
+name: Lethal - Bludgeoning
+ownership:
+  default: 0
+  mLW1zeZBsSCEsXlw: 3
+replacement: true
+results: []
+sort: 125025

@@ -1,0 +1,56 @@
+_id: vyS7PHcNDqEsV5RL
+_key: '!journal!vyS7PHcNDqEsV5RL'
+_stats:
+  compendiumSource: null
+  coreVersion: '13.351'
+  createdTime: 1768594157986
+  duplicateSource: null
+  exportSource: null
+  lastModifiedBy: mLW1zeZBsSCEsXlw
+  modifiedTime: 1768594157986
+  systemId: pf1
+  systemVersion: '11.9'
+categories: []
+flags:
+  scene-packer:
+    hash: bc275f872377b79d0c45c20a6e7bc1ae5c256694
+    sourceId: JournalEntry.vyS7PHcNDqEsV5RL
+folder: 9kV9G9p2fGjJBFby
+name: Sprained Ankle
+ownership:
+  default: 0
+  mLW1zeZBsSCEsXlw: 3
+pages:
+  - _id: KtPQI7AXeoB0TbF2
+    _key: '!journal.pages!vyS7PHcNDqEsV5RL.KtPQI7AXeoB0TbF2'
+    _stats:
+      compendiumSource: JournalEntry.H3p2gxoc5kvEFncu.JournalEntryPage.KtPQI7AXeoB0TbF2
+      coreVersion: '13.351'
+      duplicateSource: null
+      exportSource: null
+      lastModifiedBy: null
+      systemId: pf1
+      systemVersion: '11.9'
+    category: null
+    flags:
+      core: {}
+    image: {}
+    name: Effect
+    ownership:
+      default: -1
+      mLW1zeZBsSCEsXlw: 3
+    sort: 0
+    src: null
+    system: {}
+    text:
+      content: <p>Forfeit any remaining movement this round, and gain the Sprained Ankle condition.</p><p></p><p>You have disadvantage on any skills relying on footwork and Reflex saves.</p><p></p><p>A sprained ankle can be <span style="font-family:Signika, sans-serif">healed with 5 HP of healing dedicated to it (dedicated healing does not heal hit point damage).</span></p>
+      format: 1
+      markdown: ''
+    title:
+      level: 1
+      show: true
+    type: text
+    video:
+      controls: true
+      volume: 0.5
+sort: 600000

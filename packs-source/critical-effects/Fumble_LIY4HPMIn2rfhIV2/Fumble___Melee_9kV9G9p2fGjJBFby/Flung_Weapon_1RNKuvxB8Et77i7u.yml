@@ -1,0 +1,56 @@
+_id: 1RNKuvxB8Et77i7u
+_key: '!journal!1RNKuvxB8Et77i7u'
+_stats:
+  compendiumSource: null
+  coreVersion: '13.351'
+  createdTime: 1768594157986
+  duplicateSource: null
+  exportSource: null
+  lastModifiedBy: mLW1zeZBsSCEsXlw
+  modifiedTime: 1768594157986
+  systemId: pf1
+  systemVersion: '11.9'
+categories: []
+flags:
+  scene-packer:
+    hash: 98b57e8f1092621c90f148119ce104aaa5651e79
+    sourceId: JournalEntry.1RNKuvxB8Et77i7u
+folder: 9kV9G9p2fGjJBFby
+name: Flung Weapon
+ownership:
+  default: 0
+  mLW1zeZBsSCEsXlw: 3
+pages:
+  - _id: L9yw4UPHa56ByTWQ
+    _key: '!journal.pages!1RNKuvxB8Et77i7u.L9yw4UPHa56ByTWQ'
+    _stats:
+      compendiumSource: JournalEntry.1RNKuvxB8Et77i7u.JournalEntryPage.L9yw4UPHa56ByTWQ
+      coreVersion: '13.351'
+      duplicateSource: null
+      exportSource: null
+      lastModifiedBy: null
+      systemId: pf1
+      systemVersion: '11.9'
+    category: null
+    flags:
+      core: {}
+    image: {}
+    name: Effect
+    ownership:
+      default: -1
+      mLW1zeZBsSCEsXlw: 3
+    sort: 100000
+    src: null
+    system: {}
+    text:
+      content: <p>Your weapon is thrown 2d4x5 feet in a random direction. If the target square is occupied, roll an improvised thrown weapon attack against the occupying creature with disadvantage. The target of your attack has a good chuckle.</p>
+      format: 1
+      markdown: ''
+    title:
+      level: 1
+      show: true
+    type: text
+    video:
+      controls: true
+      volume: 0.5
+sort: 100000

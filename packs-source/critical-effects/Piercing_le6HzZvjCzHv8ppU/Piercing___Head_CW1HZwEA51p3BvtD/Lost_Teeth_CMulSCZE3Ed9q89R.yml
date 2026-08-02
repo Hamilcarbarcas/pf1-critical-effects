@@ -1,0 +1,56 @@
+_id: CMulSCZE3Ed9q89R
+_key: '!journal!CMulSCZE3Ed9q89R'
+_stats:
+  compendiumSource: null
+  coreVersion: '13.351'
+  createdTime: 1768594158904
+  duplicateSource: null
+  exportSource: null
+  lastModifiedBy: mLW1zeZBsSCEsXlw
+  modifiedTime: 1768594158904
+  systemId: pf1
+  systemVersion: '11.9'
+categories: []
+flags:
+  scene-packer:
+    hash: 4aeb7a07197d292b581021cc797406a0db488b86
+    sourceId: JournalEntry.CMulSCZE3Ed9q89R
+folder: CW1HZwEA51p3BvtD
+name: Lost Teeth
+ownership:
+  default: 0
+  mLW1zeZBsSCEsXlw: 3
+pages:
+  - _id: x8KTapBammxZCuUm
+    _key: '!journal.pages!CMulSCZE3Ed9q89R.x8KTapBammxZCuUm'
+    _stats:
+      compendiumSource: JournalEntry.R2OASHeVt82JbJZ6.JournalEntryPage.x8KTapBammxZCuUm
+      coreVersion: '13.351'
+      duplicateSource: null
+      exportSource: null
+      lastModifiedBy: null
+      systemId: pf1
+      systemVersion: '11.9'
+    category: null
+    flags:
+      core: {}
+    image: {}
+    name: Effect
+    ownership:
+      default: -1
+      mLW1zeZBsSCEsXlw: 3
+    sort: 0
+    src: null
+    system: {}
+    text:
+      content: <p><span style="font-family:Signika, sans-serif">Attacker may make one attack of opportunity against the target.</span></p><p></p><p>All diplomacy checks are made with disadvantage.</p><p></p><p>False teeth may reduce or remove this effect.</p>
+      format: 1
+      markdown: ''
+    title:
+      level: 1
+      show: true
+    type: text
+    video:
+      controls: true
+      volume: 0.5
+sort: 0

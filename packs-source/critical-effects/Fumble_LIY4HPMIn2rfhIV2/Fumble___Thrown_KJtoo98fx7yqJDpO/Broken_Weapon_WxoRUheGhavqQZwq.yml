@@ -1,0 +1,55 @@
+_id: WxoRUheGhavqQZwq
+_key: '!journal!WxoRUheGhavqQZwq'
+_stats:
+  compendiumSource: null
+  coreVersion: '13.351'
+  createdTime: 1768594157986
+  duplicateSource: null
+  exportSource: null
+  lastModifiedBy: mLW1zeZBsSCEsXlw
+  modifiedTime: 1768594157986
+  systemId: pf1
+  systemVersion: '11.9'
+categories: []
+flags:
+  scene-packer:
+    hash: 09012ba2c8258690c7de69400e4626e35ab41c1f
+    sourceId: JournalEntry.WxoRUheGhavqQZwq
+folder: KJtoo98fx7yqJDpO
+name: Broken Weapon
+ownership:
+  default: 0
+  mLW1zeZBsSCEsXlw: 3
+pages:
+  - _id: uUP79Wc52EGRFSQr
+    _key: '!journal.pages!WxoRUheGhavqQZwq.uUP79Wc52EGRFSQr'
+    _stats:
+      compendiumSource: null
+      coreVersion: '13.351'
+      duplicateSource: null
+      exportSource: null
+      lastModifiedBy: null
+      systemId: pf1
+      systemVersion: '11.9'
+    category: null
+    flags: {}
+    image: {}
+    name: Effect
+    ownership:
+      default: -1
+      mLW1zeZBsSCEsXlw: 3
+    sort: 100000
+    src: null
+    system: {}
+    text:
+      content: <p><span style="font-family:Signika, sans-serif">Your weapon breaks on impact with the intended target, dealing no damage and gaining the broken condition. The target is emboldened by the blow, and gains advantage on their next attack roll.</span></p>
+      format: 1
+      markdown: ''
+    title:
+      level: 1
+      show: true
+    type: text
+    video:
+      controls: true
+      volume: 0.5
+sort: 0

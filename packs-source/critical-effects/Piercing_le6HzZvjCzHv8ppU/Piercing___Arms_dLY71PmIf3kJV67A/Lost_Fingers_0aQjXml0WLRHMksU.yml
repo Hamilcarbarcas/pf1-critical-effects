@@ -1,0 +1,56 @@
+_id: 0aQjXml0WLRHMksU
+_key: '!journal!0aQjXml0WLRHMksU'
+_stats:
+  compendiumSource: null
+  coreVersion: '13.351'
+  createdTime: 1768594158904
+  duplicateSource: null
+  exportSource: null
+  lastModifiedBy: mLW1zeZBsSCEsXlw
+  modifiedTime: 1768594158904
+  systemId: pf1
+  systemVersion: '11.9'
+categories: []
+flags:
+  scene-packer:
+    hash: 23bdfe30552d044a3d1dcf1ac23b2d032def5510
+    sourceId: JournalEntry.0aQjXml0WLRHMksU
+folder: dLY71PmIf3kJV67A
+name: Lost Fingers
+ownership:
+  default: 0
+  mLW1zeZBsSCEsXlw: 3
+pages:
+  - _id: x8KTapBammxZCuUm
+    _key: '!journal.pages!0aQjXml0WLRHMksU.x8KTapBammxZCuUm'
+    _stats:
+      compendiumSource: JournalEntry.R2OASHeVt82JbJZ6.JournalEntryPage.x8KTapBammxZCuUm
+      coreVersion: '13.351'
+      duplicateSource: null
+      exportSource: null
+      lastModifiedBy: null
+      systemId: pf1
+      systemVersion: '11.9'
+    category: null
+    flags:
+      core: {}
+    image: {}
+    name: Effect
+    ownership:
+      default: -1
+      mLW1zeZBsSCEsXlw: 3
+    sort: 0
+    src: null
+    system: {}
+    text:
+      content: <p><span style="font-family:Signika, sans-serif">Lose 1d4 fingers, gain 1 stacking bleed for each lost finger, and drop all items held in that hand. Roll randomly to determine which hand is affected.</span></p><p style="box-sizing:border-box;user-select:text;margin:0.5em 0px;min-height:1rem;color:rgb(25, 24, 19);font-family:Signika, sans-serif;font-size:14px;font-style:normal;font-variant-ligatures:normal;font-variant-caps:normal;font-weight:400;letter-spacing:normal;orphans:2;text-indent:0px;text-transform:none;white-space:normal;widows:2;word-spacing:0px;-webkit-text-stroke-width:0px;text-decoration-thickness:initial;text-decoration-style:initial;text-decoration-color:initial;text-align:start"></p><p style="box-sizing:border-box;user-select:text;margin:0.5em 0px;color:rgb(25, 24, 19);font-family:Signika, sans-serif;font-size:14px;font-style:normal;font-variant-ligatures:normal;font-variant-caps:normal;font-weight:400;letter-spacing:normal;orphans:2;text-indent:0px;text-transform:none;white-space:normal;widows:2;word-spacing:0px;-webkit-text-stroke-width:0px;text-decoration-thickness:initial;text-decoration-style:initial;text-decoration-color:initial;text-align:start"><span style="font-family:Signika, sans-serif">All skills requiring the use of that hand are made with disadvantage. If 3 or more fingers are lost on a hand, that hand cannot be used to wield a weapon without the aid of a prosthesis.</span></p><p style="box-sizing:border-box;user-select:text;margin:0.5em 0px;min-height:1rem;color:rgb(25, 24, 19);font-family:Signika, sans-serif;font-size:14px;font-style:normal;font-variant-ligatures:normal;font-variant-caps:normal;font-weight:400;letter-spacing:normal;orphans:2;text-indent:0px;text-transform:none;white-space:normal;widows:2;word-spacing:0px;-webkit-text-stroke-width:0px;text-decoration-thickness:initial;text-decoration-style:initial;text-decoration-color:initial;text-align:start"></p><p style="box-sizing:border-box;user-select:text;margin:0.5em 0px;color:rgb(25, 24, 19);font-family:Signika, sans-serif;font-size:14px;font-style:normal;font-variant-ligatures:normal;font-variant-caps:normal;font-weight:400;letter-spacing:normal;orphans:2;text-indent:0px;text-transform:none;white-space:normal;widows:2;word-spacing:0px;-webkit-text-stroke-width:0px;text-decoration-thickness:initial;text-decoration-style:initial;text-decoration-color:initial;text-align:start"><span style="font-family:Signika, sans-serif">If the lost fingers are recovered, they can be reattached by making a DC 20 Heal check within 10 minutes of the loss, followed by 10 HP of healing dedicated to each finger lost (dedicated healing does not heal hit point damage).</span></p><p style="box-sizing:border-box;user-select:text;margin:0.5em 0px;min-height:1rem;color:rgb(25, 24, 19);font-family:Signika, sans-serif;font-size:14px;font-style:normal;font-variant-ligatures:normal;font-variant-caps:normal;font-weight:400;letter-spacing:normal;orphans:2;text-indent:0px;text-transform:none;white-space:normal;widows:2;word-spacing:0px;-webkit-text-stroke-width:0px;text-decoration-thickness:initial;text-decoration-style:initial;text-decoration-color:initial;text-align:start"></p><p style="box-sizing:border-box;user-select:text;margin:0.5em 0px;color:rgb(25, 24, 19);font-family:Signika, sans-serif;font-size:14px;font-style:normal;font-variant-ligatures:normal;font-variant-caps:normal;font-weight:400;letter-spacing:normal;orphans:2;text-indent:0px;text-transform:none;white-space:normal;widows:2;word-spacing:0px;-webkit-text-stroke-width:0px;text-decoration-thickness:initial;text-decoration-style:initial;text-decoration-color:initial;text-align:start"><span style="font-family:Signika, sans-serif">If the fingers are not recovered, the effects remain until the character grows accustomed to the loss of those fingers. A Wisdom check can be made each day to attempt to normalize to their new state. The base DC is 20, +1 for each finger tipped. This does not alleviate the need for a prosthesis.</span></p><p></p><p><span style="font-family:Signika, sans-serif">Bleed damage is applied at the beginning of each turn until stopped with a DC 15 Heal check or receiving 1 or more points of hit point healing.</span></p>
+      format: 1
+      markdown: ''
+    title:
+      level: 1
+      show: true
+    type: text
+    video:
+      controls: true
+      volume: 0.5
+sort: 900000

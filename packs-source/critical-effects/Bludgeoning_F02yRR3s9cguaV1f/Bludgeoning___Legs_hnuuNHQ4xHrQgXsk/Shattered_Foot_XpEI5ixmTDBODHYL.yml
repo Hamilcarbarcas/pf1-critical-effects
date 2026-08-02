@@ -1,0 +1,56 @@
+_id: XpEI5ixmTDBODHYL
+_key: '!journal!XpEI5ixmTDBODHYL'
+_stats:
+  compendiumSource: null
+  coreVersion: '13.351'
+  createdTime: 1768594154652
+  duplicateSource: null
+  exportSource: null
+  lastModifiedBy: mLW1zeZBsSCEsXlw
+  modifiedTime: 1768594154652
+  systemId: pf1
+  systemVersion: '11.9'
+categories: []
+flags:
+  scene-packer:
+    hash: bb1873cc51379967ee64de6eebdea0fe85cff0ff
+    sourceId: JournalEntry.XpEI5ixmTDBODHYL
+folder: hnuuNHQ4xHrQgXsk
+name: Shattered Foot
+ownership:
+  default: 0
+  mLW1zeZBsSCEsXlw: 3
+pages:
+  - _id: aZzabxWD6nzW2OsI
+    _key: '!journal.pages!XpEI5ixmTDBODHYL.aZzabxWD6nzW2OsI'
+    _stats:
+      compendiumSource: JournalEntry.lQRYxLJ6feesJiC2.JournalEntryPage.aZzabxWD6nzW2OsI
+      coreVersion: '13.351'
+      duplicateSource: null
+      exportSource: null
+      lastModifiedBy: null
+      systemId: pf1
+      systemVersion: '11.9'
+    category: null
+    flags:
+      core: {}
+    image: {}
+    name: Effect
+    ownership:
+      default: -1
+      mLW1zeZBsSCEsXlw: 3
+    sort: 0
+    src: null
+    system: {}
+    text:
+      content: <p><span style="font-family:Signika, sans-serif">Gain the shattered foot condition. Roll randomly to determine which foot is affected.</span></p><p style="box-sizing:border-box;user-select:text;margin:0.5em 0px;min-height:1rem;color:rgb(25, 24, 19);font-family:Signika, sans-serif;font-size:14px;font-style:normal;font-variant-ligatures:normal;font-variant-caps:normal;font-weight:400;letter-spacing:normal;orphans:2;text-indent:0px;text-transform:none;white-space:normal;widows:2;word-spacing:0px;-webkit-text-stroke-width:0px;text-decoration-thickness:initial;text-decoration-style:initial;text-decoration-color:initial;text-align:start"></p><p style="box-sizing:border-box;user-select:text;margin:0.5em 0px;color:rgb(25, 24, 19);font-family:Signika, sans-serif;font-size:14px;font-style:normal;font-variant-ligatures:normal;font-variant-caps:normal;font-weight:400;letter-spacing:normal;orphans:2;text-indent:0px;text-transform:none;white-space:normal;widows:2;word-spacing:0px;-webkit-text-stroke-width:0px;text-decoration-thickness:initial;text-decoration-style:initial;text-decoration-color:initial;text-align:start"><span style="font-family:Signika, sans-serif">A -4 penalty is applied to AC, movement is reduced to 5 feet (or half normal with the use of crutches), you cannot run or charge, and any skills requiring footwork automatically fail.</span></p><p style="box-sizing:border-box;user-select:text;margin:0.5em 0px;min-height:1rem;color:rgb(25, 24, 19);font-family:Signika, sans-serif;font-size:14px;font-style:normal;font-variant-ligatures:normal;font-variant-caps:normal;font-weight:400;letter-spacing:normal;orphans:2;text-indent:0px;text-transform:none;white-space:normal;widows:2;word-spacing:0px;-webkit-text-stroke-width:0px;text-decoration-thickness:initial;text-decoration-style:initial;text-decoration-color:initial;text-align:start"></p><p style="box-sizing:border-box;user-select:text;margin:0.5em 0px;color:rgb(25, 24, 19);font-family:Signika, sans-serif;font-size:14px;font-style:normal;font-variant-ligatures:normal;font-variant-caps:normal;font-weight:400;letter-spacing:normal;orphans:2;text-indent:0px;text-transform:none;white-space:normal;widows:2;word-spacing:0px;-webkit-text-stroke-width:0px;text-decoration-thickness:initial;text-decoration-style:initial;text-decoration-color:initial;text-align:start"><span style="font-family:Signika, sans-serif">A shattered foot can be healed by making a DC 20 Heal check to set the bone, followed by 20 HP of healing dedicated to the break (dedicated healing does not heal hit point damage).</span></p>
+      format: 1
+      markdown: ''
+    title:
+      level: 1
+      show: true
+    type: text
+    video:
+      controls: true
+      volume: 0.5
+sort: 0

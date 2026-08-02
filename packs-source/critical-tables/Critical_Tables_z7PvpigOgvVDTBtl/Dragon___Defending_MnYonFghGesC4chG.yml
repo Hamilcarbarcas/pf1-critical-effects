@@ -1,0 +1,281 @@
+_id: MnYonFghGesC4chG
+_key: '!tables!MnYonFghGesC4chG'
+_stats:
+  compendiumSource: null
+  coreVersion: '13.351'
+  createdTime: 1768594132767
+  duplicateSource: null
+  exportSource: null
+  lastModifiedBy: mLW1zeZBsSCEsXlw
+  modifiedTime: 1768595869900
+  systemId: pf1
+  systemVersion: '11.9'
+description: <p>A random table created from the contents of the Dragon - Defending Folder.</p>
+displayRoll: false
+flags:
+  core: {}
+  scene-packer:
+    hash: c0ccc0269432d592015d9966c767f04b1b32191b
+    sourceId: RollTable.MnYonFghGesC4chG
+folder: z7PvpigOgvVDTBtl
+formula: 1d12
+img: icons/svg/d20-grey.svg
+name: Dragon - Defending
+ownership:
+  default: 0
+  mLW1zeZBsSCEsXlw: 3
+replacement: true
+results:
+  - _id: dlH58EghaS8oTv1a
+    _key: '!tables.results!MnYonFghGesC4chG.dlH58EghaS8oTv1a'
+    _stats:
+      compendiumSource: null
+      coreVersion: '13.351'
+      duplicateSource: null
+      exportSource: null
+      lastModifiedBy: null
+      systemId: pf1
+      systemVersion: '11.9'
+    description: ''
+    documentUuid: Compendium.pf1-critical-effects.critical-effects.JournalEntry.5l2h1EziQGEXQHxx
+    drawn: false
+    flags: {}
+    img: icons/svg/d20-black.svg
+    name: Breath Weapon Sac
+    range:
+      - 1
+      - 1
+    type: document
+    weight: 1
+  - _id: 47S59TrvIMaXFeFV
+    _key: '!tables.results!MnYonFghGesC4chG.47S59TrvIMaXFeFV'
+    _stats:
+      compendiumSource: null
+      coreVersion: '13.351'
+      duplicateSource: null
+      exportSource: null
+      lastModifiedBy: null
+      systemId: pf1
+      systemVersion: '11.9'
+    description: ''
+    documentUuid: Compendium.pf1-critical-effects.critical-effects.JournalEntry.ebckMtjFMTZndRNU
+    drawn: false
+    flags: {}
+    img: icons/svg/d20-black.svg
+    name: Broken Teeth
+    range:
+      - 2
+      - 2
+    type: document
+    weight: 1
+  - _id: jZG6RPJKqB3pRRgT
+    _key: '!tables.results!MnYonFghGesC4chG.jZG6RPJKqB3pRRgT'
+    _stats:
+      compendiumSource: null
+      coreVersion: '13.351'
+      duplicateSource: null
+      exportSource: null
+      lastModifiedBy: null
+      systemId: pf1
+      systemVersion: '11.9'
+    description: ''
+    documentUuid: Compendium.pf1-critical-effects.critical-effects.JournalEntry.eIE4OcOaYIITLrsi
+    drawn: false
+    flags: {}
+    img: icons/svg/d20-black.svg
+    name: Dazing Blow
+    range:
+      - 3
+      - 3
+    type: document
+    weight: 1
+  - _id: OsgPyBo31NPnHe5g
+    _key: '!tables.results!MnYonFghGesC4chG.OsgPyBo31NPnHe5g'
+    _stats:
+      compendiumSource: null
+      coreVersion: '13.351'
+      duplicateSource: null
+      exportSource: null
+      lastModifiedBy: null
+      systemId: pf1
+      systemVersion: '11.9'
+    description: ''
+    documentUuid: Compendium.pf1-critical-effects.critical-effects.JournalEntry.nBwCMtN8PLMPSkVO
+    drawn: false
+    flags: {}
+    img: icons/svg/d20-black.svg
+    name: De-Scaled
+    range:
+      - 4
+      - 4
+    type: document
+    weight: 1
+  - _id: 6mF9IJLGgZdAJmzV
+    _key: '!tables.results!MnYonFghGesC4chG.6mF9IJLGgZdAJmzV'
+    _stats:
+      compendiumSource: null
+      coreVersion: '13.351'
+      duplicateSource: null
+      exportSource: null
+      lastModifiedBy: null
+      systemId: pf1
+      systemVersion: '11.9'
+    description: ''
+    documentUuid: Compendium.pf1-critical-effects.critical-effects.JournalEntry.OhozsTP1rJj9tWT8
+    drawn: false
+    flags: {}
+    img: icons/svg/d20-black.svg
+    name: Pierced Eye
+    range:
+      - 5
+      - 5
+    type: document
+    weight: 1
+  - _id: W5gb6eUtbUKPnT7y
+    _key: '!tables.results!MnYonFghGesC4chG.W5gb6eUtbUKPnT7y'
+    _stats:
+      compendiumSource: null
+      coreVersion: '13.351'
+      duplicateSource: null
+      exportSource: null
+      lastModifiedBy: null
+      systemId: pf1
+      systemVersion: '11.9'
+    description: ''
+    documentUuid: Compendium.pf1-critical-effects.critical-effects.JournalEntry.kmanhLlZ8jjdrdXx
+    drawn: false
+    flags: {}
+    img: icons/svg/d20-black.svg
+    name: Pierced Heart
+    range:
+      - 6
+      - 6
+    type: document
+    weight: 1
+  - _id: 9Wal6dmB26Yw1UaL
+    _key: '!tables.results!MnYonFghGesC4chG.9Wal6dmB26Yw1UaL'
+    _stats:
+      compendiumSource: null
+      coreVersion: '13.351'
+      duplicateSource: null
+      exportSource: null
+      lastModifiedBy: null
+      systemId: pf1
+      systemVersion: '11.9'
+    description: ''
+    documentUuid: Compendium.pf1-critical-effects.critical-effects.JournalEntry.zXYO5pLmPAE6cubF
+    drawn: false
+    flags: {}
+    img: icons/svg/d20-black.svg
+    name: Sealed Maw
+    range:
+      - 7
+      - 7
+    type: document
+    weight: 1
+  - _id: AdA7UKZu20GH0vP6
+    _key: '!tables.results!MnYonFghGesC4chG.AdA7UKZu20GH0vP6'
+    _stats:
+      compendiumSource: null
+      coreVersion: '13.351'
+      duplicateSource: null
+      exportSource: null
+      lastModifiedBy: null
+      systemId: pf1
+      systemVersion: '11.9'
+    description: ''
+    documentUuid: Compendium.pf1-critical-effects.critical-effects.JournalEntry.II0Zkv0OyHTcabgg
+    drawn: false
+    flags: {}
+    img: icons/svg/d20-black.svg
+    name: Severed Claw
+    range:
+      - 8
+      - 8
+    type: document
+    weight: 1
+  - _id: ugmRpnZwro6dkntU
+    _key: '!tables.results!MnYonFghGesC4chG.ugmRpnZwro6dkntU'
+    _stats:
+      compendiumSource: null
+      coreVersion: '13.351'
+      duplicateSource: null
+      exportSource: null
+      lastModifiedBy: null
+      systemId: pf1
+      systemVersion: '11.9'
+    description: ''
+    documentUuid: Compendium.pf1-critical-effects.critical-effects.JournalEntry.P43pnky1EAUZ7kbV
+    drawn: false
+    flags: {}
+    img: icons/svg/d20-black.svg
+    name: Severed Tail
+    range:
+      - 9
+      - 9
+    type: document
+    weight: 1
+  - _id: HxuaYbDLzOPRryBd
+    _key: '!tables.results!MnYonFghGesC4chG.HxuaYbDLzOPRryBd'
+    _stats:
+      compendiumSource: null
+      coreVersion: '13.351'
+      duplicateSource: null
+      exportSource: null
+      lastModifiedBy: null
+      systemId: pf1
+      systemVersion: '11.9'
+    description: ''
+    documentUuid: Compendium.pf1-critical-effects.critical-effects.JournalEntry.G48vbWmFvmybB036
+    drawn: false
+    flags: {}
+    img: icons/svg/d20-black.svg
+    name: Severed Tongue
+    range:
+      - 10
+      - 10
+    type: document
+    weight: 1
+  - _id: NJYdhlvYpteEQVbr
+    _key: '!tables.results!MnYonFghGesC4chG.NJYdhlvYpteEQVbr'
+    _stats:
+      compendiumSource: null
+      coreVersion: '13.351'
+      duplicateSource: null
+      exportSource: null
+      lastModifiedBy: null
+      systemId: pf1
+      systemVersion: '11.9'
+    description: ''
+    documentUuid: Compendium.pf1-critical-effects.critical-effects.JournalEntry.2Sio6CrzLfbEc5Sd
+    drawn: false
+    flags: {}
+    img: icons/svg/d20-black.svg
+    name: Shredded Wing
+    range:
+      - 11
+      - 11
+    type: document
+    weight: 1
+  - _id: 9NUnztwjKygZtzvc
+    _key: '!tables.results!MnYonFghGesC4chG.9NUnztwjKygZtzvc'
+    _stats:
+      compendiumSource: null
+      coreVersion: '13.351'
+      duplicateSource: null
+      exportSource: null
+      lastModifiedBy: null
+      systemId: pf1
+      systemVersion: '11.9'
+    description: ''
+    documentUuid: Compendium.pf1-critical-effects.critical-effects.JournalEntry.KkrZ524bh5sVF3uC
+    drawn: false
+    flags: {}
+    img: icons/svg/d20-black.svg
+    name: Throat Slashed
+    range:
+      - 12
+      - 12
+    type: document
+    weight: 1
+sort: 100046

@@ -1,0 +1,56 @@
+_id: XixkZMVOstOMWCmZ
+_key: '!journal!XixkZMVOstOMWCmZ'
+_stats:
+  compendiumSource: null
+  coreVersion: '13.351'
+  createdTime: 1768594160167
+  duplicateSource: null
+  exportSource: null
+  lastModifiedBy: mLW1zeZBsSCEsXlw
+  modifiedTime: 1768594160167
+  systemId: pf1
+  systemVersion: '11.9'
+categories: []
+flags:
+  scene-packer:
+    hash: db223574fcbed494a2d7058887fba10f8ebd5000
+    sourceId: JournalEntry.XixkZMVOstOMWCmZ
+folder: mKP1KZBa46xFcAFL
+name: Broken Back
+ownership:
+  default: 0
+  mLW1zeZBsSCEsXlw: 3
+pages:
+  - _id: x8KTapBammxZCuUm
+    _key: '!journal.pages!XixkZMVOstOMWCmZ.x8KTapBammxZCuUm'
+    _stats:
+      compendiumSource: JournalEntry.R2OASHeVt82JbJZ6.JournalEntryPage.x8KTapBammxZCuUm
+      coreVersion: '13.351'
+      duplicateSource: null
+      exportSource: null
+      lastModifiedBy: null
+      systemId: pf1
+      systemVersion: '11.9'
+    category: null
+    flags:
+      core: {}
+    image: {}
+    name: Effect
+    ownership:
+      default: -1
+      mLW1zeZBsSCEsXlw: 3
+    sort: 0
+    src: null
+    system: {}
+    text:
+      content: <p>Gain the broken back condition.</p><p></p><p>No movement, -4 to attack and AC.</p><p></p><p><span style="font-family:Signika, sans-serif">A broken back can be healed by making a DC 15 Heal check to set the bones, followed by 30 HP of healing dedicated to the break (dedicated healing does not heal hit point damage).</span></p>
+      format: 1
+      markdown: ''
+    title:
+      level: 1
+      show: true
+    type: text
+    video:
+      controls: true
+      volume: 0.5
+sort: 0

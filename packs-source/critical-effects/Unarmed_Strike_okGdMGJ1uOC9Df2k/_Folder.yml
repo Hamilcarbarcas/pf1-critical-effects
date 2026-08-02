@@ -1,0 +1,22 @@
+_id: okGdMGJ1uOC9Df2k
+_key: '!folders!okGdMGJ1uOC9Df2k'
+_stats:
+  compendiumSource: null
+  coreVersion: '13.351'
+  createdTime: 1768594161326
+  duplicateSource: null
+  exportSource: null
+  lastModifiedBy: mLW1zeZBsSCEsXlw
+  modifiedTime: 1768594161386
+  systemId: pf1
+  systemVersion: '11.9'
+color: '#707070'
+description: ''
+flags:
+  scene-packer:
+    hash: fa6a4d4497a4e52887ebc3b601a451263c93c091
+folder: null
+name: Unarmed Strike
+sort: 900000
+sorting: a
+type: JournalEntry

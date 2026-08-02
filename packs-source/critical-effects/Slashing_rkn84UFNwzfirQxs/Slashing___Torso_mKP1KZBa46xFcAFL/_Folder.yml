@@ -1,0 +1,20 @@
+_id: mKP1KZBa46xFcAFL
+_key: '!folders!mKP1KZBa46xFcAFL'
+_stats:
+  compendiumSource: null
+  coreVersion: '13.351'
+  duplicateSource: null
+  exportSource: null
+  lastModifiedBy: null
+  systemId: pf1
+  systemVersion: '11.9'
+color: '#1c1c1c'
+description: ''
+flags:
+  scene-packer:
+    hash: 4fc41cf03c91761e4c68dfbfa02d3cd31ecf6bdd
+folder: rkn84UFNwzfirQxs
+name: Slashing - Torso
+sort: 400000
+sorting: a
+type: JournalEntry

@@ -1,0 +1,56 @@
+_id: XhGkQyePxHf4P7B9
+_key: '!journal!XhGkQyePxHf4P7B9'
+_stats:
+  compendiumSource: null
+  coreVersion: '13.351'
+  createdTime: 1768594160167
+  duplicateSource: null
+  exportSource: null
+  lastModifiedBy: mLW1zeZBsSCEsXlw
+  modifiedTime: 1768594160167
+  systemId: pf1
+  systemVersion: '11.9'
+categories: []
+flags:
+  scene-packer:
+    hash: 5a15956a0bdc22d8ebdb8c0b0bf86e042b5e5dc1
+    sourceId: JournalEntry.XhGkQyePxHf4P7B9
+folder: 4rQsdOgtWeg4bIeu
+name: Broken Jaw
+ownership:
+  default: 0
+  mLW1zeZBsSCEsXlw: 3
+pages:
+  - _id: GHH4S91vRnw2nzZG
+    _key: '!journal.pages!XhGkQyePxHf4P7B9.GHH4S91vRnw2nzZG'
+    _stats:
+      compendiumSource: JournalEntry.gXwKWqRjWaLApzBj.JournalEntryPage.GHH4S91vRnw2nzZG
+      coreVersion: '13.351'
+      duplicateSource: null
+      exportSource: null
+      lastModifiedBy: null
+      systemId: pf1
+      systemVersion: '11.9'
+    category: null
+    flags:
+      core: {}
+    image: {}
+    name: Effect
+    ownership:
+      default: -1
+      mLW1zeZBsSCEsXlw: 3
+    sort: 0
+    src: null
+    system: {}
+    text:
+      content: <p>Gain the Broken Jaw condition.</p><p></p><p>All skills requiring speech are made with disadvantage.</p><p></p><p>When casting spells with somatic components, you must make a concentration check (DC 15 + double the level of the spell you’re casting) to succeed. You lose the spell if you fail.</p><p></p><p><span style="font-family:Signika, sans-serif">A broken jaw can be healed by making a DC 10 Heal check to set the bone, followed by 15 HP of healing dedicated to the break (dedicated healing does not heal hit point damage).</span></p>
+      format: 1
+      markdown: ''
+    title:
+      level: 1
+      show: true
+    type: text
+    video:
+      controls: true
+      volume: 0.5
+sort: 0

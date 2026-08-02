@@ -1,0 +1,281 @@
+_id: 7GdCRbe6svmIV6RK
+_key: '!tables!7GdCRbe6svmIV6RK'
+_stats:
+  compendiumSource: null
+  coreVersion: '13.351'
+  createdTime: 1768594132767
+  duplicateSource: null
+  exportSource: null
+  lastModifiedBy: mLW1zeZBsSCEsXlw
+  modifiedTime: 1768595869785
+  systemId: pf1
+  systemVersion: '11.9'
+description: <p>A random table created from the contents of the Unarmed Strike - Kick Folder.</p>
+displayRoll: false
+flags:
+  core: {}
+  scene-packer:
+    hash: 062c15bd6cc4d8b2765e62abd5dc493f00a0b8e6
+    sourceId: RollTable.7GdCRbe6svmIV6RK
+folder: z7PvpigOgvVDTBtl
+formula: 1d12
+img: icons/svg/d20-grey.svg
+name: Unarmed Strike - Kick
+ownership:
+  default: 0
+  mLW1zeZBsSCEsXlw: 3
+replacement: true
+results:
+  - _id: L0yJ0qT9NtaXtqR0
+    _key: '!tables.results!7GdCRbe6svmIV6RK.L0yJ0qT9NtaXtqR0'
+    _stats:
+      compendiumSource: null
+      coreVersion: '13.351'
+      duplicateSource: null
+      exportSource: null
+      lastModifiedBy: null
+      systemId: pf1
+      systemVersion: '11.9'
+    description: ''
+    documentUuid: Compendium.pf1-critical-effects.critical-effects.JournalEntry.Wm4fsUBMqQ9r9UXg
+    drawn: false
+    flags: {}
+    img: icons/svg/d20-black.svg
+    name: Broken Jaw
+    range:
+      - 1
+      - 1
+    type: document
+    weight: 1
+  - _id: 7rwuhE3GBgtTNa5t
+    _key: '!tables.results!7GdCRbe6svmIV6RK.7rwuhE3GBgtTNa5t'
+    _stats:
+      compendiumSource: null
+      coreVersion: '13.351'
+      duplicateSource: null
+      exportSource: null
+      lastModifiedBy: null
+      systemId: pf1
+      systemVersion: '11.9'
+    description: ''
+    documentUuid: Compendium.pf1-critical-effects.critical-effects.JournalEntry.kOSTlNAmXoRyEtzB
+    drawn: false
+    flags: {}
+    img: icons/svg/d20-black.svg
+    name: Broken Leg
+    range:
+      - 2
+      - 2
+    type: document
+    weight: 1
+  - _id: UusrQCDXfJbKybT1
+    _key: '!tables.results!7GdCRbe6svmIV6RK.UusrQCDXfJbKybT1'
+    _stats:
+      compendiumSource: null
+      coreVersion: '13.351'
+      duplicateSource: null
+      exportSource: null
+      lastModifiedBy: null
+      systemId: pf1
+      systemVersion: '11.9'
+    description: ''
+    documentUuid: Compendium.pf1-critical-effects.critical-effects.JournalEntry.axx5o3ArZGNvg4Pc
+    drawn: false
+    flags: {}
+    img: icons/svg/d20-black.svg
+    name: Broken Nose
+    range:
+      - 3
+      - 3
+    type: document
+    weight: 1
+  - _id: J5CVAYNjJE92l5KH
+    _key: '!tables.results!7GdCRbe6svmIV6RK.J5CVAYNjJE92l5KH'
+    _stats:
+      compendiumSource: null
+      coreVersion: '13.351'
+      duplicateSource: null
+      exportSource: null
+      lastModifiedBy: null
+      systemId: pf1
+      systemVersion: '11.9'
+    description: ''
+    documentUuid: Compendium.pf1-critical-effects.critical-effects.JournalEntry.saWICuwPGLIYqcIQ
+    drawn: false
+    flags: {}
+    img: icons/svg/d20-black.svg
+    name: Broken Ribs
+    range:
+      - 4
+      - 4
+    type: document
+    weight: 1
+  - _id: iR30pDo3lLFsyCU2
+    _key: '!tables.results!7GdCRbe6svmIV6RK.iR30pDo3lLFsyCU2'
+    _stats:
+      compendiumSource: null
+      coreVersion: '13.351'
+      duplicateSource: null
+      exportSource: null
+      lastModifiedBy: null
+      systemId: pf1
+      systemVersion: '11.9'
+    description: ''
+    documentUuid: Compendium.pf1-critical-effects.critical-effects.JournalEntry.nZk6r4T0ffr21XYQ
+    drawn: false
+    flags: {}
+    img: icons/svg/d20-black.svg
+    name: Compound Fracture
+    range:
+      - 5
+      - 5
+    type: document
+    weight: 1
+  - _id: HHUv6DJLbqGso0Wf
+    _key: '!tables.results!7GdCRbe6svmIV6RK.HHUv6DJLbqGso0Wf'
+    _stats:
+      compendiumSource: null
+      coreVersion: '13.351'
+      duplicateSource: null
+      exportSource: null
+      lastModifiedBy: null
+      systemId: pf1
+      systemVersion: '11.9'
+    description: ''
+    documentUuid: Compendium.pf1-critical-effects.critical-effects.JournalEntry.VuAWF4VBpFX29nfW
+    drawn: false
+    flags: {}
+    img: icons/svg/d20-black.svg
+    name: Dazing Blow
+    range:
+      - 6
+      - 6
+    type: document
+    weight: 1
+  - _id: z6w5N0wnqnjvbDoq
+    _key: '!tables.results!7GdCRbe6svmIV6RK.z6w5N0wnqnjvbDoq'
+    _stats:
+      compendiumSource: null
+      coreVersion: '13.351'
+      duplicateSource: null
+      exportSource: null
+      lastModifiedBy: null
+      systemId: pf1
+      systemVersion: '11.9'
+    description: ''
+    documentUuid: Compendium.pf1-critical-effects.critical-effects.JournalEntry.n8Wath7bNtESNtL2
+    drawn: false
+    flags: {}
+    img: icons/svg/d20-black.svg
+    name: Knee Capped
+    range:
+      - 7
+      - 7
+    type: document
+    weight: 1
+  - _id: GE1Uy1tE0CBA9xya
+    _key: '!tables.results!7GdCRbe6svmIV6RK.GE1Uy1tE0CBA9xya'
+    _stats:
+      compendiumSource: null
+      coreVersion: '13.351'
+      duplicateSource: null
+      exportSource: null
+      lastModifiedBy: null
+      systemId: pf1
+      systemVersion: '11.9'
+    description: ''
+    documentUuid: Compendium.pf1-critical-effects.critical-effects.JournalEntry.1Eh5cSSosoo2KP59
+    drawn: false
+    flags: {}
+    img: icons/svg/d20-black.svg
+    name: Knocked Out
+    range:
+      - 8
+      - 8
+    type: document
+    weight: 1
+  - _id: XVRVVRSAkbJ20KBs
+    _key: '!tables.results!7GdCRbe6svmIV6RK.XVRVVRSAkbJ20KBs'
+    _stats:
+      compendiumSource: null
+      coreVersion: '13.351'
+      duplicateSource: null
+      exportSource: null
+      lastModifiedBy: null
+      systemId: pf1
+      systemVersion: '11.9'
+    description: ''
+    documentUuid: Compendium.pf1-critical-effects.critical-effects.JournalEntry.Yuy98K5nz5tc15V2
+    drawn: false
+    flags: {}
+    img: icons/svg/d20-black.svg
+    name: Knocked Down
+    range:
+      - 9
+      - 9
+    type: document
+    weight: 1
+  - _id: XWK5PxivZsoSakNa
+    _key: '!tables.results!7GdCRbe6svmIV6RK.XWK5PxivZsoSakNa'
+    _stats:
+      compendiumSource: null
+      coreVersion: '13.351'
+      duplicateSource: null
+      exportSource: null
+      lastModifiedBy: null
+      systemId: pf1
+      systemVersion: '11.9'
+    description: ''
+    documentUuid: Compendium.pf1-critical-effects.critical-effects.JournalEntry.fNlJOCKUTsg4gvK5
+    drawn: false
+    flags: {}
+    img: icons/svg/d20-black.svg
+    name: Nethers
+    range:
+      - 10
+      - 10
+    type: document
+    weight: 1
+  - _id: XI8ROy2Ed9EqBSOz
+    _key: '!tables.results!7GdCRbe6svmIV6RK.XI8ROy2Ed9EqBSOz'
+    _stats:
+      compendiumSource: null
+      coreVersion: '13.351'
+      duplicateSource: null
+      exportSource: null
+      lastModifiedBy: null
+      systemId: pf1
+      systemVersion: '11.9'
+    description: ''
+    documentUuid: Compendium.pf1-critical-effects.critical-effects.JournalEntry.QA6hRhY64hxEWcth
+    drawn: false
+    flags: {}
+    img: icons/svg/d20-black.svg
+    name: Slipped Vertebrae
+    range:
+      - 11
+      - 11
+    type: document
+    weight: 1
+  - _id: rf4q4BFsAen9ENkL
+    _key: '!tables.results!7GdCRbe6svmIV6RK.rf4q4BFsAen9ENkL'
+    _stats:
+      compendiumSource: null
+      coreVersion: '13.351'
+      duplicateSource: null
+      exportSource: null
+      lastModifiedBy: null
+      systemId: pf1
+      systemVersion: '11.9'
+    description: ''
+    documentUuid: Compendium.pf1-critical-effects.critical-effects.JournalEntry.zcqDZ5fvQbLTK1NL
+    drawn: false
+    flags: {}
+    img: icons/svg/d20-black.svg
+    name: Thrown
+    range:
+      - 12
+      - 12
+    type: document
+    weight: 1
+sort: 100037

@@ -1,0 +1,55 @@
+_id: nBwCMtN8PLMPSkVO
+_key: '!journal!nBwCMtN8PLMPSkVO'
+_stats:
+  compendiumSource: null
+  coreVersion: '13.351'
+  createdTime: 1768594156758
+  duplicateSource: null
+  exportSource: null
+  lastModifiedBy: mLW1zeZBsSCEsXlw
+  modifiedTime: 1768594156758
+  systemId: pf1
+  systemVersion: '11.9'
+categories: []
+flags:
+  scene-packer:
+    hash: a1fab9e5b334474e2299688b604806f2eb792046
+    sourceId: JournalEntry.nBwCMtN8PLMPSkVO
+folder: rv9X3fvSrPJm68jh
+name: De-Scaled
+ownership:
+  default: 0
+  mLW1zeZBsSCEsXlw: 3
+pages:
+  - _id: T8u0PWofKqt1CMNV
+    _key: '!journal.pages!nBwCMtN8PLMPSkVO.T8u0PWofKqt1CMNV'
+    _stats:
+      compendiumSource: null
+      coreVersion: '13.351'
+      duplicateSource: null
+      exportSource: null
+      lastModifiedBy: null
+      systemId: pf1
+      systemVersion: '11.9'
+    category: null
+    flags: {}
+    image: {}
+    name: Effect
+    ownership:
+      default: -1
+      mLW1zeZBsSCEsXlw: 3
+    sort: 100000
+    src: null
+    system: {}
+    text:
+      content: <p>Dragon gains a chink in its armor. The critical threat range of all attacks against it are increased by 2.</p>
+      format: 1
+      markdown: ''
+    title:
+      level: 1
+      show: true
+    type: text
+    video:
+      controls: true
+      volume: 0.5
+sort: 0

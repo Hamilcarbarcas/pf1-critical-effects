@@ -1,0 +1,56 @@
+_id: hHMx5wKCrFm3EQxH
+_key: '!journal!hHMx5wKCrFm3EQxH'
+_stats:
+  compendiumSource: null
+  coreVersion: '13.351'
+  createdTime: 1768594151716
+  duplicateSource: null
+  exportSource: null
+  lastModifiedBy: mLW1zeZBsSCEsXlw
+  modifiedTime: 1768594151716
+  systemId: pf1
+  systemVersion: '11.9'
+categories: []
+flags:
+  scene-packer:
+    hash: 346a5bf182cb48a29d7137882556ad7bf07ca646
+    sourceId: JournalEntry.hHMx5wKCrFm3EQxH
+folder: COv8opMhbjaiMb8r
+name: Pierced Hand
+ownership:
+  default: 0
+  mLW1zeZBsSCEsXlw: 3
+pages:
+  - _id: bk8rZI7jLmZcrTXe
+    _key: '!journal.pages!hHMx5wKCrFm3EQxH.bk8rZI7jLmZcrTXe'
+    _stats:
+      compendiumSource: JournalEntry.ycm7IyIqQGZWrnbU.JournalEntryPage.bk8rZI7jLmZcrTXe
+      coreVersion: '13.351'
+      duplicateSource: null
+      exportSource: null
+      lastModifiedBy: null
+      systemId: pf1
+      systemVersion: '11.9'
+    category: null
+    flags:
+      core: {}
+    image: {}
+    name: Effect
+    ownership:
+      default: -1
+      mLW1zeZBsSCEsXlw: 3
+    sort: 0
+    src: null
+    system: {}
+    text:
+      content: <p>Any items in the affected hand are dropped, and any skills requiring the use of that hand are made with disadvantage for 1d4 days. Roll randomly to determine which hand is affected.</p><p></p><p>The effects of a pierced hand can be removed with 5 HP of dedicated healing to the pierced hand (dedicated healing does not heal hit point damage).</p>
+      format: 1
+      markdown: ''
+    title:
+      level: 1
+      show: true
+    type: text
+    video:
+      controls: true
+      volume: 0.5
+sort: 0

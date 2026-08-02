@@ -1,0 +1,18 @@
+{
+  "version": 1,
+  "_note": "The critical effect pool (DESIGN.md §3). Journal-first: an entry with id, name, journal, locations, damageTypes and severity is COMPLETE and fully usable — the flow resolves it, names it, links the journal, and stops. `outcomes` is optional, added entry by entry after phase 5, and no part of the engine assumes it exists. Populated by the content track; `game.criticalEffects.lint()` reports coverage.",
+  "_schema": {
+    "id": "stable slug — the join key for everything",
+    "name": "display name",
+    "journal": "Compendium.pf1-critical-effects.critical-effects.JournalEntry.<id> — display only, never parsed",
+    "locations": "array, inclusive: head | torso | arm | leg | wing | tail",
+    "damageTypes": "array, inclusive: b | p | s",
+    "severity": "minor | moderate | severe | grave | lethal",
+    "tags": "optional array",
+    "anatomy": "optional array gate: humanoid | beast | aberrant. Omit = all",
+    "weight": "optional positive draw weight within its bucket",
+    "outcomes": "optional array of typed descriptors (§6)",
+    "save": "optional { type: fort|ref|will, dc: formula, onSuccess: [...] } — onSuccess must be non-empty; a save mitigates, it never negates"
+  },
+  "entries": []
+}

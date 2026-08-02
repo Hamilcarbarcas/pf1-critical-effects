@@ -1,0 +1,20 @@
+_id: 5ZuUAU3uoQ1icTV6
+_key: '!folders!5ZuUAU3uoQ1icTV6'
+_stats:
+  compendiumSource: null
+  coreVersion: '13.351'
+  duplicateSource: null
+  exportSource: null
+  lastModifiedBy: null
+  systemId: pf1
+  systemVersion: '11.9'
+color: '#1c1c1c'
+description: ''
+flags:
+  scene-packer:
+    hash: 759f6c69f8159f4790b0c8c827ff6bdeb923d2a1
+folder: rkn84UFNwzfirQxs
+name: Slashing - Legs
+sort: 300000
+sorting: a
+type: JournalEntry

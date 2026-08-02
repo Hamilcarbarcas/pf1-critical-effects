@@ -1,0 +1,56 @@
+_id: DhEGjGChRTcLlVYG
+_key: '!journal!DhEGjGChRTcLlVYG'
+_stats:
+  compendiumSource: null
+  coreVersion: '13.351'
+  createdTime: 1768594157986
+  duplicateSource: null
+  exportSource: null
+  lastModifiedBy: mLW1zeZBsSCEsXlw
+  modifiedTime: 1768594157986
+  systemId: pf1
+  systemVersion: '11.9'
+categories: []
+flags:
+  scene-packer:
+    hash: 10304aab155b329db195dfffb9f14d38a4683054
+    sourceId: JournalEntry.DhEGjGChRTcLlVYG
+folder: KJtoo98fx7yqJDpO
+name: Dropped Weapon
+ownership:
+  default: 0
+  mLW1zeZBsSCEsXlw: 3
+pages:
+  - _id: hWUrnJtHtSMGRsL4
+    _key: '!journal.pages!DhEGjGChRTcLlVYG.hWUrnJtHtSMGRsL4'
+    _stats:
+      compendiumSource: JournalEntry.UDN3rCe3D6xQQpBe.JournalEntryPage.hWUrnJtHtSMGRsL4
+      coreVersion: '13.351'
+      duplicateSource: null
+      exportSource: null
+      lastModifiedBy: null
+      systemId: pf1
+      systemVersion: '11.9'
+    category: null
+    flags:
+      core: {}
+    image: {}
+    name: Effect
+    ownership:
+      default: -1
+      mLW1zeZBsSCEsXlw: 3
+    sort: 0
+    src: null
+    system: {}
+    text:
+      content: <p>Your weapon falls at your feet. Any other character with a free hand in reach may make a DC 15 Dexterity check to grab the weapon before it falls to the ground as an immediate action.</p>
+      format: 1
+      markdown: ''
+    title:
+      level: 1
+      show: true
+    type: text
+    video:
+      controls: true
+      volume: 0.5
+sort: 0

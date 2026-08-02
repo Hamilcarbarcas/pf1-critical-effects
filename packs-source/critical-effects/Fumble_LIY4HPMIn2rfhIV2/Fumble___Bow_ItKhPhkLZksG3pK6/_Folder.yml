@@ -1,0 +1,20 @@
+_id: ItKhPhkLZksG3pK6
+_key: '!folders!ItKhPhkLZksG3pK6'
+_stats:
+  compendiumSource: null
+  coreVersion: '13.351'
+  duplicateSource: null
+  exportSource: null
+  lastModifiedBy: null
+  systemId: pf1
+  systemVersion: '11.9'
+color: '#ff2e2e'
+description: ''
+flags:
+  scene-packer:
+    hash: 03bdbfffa8298a10b5ee58a11badf4d7f61f39c7
+folder: LIY4HPMIn2rfhIV2
+name: Fumble - Bow
+sort: 0
+sorting: a
+type: JournalEntry

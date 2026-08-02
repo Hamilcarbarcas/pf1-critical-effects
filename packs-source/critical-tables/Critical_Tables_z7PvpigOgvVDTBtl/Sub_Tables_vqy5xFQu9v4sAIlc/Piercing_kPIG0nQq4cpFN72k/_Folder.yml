@@ -1,0 +1,20 @@
+_id: kPIG0nQq4cpFN72k
+_key: '!folders!kPIG0nQq4cpFN72k'
+_stats:
+  compendiumSource: null
+  coreVersion: '13.351'
+  duplicateSource: null
+  exportSource: null
+  lastModifiedBy: null
+  systemId: pf1
+  systemVersion: '11.9'
+color: null
+description: ''
+flags:
+  scene-packer:
+    hash: 95c5920905f1ca16bec4f496ad85710b87e48f21
+folder: vqy5xFQu9v4sAIlc
+name: Piercing
+sort: 100000
+sorting: a
+type: RollTable

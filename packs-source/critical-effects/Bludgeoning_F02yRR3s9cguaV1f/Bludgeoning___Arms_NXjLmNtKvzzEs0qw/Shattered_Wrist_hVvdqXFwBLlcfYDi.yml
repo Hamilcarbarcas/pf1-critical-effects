@@ -1,0 +1,56 @@
+_id: hVvdqXFwBLlcfYDi
+_key: '!journal!hVvdqXFwBLlcfYDi'
+_stats:
+  compendiumSource: null
+  coreVersion: '13.351'
+  createdTime: 1768594154652
+  duplicateSource: null
+  exportSource: null
+  lastModifiedBy: mLW1zeZBsSCEsXlw
+  modifiedTime: 1768594154652
+  systemId: pf1
+  systemVersion: '11.9'
+categories: []
+flags:
+  scene-packer:
+    hash: 0f35344ef6105f5908562e604c35b47e82871578
+    sourceId: JournalEntry.hVvdqXFwBLlcfYDi
+folder: NXjLmNtKvzzEs0qw
+name: Shattered Wrist
+ownership:
+  default: 0
+  mLW1zeZBsSCEsXlw: 3
+pages:
+  - _id: rYmwwMxaGFDlfpcR
+    _key: '!journal.pages!hVvdqXFwBLlcfYDi.rYmwwMxaGFDlfpcR'
+    _stats:
+      compendiumSource: JournalEntry.innvoZMQNWWYdvrw.JournalEntryPage.rYmwwMxaGFDlfpcR
+      coreVersion: '13.351'
+      duplicateSource: null
+      exportSource: null
+      lastModifiedBy: null
+      systemId: pf1
+      systemVersion: '11.9'
+    category: null
+    flags:
+      core: {}
+    image: {}
+    name: Effects
+    ownership:
+      default: -1
+      mLW1zeZBsSCEsXlw: 3
+    sort: 0
+    src: null
+    system: {}
+    text:
+      content: <p><span style="font-family:Signika, sans-serif">Gain the shattered wrist condition. Roll randomly to determine which wrist is affected.</span></p><p></p><p><span style="font-family:Signika, sans-serif">The affected hand is useless, and any rolls involving its use automatically fail.</span></p><p></p><p>A shattered wrist can be healed by making a DC 25 heal check to set the bone, followed by 25 points of healing dedicated to the break (dedicated healing does not heal hit point damage).</p>
+      format: 1
+      markdown: ''
+    title:
+      level: 1
+      show: true
+    type: text
+    video:
+      controls: true
+      volume: 0.5
+sort: 0

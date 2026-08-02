@@ -1,0 +1,54 @@
+_id: HxCC7LzyIvplJMKg
+_key: '!journal!HxCC7LzyIvplJMKg'
+_stats:
+  compendiumSource: null
+  coreVersion: '13.351'
+  createdTime: 1768594158904
+  duplicateSource: null
+  exportSource: null
+  lastModifiedBy: mLW1zeZBsSCEsXlw
+  modifiedTime: 1768594158904
+  systemId: pf1
+  systemVersion: '11.9'
+categories: []
+flags:
+  scene-packer:
+    hash: dae7a313f3d4a57caaf76138c0b3d4a51ac6e192
+    sourceId: Compendium.astora-mod.astora-journals.JournalEntry.xmmxfVBqMyx36zjg
+folder: dtsx8Ez36I1gUou9
+name: Unicorned
+ownership:
+  default: 0
+  mLW1zeZBsSCEsXlw: 3
+pages:
+  - _id: 8N6AwZaJeY26fa9g
+    _key: '!journal.pages!HxCC7LzyIvplJMKg.8N6AwZaJeY26fa9g'
+    _stats:
+      compendiumSource: null
+      coreVersion: '13.351'
+      duplicateSource: null
+      exportSource: null
+      lastModifiedBy: null
+      systemId: pf1
+      systemVersion: '11.9'
+    category: null
+    flags: {}
+    image: {}
+    name: Effect
+    ownership:
+      default: -1
+    sort: 100000
+    src: null
+    system: {}
+    text:
+      content: <p>The last thing to pass through the victim's mind is the attacker's weapon.</p><p></p><p>Instant Death.</p>
+      format: 1
+      markdown: ''
+    title:
+      level: 1
+      show: true
+    type: text
+    video:
+      controls: true
+      volume: 0.5
+sort: 0

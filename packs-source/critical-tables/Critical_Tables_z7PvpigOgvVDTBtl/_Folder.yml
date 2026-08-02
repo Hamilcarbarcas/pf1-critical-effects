@@ -1,0 +1,22 @@
+_id: z7PvpigOgvVDTBtl
+_key: '!folders!z7PvpigOgvVDTBtl'
+_stats:
+  compendiumSource: null
+  coreVersion: '13.351'
+  createdTime: 1768594132606
+  duplicateSource: null
+  exportSource: null
+  lastModifiedBy: mLW1zeZBsSCEsXlw
+  modifiedTime: 1768594132606
+  systemId: pf1
+  systemVersion: '11.9'
+color: '#b01717'
+description: ''
+flags:
+  scene-packer:
+    hash: e1e40124ea61d26891361983f3ce21f5cf79a55e
+folder: null
+name: Critical Tables
+sort: 100000
+sorting: m
+type: RollTable

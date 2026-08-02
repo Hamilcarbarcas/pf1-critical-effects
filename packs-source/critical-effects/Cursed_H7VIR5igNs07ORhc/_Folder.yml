@@ -1,0 +1,22 @@
+_id: H7VIR5igNs07ORhc
+_key: '!folders!H7VIR5igNs07ORhc'
+_stats:
+  compendiumSource: null
+  coreVersion: '13.351'
+  createdTime: 1768594155629
+  duplicateSource: null
+  exportSource: null
+  lastModifiedBy: mLW1zeZBsSCEsXlw
+  modifiedTime: 1768594155674
+  systemId: pf1
+  systemVersion: '11.9'
+color: '#00e1ff'
+description: ''
+flags:
+  scene-packer:
+    hash: 55ee931c4719bb781e1062d9471ecb52f1335c9d
+folder: null
+name: Cursed
+sort: 400000
+sorting: a
+type: JournalEntry

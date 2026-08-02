@@ -1,0 +1,56 @@
+_id: zftFHLMFhdODhxS6
+_key: '!journal!zftFHLMFhdODhxS6'
+_stats:
+  compendiumSource: null
+  coreVersion: '13.351'
+  createdTime: 1768594151716
+  duplicateSource: null
+  exportSource: null
+  lastModifiedBy: mLW1zeZBsSCEsXlw
+  modifiedTime: 1768594151716
+  systemId: pf1
+  systemVersion: '11.9'
+categories: []
+flags:
+  scene-packer:
+    hash: 38a7b3f4cb3ee7a94b2a38d1c47f5fe90e91d8bd
+    sourceId: JournalEntry.zftFHLMFhdODhxS6
+folder: COv8opMhbjaiMb8r
+name: Pierced Heart
+ownership:
+  default: 0
+  mLW1zeZBsSCEsXlw: 3
+pages:
+  - _id: x8KTapBammxZCuUm
+    _key: '!journal.pages!zftFHLMFhdODhxS6.x8KTapBammxZCuUm'
+    _stats:
+      compendiumSource: JournalEntry.R2OASHeVt82JbJZ6.JournalEntryPage.x8KTapBammxZCuUm
+      coreVersion: '13.351'
+      duplicateSource: null
+      exportSource: null
+      lastModifiedBy: null
+      systemId: pf1
+      systemVersion: '11.9'
+    category: null
+    flags:
+      core: {}
+    image: {}
+    name: Effect
+    ownership:
+      default: -1
+      mLW1zeZBsSCEsXlw: 3
+    sort: 0
+    src: null
+    system: {}
+    text:
+      content: <p>Immediately dropped to -1 HP and 1d12 bleed.</p>
+      format: 1
+      markdown: ''
+    title:
+      level: 1
+      show: true
+    type: text
+    video:
+      controls: true
+      volume: 0.5
+sort: 0

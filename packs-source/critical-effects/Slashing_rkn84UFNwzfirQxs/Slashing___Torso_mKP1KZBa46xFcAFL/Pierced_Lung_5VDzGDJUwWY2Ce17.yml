@@ -1,0 +1,56 @@
+_id: 5VDzGDJUwWY2Ce17
+_key: '!journal!5VDzGDJUwWY2Ce17'
+_stats:
+  compendiumSource: null
+  coreVersion: '13.351'
+  createdTime: 1768594160167
+  duplicateSource: null
+  exportSource: null
+  lastModifiedBy: mLW1zeZBsSCEsXlw
+  modifiedTime: 1768594160167
+  systemId: pf1
+  systemVersion: '11.9'
+categories: []
+flags:
+  scene-packer:
+    hash: bafc4a98f349c8f967204a845e68eb03060d39d1
+    sourceId: JournalEntry.5VDzGDJUwWY2Ce17
+folder: mKP1KZBa46xFcAFL
+name: Pierced Lung
+ownership:
+  default: 0
+  mLW1zeZBsSCEsXlw: 3
+pages:
+  - _id: x8KTapBammxZCuUm
+    _key: '!journal.pages!5VDzGDJUwWY2Ce17.x8KTapBammxZCuUm'
+    _stats:
+      compendiumSource: JournalEntry.R2OASHeVt82JbJZ6.JournalEntryPage.x8KTapBammxZCuUm
+      coreVersion: '13.351'
+      duplicateSource: null
+      exportSource: null
+      lastModifiedBy: null
+      systemId: pf1
+      systemVersion: '11.9'
+    category: null
+    flags:
+      core: {}
+    image: {}
+    name: Effect
+    ownership:
+      default: -1
+      mLW1zeZBsSCEsXlw: 3
+    sort: 0
+    src: null
+    system: {}
+    text:
+      content: <p>Gain the punctured lung condition and 1d8 bleed.</p><p></p><p>Exhausted until cured, and talking requires a DC 15 Fortitude save, coughing up blood instead on a failure.</p><p></p><p><span style="font-family:Signika, sans-serif">The effects of a punctured lung can be removed with 15 HP of dedicated healing to it (dedicated healing does not heal hit point damage).</span></p><p></p><p><span style="font-family:Signika, sans-serif">Bleed damage is applied at the beginning of each turn until stopped with a DC 15 Heal check or receiving 1 or more points of hit point healing.</span></p>
+      format: 1
+      markdown: ''
+    title:
+      level: 1
+      show: true
+    type: text
+    video:
+      controls: true
+      volume: 0.5
+sort: 0

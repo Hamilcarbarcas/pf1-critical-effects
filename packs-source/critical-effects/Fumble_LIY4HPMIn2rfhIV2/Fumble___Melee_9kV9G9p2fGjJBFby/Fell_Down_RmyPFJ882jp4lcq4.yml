@@ -1,0 +1,56 @@
+_id: RmyPFJ882jp4lcq4
+_key: '!journal!RmyPFJ882jp4lcq4'
+_stats:
+  compendiumSource: null
+  coreVersion: '13.351'
+  createdTime: 1768594157986
+  duplicateSource: null
+  exportSource: null
+  lastModifiedBy: mLW1zeZBsSCEsXlw
+  modifiedTime: 1768594157986
+  systemId: pf1
+  systemVersion: '11.9'
+categories: []
+flags:
+  scene-packer:
+    hash: d17d5f1ff47b35633d328ccb0f0b1ddea9fae5b6
+    sourceId: JournalEntry.RmyPFJ882jp4lcq4
+folder: 9kV9G9p2fGjJBFby
+name: Fell Down
+ownership:
+  default: 0
+  mLW1zeZBsSCEsXlw: 3
+pages:
+  - _id: wSrYnYsrRBoncBvu
+    _key: '!journal.pages!RmyPFJ882jp4lcq4.wSrYnYsrRBoncBvu'
+    _stats:
+      compendiumSource: JournalEntry.RmyPFJ882jp4lcq4.JournalEntryPage.wSrYnYsrRBoncBvu
+      coreVersion: '13.351'
+      duplicateSource: null
+      exportSource: null
+      lastModifiedBy: null
+      systemId: pf1
+      systemVersion: '11.9'
+    category: null
+    flags:
+      core: {}
+    image: {}
+    name: Effect
+    ownership:
+      default: -1
+      mLW1zeZBsSCEsXlw: 3
+    sort: 100000
+    src: null
+    system: {}
+    text:
+      content: <p>Fall prone.</p>
+      format: 1
+      markdown: ''
+    title:
+      level: 1
+      show: true
+    type: text
+    video:
+      controls: true
+      volume: 0.5
+sort: 1000000

@@ -1,0 +1,56 @@
+_id: a8TDCs13Htd5xPLM
+_key: '!journal!a8TDCs13Htd5xPLM'
+_stats:
+  compendiumSource: null
+  coreVersion: '13.351'
+  createdTime: 1768594162555
+  duplicateSource: null
+  exportSource: null
+  lastModifiedBy: mLW1zeZBsSCEsXlw
+  modifiedTime: 1768594162555
+  systemId: pf1
+  systemVersion: '11.9'
+categories: []
+flags:
+  scene-packer:
+    hash: f0f4e5613497a3f990a6acad4bf83f2872269f72
+    sourceId: JournalEntry.a8TDCs13Htd5xPLM
+folder: n7VcFGwJSZ7w2LlU
+name: Disemboweled
+ownership:
+  default: 0
+  mLW1zeZBsSCEsXlw: 3
+pages:
+  - _id: x8KTapBammxZCuUm
+    _key: '!journal.pages!a8TDCs13Htd5xPLM.x8KTapBammxZCuUm'
+    _stats:
+      compendiumSource: JournalEntry.R2OASHeVt82JbJZ6.JournalEntryPage.x8KTapBammxZCuUm
+      coreVersion: '13.351'
+      duplicateSource: null
+      exportSource: null
+      lastModifiedBy: null
+      systemId: pf1
+      systemVersion: '11.9'
+    category: null
+    flags:
+      core: {}
+    image: {}
+    name: Effect
+    ownership:
+      default: -1
+      mLW1zeZBsSCEsXlw: 3
+    sort: 0
+    src: null
+    system: {}
+    text:
+      content: <p>Gain the Disemboweled condition and 1d12 bleed.</p><p></p><p>Staggered until cured.</p><p></p><p>A disembowel can be cured by pushing the innards back into the body as a standard action (requires a DC 15 Fortitude save to do it yourself), followed by a DC 20 heal check or 10 points of dedicated healing to seal the wound <span style="font-family:Signika, sans-serif">(dedicated healing does not heal hit point damage).</span></p><p></p><p><span style="font-family:Signika, sans-serif">Bleed damage is applied at the beginning of each turn until stopped with a DC 15 Heal check or receiving 1 or more points of hit point healing.</span></p>
+      format: 1
+      markdown: ''
+    title:
+      level: 1
+      show: true
+    type: text
+    video:
+      controls: true
+      volume: 0.5
+sort: 0

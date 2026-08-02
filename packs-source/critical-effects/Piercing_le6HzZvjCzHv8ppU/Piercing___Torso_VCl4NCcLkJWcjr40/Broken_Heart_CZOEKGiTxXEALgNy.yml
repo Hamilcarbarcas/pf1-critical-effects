@@ -1,0 +1,56 @@
+_id: CZOEKGiTxXEALgNy
+_key: '!journal!CZOEKGiTxXEALgNy'
+_stats:
+  compendiumSource: null
+  coreVersion: '13.351'
+  createdTime: 1768594158904
+  duplicateSource: null
+  exportSource: null
+  lastModifiedBy: mLW1zeZBsSCEsXlw
+  modifiedTime: 1768594158904
+  systemId: pf1
+  systemVersion: '11.9'
+categories: []
+flags:
+  scene-packer:
+    hash: 60d8b476c542843245b3f19d289be3acd6273a3f
+    sourceId: JournalEntry.CZOEKGiTxXEALgNy
+folder: VCl4NCcLkJWcjr40
+name: Broken Heart
+ownership:
+  default: 0
+  mLW1zeZBsSCEsXlw: 3
+pages:
+  - _id: x8KTapBammxZCuUm
+    _key: '!journal.pages!CZOEKGiTxXEALgNy.x8KTapBammxZCuUm'
+    _stats:
+      compendiumSource: JournalEntry.R2OASHeVt82JbJZ6.JournalEntryPage.x8KTapBammxZCuUm
+      coreVersion: '13.351'
+      duplicateSource: null
+      exportSource: null
+      lastModifiedBy: null
+      systemId: pf1
+      systemVersion: '11.9'
+    category: null
+    flags:
+      core: {}
+    image: {}
+    name: Effect
+    ownership:
+      default: -1
+      mLW1zeZBsSCEsXlw: 3
+    sort: 0
+    src: null
+    system: {}
+    text:
+      content: <p>Immediately dropped to -1 HP and 1d12 bleed.</p>
+      format: 1
+      markdown: ''
+    title:
+      level: 1
+      show: true
+    type: text
+    video:
+      controls: true
+      volume: 0.5
+sort: 0

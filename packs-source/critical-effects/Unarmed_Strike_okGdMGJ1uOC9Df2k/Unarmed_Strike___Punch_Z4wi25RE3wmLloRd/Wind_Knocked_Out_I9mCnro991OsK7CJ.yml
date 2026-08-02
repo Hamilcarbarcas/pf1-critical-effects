@@ -1,0 +1,56 @@
+_id: I9mCnro991OsK7CJ
+_key: '!journal!I9mCnro991OsK7CJ'
+_stats:
+  compendiumSource: null
+  coreVersion: '13.351'
+  createdTime: 1768594161369
+  duplicateSource: null
+  exportSource: null
+  lastModifiedBy: mLW1zeZBsSCEsXlw
+  modifiedTime: 1768594161369
+  systemId: pf1
+  systemVersion: '11.9'
+categories: []
+flags:
+  scene-packer:
+    hash: 4187acf375ddf463bf8eb03193132c214ccb7072
+    sourceId: JournalEntry.I9mCnro991OsK7CJ
+folder: Z4wi25RE3wmLloRd
+name: Wind Knocked Out
+ownership:
+  default: 0
+  mLW1zeZBsSCEsXlw: 3
+pages:
+  - _id: GHH4S91vRnw2nzZG
+    _key: '!journal.pages!I9mCnro991OsK7CJ.GHH4S91vRnw2nzZG'
+    _stats:
+      compendiumSource: JournalEntry.gXwKWqRjWaLApzBj.JournalEntryPage.GHH4S91vRnw2nzZG
+      coreVersion: '13.351'
+      duplicateSource: null
+      exportSource: null
+      lastModifiedBy: null
+      systemId: pf1
+      systemVersion: '11.9'
+    category: null
+    flags:
+      core: {}
+    image: {}
+    name: Effect
+    ownership:
+      default: -1
+      mLW1zeZBsSCEsXlw: 3
+    sort: 0
+    src: null
+    system: {}
+    text:
+      content: <p>Stunned for 1d4 rounds.</p><p></p><p>You may roll a DC 12 Fortitude save at the end of each of your turns to end the stunned effect early.</p>
+      format: 1
+      markdown: ''
+    title:
+      level: 1
+      show: true
+    type: text
+    video:
+      controls: true
+      volume: 0.5
+sort: 0

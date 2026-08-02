@@ -1,0 +1,260 @@
+_id: N0ssKgbPHawV6OUV
+_key: '!tables!N0ssKgbPHawV6OUV'
+_stats:
+  compendiumSource: null
+  coreVersion: '13.351'
+  createdTime: 1768594132767
+  duplicateSource: null
+  exportSource: null
+  lastModifiedBy: mLW1zeZBsSCEsXlw
+  modifiedTime: 1768595869928
+  systemId: pf1
+  systemVersion: '11.9'
+description: <p>A random table created from the contents of the Bludgeoning - Arms Folder.</p>
+displayRoll: false
+flags:
+  core: {}
+  scene-packer:
+    hash: 44cbaffc398483bc86bf8d2e92724c6eccd74973
+    sourceId: RollTable.N0ssKgbPHawV6OUV
+folder: 9ItoJFf6rgmT66qu
+formula: 1d12
+img: icons/svg/d20-grey.svg
+name: Bludgeoning - Arms
+ownership:
+  default: 0
+  mLW1zeZBsSCEsXlw: 3
+replacement: true
+results:
+  - _id: BI9Y1i1tuyzcqi6i
+    _key: '!tables.results!N0ssKgbPHawV6OUV.BI9Y1i1tuyzcqi6i'
+    _stats:
+      compendiumSource: null
+      coreVersion: '13.351'
+      duplicateSource: null
+      exportSource: null
+      lastModifiedBy: null
+      systemId: pf1
+      systemVersion: '11.9'
+    description: ''
+    documentUuid: Compendium.pf1-critical-effects.critical-effects.JournalEntry.UALn3MdNDwELBEPM
+    drawn: false
+    flags: {}
+    img: icons/svg/d20-black.svg
+    name: Dropped Item
+    range:
+      - 1
+      - 1
+    type: document
+    weight: 1
+  - _id: MaF5VBjl6ohADMLZ
+    _key: '!tables.results!N0ssKgbPHawV6OUV.MaF5VBjl6ohADMLZ'
+    _stats:
+      compendiumSource: null
+      coreVersion: '13.351'
+      duplicateSource: null
+      exportSource: null
+      lastModifiedBy: null
+      systemId: pf1
+      systemVersion: '11.9'
+    description: ''
+    documentUuid: Compendium.pf1-critical-effects.critical-effects.JournalEntry.4a45dqlLI7N0ksFu
+    drawn: false
+    flags: {}
+    img: icons/svg/d20-black.svg
+    name: Broken Shoulder
+    range:
+      - 2
+      - 2
+    type: document
+    weight: 1
+  - _id: aeJLltApQSSdWtLc
+    _key: '!tables.results!N0ssKgbPHawV6OUV.aeJLltApQSSdWtLc'
+    _stats:
+      compendiumSource: null
+      coreVersion: '13.351'
+      duplicateSource: null
+      exportSource: null
+      lastModifiedBy: null
+      systemId: pf1
+      systemVersion: '11.9'
+    description: ''
+    documentUuid: Compendium.pf1-critical-effects.critical-effects.JournalEntry.4du6yCfOJfbOFLYv
+    drawn: false
+    flags: {}
+    img: icons/svg/d20-black.svg
+    name: Flung Weapon
+    range:
+      - 3
+      - 3
+    type: document
+    weight: 1
+  - _id: r3TLeNHuMIiTSLb3
+    _key: '!tables.results!N0ssKgbPHawV6OUV.r3TLeNHuMIiTSLb3'
+    _stats:
+      compendiumSource: null
+      coreVersion: '13.351'
+      duplicateSource: null
+      exportSource: null
+      lastModifiedBy: null
+      systemId: pf1
+      systemVersion: '11.9'
+    description: ''
+    documentUuid: Compendium.pf1-critical-effects.critical-effects.JournalEntry.6UZ6CaVKqHoQHQdQ
+    drawn: false
+    flags: {}
+    img: icons/svg/d20-black.svg
+    name: Broken Wrist
+    range:
+      - 4
+      - 4
+    type: document
+    weight: 1
+  - _id: UQkyQyVeFuv7MrpB
+    _key: '!tables.results!N0ssKgbPHawV6OUV.UQkyQyVeFuv7MrpB'
+    _stats:
+      compendiumSource: null
+      coreVersion: '13.351'
+      duplicateSource: null
+      exportSource: null
+      lastModifiedBy: null
+      systemId: pf1
+      systemVersion: '11.9'
+    description: ''
+    documentUuid: Compendium.pf1-critical-effects.critical-effects.JournalEntry.7EQ3TUeWKjspitVq
+    drawn: false
+    flags: {}
+    img: icons/svg/d20-black.svg
+    name: Broken Arm
+    range:
+      - 5
+      - 5
+    type: document
+    weight: 1
+  - _id: 0lhfs7QQNJizEHgY
+    _key: '!tables.results!N0ssKgbPHawV6OUV.0lhfs7QQNJizEHgY'
+    _stats:
+      compendiumSource: null
+      coreVersion: '13.351'
+      duplicateSource: null
+      exportSource: null
+      lastModifiedBy: null
+      systemId: pf1
+      systemVersion: '11.9'
+    description: ''
+    documentUuid: Compendium.pf1-critical-effects.critical-effects.JournalEntry.FO1oPcid4oykoEtT
+    drawn: false
+    flags: {}
+    img: icons/svg/d20-black.svg
+    name: Compound Fracture
+    range:
+      - 6
+      - 6
+    type: document
+    weight: 1
+  - _id: qTkCnDdnfiQGZ2cC
+    _key: '!tables.results!N0ssKgbPHawV6OUV.qTkCnDdnfiQGZ2cC'
+    _stats:
+      compendiumSource: null
+      coreVersion: '13.351'
+      duplicateSource: null
+      exportSource: null
+      lastModifiedBy: null
+      systemId: pf1
+      systemVersion: '11.9'
+    description: ''
+    documentUuid: Compendium.pf1-critical-effects.critical-effects.JournalEntry.P4svur97n1Em0WVw
+    drawn: false
+    flags: {}
+    img: icons/svg/d20-black.svg
+    name: Shattered Hand
+    range:
+      - 7
+      - 7
+    type: document
+    weight: 1
+  - _id: SEG8hym5SRlTCB45
+    _key: '!tables.results!N0ssKgbPHawV6OUV.SEG8hym5SRlTCB45'
+    _stats:
+      compendiumSource: null
+      coreVersion: '13.351'
+      duplicateSource: null
+      exportSource: null
+      lastModifiedBy: null
+      systemId: pf1
+      systemVersion: '11.9'
+    description: ''
+    documentUuid: Compendium.pf1-critical-effects.critical-effects.JournalEntry.UALn3MdNDwELBEPM
+    drawn: false
+    flags: {}
+    img: icons/svg/d20-black.svg
+    name: Dropped Item
+    range:
+      - 8
+      - 9
+    type: document
+    weight: 2
+  - _id: ycEXZMeC8kYLW03O
+    _key: '!tables.results!N0ssKgbPHawV6OUV.ycEXZMeC8kYLW03O'
+    _stats:
+      compendiumSource: null
+      coreVersion: '13.351'
+      duplicateSource: null
+      exportSource: null
+      lastModifiedBy: null
+      systemId: pf1
+      systemVersion: '11.9'
+    description: ''
+    documentUuid: Compendium.pf1-critical-effects.critical-effects.JournalEntry.WUVpDeT7ugmSJKQG
+    drawn: false
+    flags: {}
+    img: icons/svg/d20-black.svg
+    name: Broken Finger
+    range:
+      - 10
+      - 10
+    type: document
+    weight: 1
+  - _id: NunAWZjIwvb9bjhr
+    _key: '!tables.results!N0ssKgbPHawV6OUV.NunAWZjIwvb9bjhr'
+    _stats:
+      compendiumSource: null
+      coreVersion: '13.351'
+      duplicateSource: null
+      exportSource: null
+      lastModifiedBy: null
+      systemId: pf1
+      systemVersion: '11.9'
+    description: ''
+    documentUuid: Compendium.pf1-critical-effects.critical-effects.JournalEntry.hVvdqXFwBLlcfYDi
+    drawn: false
+    flags: {}
+    img: icons/svg/d20-black.svg
+    name: Shattered Wrist
+    range:
+      - 11
+      - 11
+    type: document
+    weight: 1
+  - _id: 3P03tARjiB3Iat50
+    _key: '!tables.results!N0ssKgbPHawV6OUV.3P03tARjiB3Iat50'
+    _stats:
+      compendiumSource: null
+      coreVersion: '13.351'
+      duplicateSource: null
+      exportSource: null
+      lastModifiedBy: null
+      systemId: pf1
+      systemVersion: '11.9'
+    description: ''
+    documentUuid: Compendium.pf1-critical-effects.critical-effects.JournalEntry.izWWQvfFpo08glez
+    drawn: false
+    flags: {}
+    img: icons/svg/d20-black.svg
+    name: Broken Elbow
+    range:
+      - 12
+      - 12
+    type: document
+    weight: 1
+sort: 0

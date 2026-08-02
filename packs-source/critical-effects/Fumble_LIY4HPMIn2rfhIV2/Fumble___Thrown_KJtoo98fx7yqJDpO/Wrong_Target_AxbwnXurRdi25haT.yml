@@ -1,0 +1,56 @@
+_id: AxbwnXurRdi25haT
+_key: '!journal!AxbwnXurRdi25haT'
+_stats:
+  compendiumSource: null
+  coreVersion: '13.351'
+  createdTime: 1768594157986
+  duplicateSource: null
+  exportSource: null
+  lastModifiedBy: mLW1zeZBsSCEsXlw
+  modifiedTime: 1768594157986
+  systemId: pf1
+  systemVersion: '11.9'
+categories: []
+flags:
+  scene-packer:
+    hash: 6585a0dc9e2f2f2890473c112e528e71e2c1941d
+    sourceId: JournalEntry.AxbwnXurRdi25haT
+folder: KJtoo98fx7yqJDpO
+name: Wrong Target
+ownership:
+  default: 0
+  mLW1zeZBsSCEsXlw: 3
+pages:
+  - _id: TBr1bRwYyzfCo8zC
+    _key: '!journal.pages!AxbwnXurRdi25haT.TBr1bRwYyzfCo8zC'
+    _stats:
+      compendiumSource: JournalEntry.umaQvJsgUeDnnlWe.JournalEntryPage.TBr1bRwYyzfCo8zC
+      coreVersion: '13.351'
+      duplicateSource: null
+      exportSource: null
+      lastModifiedBy: null
+      systemId: pf1
+      systemVersion: '11.9'
+    category: null
+    flags:
+      core: {}
+    image: {}
+    name: Effect
+    ownership:
+      default: -1
+      mLW1zeZBsSCEsXlw: 3
+    sort: 0
+    src: null
+    system: {}
+    text:
+      content: <p>Reroll your to hit, targeting the closest other viable target (roll randomly if multiple targets are closest).</p><p>If no viable target is in reach, target a random unattended object in range.</p><p>If no such object exists, no effect.</p>
+      format: 1
+      markdown: ''
+    title:
+      level: 1
+      show: true
+    type: text
+    video:
+      controls: true
+      volume: 0.5
+sort: 0

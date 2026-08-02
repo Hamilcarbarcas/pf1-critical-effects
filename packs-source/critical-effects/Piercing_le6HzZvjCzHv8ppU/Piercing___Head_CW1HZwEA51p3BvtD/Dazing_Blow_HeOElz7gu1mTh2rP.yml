@@ -1,0 +1,56 @@
+_id: HeOElz7gu1mTh2rP
+_key: '!journal!HeOElz7gu1mTh2rP'
+_stats:
+  compendiumSource: null
+  coreVersion: '13.351'
+  createdTime: 1768594158904
+  duplicateSource: null
+  exportSource: null
+  lastModifiedBy: mLW1zeZBsSCEsXlw
+  modifiedTime: 1768594158904
+  systemId: pf1
+  systemVersion: '11.9'
+categories: []
+flags:
+  scene-packer:
+    hash: 2b9e1a99ba9bae6f64c64aa673bd0efde4b8a372
+    sourceId: JournalEntry.HeOElz7gu1mTh2rP
+folder: CW1HZwEA51p3BvtD
+name: Dazing Blow
+ownership:
+  default: 0
+  mLW1zeZBsSCEsXlw: 3
+pages:
+  - _id: GHH4S91vRnw2nzZG
+    _key: '!journal.pages!HeOElz7gu1mTh2rP.GHH4S91vRnw2nzZG'
+    _stats:
+      compendiumSource: JournalEntry.gXwKWqRjWaLApzBj.JournalEntryPage.GHH4S91vRnw2nzZG
+      coreVersion: '13.351'
+      duplicateSource: null
+      exportSource: null
+      lastModifiedBy: null
+      systemId: pf1
+      systemVersion: '11.9'
+    category: null
+    flags:
+      core: {}
+    image: {}
+    name: Effect
+    ownership:
+      default: -1
+      mLW1zeZBsSCEsXlw: 3
+    sort: 0
+    src: null
+    system: {}
+    text:
+      content: <p>Gain the Stunned condition for 1 round.</p>
+      format: 1
+      markdown: ''
+    title:
+      level: 1
+      show: true
+    type: text
+    video:
+      controls: true
+      volume: 0.5
+sort: 0

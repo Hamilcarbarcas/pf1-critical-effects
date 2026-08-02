@@ -1,0 +1,55 @@
+_id: OhozsTP1rJj9tWT8
+_key: '!journal!OhozsTP1rJj9tWT8'
+_stats:
+  compendiumSource: null
+  coreVersion: '13.351'
+  createdTime: 1768594156758
+  duplicateSource: null
+  exportSource: null
+  lastModifiedBy: mLW1zeZBsSCEsXlw
+  modifiedTime: 1768594156758
+  systemId: pf1
+  systemVersion: '11.9'
+categories: []
+flags:
+  scene-packer:
+    hash: 0273cc4b849bad6c0be17d321599f2ae942d791e
+    sourceId: JournalEntry.OhozsTP1rJj9tWT8
+folder: rv9X3fvSrPJm68jh
+name: Pierced Eye
+ownership:
+  default: 0
+  mLW1zeZBsSCEsXlw: 3
+pages:
+  - _id: fGUFf5hQms1bHyDb
+    _key: '!journal.pages!OhozsTP1rJj9tWT8.fGUFf5hQms1bHyDb'
+    _stats:
+      compendiumSource: null
+      coreVersion: '13.351'
+      duplicateSource: null
+      exportSource: null
+      lastModifiedBy: null
+      systemId: pf1
+      systemVersion: '11.9'
+    category: null
+    flags: {}
+    image: {}
+    name: Effect
+    ownership:
+      default: -1
+      mLW1zeZBsSCEsXlw: 3
+    sort: 100000
+    src: null
+    system: {}
+    text:
+      content: <p>Dragon loses its Frightful Presence ability, and its effect ends on any creatures affected by it.</p><p></p><p>Disadvantage on all attack rolls and any sight based checks.</p>
+      format: 1
+      markdown: ''
+    title:
+      level: 1
+      show: true
+    type: text
+    video:
+      controls: true
+      volume: 0.5
+sort: 0

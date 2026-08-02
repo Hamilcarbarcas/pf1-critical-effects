@@ -1,0 +1,59 @@
+_id: osNsQp1nBJxubgfJ
+_key: '!journal!osNsQp1nBJxubgfJ'
+_stats:
+  compendiumSource: null
+  coreVersion: '13.351'
+  createdTime: 1768594154652
+  duplicateSource: null
+  exportSource: null
+  lastModifiedBy: mLW1zeZBsSCEsXlw
+  modifiedTime: 1768594154652
+  systemId: pf1
+  systemVersion: '11.9'
+categories: []
+flags:
+  scene-packer:
+    hash: b6cf1f4f530688c5a1287624c8fbd38f3e23b53a
+    sourceId: JournalEntry.osNsQp1nBJxubgfJ
+folder: hnuuNHQ4xHrQgXsk
+name: Compound Fracture
+ownership:
+  default: 0
+  mLW1zeZBsSCEsXlw: 3
+pages:
+  - _id: aZzabxWD6nzW2OsI
+    _key: '!journal.pages!osNsQp1nBJxubgfJ.aZzabxWD6nzW2OsI'
+    _stats:
+      compendiumSource: JournalEntry.lQRYxLJ6feesJiC2.JournalEntryPage.aZzabxWD6nzW2OsI
+      coreVersion: '13.351'
+      duplicateSource: null
+      exportSource: null
+      lastModifiedBy: mLW1zeZBsSCEsXlw
+      modifiedTime: 1777852442554
+      systemId: pf1
+      systemVersion: '11.9'
+    category: null
+    flags:
+      core: {}
+      monks-enhanced-journal:
+        appendix: false
+    image: {}
+    name: Effect
+    ownership:
+      default: -1
+      mLW1zeZBsSCEsXlw: 3
+    sort: 0
+    src: null
+    system: {}
+    text:
+      content: <p><span style="font-family:Signika, sans-serif">Gain the broken leg condition and 1d8 bleed. Roll randomly to determine which leg is affected.A -4 penalty is applied to AC, movement rates are halved, you cannot run or charge, and any skills requiring footwork are made with disadvantage.A broken leg can be healed by making a DC 15 Heal check to set the bone, followed by 15 HP of healing dedicated to the break (dedicated healing does not heal hit point damage).</span></p><p><span style="font-family:Signika, sans-serif">Bleed damage is applied at the beginning of each turn until stopped with a DC 15 Heal check or receiving 1 or more points of hit point healing.</span></p>
+      format: 1
+      markdown: ''
+    title:
+      level: 1
+      show: true
+    type: text
+    video:
+      controls: true
+      volume: 0.5
+sort: 0

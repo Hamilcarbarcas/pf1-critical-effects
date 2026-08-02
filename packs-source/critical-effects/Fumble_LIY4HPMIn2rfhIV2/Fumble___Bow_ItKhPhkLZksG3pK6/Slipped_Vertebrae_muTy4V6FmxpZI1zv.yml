@@ -1,0 +1,56 @@
+_id: muTy4V6FmxpZI1zv
+_key: '!journal!muTy4V6FmxpZI1zv'
+_stats:
+  compendiumSource: null
+  coreVersion: '13.351'
+  createdTime: 1768594157986
+  duplicateSource: null
+  exportSource: null
+  lastModifiedBy: mLW1zeZBsSCEsXlw
+  modifiedTime: 1768594157986
+  systemId: pf1
+  systemVersion: '11.9'
+categories: []
+flags:
+  scene-packer:
+    hash: adb09182b2e0b5f556e4e808371bc485e121de54
+    sourceId: JournalEntry.muTy4V6FmxpZI1zv
+folder: ItKhPhkLZksG3pK6
+name: Slipped Vertebrae
+ownership:
+  default: 0
+  mLW1zeZBsSCEsXlw: 3
+pages:
+  - _id: x8KTapBammxZCuUm
+    _key: '!journal.pages!muTy4V6FmxpZI1zv.x8KTapBammxZCuUm'
+    _stats:
+      compendiumSource: JournalEntry.R2OASHeVt82JbJZ6.JournalEntryPage.x8KTapBammxZCuUm
+      coreVersion: '13.351'
+      duplicateSource: null
+      exportSource: null
+      lastModifiedBy: null
+      systemId: pf1
+      systemVersion: '11.9'
+    category: null
+    flags:
+      core: {}
+    image: {}
+    name: Effect
+    ownership:
+      default: -1
+      mLW1zeZBsSCEsXlw: 3
+    sort: 0
+    src: null
+    system: {}
+    text:
+      content: <p>-2 to attack and AC<span style="font-family:Signika, sans-serif">, movement rates are halved, you cannot run or charge, and any strength or dexterity based skills are made with disadvantage.</span></p><p></p><p><span style="font-family:Signika, sans-serif">A slipped vertebrae can be healed by making a DC 10 Heal check or 5 HP of healing dedicated to it (dedicated healing does not heal hit point damage).</span></p>
+      format: 1
+      markdown: ''
+    title:
+      level: 1
+      show: true
+    type: text
+    video:
+      controls: true
+      volume: 0.5
+sort: 900000

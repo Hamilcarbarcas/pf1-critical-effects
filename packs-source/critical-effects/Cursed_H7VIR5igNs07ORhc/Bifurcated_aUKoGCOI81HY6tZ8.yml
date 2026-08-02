@@ -1,0 +1,55 @@
+_id: aUKoGCOI81HY6tZ8
+_key: '!journal!aUKoGCOI81HY6tZ8'
+_stats:
+  compendiumSource: null
+  coreVersion: '13.351'
+  createdTime: 1768594155663
+  duplicateSource: null
+  exportSource: null
+  lastModifiedBy: mLW1zeZBsSCEsXlw
+  modifiedTime: 1768594155663
+  systemId: pf1
+  systemVersion: '11.9'
+categories: []
+flags:
+  scene-packer:
+    hash: 69a26dbc34e038323271469587d3470e17f8d851
+    sourceId: JournalEntry.aUKoGCOI81HY6tZ8
+folder: H7VIR5igNs07ORhc
+name: Bifurcated
+ownership:
+  default: 0
+  mLW1zeZBsSCEsXlw: 3
+pages:
+  - _id: j3oAAvUfnWFZGY5y
+    _key: '!journal.pages!aUKoGCOI81HY6tZ8.j3oAAvUfnWFZGY5y'
+    _stats:
+      compendiumSource: null
+      coreVersion: '13.351'
+      duplicateSource: null
+      exportSource: null
+      lastModifiedBy: null
+      systemId: pf1
+      systemVersion: '11.9'
+    category: null
+    flags: {}
+    image: {}
+    name: Effect
+    ownership:
+      default: -1
+      mLW1zeZBsSCEsXlw: 3
+    sort: 100000
+    src: null
+    system: {}
+    text:
+      content: <p>Victim loses their left side, and is all-right now.</p><p></p><p>Instant Death.</p>
+      format: 1
+      markdown: ''
+    title:
+      level: 1
+      show: true
+    type: text
+    video:
+      controls: true
+      volume: 0.5
+sort: 0

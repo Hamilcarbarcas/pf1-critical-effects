@@ -1,0 +1,282 @@
+_id: H2sMQ5vyoVCMXu67
+_key: '!tables!H2sMQ5vyoVCMXu67'
+_stats:
+  compendiumSource: null
+  coreVersion: '13.351'
+  createdTime: 1768594132767
+  duplicateSource: null
+  exportSource: null
+  lastModifiedBy: mLW1zeZBsSCEsXlw
+  modifiedTime: 1768595869871
+  systemId: pf1
+  systemVersion: '11.9'
+description: <p>A random table created from the contents of the Arrow Folder.</p>
+displayRoll: false
+flags:
+  core: {}
+  scene-packer:
+    hash: 3dfbd60fc9a25dfa86848c20d1cad37ec41bb75a
+    sourceId: Compendium.world.rollable-tables.RollTable.qnGTRELGnxDP9knc
+folder: z7PvpigOgvVDTBtl
+formula: 1d12
+img: icons/svg/d20-grey.svg
+name: Arrow
+ownership:
+  default: 0
+  mLW1zeZBsSCEsXlw: 3
+  z5KxKP3e4N47p9JL: 3
+replacement: true
+results:
+  - _id: vDkHCM47wYzMsqFE
+    _key: '!tables.results!H2sMQ5vyoVCMXu67.vDkHCM47wYzMsqFE'
+    _stats:
+      compendiumSource: null
+      coreVersion: '13.351'
+      duplicateSource: null
+      exportSource: null
+      lastModifiedBy: null
+      systemId: pf1
+      systemVersion: '11.9'
+    description: ''
+    documentUuid: Compendium.pf1-critical-effects.critical-effects.JournalEntry.9UcYDmS0N0onMhPJ
+    drawn: false
+    flags: {}
+    img: icons/svg/d20-black.svg
+    name: Compound Fracture
+    range:
+      - 1
+      - 1
+    type: document
+    weight: 1
+  - _id: 1VB03Yc76FPRJV8S
+    _key: '!tables.results!H2sMQ5vyoVCMXu67.1VB03Yc76FPRJV8S'
+    _stats:
+      compendiumSource: null
+      coreVersion: '13.351'
+      duplicateSource: null
+      exportSource: null
+      lastModifiedBy: null
+      systemId: pf1
+      systemVersion: '11.9'
+    description: ''
+    documentUuid: Compendium.pf1-critical-effects.critical-effects.JournalEntry.uVbE8BUoapfLV7aO
+    drawn: false
+    flags: {}
+    img: icons/svg/d20-black.svg
+    name: Eye Plucked
+    range:
+      - 2
+      - 2
+    type: document
+    weight: 1
+  - _id: gvjv5sErAGklwHU4
+    _key: '!tables.results!H2sMQ5vyoVCMXu67.gvjv5sErAGklwHU4'
+    _stats:
+      compendiumSource: null
+      coreVersion: '13.351'
+      duplicateSource: null
+      exportSource: null
+      lastModifiedBy: null
+      systemId: pf1
+      systemVersion: '11.9'
+    description: ''
+    documentUuid: Compendium.pf1-critical-effects.critical-effects.JournalEntry.lxDTDzvgIGn8EX6C
+    drawn: false
+    flags: {}
+    img: icons/svg/d20-black.svg
+    name: Femoral Artery
+    range:
+      - 3
+      - 3
+    type: document
+    weight: 1
+  - _id: m6cfVkCkeWSmXeuE
+    _key: '!tables.results!H2sMQ5vyoVCMXu67.m6cfVkCkeWSmXeuE'
+    _stats:
+      compendiumSource: null
+      coreVersion: '13.351'
+      duplicateSource: null
+      exportSource: null
+      lastModifiedBy: null
+      systemId: pf1
+      systemVersion: '11.9'
+    description: ''
+    documentUuid: Compendium.pf1-critical-effects.critical-effects.JournalEntry.FE5nMNunppHkQvM1
+    drawn: false
+    flags: {}
+    img: icons/svg/d20-black.svg
+    name: Horrific Facial Scar
+    range:
+      - 4
+      - 4
+    type: document
+    weight: 1
+  - _id: 9dj9ptWhpnz3X9Z0
+    _key: '!tables.results!H2sMQ5vyoVCMXu67.9dj9ptWhpnz3X9Z0'
+    _stats:
+      compendiumSource: null
+      coreVersion: '13.351'
+      duplicateSource: null
+      exportSource: null
+      lastModifiedBy: null
+      systemId: pf1
+      systemVersion: '11.9'
+    description: ''
+    documentUuid: Compendium.pf1-critical-effects.critical-effects.JournalEntry.33uUtTdtSrtsBQPX
+    drawn: false
+    flags: {}
+    img: icons/svg/d20-black.svg
+    name: Knocked Down
+    range:
+      - 5
+      - 5
+    type: document
+    weight: 1
+  - _id: HYwUru6tQt9r43GQ
+    _key: '!tables.results!H2sMQ5vyoVCMXu67.HYwUru6tQt9r43GQ'
+    _stats:
+      compendiumSource: null
+      coreVersion: '13.351'
+      duplicateSource: null
+      exportSource: null
+      lastModifiedBy: null
+      systemId: pf1
+      systemVersion: '11.9'
+    description: ''
+    documentUuid: Compendium.pf1-critical-effects.critical-effects.JournalEntry.gPpwrxeyErELELoR
+    drawn: false
+    flags: {}
+    img: icons/svg/d20-black.svg
+    name: Nethers
+    range:
+      - 6
+      - 6
+    type: document
+    weight: 1
+  - _id: nofvpa6xXLducIf8
+    _key: '!tables.results!H2sMQ5vyoVCMXu67.nofvpa6xXLducIf8'
+    _stats:
+      compendiumSource: null
+      coreVersion: '13.351'
+      duplicateSource: null
+      exportSource: null
+      lastModifiedBy: null
+      systemId: pf1
+      systemVersion: '11.9'
+    description: ''
+    documentUuid: Compendium.pf1-critical-effects.critical-effects.JournalEntry.SuQCENjPEeWeUTTF
+    drawn: false
+    flags: {}
+    img: icons/svg/d20-black.svg
+    name: Pierced Foot
+    range:
+      - 7
+      - 7
+    type: document
+    weight: 1
+  - _id: KURlB84zLtkoG1nx
+    _key: '!tables.results!H2sMQ5vyoVCMXu67.KURlB84zLtkoG1nx'
+    _stats:
+      compendiumSource: null
+      coreVersion: '13.351'
+      duplicateSource: null
+      exportSource: null
+      lastModifiedBy: null
+      systemId: pf1
+      systemVersion: '11.9'
+    description: ''
+    documentUuid: Compendium.pf1-critical-effects.critical-effects.JournalEntry.hHMx5wKCrFm3EQxH
+    drawn: false
+    flags: {}
+    img: icons/svg/d20-black.svg
+    name: Pierced Hand
+    range:
+      - 8
+      - 8
+    type: document
+    weight: 1
+  - _id: IeTUWz20qndVmQdW
+    _key: '!tables.results!H2sMQ5vyoVCMXu67.IeTUWz20qndVmQdW'
+    _stats:
+      compendiumSource: null
+      coreVersion: '13.351'
+      duplicateSource: null
+      exportSource: null
+      lastModifiedBy: null
+      systemId: pf1
+      systemVersion: '11.9'
+    description: ''
+    documentUuid: Compendium.pf1-critical-effects.critical-effects.JournalEntry.zftFHLMFhdODhxS6
+    drawn: false
+    flags: {}
+    img: icons/svg/d20-black.svg
+    name: Pierced Heart
+    range:
+      - 9
+      - 9
+    type: document
+    weight: 1
+  - _id: WbVL5dIokvZx4Zlw
+    _key: '!tables.results!H2sMQ5vyoVCMXu67.WbVL5dIokvZx4Zlw'
+    _stats:
+      compendiumSource: null
+      coreVersion: '13.351'
+      duplicateSource: null
+      exportSource: null
+      lastModifiedBy: null
+      systemId: pf1
+      systemVersion: '11.9'
+    description: ''
+    documentUuid: Compendium.pf1-critical-effects.critical-effects.JournalEntry.0ONHN8YnSgD2Iv5I
+    drawn: false
+    flags: {}
+    img: icons/svg/d20-black.svg
+    name: Pierced Knee
+    range:
+      - 10
+      - 10
+    type: document
+    weight: 1
+  - _id: FJSZnoRtrRuE09lF
+    _key: '!tables.results!H2sMQ5vyoVCMXu67.FJSZnoRtrRuE09lF'
+    _stats:
+      compendiumSource: null
+      coreVersion: '13.351'
+      duplicateSource: null
+      exportSource: null
+      lastModifiedBy: null
+      systemId: pf1
+      systemVersion: '11.9'
+    description: ''
+    documentUuid: Compendium.pf1-critical-effects.critical-effects.JournalEntry.4Utf1Vil0oCOHnRg
+    drawn: false
+    flags: {}
+    img: icons/svg/d20-black.svg
+    name: Severed Fingers
+    range:
+      - 11
+      - 11
+    type: document
+    weight: 1
+  - _id: URjIysfUOZyxWcIW
+    _key: '!tables.results!H2sMQ5vyoVCMXu67.URjIysfUOZyxWcIW'
+    _stats:
+      compendiumSource: null
+      coreVersion: '13.351'
+      duplicateSource: null
+      exportSource: null
+      lastModifiedBy: null
+      systemId: pf1
+      systemVersion: '11.9'
+    description: ''
+    documentUuid: Compendium.pf1-critical-effects.critical-effects.JournalEntry.tqfkvZtSJcasSGqN
+    drawn: false
+    flags: {}
+    img: icons/svg/d20-black.svg
+    name: Throat Pierced
+    range:
+      - 12
+      - 12
+    type: document
+    weight: 1
+sort: 87513

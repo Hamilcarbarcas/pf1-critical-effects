@@ -1,0 +1,56 @@
+_id: ZOxRqh2865UWxM5F
+_key: '!journal!ZOxRqh2865UWxM5F'
+_stats:
+  compendiumSource: null
+  coreVersion: '13.351'
+  createdTime: 1768594158904
+  duplicateSource: null
+  exportSource: null
+  lastModifiedBy: mLW1zeZBsSCEsXlw
+  modifiedTime: 1768594158904
+  systemId: pf1
+  systemVersion: '11.9'
+categories: []
+flags:
+  scene-packer:
+    hash: 1254b56342974e8e7fd392b59353e5fa44b13466
+    sourceId: JournalEntry.ZOxRqh2865UWxM5F
+folder: dLY71PmIf3kJV67A
+name: Broken Elbow
+ownership:
+  default: 0
+  mLW1zeZBsSCEsXlw: 3
+pages:
+  - _id: V6MLkDavaud8E1MQ
+    _key: '!journal.pages!ZOxRqh2865UWxM5F.V6MLkDavaud8E1MQ'
+    _stats:
+      compendiumSource: JournalEntry.3QYoUQ330Ewyfgl1.JournalEntryPage.V6MLkDavaud8E1MQ
+      coreVersion: '13.351'
+      duplicateSource: null
+      exportSource: null
+      lastModifiedBy: null
+      systemId: pf1
+      systemVersion: '11.9'
+    category: null
+    flags:
+      core: {}
+    image: {}
+    name: Effect
+    ownership:
+      default: -1
+      mLW1zeZBsSCEsXlw: 3
+    sort: 0
+    src: null
+    system: {}
+    text:
+      content: <p>Gain the Broken Elbow Condition. Roll randomly to determine which elbow is broken.</p><p></p><p>A -6 penalty is applied to all attacks or skills that make use of that arm.</p><p></p><p>A broken elbow can be healed by making a DC 15 Heal check to set the bone, followed by 15 HP of healing dedicated to the break (dedicated healing does not heal hit point damage).</p>
+      format: 1
+      markdown: ''
+    title:
+      level: 1
+      show: true
+    type: text
+    video:
+      controls: true
+      volume: 0.5
+sort: 500000

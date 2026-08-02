@@ -1,0 +1,27 @@
+_id: McXxCfxtUvNgtrnV
+_key: '!tables!McXxCfxtUvNgtrnV'
+_stats:
+  compendiumSource: null
+  coreVersion: '13.351'
+  createdTime: 1768594132767
+  duplicateSource: null
+  exportSource: null
+  lastModifiedBy: mLW1zeZBsSCEsXlw
+  modifiedTime: 1768594132767
+  systemId: pf1
+  systemVersion: '11.9'
+description: ''
+displayRoll: true
+flags:
+  scene-packer:
+    hash: e64ba5b32ada99305706156a2a56a06923ea0750
+folder: z7PvpigOgvVDTBtl
+formula: ''
+img: icons/svg/d20-grey.svg
+name: Lethal - Piercing
+ownership:
+  default: 0
+  mLW1zeZBsSCEsXlw: 3
+replacement: true
+results: []
+sort: 121903

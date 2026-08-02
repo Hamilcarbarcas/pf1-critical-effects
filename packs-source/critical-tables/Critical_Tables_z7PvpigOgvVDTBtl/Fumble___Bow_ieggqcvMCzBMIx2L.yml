@@ -1,0 +1,260 @@
+_id: ieggqcvMCzBMIx2L
+_key: '!tables!ieggqcvMCzBMIx2L'
+_stats:
+  compendiumSource: null
+  coreVersion: '13.351'
+  createdTime: 1768594132767
+  duplicateSource: null
+  exportSource: null
+  lastModifiedBy: mLW1zeZBsSCEsXlw
+  modifiedTime: 1768595870285
+  systemId: pf1
+  systemVersion: '11.9'
+description: <p>A random table created from the contents of the Fumble - Bow Folder.</p>
+displayRoll: false
+flags:
+  core: {}
+  scene-packer:
+    hash: cf59b4a783aef3f4607e36ab5d11c5a7ac484e9d
+    sourceId: RollTable.ieggqcvMCzBMIx2L
+folder: z7PvpigOgvVDTBtl
+formula: 1d12
+img: icons/svg/d20-grey.svg
+name: Fumble - Bow
+ownership:
+  default: 0
+  mLW1zeZBsSCEsXlw: 3
+replacement: true
+results:
+  - _id: h6LaIWgjazllhdIR
+    _key: '!tables.results!ieggqcvMCzBMIx2L.h6LaIWgjazllhdIR'
+    _stats:
+      compendiumSource: null
+      coreVersion: '13.351'
+      duplicateSource: null
+      exportSource: null
+      lastModifiedBy: null
+      systemId: pf1
+      systemVersion: '11.9'
+    description: ''
+    documentUuid: Compendium.pf1-critical-effects.critical-effects.JournalEntry.1NpFUxV9qeFIc51T
+    drawn: false
+    flags: {}
+    img: icons/svg/d20-black.svg
+    name: Broken Arrow
+    range:
+      - 1
+      - 1
+    type: document
+    weight: 1
+  - _id: zoVUoCqfHF26eenl
+    _key: '!tables.results!ieggqcvMCzBMIx2L.zoVUoCqfHF26eenl'
+    _stats:
+      compendiumSource: null
+      coreVersion: '13.351'
+      duplicateSource: null
+      exportSource: null
+      lastModifiedBy: null
+      systemId: pf1
+      systemVersion: '11.9'
+    description: ''
+    documentUuid: Compendium.pf1-critical-effects.critical-effects.JournalEntry.QW0upC5AImqltdJK
+    drawn: false
+    flags: {}
+    img: icons/svg/d20-black.svg
+    name: Broken String
+    range:
+      - 2
+      - 2
+    type: document
+    weight: 1
+  - _id: u9CBflnBXcwHIKL1
+    _key: '!tables.results!ieggqcvMCzBMIx2L.u9CBflnBXcwHIKL1'
+    _stats:
+      compendiumSource: null
+      coreVersion: '13.351'
+      duplicateSource: null
+      exportSource: null
+      lastModifiedBy: null
+      systemId: pf1
+      systemVersion: '11.9'
+    description: ''
+    documentUuid: Compendium.pf1-critical-effects.critical-effects.JournalEntry.HhtOA4zbxL7CYhMi
+    drawn: false
+    flags: {}
+    img: icons/svg/d20-black.svg
+    name: Dislocated Elbow
+    range:
+      - 3
+      - 3
+    type: document
+    weight: 1
+  - _id: 3s3IL8RQHK0SvznU
+    _key: '!tables.results!ieggqcvMCzBMIx2L.3s3IL8RQHK0SvznU'
+    _stats:
+      compendiumSource: null
+      coreVersion: '13.351'
+      duplicateSource: null
+      exportSource: null
+      lastModifiedBy: null
+      systemId: pf1
+      systemVersion: '11.9'
+    description: ''
+    documentUuid: Compendium.pf1-critical-effects.critical-effects.JournalEntry.SnESOs7oVjfR23C6
+    drawn: false
+    flags: {}
+    img: icons/svg/d20-black.svg
+    name: Dislocated Shoulder
+    range:
+      - 4
+      - 4
+    type: document
+    weight: 1
+  - _id: adKHP6HGAKiodWyS
+    _key: '!tables.results!ieggqcvMCzBMIx2L.adKHP6HGAKiodWyS'
+    _stats:
+      compendiumSource: null
+      coreVersion: '13.351'
+      duplicateSource: null
+      exportSource: null
+      lastModifiedBy: null
+      systemId: pf1
+      systemVersion: '11.9'
+    description: ''
+    documentUuid: Compendium.pf1-critical-effects.critical-effects.JournalEntry.AksyYKSQXHpeQkDr
+    drawn: false
+    flags: {}
+    img: icons/svg/d20-black.svg
+    name: Dropped Arrow
+    range:
+      - 5
+      - 5
+    type: document
+    weight: 1
+  - _id: uMiEL6czl65QEF3r
+    _key: '!tables.results!ieggqcvMCzBMIx2L.uMiEL6czl65QEF3r'
+    _stats:
+      compendiumSource: null
+      coreVersion: '13.351'
+      duplicateSource: null
+      exportSource: null
+      lastModifiedBy: null
+      systemId: pf1
+      systemVersion: '11.9'
+    description: ''
+    documentUuid: Compendium.pf1-critical-effects.critical-effects.JournalEntry.UDN3rCe3D6xQQpBe
+    drawn: false
+    flags: {}
+    img: icons/svg/d20-black.svg
+    name: Dropped Bow
+    range:
+      - 6
+      - 6
+    type: document
+    weight: 1
+  - _id: Y5hBwVC2jbT4hJg0
+    _key: '!tables.results!ieggqcvMCzBMIx2L.Y5hBwVC2jbT4hJg0'
+    _stats:
+      compendiumSource: null
+      coreVersion: '13.351'
+      duplicateSource: null
+      exportSource: null
+      lastModifiedBy: null
+      systemId: pf1
+      systemVersion: '11.9'
+    description: ''
+    documentUuid: Compendium.pf1-critical-effects.critical-effects.JournalEntry.IjUYwxF4kQRtfLvu
+    drawn: false
+    flags: {}
+    img: icons/svg/d20-black.svg
+    name: Fall Down
+    range:
+      - 7
+      - 7
+    type: document
+    weight: 1
+  - _id: hTusRWzKcolMeH4i
+    _key: '!tables.results!ieggqcvMCzBMIx2L.hTusRWzKcolMeH4i'
+    _stats:
+      compendiumSource: null
+      coreVersion: '13.351'
+      duplicateSource: null
+      exportSource: null
+      lastModifiedBy: null
+      systemId: pf1
+      systemVersion: '11.9'
+    description: ''
+    documentUuid: Compendium.pf1-critical-effects.critical-effects.JournalEntry.muTy4V6FmxpZI1zv
+    drawn: false
+    flags: {}
+    img: icons/svg/d20-black.svg
+    name: Slipped Vertebrae
+    range:
+      - 8
+      - 8
+    type: document
+    weight: 1
+  - _id: TljmpSdEJylblLE9
+    _key: '!tables.results!ieggqcvMCzBMIx2L.TljmpSdEJylblLE9'
+    _stats:
+      compendiumSource: null
+      coreVersion: '13.351'
+      duplicateSource: null
+      exportSource: null
+      lastModifiedBy: null
+      systemId: pf1
+      systemVersion: '11.9'
+    description: ''
+    documentUuid: Compendium.pf1-critical-effects.critical-effects.JournalEntry.yGieijN0KtK9d5uK
+    drawn: false
+    flags: {}
+    img: icons/svg/d20-black.svg
+    name: Sprained Wrist
+    range:
+      - 9
+      - 9
+    type: document
+    weight: 1
+  - _id: QKuyF0Oo3xHjd9Mf
+    _key: '!tables.results!ieggqcvMCzBMIx2L.QKuyF0Oo3xHjd9Mf'
+    _stats:
+      compendiumSource: null
+      coreVersion: '13.351'
+      duplicateSource: null
+      exportSource: null
+      lastModifiedBy: null
+      systemId: pf1
+      systemVersion: '11.9'
+    description: ''
+    documentUuid: Compendium.pf1-critical-effects.critical-effects.JournalEntry.YnjSDuFYKcxnbYrg
+    drawn: false
+    flags: {}
+    img: icons/svg/d20-black.svg
+    name: Stumble
+    range:
+      - 10
+      - 10
+    type: document
+    weight: 1
+  - _id: 41qlAjNo06PnM6Uk
+    _key: '!tables.results!ieggqcvMCzBMIx2L.41qlAjNo06PnM6Uk'
+    _stats:
+      compendiumSource: null
+      coreVersion: '13.351'
+      duplicateSource: null
+      exportSource: null
+      lastModifiedBy: null
+      systemId: pf1
+      systemVersion: '11.9'
+    description: ''
+    documentUuid: Compendium.pf1-critical-effects.critical-effects.JournalEntry.umaQvJsgUeDnnlWe
+    drawn: false
+    flags: {}
+    img: icons/svg/d20-black.svg
+    name: Wrong Target
+    range:
+      - 11
+      - 12
+    type: document
+    weight: 2
+sort: 100042

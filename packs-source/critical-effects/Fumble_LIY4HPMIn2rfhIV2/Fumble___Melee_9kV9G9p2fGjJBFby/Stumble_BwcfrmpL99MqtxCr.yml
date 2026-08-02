@@ -1,0 +1,56 @@
+_id: BwcfrmpL99MqtxCr
+_key: '!journal!BwcfrmpL99MqtxCr'
+_stats:
+  compendiumSource: null
+  coreVersion: '13.351'
+  createdTime: 1768594157986
+  duplicateSource: null
+  exportSource: null
+  lastModifiedBy: mLW1zeZBsSCEsXlw
+  modifiedTime: 1768594157986
+  systemId: pf1
+  systemVersion: '11.9'
+categories: []
+flags:
+  scene-packer:
+    hash: 7bd1e881cfe9b5856758985f8bf5902061567aa6
+    sourceId: JournalEntry.BwcfrmpL99MqtxCr
+folder: 9kV9G9p2fGjJBFby
+name: Stumble
+ownership:
+  default: 0
+  mLW1zeZBsSCEsXlw: 3
+pages:
+  - _id: TBr1bRwYyzfCo8zC
+    _key: '!journal.pages!BwcfrmpL99MqtxCr.TBr1bRwYyzfCo8zC'
+    _stats:
+      compendiumSource: JournalEntry.umaQvJsgUeDnnlWe.JournalEntryPage.TBr1bRwYyzfCo8zC
+      coreVersion: '13.351'
+      duplicateSource: null
+      exportSource: null
+      lastModifiedBy: null
+      systemId: pf1
+      systemVersion: '11.9'
+    category: null
+    flags:
+      core: {}
+    image: {}
+    name: Effect
+    ownership:
+      default: -1
+      mLW1zeZBsSCEsXlw: 3
+    sort: 0
+    src: null
+    system: {}
+    text:
+      content: <p>Lose any remaining attacks this round (including attacks of opportunity).</p><p>Make a DC 12 Reflex save to avoid falling prone.</p>
+      format: 1
+      markdown: ''
+    title:
+      level: 1
+      show: true
+    type: text
+    video:
+      controls: true
+      volume: 0.5
+sort: 200000

@@ -1,0 +1,56 @@
+_id: 4a45dqlLI7N0ksFu
+_key: '!journal!4a45dqlLI7N0ksFu'
+_stats:
+  compendiumSource: null
+  coreVersion: '13.351'
+  createdTime: 1768594154652
+  duplicateSource: null
+  exportSource: null
+  lastModifiedBy: mLW1zeZBsSCEsXlw
+  modifiedTime: 1768594154652
+  systemId: pf1
+  systemVersion: '11.9'
+categories: []
+flags:
+  scene-packer:
+    hash: 4ccd6ad4811e00e4056d9e3d0d7d2d5ec1dda0e6
+    sourceId: JournalEntry.4a45dqlLI7N0ksFu
+folder: NXjLmNtKvzzEs0qw
+name: Broken Shoulder
+ownership:
+  default: 0
+  mLW1zeZBsSCEsXlw: 3
+pages:
+  - _id: KpgJqYkgNxkm2bqj
+    _key: '!journal.pages!4a45dqlLI7N0ksFu.KpgJqYkgNxkm2bqj'
+    _stats:
+      compendiumSource: JournalEntry.p20Tl1TfKQyJc4jU.JournalEntryPage.KpgJqYkgNxkm2bqj
+      coreVersion: '13.351'
+      duplicateSource: null
+      exportSource: null
+      lastModifiedBy: null
+      systemId: pf1
+      systemVersion: '11.9'
+    category: null
+    flags:
+      core: {}
+    image: {}
+    name: Effect
+    ownership:
+      default: -1
+      mLW1zeZBsSCEsXlw: 3
+    sort: 0
+    src: null
+    system: {}
+    text:
+      content: <p>Gain the Broken Shoulder condition. Roll randomly to determine which arm is affected.</p><p></p><p>The affected arm is useless, and any rolls involving its use automatically fail. Some work involving only hand movements (such as disable device) may ignore this penalty, at DM discretion.</p><p></p><p>A broken shoulder can be healed by making a DC 20 heal check, followed by 20 HP of healing dedicated to the break (dedicated healing does not heal hit point damage).</p>
+      format: 1
+      markdown: ''
+    title:
+      level: 1
+      show: true
+    type: text
+    video:
+      controls: true
+      volume: 0.5
+sort: 0

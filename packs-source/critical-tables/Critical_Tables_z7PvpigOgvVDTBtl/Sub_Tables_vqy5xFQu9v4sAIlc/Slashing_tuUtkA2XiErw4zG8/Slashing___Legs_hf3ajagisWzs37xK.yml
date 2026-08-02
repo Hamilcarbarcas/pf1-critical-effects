@@ -1,0 +1,281 @@
+_id: hf3ajagisWzs37xK
+_key: '!tables!hf3ajagisWzs37xK'
+_stats:
+  compendiumSource: null
+  coreVersion: '13.351'
+  createdTime: 1768594132767
+  duplicateSource: null
+  exportSource: null
+  lastModifiedBy: mLW1zeZBsSCEsXlw
+  modifiedTime: 1768595870273
+  systemId: pf1
+  systemVersion: '11.9'
+description: <p>A random table created from the contents of the Slashing - Legs Folder.</p>
+displayRoll: false
+flags:
+  core: {}
+  scene-packer:
+    hash: a1e91e88e588989465dcf6aa6361fa75df3fbb54
+    sourceId: RollTable.hf3ajagisWzs37xK
+folder: tuUtkA2XiErw4zG8
+formula: 1d12
+img: icons/svg/d20-grey.svg
+name: Slashing - Legs
+ownership:
+  default: 0
+  mLW1zeZBsSCEsXlw: 3
+replacement: true
+results:
+  - _id: 9wwLbyMQ71XBIj1o
+    _key: '!tables.results!hf3ajagisWzs37xK.9wwLbyMQ71XBIj1o'
+    _stats:
+      compendiumSource: null
+      coreVersion: '13.351'
+      duplicateSource: null
+      exportSource: null
+      lastModifiedBy: null
+      systemId: pf1
+      systemVersion: '11.9'
+    description: ''
+    documentUuid: Compendium.pf1-critical-effects.critical-effects.JournalEntry.9LadRqZstmyg1jyd
+    drawn: false
+    flags: {}
+    img: icons/svg/d20-black.svg
+    name: Achilles Tendon
+    range:
+      - 1
+      - 1
+    type: document
+    weight: 1
+  - _id: IqhLQ8SGMwdeYPjl
+    _key: '!tables.results!hf3ajagisWzs37xK.IqhLQ8SGMwdeYPjl'
+    _stats:
+      compendiumSource: null
+      coreVersion: '13.351'
+      duplicateSource: null
+      exportSource: null
+      lastModifiedBy: null
+      systemId: pf1
+      systemVersion: '11.9'
+    description: ''
+    documentUuid: Compendium.pf1-critical-effects.critical-effects.JournalEntry.cNlIarp6IF3jkqSF
+    drawn: false
+    flags: {}
+    img: icons/svg/d20-black.svg
+    name: Broken Ankle
+    range:
+      - 2
+      - 2
+    type: document
+    weight: 1
+  - _id: nv8rL2YxjHZO4rCU
+    _key: '!tables.results!hf3ajagisWzs37xK.nv8rL2YxjHZO4rCU'
+    _stats:
+      compendiumSource: null
+      coreVersion: '13.351'
+      duplicateSource: null
+      exportSource: null
+      lastModifiedBy: null
+      systemId: pf1
+      systemVersion: '11.9'
+    description: ''
+    documentUuid: Compendium.pf1-critical-effects.critical-effects.JournalEntry.lQRYxLJ6feesJiC2
+    drawn: false
+    flags: {}
+    img: icons/svg/d20-black.svg
+    name: Broken Foot
+    range:
+      - 3
+      - 3
+    type: document
+    weight: 1
+  - _id: E74yVw8Ii5An92YC
+    _key: '!tables.results!hf3ajagisWzs37xK.E74yVw8Ii5An92YC'
+    _stats:
+      compendiumSource: null
+      coreVersion: '13.351'
+      duplicateSource: null
+      exportSource: null
+      lastModifiedBy: null
+      systemId: pf1
+      systemVersion: '11.9'
+    description: ''
+    documentUuid: Compendium.pf1-critical-effects.critical-effects.JournalEntry.WNVJOu5WJ2ZbjAR4
+    drawn: false
+    flags: {}
+    img: icons/svg/d20-black.svg
+    name: Broken Knee
+    range:
+      - 4
+      - 4
+    type: document
+    weight: 1
+  - _id: 4xCYuBsNCBq0jcqU
+    _key: '!tables.results!hf3ajagisWzs37xK.4xCYuBsNCBq0jcqU'
+    _stats:
+      compendiumSource: null
+      coreVersion: '13.351'
+      duplicateSource: null
+      exportSource: null
+      lastModifiedBy: null
+      systemId: pf1
+      systemVersion: '11.9'
+    description: ''
+    documentUuid: Compendium.pf1-critical-effects.critical-effects.JournalEntry.t1tzz2PBI6Pmq2ww
+    drawn: false
+    flags: {}
+    img: icons/svg/d20-black.svg
+    name: Broken Leg
+    range:
+      - 5
+      - 5
+    type: document
+    weight: 1
+  - _id: uTYWi9BcfTjynuJ4
+    _key: '!tables.results!hf3ajagisWzs37xK.uTYWi9BcfTjynuJ4'
+    _stats:
+      compendiumSource: null
+      coreVersion: '13.351'
+      duplicateSource: null
+      exportSource: null
+      lastModifiedBy: null
+      systemId: pf1
+      systemVersion: '11.9'
+    description: ''
+    documentUuid: Compendium.pf1-critical-effects.critical-effects.JournalEntry.WqeqVPQUsrK8Mlnq
+    drawn: false
+    flags: {}
+    img: icons/svg/d20-black.svg
+    name: Compound Fracture
+    range:
+      - 6
+      - 6
+    type: document
+    weight: 1
+  - _id: 4CERgSvOjheYUp4Z
+    _key: '!tables.results!hf3ajagisWzs37xK.4CERgSvOjheYUp4Z'
+    _stats:
+      compendiumSource: null
+      coreVersion: '13.351'
+      duplicateSource: null
+      exportSource: null
+      lastModifiedBy: null
+      systemId: pf1
+      systemVersion: '11.9'
+    description: ''
+    documentUuid: Compendium.pf1-critical-effects.critical-effects.JournalEntry.jef5i4udDv7zNcR2
+    drawn: false
+    flags: {}
+    img: icons/svg/d20-black.svg
+    name: Femoral Artery
+    range:
+      - 7
+      - 7
+    type: document
+    weight: 1
+  - _id: PWHPm3rmrjEQl6f2
+    _key: '!tables.results!hf3ajagisWzs37xK.PWHPm3rmrjEQl6f2'
+    _stats:
+      compendiumSource: null
+      coreVersion: '13.351'
+      duplicateSource: null
+      exportSource: null
+      lastModifiedBy: null
+      systemId: pf1
+      systemVersion: '11.9'
+    description: ''
+    documentUuid: Compendium.pf1-critical-effects.critical-effects.JournalEntry.hFNtqEydHQ2LdeyA
+    drawn: false
+    flags: {}
+    img: icons/svg/d20-black.svg
+    name: Knocked Down
+    range:
+      - 8
+      - 8
+    type: document
+    weight: 1
+  - _id: BIiMxmCBQNdEEWHJ
+    _key: '!tables.results!hf3ajagisWzs37xK.BIiMxmCBQNdEEWHJ'
+    _stats:
+      compendiumSource: null
+      coreVersion: '13.351'
+      duplicateSource: null
+      exportSource: null
+      lastModifiedBy: null
+      systemId: pf1
+      systemVersion: '11.9'
+    description: ''
+    documentUuid: Compendium.pf1-critical-effects.critical-effects.JournalEntry.rlKYUFU47138MT3M
+    drawn: false
+    flags: {}
+    img: icons/svg/d20-black.svg
+    name: Lost Toes
+    range:
+      - 9
+      - 9
+    type: document
+    weight: 1
+  - _id: vmXjCyKyJUjUtJba
+    _key: '!tables.results!hf3ajagisWzs37xK.vmXjCyKyJUjUtJba'
+    _stats:
+      compendiumSource: null
+      coreVersion: '13.351'
+      duplicateSource: null
+      exportSource: null
+      lastModifiedBy: null
+      systemId: pf1
+      systemVersion: '11.9'
+    description: ''
+    documentUuid: Compendium.pf1-critical-effects.critical-effects.JournalEntry.u3Z1DkfpOXxqverN
+    drawn: false
+    flags: {}
+    img: icons/svg/d20-black.svg
+    name: Pierced Foot
+    range:
+      - 10
+      - 10
+    type: document
+    weight: 1
+  - _id: V9UqktPEpoRAXBDd
+    _key: '!tables.results!hf3ajagisWzs37xK.V9UqktPEpoRAXBDd'
+    _stats:
+      compendiumSource: null
+      coreVersion: '13.351'
+      duplicateSource: null
+      exportSource: null
+      lastModifiedBy: null
+      systemId: pf1
+      systemVersion: '11.9'
+    description: ''
+    documentUuid: Compendium.pf1-critical-effects.critical-effects.JournalEntry.eV9m81EBLHOgxuDJ
+    drawn: false
+    flags: {}
+    img: icons/svg/d20-black.svg
+    name: Severed Foot
+    range:
+      - 11
+      - 11
+    type: document
+    weight: 1
+  - _id: LM2wGJeDfsXrNKIg
+    _key: '!tables.results!hf3ajagisWzs37xK.LM2wGJeDfsXrNKIg'
+    _stats:
+      compendiumSource: null
+      coreVersion: '13.351'
+      duplicateSource: null
+      exportSource: null
+      lastModifiedBy: null
+      systemId: pf1
+      systemVersion: '11.9'
+    description: ''
+    documentUuid: Compendium.pf1-critical-effects.critical-effects.JournalEntry.9JEFWYSK8w7J84PY
+    drawn: false
+    flags: {}
+    img: icons/svg/d20-black.svg
+    name: Severed Leg
+    range:
+      - 12
+      - 12
+    type: document
+    weight: 1
+sort: 0

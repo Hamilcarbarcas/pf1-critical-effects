@@ -1,0 +1,20 @@
+_id: pxBm3bEmOUbLfScK
+_key: '!folders!pxBm3bEmOUbLfScK'
+_stats:
+  compendiumSource: null
+  coreVersion: '13.351'
+  duplicateSource: null
+  exportSource: null
+  lastModifiedBy: null
+  systemId: pf1
+  systemVersion: '11.9'
+color: '#028a00'
+description: ''
+flags:
+  scene-packer:
+    hash: c11e8d9fb9c174bad217b86e80ce30552dd3a5f5
+folder: F02yRR3s9cguaV1f
+name: Bludgeoning - Head
+sort: 200000
+sorting: a
+type: JournalEntry

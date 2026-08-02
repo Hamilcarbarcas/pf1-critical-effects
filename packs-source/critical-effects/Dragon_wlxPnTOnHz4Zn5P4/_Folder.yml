@@ -1,0 +1,22 @@
+_id: wlxPnTOnHz4Zn5P4
+_key: '!folders!wlxPnTOnHz4Zn5P4'
+_stats:
+  compendiumSource: null
+  coreVersion: '13.351'
+  createdTime: 1768594156730
+  duplicateSource: null
+  exportSource: null
+  lastModifiedBy: mLW1zeZBsSCEsXlw
+  modifiedTime: 1768594156778
+  systemId: pf1
+  systemVersion: '11.9'
+color: '#e08e00'
+description: ''
+flags:
+  scene-packer:
+    hash: 0db8b9b1d2a331ee1251a08027052ed14a7a9cbe
+folder: null
+name: Dragon
+sort: 500000
+sorting: a
+type: JournalEntry

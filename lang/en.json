@@ -1,0 +1,18 @@
+{
+  "CRITICAL_EFFECTS": {
+    "Fumble": {
+      "ResolveButton": "Resolve Fumble",
+      "DialogTitle": "Resolve Fumble",
+      "PickTable": "Which fumble table should this draw from?",
+      "Draw": "Draw",
+      "DrawFlavor": "Fumble — {type}",
+      "ResultLabel": "Fumble",
+      "Table": {
+        "melee": "Melee",
+        "bow": "Bow",
+        "thrown": "Thrown",
+        "natural": "Natural"
+      }
+    }
+  }
+}

@@ -1,0 +1,56 @@
+_id: 3s5dFf2IHYYDamBP
+_key: '!journal!3s5dFf2IHYYDamBP'
+_stats:
+  compendiumSource: null
+  coreVersion: '13.351'
+  createdTime: 1768594157986
+  duplicateSource: null
+  exportSource: null
+  lastModifiedBy: mLW1zeZBsSCEsXlw
+  modifiedTime: 1768594157986
+  systemId: pf1
+  systemVersion: '11.9'
+categories: []
+flags:
+  scene-packer:
+    hash: 5fb003ab204348faa2542f6ce15309897bf545ab
+    sourceId: JournalEntry.3s5dFf2IHYYDamBP
+folder: KJtoo98fx7yqJDpO
+name: Dislocated Elbow
+ownership:
+  default: 0
+  mLW1zeZBsSCEsXlw: 3
+pages:
+  - _id: XMozQvbXaymJUpJw
+    _key: '!journal.pages!3s5dFf2IHYYDamBP.XMozQvbXaymJUpJw'
+    _stats:
+      compendiumSource: JournalEntry.SnESOs7oVjfR23C6.JournalEntryPage.XMozQvbXaymJUpJw
+      coreVersion: '13.351'
+      duplicateSource: null
+      exportSource: null
+      lastModifiedBy: null
+      systemId: pf1
+      systemVersion: '11.9'
+    category: null
+    flags:
+      core: {}
+    image: {}
+    name: Effect
+    ownership:
+      default: -1
+      mLW1zeZBsSCEsXlw: 3
+    sort: 0
+    src: null
+    system: {}
+    text:
+      content: <p><span style="font-family:Signika, sans-serif">Lose any remaining attacks this round (including attacks of opportunity) and gain the Dislocated Elbow condition on your throwing arm.</span></p><p></p><p>Any attacks or skill checks that require the use of the affected arm are rolled with disadvantage.</p><p></p><p>A dislocated elbow can be relocated with a DC 10 Heal check. You take 1d4 nonlethal damage for each attempt made, successful or not.</p>
+      format: 1
+      markdown: ''
+    title:
+      level: 1
+      show: true
+    type: text
+    video:
+      controls: true
+      volume: 0.5
+sort: 0

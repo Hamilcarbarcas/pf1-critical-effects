@@ -1,0 +1,20 @@
+_id: btALouSrLtkU3P1I
+_key: '!folders!btALouSrLtkU3P1I'
+_stats:
+  compendiumSource: null
+  coreVersion: '13.351'
+  duplicateSource: null
+  exportSource: null
+  lastModifiedBy: null
+  systemId: pf1
+  systemVersion: '11.9'
+color: '#1c1c1c'
+description: ''
+flags:
+  scene-packer:
+    hash: 53ec54905236054a26ce14c55359f45a66824875
+folder: rkn84UFNwzfirQxs
+name: Slashing - Lethal
+sort: 500000
+sorting: a
+type: JournalEntry

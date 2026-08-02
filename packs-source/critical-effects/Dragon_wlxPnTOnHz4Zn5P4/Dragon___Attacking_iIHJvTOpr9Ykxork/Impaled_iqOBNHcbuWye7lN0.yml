@@ -1,0 +1,55 @@
+_id: iqOBNHcbuWye7lN0
+_key: '!journal!iqOBNHcbuWye7lN0'
+_stats:
+  compendiumSource: null
+  coreVersion: '13.351'
+  createdTime: 1768594156758
+  duplicateSource: null
+  exportSource: null
+  lastModifiedBy: mLW1zeZBsSCEsXlw
+  modifiedTime: 1768594156758
+  systemId: pf1
+  systemVersion: '11.9'
+categories: []
+flags:
+  scene-packer:
+    hash: cb4bd107ebd5e60b653346ddede48c87e2acb262
+    sourceId: JournalEntry.iqOBNHcbuWye7lN0
+folder: iIHJvTOpr9Ykxork
+name: Impaled
+ownership:
+  default: 0
+  mLW1zeZBsSCEsXlw: 3
+pages:
+  - _id: fE6aY21oKn7NHskR
+    _key: '!journal.pages!iqOBNHcbuWye7lN0.fE6aY21oKn7NHskR'
+    _stats:
+      compendiumSource: null
+      coreVersion: '13.351'
+      duplicateSource: null
+      exportSource: null
+      lastModifiedBy: null
+      systemId: pf1
+      systemVersion: '11.9'
+    category: null
+    flags: {}
+    image: {}
+    name: Effect
+    ownership:
+      default: -1
+      mLW1zeZBsSCEsXlw: 3
+    sort: 100000
+    src: null
+    system: {}
+    text:
+      content: <p>Triple damage. Victim lands prone 1d4x5 feet in the direction of the dragon's choice.</p>
+      format: 1
+      markdown: ''
+    title:
+      level: 1
+      show: true
+    type: text
+    video:
+      controls: true
+      volume: 0.5
+sort: 0

@@ -1,0 +1,20 @@
+_id: dLY71PmIf3kJV67A
+_key: '!folders!dLY71PmIf3kJV67A'
+_stats:
+  compendiumSource: null
+  coreVersion: '13.351'
+  duplicateSource: null
+  exportSource: null
+  lastModifiedBy: null
+  systemId: pf1
+  systemVersion: '11.9'
+color: '#0033cc'
+description: ''
+flags:
+  scene-packer:
+    hash: 95a721d0ebad8667fb8377e02857b11d4fbc9b6e
+folder: le6HzZvjCzHv8ppU
+name: Piercing - Arms
+sort: 100000
+sorting: a
+type: JournalEntry

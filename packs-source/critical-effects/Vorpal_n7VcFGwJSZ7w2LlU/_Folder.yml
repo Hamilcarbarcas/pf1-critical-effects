@@ -1,0 +1,22 @@
+_id: n7VcFGwJSZ7w2LlU
+_key: '!folders!n7VcFGwJSZ7w2LlU'
+_stats:
+  compendiumSource: null
+  coreVersion: '13.351'
+  createdTime: 1768594162485
+  duplicateSource: null
+  exportSource: null
+  lastModifiedBy: mLW1zeZBsSCEsXlw
+  modifiedTime: 1768594162568
+  systemId: pf1
+  systemVersion: '11.9'
+color: '#b8b8b8'
+description: ''
+flags:
+  scene-packer:
+    hash: 2fa5c281003533fcc9a70b67f148634aad83df84
+folder: null
+name: Vorpal
+sort: 1000000
+sorting: a
+type: JournalEntry

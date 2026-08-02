@@ -1,0 +1,56 @@
+_id: dJ5A60ktm0sUK0ro
+_key: '!journal!dJ5A60ktm0sUK0ro'
+_stats:
+  compendiumSource: null
+  coreVersion: '13.351'
+  createdTime: 1768594158904
+  duplicateSource: null
+  exportSource: null
+  lastModifiedBy: mLW1zeZBsSCEsXlw
+  modifiedTime: 1768594158904
+  systemId: pf1
+  systemVersion: '11.9'
+categories: []
+flags:
+  scene-packer:
+    hash: 1488a3b546baa5831d0e947cb42c4c992549f3fc
+    sourceId: JournalEntry.dJ5A60ktm0sUK0ro
+folder: xUrpAale0VD3mOEL
+name: Knocked Down
+ownership:
+  default: 0
+  mLW1zeZBsSCEsXlw: 3
+pages:
+  - _id: GHH4S91vRnw2nzZG
+    _key: '!journal.pages!dJ5A60ktm0sUK0ro.GHH4S91vRnw2nzZG'
+    _stats:
+      compendiumSource: JournalEntry.gXwKWqRjWaLApzBj.JournalEntryPage.GHH4S91vRnw2nzZG
+      coreVersion: '13.351'
+      duplicateSource: null
+      exportSource: null
+      lastModifiedBy: null
+      systemId: pf1
+      systemVersion: '11.9'
+    category: null
+    flags:
+      core: {}
+    image: {}
+    name: Effect
+    ownership:
+      default: -1
+      mLW1zeZBsSCEsXlw: 3
+    sort: 0
+    src: null
+    system: {}
+    text:
+      content: <p>Knocked prone.</p>
+      format: 1
+      markdown: ''
+    title:
+      level: 1
+      show: true
+    type: text
+    video:
+      controls: true
+      volume: 0.5
+sort: 0

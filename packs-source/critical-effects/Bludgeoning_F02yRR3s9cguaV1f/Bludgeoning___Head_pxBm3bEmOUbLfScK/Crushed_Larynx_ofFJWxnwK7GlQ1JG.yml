@@ -1,0 +1,56 @@
+_id: ofFJWxnwK7GlQ1JG
+_key: '!journal!ofFJWxnwK7GlQ1JG'
+_stats:
+  compendiumSource: null
+  coreVersion: '13.351'
+  createdTime: 1768594154652
+  duplicateSource: null
+  exportSource: null
+  lastModifiedBy: mLW1zeZBsSCEsXlw
+  modifiedTime: 1768594154652
+  systemId: pf1
+  systemVersion: '11.9'
+categories: []
+flags:
+  scene-packer:
+    hash: b496de99191970f931ecf20f6e09c6991d2f8147
+    sourceId: JournalEntry.ofFJWxnwK7GlQ1JG
+folder: pxBm3bEmOUbLfScK
+name: Crushed Larynx
+ownership:
+  default: 0
+  mLW1zeZBsSCEsXlw: 3
+pages:
+  - _id: GHH4S91vRnw2nzZG
+    _key: '!journal.pages!ofFJWxnwK7GlQ1JG.GHH4S91vRnw2nzZG'
+    _stats:
+      compendiumSource: JournalEntry.gXwKWqRjWaLApzBj.JournalEntryPage.GHH4S91vRnw2nzZG
+      coreVersion: '13.351'
+      duplicateSource: null
+      exportSource: null
+      lastModifiedBy: null
+      systemId: pf1
+      systemVersion: '11.9'
+    category: null
+    flags:
+      core: {}
+    image: {}
+    name: Effect
+    ownership:
+      default: -1
+      mLW1zeZBsSCEsXlw: 3
+    sort: 0
+    src: null
+    system: {}
+    text:
+      content: <p>Stunned for 1 round and gain the Crushed Larynx condition.</p><p></p><p><span style="font-family:Signika, sans-serif">You cannot speak above a whisper.</span></p><p style="box-sizing:border-box;user-select:text;margin:0.5em 0px;min-height:1rem;color:rgb(25, 24, 19);font-family:Signika, sans-serif;font-size:14px;font-style:normal;font-variant-ligatures:normal;font-variant-caps:normal;font-weight:400;letter-spacing:normal;orphans:2;text-indent:0px;text-transform:none;white-space:normal;widows:2;word-spacing:0px;-webkit-text-stroke-width:0px;text-decoration-thickness:initial;text-decoration-style:initial;text-decoration-color:initial;text-align:start"></p><p style="box-sizing:border-box;user-select:text;margin:0.5em 0px;color:rgb(25, 24, 19);font-family:Signika, sans-serif;font-size:14px;font-style:normal;font-variant-ligatures:normal;font-variant-caps:normal;font-weight:400;letter-spacing:normal;orphans:2;text-indent:0px;text-transform:none;white-space:normal;widows:2;word-spacing:0px;-webkit-text-stroke-width:0px;text-decoration-thickness:initial;text-decoration-style:initial;text-decoration-color:initial;text-align:start"><span style="font-family:Signika, sans-serif">You cannot cast spells with somatic components.</span></p><p></p><p><span style="font-family:Signika, sans-serif">A crushed larynx be healed with 20 HP of healing dedicated to it (dedicated healing does not heal hit point damage).</span></p>
+      format: 1
+      markdown: ''
+    title:
+      level: 1
+      show: true
+    type: text
+    video:
+      controls: true
+      volume: 0.5
+sort: 0

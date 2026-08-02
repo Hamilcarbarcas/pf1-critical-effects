@@ -1,0 +1,55 @@
+_id: II0Zkv0OyHTcabgg
+_key: '!journal!II0Zkv0OyHTcabgg'
+_stats:
+  compendiumSource: null
+  coreVersion: '13.351'
+  createdTime: 1768594156758
+  duplicateSource: null
+  exportSource: null
+  lastModifiedBy: mLW1zeZBsSCEsXlw
+  modifiedTime: 1768594156758
+  systemId: pf1
+  systemVersion: '11.9'
+categories: []
+flags:
+  scene-packer:
+    hash: a7c3346cde1e46e1f86e737bbfb3436c03bd94d8
+    sourceId: JournalEntry.II0Zkv0OyHTcabgg
+folder: rv9X3fvSrPJm68jh
+name: Severed Claw
+ownership:
+  default: 0
+  mLW1zeZBsSCEsXlw: 3
+pages:
+  - _id: za2Ud9gfwhUJaap0
+    _key: '!journal.pages!II0Zkv0OyHTcabgg.za2Ud9gfwhUJaap0'
+    _stats:
+      compendiumSource: null
+      coreVersion: '13.351'
+      duplicateSource: null
+      exportSource: null
+      lastModifiedBy: null
+      systemId: pf1
+      systemVersion: '11.9'
+    category: null
+    flags: {}
+    image: {}
+    name: Effect
+    ownership:
+      default: -1
+      mLW1zeZBsSCEsXlw: 3
+    sort: 100000
+    src: null
+    system: {}
+    text:
+      content: <p>Movement rates halved and 1d8 bleed. Dragon loses one claw attack.</p><p></p><p><span style="font-family:Signika, sans-serif">Bleed damage is applied at the beginning of each turn until stopped with a DC 15 Heal check or receiving 1 or more points of hit point healing.</span></p>
+      format: 1
+      markdown: ''
+    title:
+      level: 1
+      show: true
+    type: text
+    video:
+      controls: true
+      volume: 0.5
+sort: 0

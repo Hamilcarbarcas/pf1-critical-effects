@@ -1,0 +1,119 @@
+{
+  "id": "pf1-critical-effects",
+  "title": "Critical Effects",
+  "description": "<p>A critical hit and fumble effect system for Pathfinder 1e: journal-linked effect content, a fumble resolution flow, and a framework for attaching mechanical outcomes to effects over time.</p>",
+  "authors": [
+    {
+      "name": "Hamilcarbarcas",
+      "flags": {}
+    }
+  ],
+  "version": "0.0.0",
+  "compatibility": {
+    "minimum": "13",
+    "verified": "13"
+  },
+  "relationships": {
+    "systems": [
+      {
+        "id": "pf1",
+        "type": "system",
+        "compatibility": {
+          "minimum": "11.10",
+          "verified": "11.11"
+        }
+      }
+    ],
+    "requires": [
+      {
+        "id": "lib-wrapper",
+        "type": "module",
+        "reason": "Used to wrap PF1's crit-damage pass so critical damage can be deferred until a critical effect has been chosen, without conflicting with other modules that wrap the same methods."
+      },
+      {
+        "id": "pf1-roll-requests",
+        "type": "module",
+        "reason": "Every die the players roll during a fumble or critical resolution is posted as a roll request, including the player-visible result table."
+      }
+    ],
+    "recommends": [
+      {
+        "id": "astora-mod",
+        "type": "module",
+        "reason": "Optional integration: lets players spend luck points to influence a critical resolution. The module is fully functional without it; the luck affordances simply do not render."
+      }
+    ]
+  },
+  "esmodules": [
+    "src/critical-effects.mjs"
+  ],
+  "styles": [
+    "src/styles/critical-effects.css"
+  ],
+  "languages": [
+    {
+      "lang": "en",
+      "name": "English",
+      "path": "lang/en.json"
+    }
+  ],
+  "socket": true,
+  "flags": {
+    "canUpload": true
+  },
+  "packs": [
+    {
+      "name": "critical-effects",
+      "label": "Critical Effects",
+      "path": "packs/critical-effects",
+      "type": "JournalEntry",
+      "ownership": {
+        "PLAYER": "OBSERVER",
+        "ASSISTANT": "OWNER"
+      },
+      "system": "pf1",
+      "flags": {}
+    },
+    {
+      "name": "critical-tables",
+      "label": "Critical Tables",
+      "path": "packs/critical-tables",
+      "type": "RollTable",
+      "ownership": {
+        "PLAYER": "OBSERVER",
+        "ASSISTANT": "OWNER"
+      },
+      "system": "pf1",
+      "flags": {}
+    },
+    {
+      "name": "effect-buffs",
+      "label": "Critical Effect Buffs",
+      "path": "packs/effect-buffs",
+      "type": "Item",
+      "ownership": {
+        "PLAYER": "OBSERVER",
+        "ASSISTANT": "OWNER"
+      },
+      "system": "pf1",
+      "flags": {}
+    },
+    {
+      "name": "macros",
+      "label": "Critical Effect Macros",
+      "path": "packs/macros",
+      "type": "Macro",
+      "ownership": {
+        "PLAYER": "OBSERVER",
+        "ASSISTANT": "OWNER"
+      },
+      "system": "pf1",
+      "flags": {}
+    }
+  ],
+  "url": "https://github.com/Hamilcarbarcas/pf1-critical-effects",
+  "readme": "https://github.com/Hamilcarbarcas/pf1-critical-effects/blob/main/README.md",
+  "bugs": "https://github.com/Hamilcarbarcas/pf1-critical-effects/issues",
+  "manifest": "https://github.com/Hamilcarbarcas/pf1-critical-effects/releases/latest/download/module.json",
+  "download": "https://github.com/Hamilcarbarcas/pf1-critical-effects/releases/download/v1.0.0/module.zip"
+}

@@ -1,0 +1,56 @@
+_id: u3Z1DkfpOXxqverN
+_key: '!journal!u3Z1DkfpOXxqverN'
+_stats:
+  compendiumSource: null
+  coreVersion: '13.351'
+  createdTime: 1768594160167
+  duplicateSource: null
+  exportSource: null
+  lastModifiedBy: mLW1zeZBsSCEsXlw
+  modifiedTime: 1768594160167
+  systemId: pf1
+  systemVersion: '11.9'
+categories: []
+flags:
+  scene-packer:
+    hash: 24f675686839b167a50dd583cae69019d21daf1f
+    sourceId: JournalEntry.u3Z1DkfpOXxqverN
+folder: 5ZuUAU3uoQ1icTV6
+name: Pierced Foot
+ownership:
+  default: 0
+  mLW1zeZBsSCEsXlw: 3
+pages:
+  - _id: bk8rZI7jLmZcrTXe
+    _key: '!journal.pages!u3Z1DkfpOXxqverN.bk8rZI7jLmZcrTXe'
+    _stats:
+      compendiumSource: JournalEntry.ycm7IyIqQGZWrnbU.JournalEntryPage.bk8rZI7jLmZcrTXe
+      coreVersion: '13.351'
+      duplicateSource: null
+      exportSource: null
+      lastModifiedBy: null
+      systemId: pf1
+      systemVersion: '11.9'
+    category: null
+    flags:
+      core: {}
+    image: {}
+    name: Effect
+    ownership:
+      default: -1
+      mLW1zeZBsSCEsXlw: 3
+    sort: 0
+    src: null
+    system: {}
+    text:
+      content: <p>Cannot run or charge, and skills requiring footwork are rolled with disadvantage for 1d4 days.<span style="font-family:Signika, sans-serif"> Roll randomly to determine which foot is affected.</span></p><p></p><p>The effects of a pierced foot can be removed with 5 HP of dedicated healing to the pierced foot (dedicated healing does not heal hit point damage).</p>
+      format: 1
+      markdown: ''
+    title:
+      level: 1
+      show: true
+    type: text
+    video:
+      controls: true
+      volume: 0.5
+sort: 0

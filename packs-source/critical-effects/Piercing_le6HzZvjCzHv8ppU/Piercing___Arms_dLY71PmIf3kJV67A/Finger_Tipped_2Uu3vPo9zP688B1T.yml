@@ -1,0 +1,56 @@
+_id: 2Uu3vPo9zP688B1T
+_key: '!journal!2Uu3vPo9zP688B1T'
+_stats:
+  compendiumSource: null
+  coreVersion: '13.351'
+  createdTime: 1768594158904
+  duplicateSource: null
+  exportSource: null
+  lastModifiedBy: mLW1zeZBsSCEsXlw
+  modifiedTime: 1768594158904
+  systemId: pf1
+  systemVersion: '11.9'
+categories: []
+flags:
+  scene-packer:
+    hash: 5540935493a2bffb0e4f7bb4f79267a8be7958cb
+    sourceId: JournalEntry.2Uu3vPo9zP688B1T
+folder: dLY71PmIf3kJV67A
+name: Finger Tipped
+ownership:
+  default: 0
+  mLW1zeZBsSCEsXlw: 3
+pages:
+  - _id: Q3viuwzOlg9FXbkG
+    _key: '!journal.pages!2Uu3vPo9zP688B1T.Q3viuwzOlg9FXbkG'
+    _stats:
+      compendiumSource: JournalEntry.bGellaX3DwEr0DOn.JournalEntryPage.Q3viuwzOlg9FXbkG
+      coreVersion: '13.351'
+      duplicateSource: null
+      exportSource: null
+      lastModifiedBy: null
+      systemId: pf1
+      systemVersion: '11.9'
+    category: null
+    flags:
+      core: {}
+    image: {}
+    name: Effect
+    ownership:
+      default: -1
+      mLW1zeZBsSCEsXlw: 3
+    sort: 0
+    src: null
+    system: {}
+    text:
+      content: <p>Lose 1d4 fingertips and gain 1 bleed. Roll randomly to determine which hand is affected.</p><p></p><p>All skills requiring the use of that hand are made with disadvantage.</p><p></p><p>If the fingertips are recovered, they can be reattached by making a DC 15 Heal check within 10 minutes of the loss, followed by 5 HP of healing dedicated to each finger tipped <span style="font-family:Signika, sans-serif">(dedicated healing does not heal hit point damage).</span></p><p></p><p>If the fingertips are not recovered, the effects remain until the character grows accustomed to the loss of those tips. A Wisdom check can be made each day to attempt to normalize to their new state. The base DC is 15, +1 for each finger tipped.</p><p></p><p><span style="font-family:Signika, sans-serif">Bleed damage is applied at the beginning of each turn until stopped with a DC 15 Heal check or receiving 1 or more points of hit point healing.</span></p>
+      format: 1
+      markdown: ''
+    title:
+      level: 1
+      show: true
+    type: text
+    video:
+      controls: true
+      volume: 0.5
+sort: 100000

@@ -1,0 +1,56 @@
+_id: MSQmJZAnzlMyCHep
+_key: '!journal!MSQmJZAnzlMyCHep'
+_stats:
+  compendiumSource: null
+  coreVersion: '13.351'
+  createdTime: 1768594157986
+  duplicateSource: null
+  exportSource: null
+  lastModifiedBy: mLW1zeZBsSCEsXlw
+  modifiedTime: 1768594157986
+  systemId: pf1
+  systemVersion: '11.9'
+categories: []
+flags:
+  scene-packer:
+    hash: 347c2c3339a774d1aa55143d203b6ebd1571c5cc
+    sourceId: JournalEntry.MSQmJZAnzlMyCHep
+folder: KJtoo98fx7yqJDpO
+name: Sprained Wrist
+ownership:
+  default: 0
+  mLW1zeZBsSCEsXlw: 3
+pages:
+  - _id: TBr1bRwYyzfCo8zC
+    _key: '!journal.pages!MSQmJZAnzlMyCHep.TBr1bRwYyzfCo8zC'
+    _stats:
+      compendiumSource: JournalEntry.umaQvJsgUeDnnlWe.JournalEntryPage.TBr1bRwYyzfCo8zC
+      coreVersion: '13.351'
+      duplicateSource: null
+      exportSource: null
+      lastModifiedBy: null
+      systemId: pf1
+      systemVersion: '11.9'
+    category: null
+    flags:
+      core: {}
+    image: {}
+    name: Effect
+    ownership:
+      default: -1
+      mLW1zeZBsSCEsXlw: 3
+    sort: 0
+    src: null
+    system: {}
+    text:
+      content: <p>Lose any remaining attacks this round (including attacks of opportunity) and gain the Sprained Wrist condition on your throwing arm.</p><p></p><p>Any skills or attacks relying on the affected hand are rolled with disadvantage.</p><p></p><p>A sprained wrist can be <span style="font-family:Signika, sans-serif">healed with 5 HP of healing dedicated to it (dedicated healing does not heal hit point damage).</span></p>
+      format: 1
+      markdown: ''
+    title:
+      level: 1
+      show: true
+    type: text
+    video:
+      controls: true
+      volume: 0.5
+sort: 0

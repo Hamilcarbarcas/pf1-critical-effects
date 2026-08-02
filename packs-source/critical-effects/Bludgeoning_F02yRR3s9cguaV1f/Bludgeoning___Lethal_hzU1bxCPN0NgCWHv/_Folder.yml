@@ -1,0 +1,20 @@
+_id: hzU1bxCPN0NgCWHv
+_key: '!folders!hzU1bxCPN0NgCWHv'
+_stats:
+  compendiumSource: null
+  coreVersion: '13.351'
+  duplicateSource: null
+  exportSource: null
+  lastModifiedBy: null
+  systemId: pf1
+  systemVersion: '11.9'
+color: '#028a00'
+description: ''
+flags:
+  scene-packer:
+    hash: 81113a40eb63769f1f447bae91efc1ee6c604f1c
+folder: F02yRR3s9cguaV1f
+name: Bludgeoning - Lethal
+sort: 500000
+sorting: a
+type: JournalEntry

@@ -1,0 +1,22 @@
+_id: AWT1QRLWJpmRk90H
+_key: '!folders!AWT1QRLWJpmRk90H'
+_stats:
+  compendiumSource: null
+  coreVersion: '13.351'
+  createdTime: 1768594153385
+  duplicateSource: null
+  exportSource: null
+  lastModifiedBy: mLW1zeZBsSCEsXlw
+  modifiedTime: 1768594175038
+  systemId: pf1
+  systemVersion: '11.9'
+color: '#7d4926'
+description: ''
+flags:
+  scene-packer:
+    hash: a69010df3dd775890552c0beba8fc8c97d1c2669
+folder: COv8opMhbjaiMb8r
+name: Arrow - Lethal
+sort: 100000
+sorting: a
+type: JournalEntry

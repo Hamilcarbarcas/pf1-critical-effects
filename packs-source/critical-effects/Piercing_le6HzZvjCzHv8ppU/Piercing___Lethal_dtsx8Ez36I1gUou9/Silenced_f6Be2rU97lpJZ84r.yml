@@ -1,0 +1,54 @@
+_id: f6Be2rU97lpJZ84r
+_key: '!journal!f6Be2rU97lpJZ84r'
+_stats:
+  compendiumSource: null
+  coreVersion: '13.351'
+  createdTime: 1768594158904
+  duplicateSource: null
+  exportSource: null
+  lastModifiedBy: mLW1zeZBsSCEsXlw
+  modifiedTime: 1768594158904
+  systemId: pf1
+  systemVersion: '11.9'
+categories: []
+flags:
+  scene-packer:
+    hash: 5b93bf9cc0b1aeced2d5d4427516bc4612927906
+    sourceId: Compendium.astora-mod.astora-journals.JournalEntry.cdKkW5nejQPtBaWK
+folder: dtsx8Ez36I1gUou9
+name: Silenced
+ownership:
+  default: 0
+  mLW1zeZBsSCEsXlw: 3
+pages:
+  - _id: 4Icty82clEzJHz0F
+    _key: '!journal.pages!f6Be2rU97lpJZ84r.4Icty82clEzJHz0F'
+    _stats:
+      compendiumSource: null
+      coreVersion: '13.351'
+      duplicateSource: null
+      exportSource: null
+      lastModifiedBy: null
+      systemId: pf1
+      systemVersion: '11.9'
+    category: null
+    flags: {}
+    image: {}
+    name: Effect
+    ownership:
+      default: -1
+    sort: 100000
+    src: null
+    system: {}
+    text:
+      content: <p>Victim tries to say some final words, but no sound comes out but the gurgling of blood.</p><p></p><p>Instant Death.</p>
+      format: 1
+      markdown: ''
+    title:
+      level: 1
+      show: true
+    type: text
+    video:
+      controls: true
+      volume: 0.5
+sort: 0

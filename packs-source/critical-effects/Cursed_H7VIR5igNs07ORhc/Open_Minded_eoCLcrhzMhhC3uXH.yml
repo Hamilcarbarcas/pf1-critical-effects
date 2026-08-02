@@ -1,0 +1,55 @@
+_id: eoCLcrhzMhhC3uXH
+_key: '!journal!eoCLcrhzMhhC3uXH'
+_stats:
+  compendiumSource: null
+  coreVersion: '13.351'
+  createdTime: 1768594155663
+  duplicateSource: null
+  exportSource: null
+  lastModifiedBy: mLW1zeZBsSCEsXlw
+  modifiedTime: 1768594155663
+  systemId: pf1
+  systemVersion: '11.9'
+categories: []
+flags:
+  scene-packer:
+    hash: 5e7b9dafd5d4865738e642f172f296517784f886
+    sourceId: JournalEntry.eoCLcrhzMhhC3uXH
+folder: H7VIR5igNs07ORhc
+name: Open Minded
+ownership:
+  default: 0
+  mLW1zeZBsSCEsXlw: 3
+pages:
+  - _id: N4U7ylaX1EKTO58Y
+    _key: '!journal.pages!eoCLcrhzMhhC3uXH.N4U7ylaX1EKTO58Y'
+    _stats:
+      compendiumSource: null
+      coreVersion: '13.351'
+      duplicateSource: null
+      exportSource: null
+      lastModifiedBy: null
+      systemId: pf1
+      systemVersion: '11.9'
+    category: null
+    flags: {}
+    image: {}
+    name: Effect
+    ownership:
+      default: -1
+      mLW1zeZBsSCEsXlw: 3
+    sort: 100000
+    src: null
+    system: {}
+    text:
+      content: <p>Victim stares at attacker in momentary disbelief.</p><p></p><p>Instant Death.</p>
+      format: 1
+      markdown: ''
+    title:
+      level: 1
+      show: true
+    type: text
+    video:
+      controls: true
+      volume: 0.5
+sort: 0

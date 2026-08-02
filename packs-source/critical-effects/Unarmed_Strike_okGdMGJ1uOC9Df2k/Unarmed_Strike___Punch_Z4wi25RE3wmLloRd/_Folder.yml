@@ -1,0 +1,20 @@
+_id: Z4wi25RE3wmLloRd
+_key: '!folders!Z4wi25RE3wmLloRd'
+_stats:
+  compendiumSource: null
+  coreVersion: '13.351'
+  duplicateSource: null
+  exportSource: null
+  lastModifiedBy: null
+  systemId: pf1
+  systemVersion: '11.9'
+color: '#707070'
+description: ''
+flags:
+  scene-packer:
+    hash: fe69851f54020f2edf263b80e5e7cebccf4512fc
+folder: okGdMGJ1uOC9Df2k
+name: Unarmed Strike - Punch
+sort: 0
+sorting: a
+type: JournalEntry

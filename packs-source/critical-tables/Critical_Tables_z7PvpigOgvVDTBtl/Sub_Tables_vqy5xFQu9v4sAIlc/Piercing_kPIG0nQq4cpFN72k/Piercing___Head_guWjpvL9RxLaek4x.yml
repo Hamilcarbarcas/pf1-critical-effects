@@ -1,0 +1,281 @@
+_id: guWjpvL9RxLaek4x
+_key: '!tables!guWjpvL9RxLaek4x'
+_stats:
+  compendiumSource: null
+  coreVersion: '13.351'
+  createdTime: 1768594132767
+  duplicateSource: null
+  exportSource: null
+  lastModifiedBy: mLW1zeZBsSCEsXlw
+  modifiedTime: 1768595870222
+  systemId: pf1
+  systemVersion: '11.9'
+description: <p>A random table created from the contents of the Piercing - Head Folder.</p>
+displayRoll: false
+flags:
+  core: {}
+  scene-packer:
+    hash: 34ee050faddc0799240a1612b44605ea8f286639
+    sourceId: RollTable.guWjpvL9RxLaek4x
+folder: kPIG0nQq4cpFN72k
+formula: 1d12
+img: icons/svg/d20-grey.svg
+name: Piercing - Head
+ownership:
+  default: 0
+  mLW1zeZBsSCEsXlw: 3
+replacement: true
+results:
+  - _id: Sx6aXgd5YR6EPsOI
+    _key: '!tables.results!guWjpvL9RxLaek4x.Sx6aXgd5YR6EPsOI'
+    _stats:
+      compendiumSource: null
+      coreVersion: '13.351'
+      duplicateSource: null
+      exportSource: null
+      lastModifiedBy: null
+      systemId: pf1
+      systemVersion: '11.9'
+    description: ''
+    documentUuid: Compendium.pf1-critical-effects.critical-effects.JournalEntry.4dvtmhPTfDIw2cTh
+    drawn: false
+    flags: {}
+    img: icons/svg/d20-black.svg
+    name: Broken Jaw
+    range:
+      - 1
+      - 1
+    type: document
+    weight: 1
+  - _id: BnQqkgWl7NDvaVvx
+    _key: '!tables.results!guWjpvL9RxLaek4x.BnQqkgWl7NDvaVvx'
+    _stats:
+      compendiumSource: null
+      coreVersion: '13.351'
+      duplicateSource: null
+      exportSource: null
+      lastModifiedBy: null
+      systemId: pf1
+      systemVersion: '11.9'
+    description: ''
+    documentUuid: Compendium.pf1-critical-effects.critical-effects.JournalEntry.HeOElz7gu1mTh2rP
+    drawn: false
+    flags: {}
+    img: icons/svg/d20-black.svg
+    name: Dazing Blow
+    range:
+      - 2
+      - 2
+    type: document
+    weight: 1
+  - _id: Xqo21pay8UKQecxX
+    _key: '!tables.results!guWjpvL9RxLaek4x.Xqo21pay8UKQecxX'
+    _stats:
+      compendiumSource: null
+      coreVersion: '13.351'
+      duplicateSource: null
+      exportSource: null
+      lastModifiedBy: null
+      systemId: pf1
+      systemVersion: '11.9'
+    description: ''
+    documentUuid: Compendium.pf1-critical-effects.critical-effects.JournalEntry.7dICgl9TMi5mfAv1
+    drawn: false
+    flags: {}
+    img: icons/svg/d20-black.svg
+    name: Eye Plucked
+    range:
+      - 3
+      - 3
+    type: document
+    weight: 1
+  - _id: BTSbfWA30nBCLeTA
+    _key: '!tables.results!guWjpvL9RxLaek4x.BTSbfWA30nBCLeTA'
+    _stats:
+      compendiumSource: null
+      coreVersion: '13.351'
+      duplicateSource: null
+      exportSource: null
+      lastModifiedBy: null
+      systemId: pf1
+      systemVersion: '11.9'
+    description: ''
+    documentUuid: Compendium.pf1-critical-effects.critical-effects.JournalEntry.sbqb77YNRW4qV1bQ
+    drawn: false
+    flags: {}
+    img: icons/svg/d20-black.svg
+    name: Horrific Facial Scar
+    range:
+      - 4
+      - 4
+    type: document
+    weight: 1
+  - _id: A0PL1LvfMEl2pUpt
+    _key: '!tables.results!guWjpvL9RxLaek4x.A0PL1LvfMEl2pUpt'
+    _stats:
+      compendiumSource: null
+      coreVersion: '13.351'
+      duplicateSource: null
+      exportSource: null
+      lastModifiedBy: null
+      systemId: pf1
+      systemVersion: '11.9'
+    description: ''
+    documentUuid: Compendium.pf1-critical-effects.critical-effects.JournalEntry.uNwhm7knPjMIa30E
+    drawn: false
+    flags: {}
+    img: icons/svg/d20-black.svg
+    name: Knocked Down
+    range:
+      - 5
+      - 5
+    type: document
+    weight: 1
+  - _id: RGtZCTw97xvamyuk
+    _key: '!tables.results!guWjpvL9RxLaek4x.RGtZCTw97xvamyuk'
+    _stats:
+      compendiumSource: null
+      coreVersion: '13.351'
+      duplicateSource: null
+      exportSource: null
+      lastModifiedBy: null
+      systemId: pf1
+      systemVersion: '11.9'
+    description: ''
+    documentUuid: Compendium.pf1-critical-effects.critical-effects.JournalEntry.i49Z0bUcDd3g194h
+    drawn: false
+    flags: {}
+    img: icons/svg/d20-black.svg
+    name: Knocked Out
+    range:
+      - 6
+      - 6
+    type: document
+    weight: 1
+  - _id: BOEHXcXV8VjHRCjP
+    _key: '!tables.results!guWjpvL9RxLaek4x.BOEHXcXV8VjHRCjP'
+    _stats:
+      compendiumSource: null
+      coreVersion: '13.351'
+      duplicateSource: null
+      exportSource: null
+      lastModifiedBy: null
+      systemId: pf1
+      systemVersion: '11.9'
+    description: ''
+    documentUuid: Compendium.pf1-critical-effects.critical-effects.JournalEntry.CMulSCZE3Ed9q89R
+    drawn: false
+    flags: {}
+    img: icons/svg/d20-black.svg
+    name: Lost Teeth
+    range:
+      - 7
+      - 7
+    type: document
+    weight: 1
+  - _id: ihH2Lp69X7ULY1mA
+    _key: '!tables.results!guWjpvL9RxLaek4x.ihH2Lp69X7ULY1mA'
+    _stats:
+      compendiumSource: null
+      coreVersion: '13.351'
+      duplicateSource: null
+      exportSource: null
+      lastModifiedBy: null
+      systemId: pf1
+      systemVersion: '11.9'
+    description: ''
+    documentUuid: Compendium.pf1-critical-effects.critical-effects.JournalEntry.Kj4o9DF2xskHGbFH
+    drawn: false
+    flags: {}
+    img: icons/svg/d20-black.svg
+    name: Pierced Brain
+    range:
+      - 8
+      - 8
+    type: document
+    weight: 1
+  - _id: ilCjdnjdh7GE4dm1
+    _key: '!tables.results!guWjpvL9RxLaek4x.ilCjdnjdh7GE4dm1'
+    _stats:
+      compendiumSource: null
+      coreVersion: '13.351'
+      duplicateSource: null
+      exportSource: null
+      lastModifiedBy: null
+      systemId: pf1
+      systemVersion: '11.9'
+    description: ''
+    documentUuid: Compendium.pf1-critical-effects.critical-effects.JournalEntry.hN73qkAh9TzuNdIA
+    drawn: false
+    flags: {}
+    img: icons/svg/d20-black.svg
+    name: Pierced Eardrum
+    range:
+      - 9
+      - 9
+    type: document
+    weight: 1
+  - _id: zYILlPFsNhdUcE8p
+    _key: '!tables.results!guWjpvL9RxLaek4x.zYILlPFsNhdUcE8p'
+    _stats:
+      compendiumSource: null
+      coreVersion: '13.351'
+      duplicateSource: null
+      exportSource: null
+      lastModifiedBy: null
+      systemId: pf1
+      systemVersion: '11.9'
+    description: ''
+    documentUuid: Compendium.pf1-critical-effects.critical-effects.JournalEntry.PsgxcGy7tm02aUQu
+    drawn: false
+    flags: {}
+    img: icons/svg/d20-black.svg
+    name: Pierced Mouth
+    range:
+      - 10
+      - 10
+    type: document
+    weight: 1
+  - _id: EnpSkM1L36QMh2Xo
+    _key: '!tables.results!guWjpvL9RxLaek4x.EnpSkM1L36QMh2Xo'
+    _stats:
+      compendiumSource: null
+      coreVersion: '13.351'
+      duplicateSource: null
+      exportSource: null
+      lastModifiedBy: null
+      systemId: pf1
+      systemVersion: '11.9'
+    description: ''
+    documentUuid: Compendium.pf1-critical-effects.critical-effects.JournalEntry.pGrp3CzKFDJ6sW0m
+    drawn: false
+    flags: {}
+    img: icons/svg/d20-black.svg
+    name: Pierced Throat
+    range:
+      - 11
+      - 11
+    type: document
+    weight: 1
+  - _id: gTp8ubpiUvEKn7cz
+    _key: '!tables.results!guWjpvL9RxLaek4x.gTp8ubpiUvEKn7cz'
+    _stats:
+      compendiumSource: null
+      coreVersion: '13.351'
+      duplicateSource: null
+      exportSource: null
+      lastModifiedBy: null
+      systemId: pf1
+      systemVersion: '11.9'
+    description: ''
+    documentUuid: Compendium.pf1-critical-effects.critical-effects.JournalEntry.tyYP9BdQhbUcRAZ2
+    drawn: false
+    flags: {}
+    img: icons/svg/d20-black.svg
+    name: Severed Nose
+    range:
+      - 12
+      - 12
+    type: document
+    weight: 1
+sort: 0

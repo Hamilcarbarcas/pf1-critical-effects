@@ -1,0 +1,22 @@
+_id: COv8opMhbjaiMb8r
+_key: '!folders!COv8opMhbjaiMb8r'
+_stats:
+  compendiumSource: null
+  coreVersion: '13.351'
+  createdTime: 1768594151698
+  duplicateSource: null
+  exportSource: null
+  lastModifiedBy: mLW1zeZBsSCEsXlw
+  modifiedTime: 1768594151746
+  systemId: pf1
+  systemVersion: '11.9'
+color: '#7d4926'
+description: ''
+flags:
+  scene-packer:
+    hash: 751b0a1dee02764095ab8d19af65df01e2793544
+folder: null
+name: Arrow
+sort: 100000
+sorting: a
+type: JournalEntry

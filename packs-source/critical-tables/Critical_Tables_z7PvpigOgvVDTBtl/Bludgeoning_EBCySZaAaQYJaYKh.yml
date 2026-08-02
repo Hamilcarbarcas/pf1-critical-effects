@@ -1,0 +1,113 @@
+_id: EBCySZaAaQYJaYKh
+_key: '!tables!EBCySZaAaQYJaYKh'
+_stats:
+  compendiumSource: null
+  coreVersion: '13.351'
+  createdTime: 1768594132767
+  duplicateSource: null
+  exportSource: null
+  lastModifiedBy: mLW1zeZBsSCEsXlw
+  modifiedTime: 1768596442642
+  systemId: pf1
+  systemVersion: '11.9'
+description: ''
+displayRoll: false
+flags:
+  core: {}
+  scene-packer:
+    hash: ebe36389cb87afa6cfad67ca628d78a687e613b0
+    sourceId: RollTable.EBCySZaAaQYJaYKh
+folder: z7PvpigOgvVDTBtl
+formula: 1d6
+img: icons/svg/d20-grey.svg
+name: Bludgeoning
+ownership:
+  default: 0
+  mLW1zeZBsSCEsXlw: 3
+replacement: true
+results:
+  - _id: 2HyoT34BSqAz4jQM
+    _key: '!tables.results!EBCySZaAaQYJaYKh.2HyoT34BSqAz4jQM'
+    _stats:
+      compendiumSource: null
+      coreVersion: '13.351'
+      duplicateSource: null
+      exportSource: null
+      lastModifiedBy: null
+      systemId: pf1
+      systemVersion: '11.9'
+    description: ''
+    documentUuid: Compendium.pf1-critical-effects.critical-tables.RollTable.N0ssKgbPHawV6OUV
+    drawn: false
+    flags: {}
+    img: icons/svg/d20-grey.svg
+    name: Bludgeoning - Arms
+    range:
+      - 1
+      - 2
+    type: document
+    weight: 2
+  - _id: snRLj2IST9IiNobV
+    _key: '!tables.results!EBCySZaAaQYJaYKh.snRLj2IST9IiNobV'
+    _stats:
+      compendiumSource: null
+      coreVersion: '13.351'
+      duplicateSource: null
+      exportSource: null
+      lastModifiedBy: null
+      systemId: pf1
+      systemVersion: '11.9'
+    description: ''
+    documentUuid: Compendium.pf1-critical-effects.critical-tables.RollTable.DRxLjP158vYs8IVe
+    drawn: false
+    flags: {}
+    img: icons/svg/d20-grey.svg
+    name: Bludgeoning - Legs
+    range:
+      - 3
+      - 4
+    type: document
+    weight: 2
+  - _id: 1bFaOv3Z0vxvL3Ty
+    _key: '!tables.results!EBCySZaAaQYJaYKh.1bFaOv3Z0vxvL3Ty'
+    _stats:
+      compendiumSource: null
+      coreVersion: '13.351'
+      duplicateSource: null
+      exportSource: null
+      lastModifiedBy: null
+      systemId: pf1
+      systemVersion: '11.9'
+    description: ''
+    documentUuid: Compendium.pf1-critical-effects.critical-tables.RollTable.d3tIrnCQmXN34Nd5
+    drawn: false
+    flags: {}
+    img: icons/svg/d20-grey.svg
+    name: Blugeoning - Torso
+    range:
+      - 5
+      - 5
+    type: document
+    weight: 1
+  - _id: VFX3AQRFVUF3y2xK
+    _key: '!tables.results!EBCySZaAaQYJaYKh.VFX3AQRFVUF3y2xK'
+    _stats:
+      compendiumSource: null
+      coreVersion: '13.351'
+      duplicateSource: null
+      exportSource: null
+      lastModifiedBy: null
+      systemId: pf1
+      systemVersion: '11.9'
+    description: ''
+    documentUuid: Compendium.pf1-critical-effects.critical-tables.RollTable.XliR6TRkbV5B4wBE
+    drawn: false
+    flags: {}
+    img: icons/svg/d20-grey.svg
+    name: Bludgeoning - Head
+    range:
+      - 6
+      - 6
+    type: document
+    weight: 1
+sort: 75000

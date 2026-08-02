@@ -1,0 +1,281 @@
+_id: phPXtUmOO2Tnp19x
+_key: '!tables!phPXtUmOO2Tnp19x'
+_stats:
+  compendiumSource: null
+  coreVersion: '13.351'
+  createdTime: 1768594132767
+  duplicateSource: null
+  exportSource: null
+  lastModifiedBy: mLW1zeZBsSCEsXlw
+  modifiedTime: 1768594132767
+  systemId: pf1
+  systemVersion: '11.9'
+description: <p>A random table created from the contents of the Cursed Folder.</p>
+displayRoll: false
+flags:
+  core: {}
+  scene-packer:
+    hash: fb2647e9254673e86e79a1b896fee24f3fc7c477
+    sourceId: RollTable.phPXtUmOO2Tnp19x
+folder: z7PvpigOgvVDTBtl
+formula: 1d12
+img: icons/svg/d20-grey.svg
+name: Cursed
+ownership:
+  default: 0
+  mLW1zeZBsSCEsXlw: 3
+replacement: true
+results:
+  - _id: EdIVts8LOUnij8mx
+    _key: '!tables.results!phPXtUmOO2Tnp19x.EdIVts8LOUnij8mx'
+    _stats:
+      compendiumSource: null
+      coreVersion: '13.351'
+      duplicateSource: null
+      exportSource: null
+      lastModifiedBy: null
+      systemId: pf1
+      systemVersion: '11.9'
+    description: ''
+    documentUuid: Compendium.homebrew-mod.critical-effects.JournalEntry.eV9m81EBLHOgxuDJ
+    drawn: false
+    flags: {}
+    img: icons/svg/d20-black.svg
+    name: Severed Foot
+    range:
+      - 1
+      - 1
+    type: document
+    weight: 1
+  - _id: yUW4jLlyo3Xe4ewF
+    _key: '!tables.results!phPXtUmOO2Tnp19x.yUW4jLlyo3Xe4ewF'
+    _stats:
+      compendiumSource: null
+      coreVersion: '13.351'
+      duplicateSource: null
+      exportSource: null
+      lastModifiedBy: null
+      systemId: pf1
+      systemVersion: '11.9'
+    description: ''
+    documentUuid: Compendium.homebrew-mod.critical-effects.JournalEntry.aUKoGCOI81HY6tZ8
+    drawn: false
+    flags: {}
+    img: icons/svg/d20-black.svg
+    name: Bifurcated
+    range:
+      - 2
+      - 2
+    type: document
+    weight: 1
+  - _id: 15CJYBYeMthr4vE0
+    _key: '!tables.results!phPXtUmOO2Tnp19x.15CJYBYeMthr4vE0'
+    _stats:
+      compendiumSource: null
+      coreVersion: '13.351'
+      duplicateSource: null
+      exportSource: null
+      lastModifiedBy: null
+      systemId: pf1
+      systemVersion: '11.9'
+    description: ''
+    documentUuid: Compendium.homebrew-mod.critical-effects.JournalEntry.cdKkW5nejQPtBaWK
+    drawn: false
+    flags: {}
+    img: icons/svg/d20-black.svg
+    name: Silenced
+    range:
+      - 3
+      - 3
+    type: document
+    weight: 1
+  - _id: AA5StWdYgJGcEAMS
+    _key: '!tables.results!phPXtUmOO2Tnp19x.AA5StWdYgJGcEAMS'
+    _stats:
+      compendiumSource: null
+      coreVersion: '13.351'
+      duplicateSource: null
+      exportSource: null
+      lastModifiedBy: null
+      systemId: pf1
+      systemVersion: '11.9'
+    description: ''
+    documentUuid: Compendium.homebrew-mod.critical-effects.JournalEntry.R2OASHeVt82JbJZ6
+    drawn: false
+    flags: {}
+    img: icons/svg/d20-black.svg
+    name: Lost Fingers
+    range:
+      - 4
+      - 4
+    type: document
+    weight: 1
+  - _id: BXb9KPJ20X3rahHs
+    _key: '!tables.results!phPXtUmOO2Tnp19x.BXb9KPJ20X3rahHs'
+    _stats:
+      compendiumSource: null
+      coreVersion: '13.351'
+      duplicateSource: null
+      exportSource: null
+      lastModifiedBy: null
+      systemId: pf1
+      systemVersion: '11.9'
+    description: ''
+    documentUuid: Compendium.homebrew-mod.critical-effects.JournalEntry.da1e2kfpVtIwE0jQ
+    drawn: false
+    flags: {}
+    img: icons/svg/d20-black.svg
+    name: Defaced
+    range:
+      - 5
+      - 5
+    type: document
+    weight: 1
+  - _id: gEGqKzdjFEPXQLPv
+    _key: '!tables.results!phPXtUmOO2Tnp19x.gEGqKzdjFEPXQLPv'
+    _stats:
+      compendiumSource: null
+      coreVersion: '13.351'
+      duplicateSource: null
+      exportSource: null
+      lastModifiedBy: null
+      systemId: pf1
+      systemVersion: '11.9'
+    description: ''
+    documentUuid: Compendium.homebrew-mod.critical-effects.JournalEntry.eoCLcrhzMhhC3uXH
+    drawn: false
+    flags: {}
+    img: icons/svg/d20-black.svg
+    name: Open Minded
+    range:
+      - 6
+      - 6
+    type: document
+    weight: 1
+  - _id: TpMi8SjhI0UNdJhn
+    _key: '!tables.results!phPXtUmOO2Tnp19x.TpMi8SjhI0UNdJhn'
+    _stats:
+      compendiumSource: null
+      coreVersion: '13.351'
+      duplicateSource: null
+      exportSource: null
+      lastModifiedBy: null
+      systemId: pf1
+      systemVersion: '11.9'
+    description: ''
+    documentUuid: Compendium.homebrew-mod.critical-effects.JournalEntry.xCtoGHG49wDTKFP5
+    drawn: false
+    flags: {}
+    img: icons/svg/d20-black.svg
+    name: Nethers
+    range:
+      - 7
+      - 7
+    type: document
+    weight: 1
+  - _id: WCQlkg5FBRWewYSk
+    _key: '!tables.results!phPXtUmOO2Tnp19x.WCQlkg5FBRWewYSk'
+    _stats:
+      compendiumSource: null
+      coreVersion: '13.351'
+      duplicateSource: null
+      exportSource: null
+      lastModifiedBy: null
+      systemId: pf1
+      systemVersion: '11.9'
+    description: ''
+    documentUuid: Compendium.homebrew-mod.critical-effects.JournalEntry.oKUYvEv3hQn0f1sP
+    drawn: false
+    flags: {}
+    img: icons/svg/d20-black.svg
+    name: Severed Ear
+    range:
+      - 8
+      - 8
+    type: document
+    weight: 1
+  - _id: zOSdELroeyT8M7tZ
+    _key: '!tables.results!phPXtUmOO2Tnp19x.zOSdELroeyT8M7tZ'
+    _stats:
+      compendiumSource: null
+      coreVersion: '13.351'
+      duplicateSource: null
+      exportSource: null
+      lastModifiedBy: null
+      systemId: pf1
+      systemVersion: '11.9'
+    description: ''
+    documentUuid: Compendium.homebrew-mod.critical-effects.JournalEntry.mSr9gK1dhpQew3Pa
+    drawn: false
+    flags: {}
+    img: icons/svg/d20-black.svg
+    name: Halved
+    range:
+      - 9
+      - 9
+    type: document
+    weight: 1
+  - _id: WqVY4mnH6RJTsw24
+    _key: '!tables.results!phPXtUmOO2Tnp19x.WqVY4mnH6RJTsw24'
+    _stats:
+      compendiumSource: null
+      coreVersion: '13.351'
+      duplicateSource: null
+      exportSource: null
+      lastModifiedBy: null
+      systemId: pf1
+      systemVersion: '11.9'
+    description: ''
+    documentUuid: Compendium.homebrew-mod.critical-effects.JournalEntry.qF96GqB5rcnRvrR1
+    drawn: false
+    flags: {}
+    img: icons/svg/d20-black.svg
+    name: Eye Pluck
+    range:
+      - 10
+      - 10
+    type: document
+    weight: 1
+  - _id: 9RKBKH3cChHiPDQd
+    _key: '!tables.results!phPXtUmOO2Tnp19x.9RKBKH3cChHiPDQd'
+    _stats:
+      compendiumSource: null
+      coreVersion: '13.351'
+      duplicateSource: null
+      exportSource: null
+      lastModifiedBy: null
+      systemId: pf1
+      systemVersion: '11.9'
+    description: ''
+    documentUuid: Compendium.homebrew-mod.critical-effects.JournalEntry.rR05OtmBsXAj56BB
+    drawn: false
+    flags: {}
+    img: icons/svg/d20-black.svg
+    name: Severed Nose
+    range:
+      - 11
+      - 11
+    type: document
+    weight: 1
+  - _id: CBdSsphTXuHiYdZt
+    _key: '!tables.results!phPXtUmOO2Tnp19x.CBdSsphTXuHiYdZt'
+    _stats:
+      compendiumSource: null
+      coreVersion: '13.351'
+      duplicateSource: null
+      exportSource: null
+      lastModifiedBy: null
+      systemId: pf1
+      systemVersion: '11.9'
+    description: ''
+    documentUuid: Compendium.homebrew-mod.critical-effects.JournalEntry.xmmxfVBqMyx36zjg
+    drawn: false
+    flags: {}
+    img: icons/svg/d20-black.svg
+    name: Unicorned
+    range:
+      - 12
+      - 12
+    type: document
+    weight: 1
+sort: 112537

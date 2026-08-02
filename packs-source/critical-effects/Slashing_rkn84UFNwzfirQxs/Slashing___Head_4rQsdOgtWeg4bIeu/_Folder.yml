@@ -1,0 +1,20 @@
+_id: 4rQsdOgtWeg4bIeu
+_key: '!folders!4rQsdOgtWeg4bIeu'
+_stats:
+  compendiumSource: null
+  coreVersion: '13.351'
+  duplicateSource: null
+  exportSource: null
+  lastModifiedBy: null
+  systemId: pf1
+  systemVersion: '11.9'
+color: '#1c1c1c'
+description: ''
+flags:
+  scene-packer:
+    hash: 1ba9b1e77c6eec2e48be2e3c032d4fb4c419b48f
+folder: rkn84UFNwzfirQxs
+name: Slashing - Head
+sort: 200000
+sorting: a
+type: JournalEntry

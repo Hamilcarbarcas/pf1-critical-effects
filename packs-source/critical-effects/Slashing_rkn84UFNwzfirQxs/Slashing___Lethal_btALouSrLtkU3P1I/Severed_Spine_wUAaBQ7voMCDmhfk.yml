@@ -1,0 +1,61 @@
+_id: wUAaBQ7voMCDmhfk
+_key: '!journal!wUAaBQ7voMCDmhfk'
+_stats:
+  compendiumSource: null
+  coreVersion: '13.351'
+  createdTime: 1768594160167
+  duplicateSource: null
+  exportSource: null
+  lastModifiedBy: mLW1zeZBsSCEsXlw
+  modifiedTime: 1768594160167
+  systemId: pf1
+  systemVersion: '11.9'
+categories: []
+flags:
+  monks-enhanced-journal:
+    img: modules/monks-enhanced-journal/assets/text.png
+    pagetype: text
+  scene-packer:
+    hash: 2b1b647321e0b51857117317698c415b132951fd
+folder: btALouSrLtkU3P1I
+name: Severed Spine
+ownership:
+  default: 0
+  mLW1zeZBsSCEsXlw: 3
+pages:
+  - _id: EoP1tuCXXn9kWbgp
+    _key: '!journal.pages!wUAaBQ7voMCDmhfk.EoP1tuCXXn9kWbgp'
+    _stats:
+      compendiumSource: null
+      coreVersion: '13.351'
+      duplicateSource: null
+      exportSource: null
+      lastModifiedBy: mLW1zeZBsSCEsXlw
+      modifiedTime: 1768594160718
+      systemId: pf1
+      systemVersion: '11.9'
+    category: null
+    flags:
+      monks-enhanced-journal:
+        appendix: false
+        img: modules/monks-enhanced-journal/assets/text.png
+        pagetype: text
+    image: {}
+    name: Effect
+    ownership:
+      default: -1
+      mLW1zeZBsSCEsXlw: 3
+    sort: 0
+    src: null
+    system: {}
+    text:
+      content: <p>Everything below the shoulders gives out. Death follows immediately.</p>
+      format: 1
+    title:
+      level: 1
+      show: true
+    type: text
+    video:
+      controls: true
+      volume: 0.5
+sort: 0

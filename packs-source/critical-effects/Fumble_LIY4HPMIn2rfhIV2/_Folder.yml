@@ -1,0 +1,22 @@
+_id: LIY4HPMIn2rfhIV2
+_key: '!folders!LIY4HPMIn2rfhIV2'
+_stats:
+  compendiumSource: null
+  coreVersion: '13.351'
+  createdTime: 1768594157894
+  duplicateSource: null
+  exportSource: null
+  lastModifiedBy: mLW1zeZBsSCEsXlw
+  modifiedTime: 1768594158014
+  systemId: pf1
+  systemVersion: '11.9'
+color: '#ff2e2e'
+description: ''
+flags:
+  scene-packer:
+    hash: 69e3805689222195888d0cfdf98a0f0e28f1d138
+folder: null
+name: Fumble
+sort: 600000
+sorting: a
+type: JournalEntry

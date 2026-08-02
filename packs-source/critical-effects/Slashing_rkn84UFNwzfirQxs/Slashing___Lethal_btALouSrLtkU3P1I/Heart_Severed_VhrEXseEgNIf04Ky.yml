@@ -1,0 +1,61 @@
+_id: VhrEXseEgNIf04Ky
+_key: '!journal!VhrEXseEgNIf04Ky'
+_stats:
+  compendiumSource: null
+  coreVersion: '13.351'
+  createdTime: 1768594160167
+  duplicateSource: null
+  exportSource: null
+  lastModifiedBy: mLW1zeZBsSCEsXlw
+  modifiedTime: 1768594160167
+  systemId: pf1
+  systemVersion: '11.9'
+categories: []
+flags:
+  monks-enhanced-journal:
+    img: modules/monks-enhanced-journal/assets/text.png
+    pagetype: text
+  scene-packer:
+    hash: aea4e3e8f0f060d8454ef0d2340a2b027980d00c
+folder: btALouSrLtkU3P1I
+name: Heart Severed
+ownership:
+  default: 0
+  mLW1zeZBsSCEsXlw: 3
+pages:
+  - _id: MhyaH7Uz32AKVxPn
+    _key: '!journal.pages!VhrEXseEgNIf04Ky.MhyaH7Uz32AKVxPn'
+    _stats:
+      compendiumSource: null
+      coreVersion: '13.351'
+      duplicateSource: null
+      exportSource: null
+      lastModifiedBy: mLW1zeZBsSCEsXlw
+      modifiedTime: 1768594160700
+      systemId: pf1
+      systemVersion: '11.9'
+    category: null
+    flags:
+      monks-enhanced-journal:
+        appendix: false
+        img: modules/monks-enhanced-journal/assets/text.png
+        pagetype: text
+    image: {}
+    name: Effect
+    ownership:
+      default: -1
+      mLW1zeZBsSCEsXlw: 3
+    sort: 0
+    src: null
+    system: {}
+    text:
+      content: <p>With a clean cut, the heart is split in two. Instant death.</p>
+      format: 1
+    title:
+      level: 1
+      show: true
+    type: text
+    video:
+      controls: true
+      volume: 0.5
+sort: 0

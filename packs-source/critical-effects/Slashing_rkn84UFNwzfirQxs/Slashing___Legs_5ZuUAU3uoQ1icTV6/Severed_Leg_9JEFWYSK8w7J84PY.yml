@@ -1,0 +1,56 @@
+_id: 9JEFWYSK8w7J84PY
+_key: '!journal!9JEFWYSK8w7J84PY'
+_stats:
+  compendiumSource: null
+  coreVersion: '13.351'
+  createdTime: 1768594160167
+  duplicateSource: null
+  exportSource: null
+  lastModifiedBy: mLW1zeZBsSCEsXlw
+  modifiedTime: 1768594160167
+  systemId: pf1
+  systemVersion: '11.9'
+categories: []
+flags:
+  scene-packer:
+    hash: 6282e00e74a4f0fef53774d737059fd6834d3fd1
+    sourceId: JournalEntry.9JEFWYSK8w7J84PY
+folder: 5ZuUAU3uoQ1icTV6
+name: Severed Leg
+ownership:
+  default: 0
+  mLW1zeZBsSCEsXlw: 3
+pages:
+  - _id: bk8rZI7jLmZcrTXe
+    _key: '!journal.pages!9JEFWYSK8w7J84PY.bk8rZI7jLmZcrTXe'
+    _stats:
+      compendiumSource: JournalEntry.ycm7IyIqQGZWrnbU.JournalEntryPage.bk8rZI7jLmZcrTXe
+      coreVersion: '13.351'
+      duplicateSource: null
+      exportSource: null
+      lastModifiedBy: null
+      systemId: pf1
+      systemVersion: '11.9'
+    category: null
+    flags:
+      core: {}
+    image: {}
+    name: Effect
+    ownership:
+      default: -1
+      mLW1zeZBsSCEsXlw: 3
+    sort: 0
+    src: null
+    system: {}
+    text:
+      content: <p>Lose a leg and gain 1d10 bleed. Roll randomly to see which foot is affected.</p><p></p><p><span style="font-family:Signika, sans-serif">A -6 penalty is applied to AC, movement is reduced to 5 feet (or half normal with the use of crutches), you cannot run or charge, and any skills requiring footwork automatically fail.</span></p><p></p><p>A severed leg is cut somewhere between the knee and hip.</p><p></p><p>If the leg can be recovered, it can be reattached by making a DC 25 Heal check within 10 minutes of the loss, followed by 45 HP of healing dedicated to the leg <span style="font-family:Signika, sans-serif">(dedicated healing does not heal hit point damage).</span></p><p></p><p><span style="font-family:Signika, sans-serif">Bleed damage is applied at the beginning of each turn until stopped with a DC 15 Heal check or receiving 1 or more points of hit point healing.</span></p><p></p><p>Partial to total use of a lost leg can be regained via the use of a prosthesis.</p>
+      format: 1
+      markdown: ''
+    title:
+      level: 1
+      show: true
+    type: text
+    video:
+      controls: true
+      volume: 0.5
+sort: 0

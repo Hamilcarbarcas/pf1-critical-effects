@@ -1,0 +1,56 @@
+_id: qRjaAihb9yMqRjZd
+_key: '!journal!qRjaAihb9yMqRjZd'
+_stats:
+  compendiumSource: null
+  coreVersion: '13.351'
+  createdTime: 1768594157986
+  duplicateSource: null
+  exportSource: null
+  lastModifiedBy: mLW1zeZBsSCEsXlw
+  modifiedTime: 1768594157986
+  systemId: pf1
+  systemVersion: '11.9'
+categories: []
+flags:
+  scene-packer:
+    hash: 13ef68396ee3ff58b80c45c2ec1d2dc98f69ce43
+    sourceId: JournalEntry.qRjaAihb9yMqRjZd
+folder: KJtoo98fx7yqJDpO
+name: Juggled Weapon
+ownership:
+  default: 0
+  mLW1zeZBsSCEsXlw: 3
+pages:
+  - _id: rBKxaHWXcnhV4R4g
+    _key: '!journal.pages!qRjaAihb9yMqRjZd.rBKxaHWXcnhV4R4g'
+    _stats:
+      compendiumSource: JournalEntry.FL96GikENrj0KvNm.JournalEntryPage.rBKxaHWXcnhV4R4g
+      coreVersion: '13.351'
+      duplicateSource: null
+      exportSource: null
+      lastModifiedBy: null
+      systemId: pf1
+      systemVersion: '11.9'
+    category: null
+    flags:
+      core: {}
+    image: {}
+    name: Effect
+    ownership:
+      default: -1
+      mLW1zeZBsSCEsXlw: 3
+    sort: 0
+    src: null
+    system: {}
+    text:
+      content: <p>You may take an Immediate or Swift action to make a DC 15 Dexterity check to recover your weapon, otherwise your weapon falls 1d4x5 feet in a random direction.</p>
+      format: 1
+      markdown: ''
+    title:
+      level: 1
+      show: true
+    type: text
+    video:
+      controls: true
+      volume: 0.5
+sort: 0

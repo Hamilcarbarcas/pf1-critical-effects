@@ -1,0 +1,20 @@
+_id: LnEzjrlMjQ3Lnjsr
+_key: '!folders!LnEzjrlMjQ3Lnjsr'
+_stats:
+  compendiumSource: null
+  coreVersion: '13.351'
+  duplicateSource: null
+  exportSource: null
+  lastModifiedBy: null
+  systemId: pf1
+  systemVersion: '11.9'
+color: '#1c1c1c'
+description: ''
+flags:
+  scene-packer:
+    hash: b8d624dcffb775bc56a82e8d3398b774e5cf4c89
+folder: rkn84UFNwzfirQxs
+name: Slashing - Arms
+sort: 100000
+sorting: a
+type: JournalEntry

@@ -1,0 +1,54 @@
+_id: uS8zCWArVjlQlrME
+_key: '!journal!uS8zCWArVjlQlrME'
+_stats:
+  compendiumSource: null
+  coreVersion: '13.351'
+  createdTime: 1768594160167
+  duplicateSource: null
+  exportSource: null
+  lastModifiedBy: mLW1zeZBsSCEsXlw
+  modifiedTime: 1768594160167
+  systemId: pf1
+  systemVersion: '11.9'
+categories: []
+flags:
+  scene-packer:
+    hash: 362af4a777204776ceb1806a8b1c497bb76afc59
+    sourceId: Compendium.astora-mod.astora-journals.JournalEntry.mSr9gK1dhpQew3Pa
+folder: btALouSrLtkU3P1I
+name: Halved
+ownership:
+  default: 0
+  mLW1zeZBsSCEsXlw: 3
+pages:
+  - _id: aRyA9qojPQ71Kv3Z
+    _key: '!journal.pages!uS8zCWArVjlQlrME.aRyA9qojPQ71Kv3Z'
+    _stats:
+      compendiumSource: null
+      coreVersion: '13.351'
+      duplicateSource: null
+      exportSource: null
+      lastModifiedBy: null
+      systemId: pf1
+      systemVersion: '11.9'
+    category: null
+    flags: {}
+    image: {}
+    name: Effect
+    ownership:
+      default: -1
+    sort: 100000
+    src: null
+    system: {}
+    text:
+      content: <p>Victim seems unphased at first, then their upper body slowly slides off.</p><p></p><p>Instant Death.</p>
+      format: 1
+      markdown: ''
+    title:
+      level: 1
+      show: true
+    type: text
+    video:
+      controls: true
+      volume: 0.5
+sort: 200000

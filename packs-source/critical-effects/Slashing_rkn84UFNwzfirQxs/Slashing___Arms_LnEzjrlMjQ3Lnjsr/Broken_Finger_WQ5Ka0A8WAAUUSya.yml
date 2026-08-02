@@ -1,0 +1,55 @@
+_id: WQ5Ka0A8WAAUUSya
+_key: '!journal!WQ5Ka0A8WAAUUSya'
+_stats:
+  compendiumSource: null
+  coreVersion: '13.351'
+  createdTime: 1768594160167
+  duplicateSource: null
+  exportSource: null
+  lastModifiedBy: mLW1zeZBsSCEsXlw
+  modifiedTime: 1768594160167
+  systemId: pf1
+  systemVersion: '11.9'
+categories: []
+flags:
+  scene-packer:
+    hash: 12802387775f9f536339869beac65d414052d7de
+    sourceId: JournalEntry.WQ5Ka0A8WAAUUSya
+folder: LnEzjrlMjQ3Lnjsr
+name: Broken Finger
+ownership:
+  default: 0
+  mLW1zeZBsSCEsXlw: 3
+pages:
+  - _id: 9sqvVl7thz4mhDoM
+    _key: '!journal.pages!WQ5Ka0A8WAAUUSya.9sqvVl7thz4mhDoM'
+    _stats:
+      compendiumSource: null
+      coreVersion: '13.351'
+      duplicateSource: null
+      exportSource: null
+      lastModifiedBy: null
+      systemId: pf1
+      systemVersion: '11.9'
+    category: null
+    flags: {}
+    image: {}
+    name: Effect
+    ownership:
+      default: -1
+      mLW1zeZBsSCEsXlw: 3
+    sort: 100000
+    src: null
+    system: {}
+    text:
+      content: <p>Gain the broken finger condition. Roll randomly to determine which hand is affected.</p><p></p><p>All skill checks using that hand are made with disadvantage.</p><p></p><p>If 2 or more fingers are broken on one hand, they are replaced with the broken hand condition.</p><p></p><p><span style="font-family:Signika, sans-serif">A broken finger can be healed by making a DC 10 Heal check to set the bone, followed by 5 HP of healing dedicated to the break (dedicated healing does not heal hit point damage).</span></p>
+      format: 1
+      markdown: ''
+    title:
+      level: 1
+      show: true
+    type: text
+    video:
+      controls: true
+      volume: 0.5
+sort: 0
