@@ -1,6 +1,6 @@
 {
   "id": "pf1-critical-effects",
-  "title": "Critical Effects",
+  "title": "PF1 Critical Effects",
   "description": "<p>A critical hit and fumble effect system for Pathfinder 1e: journal-linked effect content, a fumble resolution flow, and a framework for attaching mechanical outcomes to effects over time.</p>",
   "authors": [
     {
@@ -40,7 +40,7 @@
       {
         "id": "astora-mod",
         "type": "module",
-        "reason": "Optional integration: lets players spend luck points to influence a critical resolution. The module is fully functional without it; the luck affordances simply do not render."
+        "reason": "Optional integration: individual effects may use its buff automation to offer an apply-buff button. The engine is fully functional without it."
       }
     ]
   },

@@ -5,8 +5,8 @@
  * clients do a socket round-trip and await the result.
  *
  * This socket is deliberately independent of astora-mod's `gmProxy` rather than a thin shim
- * onto it (DESIGN.md §0). Dedicated healing (§8) and the luck dispatch (§7.3) both need a GM
- * channel, and neither may stop working when astora-mod is absent.
+ * onto it (DESIGN.md §0). Dedicated healing (§8) and writing a resolution back onto an attack card
+ * both need a GM channel, and neither may stop working when astora-mod is absent.
  *
  * Handlers are GENERIC PRIMITIVES ONLY — no per-feature entry points. A new feature that needs
  * GM privileges composes the primitives below; if it genuinely cannot, that is a signal the
@@ -49,6 +49,23 @@ const GM_HANDLERS = {
     return message ? { messageId: message.id } : null;
   },
 };
+
+/**
+ * Register a feature-owned GM handler.
+ *
+ * The primitives above stay generic on purpose. Some operations genuinely cannot be composed from
+ * them safely, though — anything that has to validate, mutate and record as ONE transaction, where
+ * splitting it into two `updateDocument` calls driven from a player's client would let half of it
+ * land. Such a handler lives with its feature rather than in this file, so the socket remains a
+ * mechanism rather than a catalogue of endpoints.
+ */
+export function registerHandler(name, handler) {
+  if (GM_HANDLERS[name]) {
+    console.error(`${MODULE_ID} | socket: handler "${name}" is already registered`);
+    return;
+  }
+  GM_HANDLERS[name] = handler;
+}
 
 /** Call a GM handler from any client. */
 export async function gmRequest(fn, args) {

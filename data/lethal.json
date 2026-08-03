@@ -1,0 +1,96 @@
+{
+  "version": 1,
+  "_generated": "transcribed from the '… - Lethal' journal folders by tools/tables-to-json.mjs",
+  "entries": [
+    {
+      "id": "heart-pierced",
+      "name": "Heart Pierced",
+      "journal": "Compendium.pf1-critical-effects.critical-effects.JournalEntry.ij3o6K473tbiQHt6",
+      "damageTypes": [
+        "piercing"
+      ],
+      "source": "Arrow - Lethal"
+    },
+    {
+      "id": "silenced",
+      "name": "Silenced",
+      "journal": "Compendium.pf1-critical-effects.critical-effects.JournalEntry.f6Be2rU97lpJZ84r",
+      "damageTypes": [
+        "piercing"
+      ],
+      "source": "Piercing - Lethal"
+    },
+    {
+      "id": "unicorned",
+      "name": "Unicorned",
+      "journal": "Compendium.pf1-critical-effects.critical-effects.JournalEntry.HxCC7LzyIvplJMKg",
+      "damageTypes": [
+        "piercing"
+      ],
+      "source": "Piercing - Lethal"
+    },
+    {
+      "id": "beheaded",
+      "name": "Beheaded",
+      "journal": "Compendium.pf1-critical-effects.critical-effects.JournalEntry.By24SfvIZyhUINop",
+      "damageTypes": [
+        "slashing"
+      ],
+      "source": "Slashing - Lethal"
+    },
+    {
+      "id": "bifurcated",
+      "name": "Bifurcated",
+      "journal": "Compendium.pf1-critical-effects.critical-effects.JournalEntry.y4snw9914bF59cJL",
+      "damageTypes": [
+        "slashing"
+      ],
+      "source": "Slashing - Lethal"
+    },
+    {
+      "id": "defaced",
+      "name": "Defaced",
+      "journal": "Compendium.pf1-critical-effects.critical-effects.JournalEntry.FmEPg5w0BXNKTDMn",
+      "damageTypes": [
+        "slashing"
+      ],
+      "source": "Slashing - Lethal"
+    },
+    {
+      "id": "halved",
+      "name": "Halved",
+      "journal": "Compendium.pf1-critical-effects.critical-effects.JournalEntry.uS8zCWArVjlQlrME",
+      "damageTypes": [
+        "slashing"
+      ],
+      "source": "Slashing - Lethal"
+    },
+    {
+      "id": "heart-severed",
+      "name": "Heart Severed",
+      "journal": "Compendium.pf1-critical-effects.critical-effects.JournalEntry.VhrEXseEgNIf04Ky",
+      "damageTypes": [
+        "slashing"
+      ],
+      "source": "Slashing - Lethal"
+    },
+    {
+      "id": "open-minded",
+      "name": "Open Minded",
+      "journal": "Compendium.pf1-critical-effects.critical-effects.JournalEntry.gYtgut4r8ER1vmqN",
+      "damageTypes": [
+        "slashing"
+      ],
+      "source": "Slashing - Lethal"
+    },
+    {
+      "id": "severed-spine",
+      "name": "Severed Spine",
+      "journal": "Compendium.pf1-critical-effects.critical-effects.JournalEntry.wUAaBQ7voMCDmhfk",
+      "damageTypes": [
+        "slashing"
+      ],
+      "source": "Slashing - Lethal"
+    }
+  ]
+}

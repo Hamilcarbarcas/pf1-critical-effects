@@ -1,0 +1,152 @@
+_id: indkK9vv0zFP4vCV
+_key: '!items!indkK9vv0zFP4vCV'
+_stats:
+  compendiumSource: null
+  coreVersion: '13.351'
+  createdTime: 1777845890380
+  duplicateSource: null
+  exportSource: null
+  lastModifiedBy: mLW1zeZBsSCEsXlw
+  modifiedTime: 1779744211312
+  systemId: pf1
+  systemVersion: '11.11'
+effects:
+  - _id: DF6bMEy0OY79fVoE
+    _key: '!items.effects!indkK9vv0zFP4vCV.DF6bMEy0OY79fVoE'
+    _stats:
+      compendiumSource: null
+      coreVersion: '13.351'
+      duplicateSource: null
+      exportSource: null
+      lastModifiedBy: null
+      systemId: pf1
+      systemVersion: '11.11'
+    changes: []
+    description: ''
+    disabled: false
+    duration:
+      combat: null
+      startTime: -15704786016
+    flags:
+      pf1:
+        tracker: true
+    img: icons/skills/wounds/bone-broken-marrow-red.webp
+    name: Broken Hand
+    origin: .Item.y5e0S2cUC0067S0o
+    sort: 0
+    statuses: []
+    system:
+      end: turnStart
+    tint: '#ffffff'
+    transfer: true
+    type: buff
+flags:
+  lilhelper:
+    item:
+      autoPowerAttack: false
+      hideAttacks: false
+      keen: false
+      rollOverride: ''
+      rollmodeOverride: ''
+      skipDialog: 0
+  scene-packer:
+    hash: 0cb01659979ef2d2d22ddd8f50f8e6f709f97cad
+    sourceId: Scene.FQ5mCt4L7UKYb3rs.Token.m4rvzr5RDEP5sZNz.Actor.aiYrAq6pSoQd8m4O.Item.y5e0S2cUC0067S0o
+folder: CEBrokenBones001
+img: icons/skills/wounds/bone-broken-marrow-red.webp
+name: Shattered Arm
+ownership:
+  default: 0
+  mLW1zeZBsSCEsXlw: 3
+sort: 1300000
+system:
+  actions:
+    - _id: KRYUYq05iuulGBDH
+      actionType: other
+      activation:
+        cost: 1
+        type: nonaction
+        unchained:
+          cost: 1
+          type: nonaction
+      ammo:
+        type: none
+      flags: {}
+      name: Set Bone
+      powerAttack:
+        critMultiplier: 1
+        damageBonus: 2
+      range:
+        units: personal
+      uses: {}
+  active: true
+  attackNotes: []
+  changeFlags:
+    heavyArmorFullSpeed: false
+    immuneToMorale: false
+    loseDexToAC: false
+    lowLightVision: false
+    mediumArmorFullSpeed: false
+    noHeavyEncumbrance: false
+    noMediumEncumbrance: false
+    seeInDarkness: false
+    seeInvisibility: false
+  changes: []
+  conditions: []
+  contextNotes:
+    - target: skills
+      text: Fractured arm unusable.
+    - target: attack
+      text: Fractured arm unusable.
+  description:
+    instructions: ''
+    value: <p>A shattered arm involves multiple breaks of multiple arm bones. A shattered arm is unusable until healed.</p><p>A shattered arm can be healed by making a DC 15 Heal check to set the bones, followed by 30 points of healing dedicated to the break (dedicated healing does not heal hit point damage) and at least one long rest. A @UUID[Compendium.pf1.spells.Item.fxz69pwpqt9b6uss]{Restoration, Lesser} spell can be used in place of a long rest.</p>
+  duration:
+    end: ''
+    start: -15704786016
+    units: ''
+    value: null
+  effectNotes: []
+  flags:
+    boolean: {}
+    dictionary:
+      dhDC: '15'
+      dhReceived: '0'
+      dhRequired: '30'
+  hideFromToken: false
+  level: 0
+  links:
+    children: []
+  scriptCalls:
+    - _id: RBBM7aHN
+      category: use
+      hidden: false
+      img: null
+      name: ''
+      type: macro
+      value: Compendium.pf1-critical-effects.macros.Macro.2KJDXE3liCDaKEWO
+    - _id: QdH2K5gx
+      category: toggle
+      hidden: false
+      img: null
+      name: ''
+      type: macro
+      value: Compendium.pf1-critical-effects.macros.Macro.DSmUMLDLIt9z26p0
+    - _id: GZBBPTA1
+      category: preActivate
+      hidden: false
+      img: null
+      name: ''
+      type: macro
+      value: Compendium.pf1-critical-effects.macros.Macro.PEtshlwi0AEvwNJ6
+  showInQuickbar: false
+  subType: perm
+  tag: ''
+  tags: []
+  uses:
+    autoDeductChargesCost: ''
+    maxFormula: ''
+    per: ''
+    rechargeFormula: ''
+    value: null
+type: buff

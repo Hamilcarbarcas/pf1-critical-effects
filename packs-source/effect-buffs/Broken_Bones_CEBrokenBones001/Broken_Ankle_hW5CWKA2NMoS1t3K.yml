@@ -1,0 +1,181 @@
+_id: hW5CWKA2NMoS1t3K
+_key: '!items!hW5CWKA2NMoS1t3K'
+_stats:
+  compendiumSource: null
+  coreVersion: '13.351'
+  createdTime: 1779744211247
+  duplicateSource: null
+  exportSource: null
+  lastModifiedBy: mLW1zeZBsSCEsXlw
+  modifiedTime: 1779744332917
+  systemId: pf1
+  systemVersion: '11.11'
+effects:
+  - _id: xlXggERoC6KGbixG
+    _key: '!items.effects!hW5CWKA2NMoS1t3K.xlXggERoC6KGbixG'
+    _stats:
+      compendiumSource: null
+      coreVersion: '13.351'
+      duplicateSource: null
+      exportSource: null
+      lastModifiedBy: null
+      systemId: pf1
+      systemVersion: '11.11'
+    changes: []
+    description: ''
+    disabled: false
+    duration:
+      combat: null
+      startTime: -15704702526
+    flags:
+      pf1:
+        tracker: true
+    img: icons/skills/wounds/bone-broken-marrow-red.webp
+    name: Broken Foot
+    origin: .Item.PyKlGfuRTD68Nwht
+    sort: 0
+    statuses: []
+    system:
+      end: turnStart
+    tint: '#ffffff'
+    transfer: true
+    type: buff
+flags:
+  lilhelper:
+    item:
+      autoPowerAttack: false
+      hideAttacks: false
+      keen: false
+      rollOverride: ''
+      rollmodeOverride: ''
+      skipDialog: 0
+  scene-packer:
+    hash: fae909103bf1dd70339f69d5100fbe06973dc3e8
+    sourceId: Actor.IdemNU0cmN3HicaS.Item.PyKlGfuRTD68Nwht
+folder: CEBrokenBones001
+img: icons/skills/wounds/bone-broken-marrow-red.webp
+name: Broken Ankle
+ownership:
+  default: 0
+  mLW1zeZBsSCEsXlw: 3
+sort: 200000
+system:
+  actions:
+    - _id: KRYUYq05iuulGBDH
+      actionType: other
+      activation:
+        cost: 1
+        type: nonaction
+        unchained:
+          cost: 1
+          type: nonaction
+      ammo:
+        type: none
+      flags: {}
+      name: Set Bone
+      powerAttack:
+        critMultiplier: 1
+        damageBonus: 2
+      range:
+        units: personal
+      uses: {}
+    - _id: a4OHpeXvx1WedkiN
+      actionType: other
+      activation:
+        cost: 1
+        type: nonaction
+        unchained:
+          cost: 1
+          type: nonaction
+      ammo:
+        type: none
+      flags: {}
+      name: Use Foot
+      powerAttack:
+        critMultiplier: 1
+        damageBonus: 2
+      range:
+        units: personal
+      uses: {}
+  active: true
+  attackNotes: []
+  changeFlags:
+    heavyArmorFullSpeed: false
+    immuneToMorale: false
+    loseDexToAC: false
+    lowLightVision: false
+    mediumArmorFullSpeed: false
+    noHeavyEncumbrance: false
+    noMediumEncumbrance: false
+    seeInDarkness: false
+    seeInvisibility: false
+  changes:
+    - _id: s71XylsZ
+      formula: '-2'
+      operator: add
+      priority: 0
+      target: ac
+      type: untyped
+    - _id: cAETIBTm
+      formula: max(floor(@attributes.speed.land.total / 10) * 5, 5)
+      operator: set
+      priority: -10
+      target: landSpeed
+      type: untyped
+  conditions: []
+  contextNotes:
+    - target: dexSkills
+      text: -2 to if the check involves movement.
+  description:
+    instructions: ''
+    value: <p>A broken ankle is difficult and painful to put any amount of weight on. <a data-article-privacy="public" data-article-id="34340b9b-7215-410b-a17a-992036d613f0" data-template-type="article" class="article-link article-explorer-link tooltipstered" data-article="34340b9b-7215-410b-a17a-992036d613f0" href="https://www.worldanvil.com/w/astora-hamilcarbarca/a/movement-article">Movement</a> rates are halved, a -2 penalty is applied to AC and <span class="world-variable world-variable-string ability-score-dexterity"><a href="https://www.worldanvil.com/w/astora-hamilcarbarca/a/ability-scores-article#dexterity" target="_blank">Dexterity</a> checks that involve movement</span>, and the character cannot run or charge.</p><p>A character with both ankles broken instead takes a -4 penalty to AC and <span class="world-variable world-variable-string ability-score-dexterity"><a href="https://www.worldanvil.com/w/astora-hamilcarbarca/a/ability-scores-article#dexterity" target="_blank">Dexterity</a></span> checks that involve movement, and has a movement rate of 5 feet.</p><p>A broken ankle can be healed by making a DC 15 Heal check to set the break, followed by 15 points of healing dedicated to the break (dedicated healing does not heal hit point damage).</p>
+  duration:
+    end: ''
+    start: -15704702526
+    units: ''
+    value: null
+  effectNotes: []
+  flags:
+    boolean: {}
+    dictionary:
+      dhDC: '10'
+      dhReceived: '0'
+      dhRequired: '10'
+      useFortSave: '10'
+  hideFromToken: false
+  level: 0
+  links:
+    children: []
+  scriptCalls:
+    - _id: RBBM7aHN
+      category: use
+      hidden: false
+      img: null
+      name: ''
+      type: macro
+      value: Compendium.pf1-critical-effects.macros.Macro.2KJDXE3liCDaKEWO
+    - _id: QdH2K5gx
+      category: toggle
+      hidden: false
+      img: null
+      name: ''
+      type: macro
+      value: Compendium.pf1-critical-effects.macros.Macro.DSmUMLDLIt9z26p0
+    - _id: GZBBPTA1
+      category: preActivate
+      hidden: false
+      img: null
+      name: ''
+      type: macro
+      value: Compendium.pf1-critical-effects.macros.Macro.PEtshlwi0AEvwNJ6
+  showInQuickbar: false
+  subType: perm
+  tag: ''
+  tags: []
+  uses:
+    autoDeductChargesCost: ''
+    maxFormula: ''
+    per: ''
+    rechargeFormula: ''
+    value: null
+type: buff

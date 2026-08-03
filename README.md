@@ -17,7 +17,7 @@ resolution — you always get a named, journal-linked result.
 | **System** | `pf1` (v11.10+) | — |
 | **Required** | `lib-wrapper` | The module does not function. |
 | **Required** | `pf1-roll-requests` | Resolutions cannot post their dice. |
-| **Recommended** | `astora-mod` | Everything runs; luck-point spending is unavailable. |
+| **Recommended** | `astora-mod` | Everything runs; effects that use its buff automation can't offer their apply-buff button. |
 
 ## What works today
 
@@ -25,17 +25,217 @@ resolution — you always get a named, journal-linked result.
 
 1. Rolling a **natural 1** on an attack automatically rolls a confirmation die, shown on the
    attack card.
-2. If the confirmation fails — or if the module cannot tell, because there was no single target
-   with a readable AC — a GM-only **Resolve Fumble** button appears on the card.
+2. A GM-only **Resolve Fumble** button appears on the card. The confirmation roll is shown but
+   not interpreted — whether it saved you is the GM's call, so the button is always available on
+   a natural 1 and simply goes unused when the confirmation was good.
 3. Clicking it asks which table to draw from. The attack type is pre-selected from the weapon:
    natural attacks use the natural table, bows and crossbows the bow table, other ranged attacks
    the thrown table, everything else melee.
-4. A `1d12` roll request is posted for the fumbling token, showing the **whole table** with the
-   rolled row highlighted, so the player can see what they avoided.
-5. The result is written back onto the original attack card as a link to its journal entry.
+4. A `1d12` roll request is posted for the fumbling token. **The player clicks to roll it** — the
+   card shows the whole table, with their row highlighted once it lands, so they can see what
+   they avoided.
+5. Whenever that roll comes in, the result is written back onto the original attack card as a
+   link to its journal entry. The GM doesn't have to be waiting on it, and a reload in between
+   doesn't lose it.
 
-The button is only ever *suggested*, never enforced — a GM who wants to resolve a fumble the
-module didn't flag can, and one the module did flag can be ignored.
+The button offers, it never decides. Every natural 1 gets one, and ignoring it is a normal
+outcome rather than a missed step.
+
+### Confirmation rolls ignore the d20 override
+
+PF1's attack dialog lets you replace the d20 with any formula — `20` for an auto-hit, `2d20kh` for
+a re-roll effect. That override applies to the **attack**, not to the confirmation that follows it:
+both the fumble confirmation and the critical confirmation are rolled with a plain `1d20`, keeping
+all the attack's bonuses.
+
+Otherwise a manual `20` would confirm every critical automatically and `2d20kh` would confirm with
+advantage — one override paying for two rolls. This is unconditional; say so if you'd rather it
+were a setting.
+
+### Critical hits
+
+Threatening a critical puts a GM-only **Critical Effect** button on the attack card. It opens a
+resolution dialog built from the live action — target, size, anatomy, damage type and multiplier
+all read for you — and from there it works exactly like the manual resolver.
+
+The button appears on a **threat**, not a confirmed hit. The confirmation is rolled and shown but
+never interpreted: deciding whether it landed means reading a target's AC, which is unavailable or
+ambiguous often enough that a wrong automatic answer costs more than a button you ignore. A natural
+1 is explicitly *not* a threat, so a fumble and a critical are never both offered on one attack.
+
+The dialog is yours alone. What the table sees is the dice — Location and Power go out as roll
+requests for the **attacking player** to click, each carrying its table so they can read what their
+result bought:
+
+- The **location chart is resolved for the target first**. A wolf's card reads "Left Leg" where a
+  naga's reads "Torso" for the same face, because the fallback chain has already been walked.
+- The **Power roll indexes straight into the effect table** for that damage type and body part —
+  the number rolled *is* the row, 1 mildest to 12 worst, with 0 or less as no effect and 13+ as
+  row 12 plus a Fortitude save at a DC equal to the total.
+
+#### Critical explosion
+
+When a critical confirmation is *itself* a threat, Critical Power goes up a grade and the
+confirmation is rolled again — repeating until one doesn't threaten. Those dice roll with the
+attack, not in the dialog, and the attack card reports **Critical Explosion ×N**.
+
+It only ever fires on attacks: it reads the confirmation roll, which only exists in PF1's attack
+pipeline, so skill checks and saves can't reach it. Combat maneuvers don't confirm crits and so
+can't explode either, and a natural 1 never explodes. Tied to the **Defer critical damage** setting
+below, so a world not using this system sees no change to its criticals at all.
+
+#### The GM's controls
+
+The automation infers a lot, and some of it can be wrong, so each stage lets you correct what it
+inferred rather than making you cancel and start over:
+
+- **Location** — the creature type and the damage type, both of which decide which tables get used.
+- **Power** — the grade, as a dropdown, and a free-text modifier (`+1`, `-2`). Picking a grade sets
+  it *absolutely*: whatever the size difference and the explosions did, the pool becomes the one
+  you named.
+- **Result** — a dropdown of the same fourteen rows the player rolled against, so a result can be
+  changed to any of them before it is committed.
+
+Pressing **Confirm Result** is what commits: the effect is written onto the attack card as a
+journal link, any deferred critical damage is rolled then and not before, the roll-request cards
+come down, and the dialog closes.
+
+The request cards stay in chat for the whole resolution rather than vanishing as soon as their
+number arrives, so the table can still see what was rolled and against what while you're working.
+Cancelling the dialog kills the process, so its cards go too.
+
+Resolution state lives in the window, not in the world. Closing it or reloading abandons the
+resolution; re-open it from the attack card's button and start over. Nothing is written anywhere
+until you press **Confirm Result**.
+
+#### Deferring critical damage
+
+There's a setting, **Defer critical damage**, off by default. Turning it on changes the shape of a
+critical hit to match the house rule that damage and effect are alternatives:
+
+- The attack card shows base damage and a threat. No critical damage is rolled yet.
+- The confirmation still rolls, still animates, still shows.
+- Picking *Critical Damage* rolls it immediately — that choice ends the resolution. Picking *Both*
+  waits until you press **Confirm Result**, so an abandoned resolution leaves no orphaned damage.
+  Either way it is animated at that moment and filled into the attack card's own critical damage
+  column — including a working **Apply**, with damage types intact so DR and resistances still
+  compute.
+- The **per-part breakdown under the column** is filled in as well, so a critical reads exactly
+  like a normal hit does: one row per damage part, each with its roll and its damage type, and the
+  dice breakdown still expands. Extra rows are added when the critical pass produces more parts
+  than the normal one, which a ×3 weapon or an action with crit-only damage will. Each cell copies
+  its styling from the normal part beside it, so a row keeps matching itself even when another
+  module has rearranged it — Little Helper's **Meld Damage & Type** in particular.
+
+It's implemented as a libWrapper wrapper on PF1's damage pass. It touches core combat behaviour,
+so it ships off — turn it on deliberately, and turn it off if anything looks wrong. Requires a
+reload either way.
+
+### Resolving a critical effect by hand
+
+The **Critical Effect** quick action in pf1-roll-requests opens a manual resolver: pick a target
+and fill in the crit multiplier, damage type, weapon class, sizes and (optionally) an anatomy
+override. It shows live what Critical Power those inputs buy, then opens the same resolution dialog
+the automated flow uses.
+
+This is the fallback for everything the automation can't see — an off-card kill, a GM ruling, an
+attack resolved before the module was installed, a creature the pipeline doesn't understand.
+
+```js
+game.criticalEffects.openResolver();                    // blank
+game.criticalEffects.openResolver({ critMult: 3 });     // pre-filled
+```
+
+### Lethal blows
+
+Lethal entries are **flavour only** — no save, no roll-off, no mechanics — used when a hit has
+already been determined to kill. Two ways to draw one:
+
+- The **Lethal Blow** quick action, always available, for any kill including ones with no attack
+  card behind them (coup de grace, environmental, narrative).
+- A GM-only button on an attack card, shown when the damage could plausibly have downed one of
+  its targets.
+
+That button's gate is a *prediction*, not a ruling: damage isn't applied yet at card-render time,
+DR may absorb some of it, and "kills" in this system isn't `hp <= 0`. It only decides whether the
+button is offered — the quick action is always there regardless.
+
+```js
+game.criticalEffects.lethal.forType("s");   // what's available for slashing
+game.criticalEffects.lethal.prompt();       // pick a damage type and draw
+```
+
+**Bludgeoning currently has no lethal entries** — the content ships that way. A draw against an
+empty damage type says so rather than failing.
+
+### Mechanics on an effect
+
+An effect entry can carry **outcomes** — typed descriptors that do something rather than merely
+printing prose. Nothing evaluates a stored script; each descriptor names a type handled by a
+registered handler.
+
+> **Not yet wired to the dialog.** The registry and its handlers work and are callable from
+> `game.criticalEffects.outcomes`, but the resolution dialog no longer has an Apply button: the
+> next piece of work replaces it with an apply-buff button on the attack card itself, where the
+> people affected can see it. Until then a resolution names its effect and links the journal.
+
+| `type` | Payload | Notes |
+|---|---|---|
+| `buff` | `uuid`, `overrides?`, `active?` | Pull an item from a pack and create it on the target. The workhorse. |
+| `condition` | `id` | A PF1 status id. Undo won't cure a condition the target already had. |
+| `note` | `text` | **No automation** — prints a line for the GM to adjudicate. |
+| `delegate` | `entry` | Apply another entry's outcomes. The downgrade primitive. |
+
+```jsonc
+"outcomes": [
+  { "type": "buff", "uuid": "Compendium.pf1-critical-effects.effect-buffs.Item.…" },
+  { "type": "condition", "id": "prone" },
+  { "type": "note", "text": "Movement is halved until the bone is set." }
+]
+```
+
+Entries **without** outcomes are first-class: the resolution runs identically and simply has no
+mechanics to offer. That's the point of the framework — mechanics get bolted onto entries that
+already ship, one at a time.
+
+Failures are isolated. If one outcome can't apply — a missing buff, a back end that isn't
+installed — the others still do, and the card says what didn't work. An unrecognised type is a
+reported no-op rather than an error, so a half-migrated catalog still runs.
+
+**Undo** is recorded as data rather than a closure, so a misfire can be reverted even after a
+reload. Reversal runs newest-first.
+
+Other modules can add their own types:
+
+```js
+game.criticalEffects.outcomes.registerOutcome(
+  "myType",
+  async (descriptor, ctx) => ({ summary: "did a thing", undo: { what: "thing" } }),
+  { undo: async (data, ctx) => { /* reverse it */ } },
+);
+game.criticalEffects.outcomes.registeredTypes();   // what's available
+```
+
+### Dedicated healing
+
+Some conditions — broken bones, mostly — can't simply be healed away. They must first be
+**treated** (a Heal check), after which they absorb a threshold of healing before clearing:
+healing that would otherwise have gone to hit points.
+
+Once a treated condition is on an actor, any incoming healing opens an allocation dialog so the
+player can split it between hit points and their conditions. When healing is applied on someone's
+behalf — a GM resolving a short rest — the dialog opens for the player who submitted it rather
+than the GM.
+
+Conditions carry four item flags: `dhDC` (Heal check DC, 0 = no check needed), `dhRequired` (HP to
+cure), `dhReceived` (accumulated, runtime), and the boolean `dhCheckSuccess`.
+
+```js
+game.criticalEffects.dedicatedHealing.requestBoneSetting(actor, item);
+```
+
+This lived in astora-mod until its only consumers ended up here. A broken-bone effect now works
+with astora-mod absent entirely.
 
 ## Compendia
 
@@ -43,7 +243,7 @@ module didn't flag can, and one the module did flag can be ignored.
 |---|---|
 | **Critical Effects** (Journal) | The effect descriptions. The prose players and GMs actually read. |
 | **Critical Tables** (RollTable) | The original browsable tables, kept for reference. |
-| **Critical Effect Buffs** (Item) | Buffs carrying the mechanics of an effect. Grows with the content track. |
+| **Critical Effect Buffs** (Item) | Buffs carrying the mechanics of an effect — currently the 19 Broken/Shattered bone conditions. Grows with the content track. |
 | **Critical Effect Macros** (Macro) | Script calls for effects whose behaviour doesn't fit a typed outcome. |
 
 The fumble flow draws from `data/fumbles.json` rather than the RollTables, so it can attach
@@ -55,8 +255,8 @@ the browsable, GM-facing copy.
 `game.criticalEffects` is available after `ready`:
 
 ```js
-// Content health report — dead journal links, unreferenced journals, thin buckets,
-// outcome coverage. Everything it reports is a warning.
+// Content health report — dead journal links, unreferenced journals, and how many of each
+// table's twelve rows are still placeholders. Everything it reports is a warning.
 await game.criticalEffects.lint();
 
 // Fumble tables
@@ -64,9 +264,68 @@ game.criticalEffects.fumbles.table("melee");     // the rows
 game.criticalEffects.fumbles.draw("melee", 7);   // what a 7 means
 game.criticalEffects.fumbles.entry("stumble");   // one entry
 
-// The effect pool (populated by the content track)
-game.criticalEffects.catalog.query({ location: "leg", damageType: "b", severity: "severe" });
+// The effect tables — one 12-row table per damage type x body part. The Critical Power total
+// IS the row: 1 is the mildest outcome for that location, 12 the worst.
+game.criticalEffects.catalog.effectTable("s", "arm");        // the twelve entries
+game.criticalEffects.catalog.effectFor("s", "arm", 7);       // what a 7 lands on
+game.criticalEffects.catalog.effectFor("s", "arm", 15).save; // -> { type: "fort", dc: 15 }
 ```
+
+### The resolve layer
+
+The critical-effect maths is pure and has no UI, so all of it can be driven from the console:
+
+```js
+const R = game.criticalEffects.resolve;
+
+// Critical Power: base grade from the crit multiplier, shifted by size, explosions and any GM adjustment.
+R.computeGrade({ critMult: 3, attackerSize: 5, targetSize: 4, weaponClass: "twoHanded" });
+// -> { base: "heavy", grade: "brutal", formula: "2d6", flat: 1, breakdown: {...} }
+
+// Shifts past either end of the ladder become a flat modifier instead of clamping away.
+R.shiftGrade("brutal", 2);        // -> { grade: "devastating", flat: 1 }
+
+// The GM's grade dropdown is an absolute pick, so it is solved back into a shift.
+R.tiersToReach("devastating", { base: "heavy", priorSteps: 0 });   // -> 2
+
+// Hit location. A limb the target lacks falls through to the next candidate.
+R.locationFor({ anatomy: "beast", limbs: ["leg", "arm"], total: 3 });
+// -> left leg, fellBack: true, from: { slot: "tail" }
+
+// Reading anatomy off a real actor
+R.anatomyFor(actor);              // "humanoid" | "beast" | "aberrant"
+R.limbsFor(actor);                // Set of slots the creature has
+```
+
+Per-actor overrides, for creatures the creature-type defaults get wrong:
+
+```js
+await actor.setFlag("pf1-critical-effects", "anatomy", "beast");
+await actor.setFlag("pf1-critical-effects", "limbs", ["leg", "wing", "tail"]);
+await actor.setFlag("pf1-critical-effects", "critImmunity", 1);  // shrug off one table row
+```
+
+`limbs` **replaces** the default rather than merging, so a limb can be taken away.
+
+### The resolution dialog
+
+A critical resolution runs in a GM-only window that advances through its stages. Open one by hand:
+
+```js
+const R = game.criticalEffects.resolve;
+const ctx = R.buildContext({
+  target: canvas.tokens.controlled[0],
+  manual: { critMult: 3, damageType: "s", weaponClass: "twoHanded", attackerSize: 4 },
+});
+await game.criticalEffects.crit.start({ context: ctx });
+```
+
+The GM works it through its stages; the players roll the Location and Power requests it sends them,
+and that is the whole of their part in it.
+
+State lives on the instance, so a reload loses it. That is the trade for keeping the working
+surface out of chat — and the resolution is a handful of clicks, with nothing written anywhere
+until **Confirm Result**.
 
 ### Regenerating the fumble tables
 

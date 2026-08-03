@@ -1,0 +1,181 @@
+_id: JSCHwVBMcBXi7q05
+_key: '!items!JSCHwVBMcBXi7q05'
+_stats:
+  compendiumSource: null
+  coreVersion: '13.351'
+  createdTime: 1777847760211
+  duplicateSource: null
+  exportSource: null
+  lastModifiedBy: mLW1zeZBsSCEsXlw
+  modifiedTime: 1779744211312
+  systemId: pf1
+  systemVersion: '11.11'
+effects:
+  - _id: xlXggERoC6KGbixG
+    _key: '!items.effects!JSCHwVBMcBXi7q05.xlXggERoC6KGbixG'
+    _stats:
+      compendiumSource: null
+      coreVersion: '13.351'
+      duplicateSource: null
+      exportSource: null
+      lastModifiedBy: null
+      systemId: pf1
+      systemVersion: '11.11'
+    changes: []
+    description: ''
+    disabled: false
+    duration:
+      combat: null
+      startTime: -15704786016
+    flags:
+      pf1:
+        tracker: true
+    img: icons/skills/wounds/bone-broken-marrow-red.webp
+    name: Broken Foot
+    origin: .Item.hJQotU8uLSEeCk9u
+    sort: 0
+    statuses: []
+    system:
+      end: turnStart
+    tint: '#ffffff'
+    transfer: true
+    type: buff
+flags:
+  lilhelper:
+    item:
+      autoPowerAttack: false
+      hideAttacks: false
+      keen: false
+      rollOverride: ''
+      rollmodeOverride: ''
+      skipDialog: 0
+  scene-packer:
+    hash: 47584eda059fcd35eceb8e3a9c4deda4ac2d557a
+    sourceId: Scene.FQ5mCt4L7UKYb3rs.Token.m4rvzr5RDEP5sZNz.Actor.aiYrAq6pSoQd8m4O.Item.hJQotU8uLSEeCk9u
+folder: CEBrokenBones001
+img: icons/skills/wounds/bone-broken-marrow-red.webp
+name: Broken Leg
+ownership:
+  default: 0
+  mLW1zeZBsSCEsXlw: 3
+sort: 900000
+system:
+  actions:
+    - _id: KRYUYq05iuulGBDH
+      actionType: other
+      activation:
+        cost: 1
+        type: nonaction
+        unchained:
+          cost: 1
+          type: nonaction
+      ammo:
+        type: none
+      flags: {}
+      name: Set Bone
+      powerAttack:
+        critMultiplier: 1
+        damageBonus: 2
+      range:
+        units: personal
+      uses: {}
+    - _id: a4OHpeXvx1WedkiN
+      actionType: other
+      activation:
+        cost: 1
+        type: nonaction
+        unchained:
+          cost: 1
+          type: nonaction
+      ammo:
+        type: none
+      flags: {}
+      name: Use Leg
+      powerAttack:
+        critMultiplier: 1
+        damageBonus: 2
+      range:
+        units: personal
+      uses: {}
+  active: true
+  attackNotes: []
+  changeFlags:
+    heavyArmorFullSpeed: false
+    immuneToMorale: false
+    loseDexToAC: false
+    lowLightVision: false
+    mediumArmorFullSpeed: false
+    noHeavyEncumbrance: false
+    noMediumEncumbrance: false
+    seeInDarkness: false
+    seeInvisibility: false
+  changes:
+    - _id: Zyh2Hooa
+      formula: '-4'
+      operator: add
+      priority: 0
+      target: ac
+      type: untyped
+    - _id: gBCTUZqf
+      formula: max(floor(@attributes.speed.land.total / 10) * 5, 5)
+      operator: set
+      priority: -10
+      target: landSpeed
+      type: untyped
+  conditions: []
+  contextNotes:
+    - target: dexSkills
+      text: -4 to if the check involves movement.
+  description:
+    instructions: ''
+    value: <p>A broken leg is difficult and painful to put any amount of weight on. <a data-article-privacy="public" data-article-id="34340b9b-7215-410b-a17a-992036d613f0" data-template-type="article" class="article-link article-explorer-link tooltipstered" data-article="34340b9b-7215-410b-a17a-992036d613f0" href="https://www.worldanvil.com/w/astora-hamilcarbarca/a/movement-article">Movement</a> rates are halved, running is impossible, and a -4 penalty is applied to AC and <span class="world-variable world-variable-string ability-score-dexterity"><a href="https://www.worldanvil.com/w/astora-hamilcarbarca/a/ability-scores-article#dexterity" target="_blank">Dexterity</a> checks that involve movement</span>.</p><p>A character with both legs broken is also considered flat-footed, and cannot stand or walk unaided.</p><p>A character with a broken leg may elect to move at full speed, but they must make a DC 12 <span class="world-variable world-variable-string saving-throw-fortitude-save"><a href="https://www.worldanvil.com/w/astora-hamilcarbarca/a/saving-throws-article#fortitude_save" target="_blank">Fortitude Save</a></span> after each such act or turn their broken leg into a @UUID[Compendium.pf1-critical-effects.effect-buffs.Item.YgS2ieaT621IlIWZ]{Shattered leg}.</p><p>A broken leg can be healed by making a DC 10 Heal check to set the bone, followed by 15 points of healing dedicated to the break (dedicated healing does not heal hit point damage).</p>
+  duration:
+    end: ''
+    start: -15704702526
+    units: ''
+    value: null
+  effectNotes: []
+  flags:
+    boolean: {}
+    dictionary:
+      dhDC: '10'
+      dhReceived: '0'
+      dhRequired: '15'
+      useFortSave: '12'
+  hideFromToken: false
+  level: 0
+  links:
+    children: []
+  scriptCalls:
+    - _id: RBBM7aHN
+      category: use
+      hidden: false
+      img: null
+      name: ''
+      type: macro
+      value: Compendium.pf1-critical-effects.macros.Macro.2KJDXE3liCDaKEWO
+    - _id: QdH2K5gx
+      category: toggle
+      hidden: false
+      img: null
+      name: ''
+      type: macro
+      value: Compendium.pf1-critical-effects.macros.Macro.DSmUMLDLIt9z26p0
+    - _id: GZBBPTA1
+      category: preActivate
+      hidden: false
+      img: null
+      name: ''
+      type: macro
+      value: Compendium.pf1-critical-effects.macros.Macro.PEtshlwi0AEvwNJ6
+  showInQuickbar: false
+  subType: perm
+  tag: ''
+  tags: []
+  uses:
+    autoDeductChargesCost: ''
+    maxFormula: ''
+    per: ''
+    rechargeFormula: ''
+    value: null
+type: buff

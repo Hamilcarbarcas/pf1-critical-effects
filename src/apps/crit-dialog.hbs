@@ -1,0 +1,193 @@
+{{!-- Critical resolution dialog (DESIGN.md §7.2).
+      GM-only and in-memory: unlike the chat card this replaced, nothing here is regenerated from
+      stored state, so it can afford to be a working surface rather than a record. The record is
+      written onto the attack card when the resolution is confirmed. --}}
+<div class="ce-crit-dialog-body">
+
+  <header class="ce-crit-header">
+    <span class="ce-crit-parties">{{display.attackerName}} <i class="fa-solid fa-arrow-right"></i> {{display.targetName}}</span>
+  </header>
+
+  {{!-- Stage rail: where the resolution is, and where it still has to go. --}}
+  <ol class="ce-stage-rail">
+    {{#each stages}}
+      <li class="ce-stage {{#if current}}is-current{{/if}} {{#if done}}is-done{{/if}}">
+        <span class="ce-stage-label">{{label}}</span>
+      </li>
+    {{/each}}
+  </ol>
+
+  {{!-- What the resolution knows so far. Each line appears as its stage settles it. --}}
+  <div class="ce-readout">
+    <div class="ce-line">
+      <span class="ce-line-label">Power</span>
+      <span class="ce-line-value">
+        <strong class="ce-accent">{{grade.grade}}</strong>
+        <span class="ce-mono">{{gradeFormula}}</span>
+        {{#unless (eq grade.base grade.grade)}}<em class="ce-muted">from {{grade.base}}</em>{{/unless}}
+      </span>
+    </div>
+
+    {{#if locationLabel}}
+      <div class="ce-line">
+        <span class="ce-line-label">Location</span>
+        <span class="ce-line-value">
+          {{locationLabel}}
+          {{#if state.location.chosen}}<em class="ce-muted">chosen</em>{{else}}<em class="ce-muted">rolled {{state.location.rolled}}</em>{{/if}}
+          {{#if state.location.fellBack}}<em class="ce-muted">(no {{state.location.from.slot}})</em>{{/if}}
+        </span>
+      </div>
+    {{/if}}
+
+    {{#if state.powerRoll}}
+      <div class="ce-line">
+        <span class="ce-line-label">Rolled</span>
+        <span class="ce-line-value"><span class="ce-mono">{{state.powerRoll.formula}}</span> = <strong class="ce-accent">{{state.powerRoll.total}}</strong></span>
+      </div>
+    {{/if}}
+
+    {{#if state.critDamage}}
+      <div class="ce-line">
+        <span class="ce-line-label">Crit dmg</span>
+        {{!-- The total is the whole critical (base + extra passes), matching the card's column;
+              the extra passes are shown separately so the two numbers can't be confused. --}}
+        <span class="ce-line-value">
+          <strong class="ce-accent">{{state.critDamage.total}}</strong>
+          <em class="ce-muted">+{{state.critDamage.extra}} from {{state.critDamage.formula}}</em>
+        </span>
+      </div>
+    {{/if}}
+  </div>
+
+  {{!-- Waiting on a player. The dialog stays usable — the only thing it blocks is a second roll. --}}
+  {{#if pending}}
+    <div class="ce-pending">
+      <i class="fa-solid fa-hourglass-half"></i>
+      <span>Waiting for {{display.attackerName}} to roll {{pending.label}}&hellip;</span>
+      <button type="button" class="ce-btn ce-secondary" data-action="cancelRequest">Cancel</button>
+    </div>
+  {{/if}}
+
+  {{!-- Current stage: its prompt and its controls. --}}
+  {{#each stages}}
+    {{#if current}}
+      <div class="ce-stage-body">
+        <p class="ce-stage-hint">{{hint}}</p>
+
+        {{#unless ../pending}}
+
+          {{#if (eq key "trigger")}}
+            <div class="ce-stage-controls">
+              <button type="button" class="ce-btn ce-primary" data-action="choose" data-value="effect">Critical Effect</button>
+              <button type="button" class="ce-btn ce-primary" data-action="choose" data-value="damage">Critical Damage</button>
+              <button type="button" class="ce-btn ce-primary" data-action="choose" data-value="both">Both</button>
+            </div>
+          {{/if}}
+
+          {{#if (eq key "location")}}
+            {{!-- Both of these are inferred by the automation and both can be inferred wrongly;
+                  neither has any recourse once the resolution is under way. --}}
+            <div class="ce-fields">
+              <label class="ce-field">
+                <span class="ce-field-label">Creature type</span>
+                <select name="anatomy">
+                  {{#each ../anatomies}}<option value="{{key}}" {{#if selected}}selected{{/if}}>{{key}}</option>{{/each}}
+                </select>
+              </label>
+              <label class="ce-field">
+                <span class="ce-field-label">Damage type</span>
+                <select name="damageType">
+                  <option value="" {{#unless ../state.damageType}}selected{{/unless}}>— none —</option>
+                  {{#each ../damageTypes}}<option value="{{key}}" {{#if selected}}selected{{/if}}>{{label}}</option>{{/each}}
+                </select>
+              </label>
+            </div>
+
+            <div class="ce-stage-controls">
+              <button type="button" class="ce-btn ce-primary" data-action="requestLocation">
+                <i class="fa-solid fa-dice-d20"></i> Roll Location
+              </button>
+              <button type="button" class="ce-btn ce-primary" data-action="chooseLocation">
+                <i class="fa-solid fa-hand-pointer"></i> Choose Location
+              </button>
+            </div>
+          {{/if}}
+
+          {{#if (eq key "power")}}
+            <div class="ce-fields">
+              <label class="ce-field">
+                <span class="ce-field-label">Grade</span>
+                <select name="gradeOverride">
+                  {{#each ../gradeOptions}}<option value="{{key}}" {{#if selected}}selected{{/if}}>{{key}}</option>{{/each}}
+                </select>
+              </label>
+              <label class="ce-field">
+                <span class="ce-field-label">Modifier ({{#if (gt ../grade.flat 0)}}+{{/if}}{{../grade.flat}})</span>
+                <input type="text" name="extraFlat" value="{{../state.extraFlat}}" placeholder="+1, -2" />
+              </label>
+            </div>
+
+            <div class="ce-stage-controls">
+              <button type="button" class="ce-btn ce-secondary ce-narrow" data-action="back" title="Back to Location">
+                <i class="fa-solid fa-chevron-left"></i>
+              </button>
+              <button type="button" class="ce-btn ce-primary" data-action="requestPower">
+                <i class="fa-solid fa-dice-d20"></i> Request Power Roll ({{../gradeFormula}})
+              </button>
+            </div>
+          {{/if}}
+
+          {{#if (eq key "result")}}
+            {{#if ../hasEffectTable}}
+              <label class="ce-field ce-field-wide">
+                <span class="ce-field-label">Result</span>
+                <select name="rowOverride">
+                  {{#each ../effectOptions}}<option value="{{index}}" {{#if selected}}selected{{/if}}>{{label}}</option>{{/each}}
+                </select>
+              </label>
+            {{else}}
+              <p class="ce-empty">No effect table for {{../state.damageType}} / {{../locationLabel}}.</p>
+            {{/if}}
+
+            <div class="ce-stage-controls">
+              <button type="button" class="ce-btn ce-secondary ce-narrow" data-action="back" title="Back to Power">
+                <i class="fa-solid fa-chevron-left"></i>
+              </button>
+              <button type="button" class="ce-btn ce-primary" data-action="confirm">
+                <i class="fa-solid fa-check"></i> Confirm Result
+              </button>
+            </div>
+          {{/if}}
+
+        {{/unless}}
+      </div>
+    {{/if}}
+  {{/each}}
+
+  {{!-- The outcome as it currently stands, shown from the Result stage on. --}}
+  {{#if outcome}}
+    <div class="ce-result">
+      {{#if entry}}
+        <div class="ce-result-name">
+          {{#if entry.journal}}
+            <a class="content-link" draggable="true" data-link data-uuid="{{entry.journal}}" data-type="JournalEntry"><i class="fa-solid fa-book-open"></i>{{entry.name}}</a>
+          {{else}}
+            {{entry.name}}
+          {{/if}}
+          <span class="ce-row-badge">row {{outcome.row}}</span>
+          {{#if overridden}}<span class="ce-row-badge ce-override">adjusted</span>{{/if}}
+        </div>
+        {{#if entry.tags.length}}
+          <div class="ce-result-tags">{{#each entry.tags}}<span class="ce-tag">{{this}}</span>{{/each}}</div>
+        {{/if}}
+      {{else}}
+        <div class="ce-result-name"><em>No effect</em></div>
+      {{/if}}
+
+      {{#if outcome.save}}
+        <div class="ce-deadly"><i class="fa-solid fa-skull"></i> Fort DC {{outcome.save.dc}} or die</div>
+      {{/if}}
+    </div>
+  {{/if}}
+
+</div>

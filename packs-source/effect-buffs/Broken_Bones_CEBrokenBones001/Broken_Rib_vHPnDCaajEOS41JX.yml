@@ -1,0 +1,177 @@
+_id: vHPnDCaajEOS41JX
+_key: '!items!vHPnDCaajEOS41JX'
+_stats:
+  compendiumSource: null
+  coreVersion: '13.351'
+  createdTime: 1777848833321
+  duplicateSource: null
+  exportSource: null
+  lastModifiedBy: mLW1zeZBsSCEsXlw
+  modifiedTime: 1779744211312
+  systemId: pf1
+  systemVersion: '11.11'
+effects:
+  - _id: xlXggERoC6KGbixG
+    _key: '!items.effects!vHPnDCaajEOS41JX.xlXggERoC6KGbixG'
+    _stats:
+      compendiumSource: null
+      coreVersion: '13.351'
+      duplicateSource: null
+      exportSource: null
+      lastModifiedBy: null
+      systemId: pf1
+      systemVersion: '11.11'
+    changes: []
+    description: ''
+    disabled: false
+    duration:
+      combat: null
+      startTime: -15704786016
+    flags:
+      pf1:
+        tracker: true
+    img: icons/skills/wounds/bone-broken-marrow-red.webp
+    name: Broken Leg
+    origin: .Item.5ABngMdUIW3b8liD
+    sort: 0
+    statuses: []
+    system:
+      end: turnStart
+    tint: '#ffffff'
+    transfer: true
+    type: buff
+flags:
+  lilhelper:
+    item:
+      autoPowerAttack: false
+      hideAttacks: false
+      keen: false
+      rollOverride: ''
+      rollmodeOverride: ''
+      skipDialog: 0
+  nevelas-automation-suite:
+    itemReactiveEffects:
+      onHitByAction: {}
+      onHitByActionOverride: {}
+      onStruck:
+        buffRows: []
+        conditionRows: []
+        effects: []
+        enabled: false
+        filters:
+          excludeReach: true
+          meleeOnly: true
+        message: true
+        onStruckFunction: none
+  scene-packer:
+    hash: 3258039b41df63c8ba8d108e24d3984044ba09d7
+    sourceId: Scene.FQ5mCt4L7UKYb3rs.Token.m4rvzr5RDEP5sZNz.Actor.aiYrAq6pSoQd8m4O.Item.5ABngMdUIW3b8liD
+folder: CEBrokenBones001
+img: icons/skills/wounds/bone-broken-marrow-red.webp
+name: Broken Rib
+ownership:
+  default: 0
+  mLW1zeZBsSCEsXlw: 3
+sort: 1000000
+system:
+  actions:
+    - _id: KRYUYq05iuulGBDH
+      actionType: other
+      activation:
+        cost: 1
+        type: nonaction
+        unchained:
+          cost: 1
+          type: nonaction
+      ammo:
+        type: none
+      flags: {}
+      name: Set Bone
+      powerAttack:
+        critMultiplier: 1
+        damageBonus: 2
+      range:
+        units: personal
+      uses: {}
+  active: true
+  attackNotes: []
+  changeFlags:
+    heavyArmorFullSpeed: false
+    immuneToMorale: false
+    loseDexToAC: false
+    lowLightVision: false
+    mediumArmorFullSpeed: false
+    noHeavyEncumbrance: false
+    noMediumEncumbrance: false
+    seeInDarkness: false
+    seeInvisibility: false
+  changes:
+    - _id: xZ9erPMZ
+      formula: '-2'
+      operator: add
+      priority: 0
+      target: ac
+      type: untyped
+    - _id: BiDa9s44
+      formula: '-2'
+      operator: add
+      priority: 0
+      target: attack
+      type: untyped
+  conditions:
+    - fatigued
+  contextNotes:
+    - target: ac
+      text: '@Damage[1d6;nonlethal] to self when hit'
+  description:
+    instructions: ''
+    value: <p>A broken rib is a painful injury that inhibits swift motion.</p><p>The character is <span class="world-variable world-variable-string condition-fatigued"><a href="https://www.worldanvil.com/w/astora-hamilcarbarca/a/conditions-article#fatigued" target="_blank">Fatigued</a></span> until the rib is healed, has a -2 penalty to attack and AC, and takes an additional 1d6 nonlethal damage whenever hit by an attack.</p><p>If a character gains multiple broken ribs, it becomes a @UUID[Compendium.pf1-critical-effects.effect-buffs.Item.L98fh04V1wiR9eo2]{Shattered Rib}.</p><p>A broken rib can be healed by making a DC 10 Heal check to set the bone, followed by 20 points of healing dedicated to the break (dedicated healing does not heal hit point damage) and one full day of bed-rest. a @UUID[Compendium.pf1.spells.Item.anya5qwdjhdfyk8u]{Restoration } spell can be used in place of a full day of bed-rest.</p>
+  duration:
+    end: ''
+    start: -15704786016
+    units: ''
+    value: null
+  effectNotes: []
+  flags:
+    boolean: {}
+    dictionary:
+      dhDC: '10'
+      dhReceived: '0'
+      dhRequired: '20'
+  hideFromToken: false
+  level: 0
+  links:
+    children: []
+  scriptCalls:
+    - _id: RBBM7aHN
+      category: use
+      hidden: false
+      img: null
+      name: ''
+      type: macro
+      value: Compendium.pf1-critical-effects.macros.Macro.2KJDXE3liCDaKEWO
+    - _id: QdH2K5gx
+      category: toggle
+      hidden: false
+      img: null
+      name: ''
+      type: macro
+      value: Compendium.pf1-critical-effects.macros.Macro.DSmUMLDLIt9z26p0
+    - _id: GZBBPTA1
+      category: preActivate
+      hidden: false
+      img: null
+      name: ''
+      type: macro
+      value: Compendium.pf1-critical-effects.macros.Macro.PEtshlwi0AEvwNJ6
+  showInQuickbar: false
+  subType: perm
+  tag: ''
+  tags: []
+  uses:
+    autoDeductChargesCost: ''
+    maxFormula: ''
+    per: ''
+    rechargeFormula: ''
+    value: null
+type: buff

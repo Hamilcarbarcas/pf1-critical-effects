@@ -4,9 +4,13 @@
  *                          critical-fumble.mjs). Synchronous, so Dice So Nice sees the die.
  *   2. pf1PostActionUse  — attach a "Resolve Fumble" button to the attack card.
  *   3. click             — GM picks the attack type (pre-selected from the weapon).
- *   4. draw              — a targeted 1d12 roll request carrying the table, so the player sees
- *                          the whole table with their row highlighted.
- *   5. result            — appended to the original attack card, journal linked.
+ *   4. draw              — a targeted 1d12 roll request carrying the table, which the PLAYER
+ *                          clicks to roll. Posting it ends the GM's turn in the flow.
+ *   5. result            — picked up from the rollComplete hook whenever that roll lands, then
+ *                          appended to the original attack card, journal linked.
+ *
+ * Steps 4 and 5 are deliberately disconnected: the wait for a player's click is open-ended, so
+ * the link between the two lives in a flag on the request card rather than in memory.
  *
  * Nothing here touches PF1's crit pipeline; that is phase 7.
  */
@@ -15,7 +19,7 @@ import { MODULE_ID } from "../const.mjs";
 import * as catalog from "../catalog/catalog.mjs";
 import { registerButtonType, addButtons, removeButton } from "../chat/card-buttons.mjs";
 import { setFumbleResult } from "../chat/card-mutate.mjs";
-import { requestFumbleDraw } from "../integrations/roll-requests.mjs";
+import { postFumbleDraw, totalFromResult, DRAW_FLAG } from "../integrations/roll-requests.mjs";
 
 const BUTTON_TYPE = "resolve-fumble";
 
@@ -42,7 +46,7 @@ function forceFumbleConfirmation(actionUse) {
     const conditionalParts = actionUse._getConditionalParts(atk, { index: idx });
     if (conditionalParts["attack.crit"]?.length) confirmParts.push(...conditionalParts["attack.crit"]);
 
-    const baseFormula = chatAttack.attack.formula;
+    const baseFormula = standardConfirmFormula(chatAttack.attack);
     const formula = confirmParts.length ? `${baseFormula}+${confirmParts.join("+")}` : baseFormula;
 
     const roll = new pf1.dice.D20RollPF(formula, rollData, {
@@ -54,6 +58,28 @@ function forceFumbleConfirmation(actionUse) {
     chatAttack.critConfirm = roll;
     chatAttack.hasCritConfirm = true;
   }
+}
+
+/**
+ * The attack's formula with its d20 forced back to a plain `1d20`, keeping every bonus term.
+ *
+ * PF1's attack dialog can replace the d20 with any formula — `20`, `2d20kh` — held in
+ * `rollData.d20` and spliced in as the FIRST term of the attack roll (which is exactly what
+ * `D20RollPF#d20` reads). Reusing the attack's formula verbatim would carry that override into
+ * the confirmation, so an override bought with one roll would pay for two.
+ *
+ * Only the d20 slot is replaced; the size, ability, BAB and situational terms are kept as they
+ * are, flavour and all, so the confirmation's breakdown still reads like the attack's.
+ *
+ * The mirror of this for critical confirmations is in integrations/pf1-pipeline.mjs — that one
+ * has to be a libWrapper, since PF1 rolls those itself.
+ */
+export function standardConfirmFormula(attackRoll) {
+  if (!attackRoll) return pf1.dice.D20RollPF.standardRoll;
+  if (attackRoll.isNormal) return attackRoll.formula; // already a plain d20; nothing to strip
+
+  const standard = new foundry.dice.terms.Die({ number: 1, faces: 20 });
+  return pf1.dice.D20RollPF.getFormula([standard, ...attackRoll.terms.slice(1)]);
 }
 
 // --- 2. attach the button ---------------------------------------------------
@@ -78,43 +104,16 @@ export function inferAttackType(item, action) {
   return "thrown";
 }
 
-/**
- * Did the confirmation roll fail?
- *
- * Only answerable when there is exactly one target whose AC we can read. With several targets,
- * or none, the answer is `null` — unknown — and the button is surfaced anyway for the GM to
- * adjudicate. Same posture as the lethal-draw gate (§7.4): surface, never enforce.
- *
- * @returns {boolean|null}
- */
-function confirmFailed(actionUse, chatAttack) {
-  const total = chatAttack?.critConfirm?.total;
-  if (typeof total !== "number") return null;
-
-  const targets = actionUse.shared?.targets ?? [];
-  if (targets.length !== 1) return null;
-
-  const ac = targets[0]?.actor?.system?.attributes?.ac?.normal?.total;
-  if (typeof ac !== "number") return null;
-
-  return total < ac;
-}
-
+/* A natural 1 is the whole gate. The confirmation roll is rolled and displayed, but nothing
+ * reads it: whether it "failed" is a judgement about the target's AC that the GM is better
+ * placed to make than we are, and the button costs nothing when it goes unused. */
 async function attachFumbleButton(actionUse, message) {
   if (!message) return; // hidden chat — nowhere to attach
 
   const item = actionUse.shared?.item ?? actionUse.item;
   const action = actionUse.shared?.action ?? actionUse.action;
 
-  const fumbles = [];
-  for (const atk of actionUse.shared?.attacks ?? []) {
-    const chatAttack = atk.chatAttack;
-    if (!chatAttack?.attack?.isNat1) continue;
-    // A confirmation that beat the target's AC is a miss, not a fumble.
-    if (confirmFailed(actionUse, chatAttack) === false) continue;
-    fumbles.push(chatAttack);
-  }
-
+  const fumbles = (actionUse.shared?.attacks ?? []).filter((atk) => atk.chatAttack?.attack?.isNat1);
   if (!fumbles.length) return;
 
   await addButtons(message, [{
@@ -162,8 +161,10 @@ async function promptAttackType(preselected) {
   });
 }
 
-// --- 4 + 5. draw and record -------------------------------------------------
+// --- 4. post the draw -------------------------------------------------------
 
+/* Posts the request and stops. The player rolls it in their own time, and `completeDraw` below
+ * finishes the job off the rollComplete hook — so nothing here holds state across the wait. */
 async function resolveFumble(descriptor, { message }) {
   const attackType = await promptAttackType(descriptor.data?.attackType);
   if (!attackType) return; // cancelled
@@ -180,35 +181,61 @@ async function resolveFumble(descriptor, { message }) {
     return;
   }
 
-  const { total } = await requestFumbleDraw({
+  const request = await postFumbleDraw({
     token,
     resultTable,
+    tableKey: attackType,
+    sourceMessageId: message.id,
     flavor: game.i18n.format("CRITICAL_EFFECTS.Fumble.DrawFlavor", {
       type: game.i18n.localize(`CRITICAL_EFFECTS.Fumble.Table.${attackType}`),
     }),
   });
 
-  if (total == null) {
-    ui.notifications.warn(`${MODULE_ID}: the fumble draw produced no result.`);
+  if (!request) {
+    ui.notifications.warn(`${MODULE_ID}: could not post the fumble draw.`);
     return;
   }
 
-  const entry = catalog.drawFumble(attackType, total);
+  // The button has handed off; a second click would post a duplicate request.
+  await removeButton(message, descriptor.id);
+}
+
+// --- 5. record the result ---------------------------------------------------
+
+/* Fires on the GM's client for every roll on any request card, including rolls a player made
+ * (roll-requests relays those to the GM to record). We claim only the cards we stamped. */
+async function completeDraw({ messageId, result }) {
+  if (!game.user.isGM) return;
+
+  const request = game.messages.get(messageId);
+  const draw = request?.getFlag(MODULE_ID, DRAW_FLAG);
+  if (!draw) return; // not one of ours
+
+  const source = game.messages.get(draw.sourceMessageId);
+  if (!source) {
+    console.error(`${MODULE_ID} | fumble draw resolved but its attack card ${draw.sourceMessageId} is gone`);
+    return;
+  }
+
+  const total = totalFromResult(result);
+  if (total == null) return;
+
+  const entry = catalog.drawFumble(draw.tableKey, total);
   if (!entry) {
-    ui.notifications.warn(`${MODULE_ID}: d12 rolled ${total}, which the "${attackType}" table does not cover.`);
+    ui.notifications.warn(`${MODULE_ID}: d12 rolled ${total}, which the "${draw.tableKey}" table does not cover.`);
     return;
   }
 
-  await setFumbleResult(message, {
-    tableKey: attackType,
+  await setFumbleResult(source, {
+    tableKey: draw.tableKey,
     total,
     entryId: entry.id,
     name: entry.name,
     journal: entry.journal ?? null,
   });
 
-  // The fumble is resolved; the button has done its job.
-  await removeButton(message, descriptor.id);
+  // Resolved — don't act on a re-roll of the same card.
+  await request.unsetFlag(MODULE_ID, DRAW_FLAG);
 }
 
 function resolveToken(descriptor, message) {
@@ -238,6 +265,15 @@ export function registerFumbleFlow() {
       await attachFumbleButton(actionUse, message);
     } catch (err) {
       console.error(`${MODULE_ID} | attaching the fumble button failed:`, err);
+    }
+  });
+
+  // Global rather than per-request, so a pending draw survives a GM reload.
+  Hooks.on("pf1RollRequests.rollComplete", async (payload) => {
+    try {
+      await completeDraw(payload);
+    } catch (err) {
+      console.error(`${MODULE_ID} | recording the fumble draw failed:`, err);
     }
   });
 

@@ -1,0 +1,171 @@
+_id: 4FJyXaNSJ9lWEqXX
+_key: '!items!4FJyXaNSJ9lWEqXX'
+_stats:
+  compendiumSource: null
+  coreVersion: '13.351'
+  createdTime: 1777851251970
+  duplicateSource: null
+  exportSource: null
+  lastModifiedBy: mLW1zeZBsSCEsXlw
+  modifiedTime: 1779744211312
+  systemId: pf1
+  systemVersion: '11.11'
+effects:
+  - _id: xlXggERoC6KGbixG
+    _key: '!items.effects!4FJyXaNSJ9lWEqXX.xlXggERoC6KGbixG'
+    _stats:
+      compendiumSource: null
+      coreVersion: '13.351'
+      duplicateSource: null
+      exportSource: null
+      lastModifiedBy: null
+      systemId: pf1
+      systemVersion: '11.11'
+    changes: []
+    description: ''
+    disabled: false
+    duration:
+      combat: null
+      startTime: -15704786016
+    flags:
+      pf1:
+        tracker: true
+    img: icons/skills/wounds/bone-broken-marrow-red.webp
+    name: Broken Back
+    origin: .Item.pF0VjrsD03opcN5H
+    sort: 0
+    statuses:
+      - fatigued
+    system:
+      end: turnStart
+    tint: '#ffffff'
+    transfer: true
+    type: buff
+flags:
+  lilhelper:
+    item:
+      autoPowerAttack: false
+      hideAttacks: false
+      keen: false
+      rollOverride: ''
+      rollmodeOverride: ''
+      skipDialog: 0
+  nevelas-automation-suite:
+    itemReactiveEffects:
+      onHitByAction: {}
+      onHitByActionOverride: {}
+      onStruck:
+        buffRows: []
+        conditionRows: []
+        effects: []
+        enabled: false
+        filters:
+          excludeReach: true
+          meleeOnly: true
+        message: true
+        onStruckFunction: none
+  scene-packer:
+    hash: a288d010c434161d0bfca81b5a1208b1be427041
+    sourceId: Scene.FQ5mCt4L7UKYb3rs.Token.m4rvzr5RDEP5sZNz.Actor.aiYrAq6pSoQd8m4O.Item.pF0VjrsD03opcN5H
+folder: CEBrokenBones001
+img: icons/skills/wounds/bone-broken-marrow-red.webp
+name: Broken Neck
+ownership:
+  default: 0
+  mLW1zeZBsSCEsXlw: 3
+sort: 100000
+system:
+  actions:
+    - _id: KRYUYq05iuulGBDH
+      actionType: other
+      activation:
+        cost: 1
+        type: nonaction
+        unchained:
+          cost: 1
+          type: nonaction
+      ammo:
+        type: none
+      flags: {}
+      name: Set Bone
+      powerAttack:
+        critMultiplier: 1
+        damageBonus: 2
+      range:
+        units: personal
+      uses: {}
+  active: true
+  attackNotes: []
+  changeFlags:
+    heavyArmorFullSpeed: false
+    immuneToMorale: false
+    loseDexToAC: false
+    lowLightVision: false
+    mediumArmorFullSpeed: false
+    noHeavyEncumbrance: false
+    noMediumEncumbrance: false
+    seeInDarkness: false
+    seeInvisibility: false
+  changes: []
+  conditions:
+    - paralyzed
+  contextNotes: []
+  description:
+    instructions: ''
+    value: <p>A broken neck involves a break in the spine between the shoulders and head, and is severely debilitating.</p><p>The character immediately takes temporary damage equal to their current hit point total, and is <span class="world-variable world-variable-string condition-paralyzed"><a href="https://www.worldanvil.com/w/astora-hamilcarbarca/a/conditions-article#paralyzed" target="_blank">Paralyzed</a></span> until the neck is healed.</p><p>A broken neck can be healed by making a DC 20 Heal check to set the bone, followed by 40 points of healing dedicated to the break (dedicated healing does not heal hit point damage) and two full days of bed-rest. a @UUID[Compendium.pf1.spells.Item.anya5qwdjhdfyk8u]{Restoration } spell can be used in place of a full day of bed-rest.</p>
+  duration:
+    end: ''
+    start: -15704786016
+    units: ''
+    value: null
+  effectNotes: []
+  flags:
+    boolean: {}
+    dictionary:
+      dhDC: '20'
+      dhReceived: '0'
+      dhRequired: '40'
+  hideFromToken: false
+  level: 0
+  links:
+    children: []
+  scriptCalls:
+    - _id: RBBM7aHN
+      category: use
+      hidden: false
+      img: null
+      name: ''
+      type: macro
+      value: Compendium.pf1-critical-effects.macros.Macro.2KJDXE3liCDaKEWO
+    - _id: QdH2K5gx
+      category: toggle
+      hidden: false
+      img: null
+      name: ''
+      type: macro
+      value: Compendium.pf1-critical-effects.macros.Macro.DSmUMLDLIt9z26p0
+    - _id: GZBBPTA1
+      category: preActivate
+      hidden: false
+      img: null
+      name: ''
+      type: macro
+      value: Compendium.pf1-critical-effects.macros.Macro.PEtshlwi0AEvwNJ6
+    - _id: LCtnBpDE
+      category: toggle
+      hidden: false
+      img: null
+      name: ''
+      type: macro
+      value: Compendium.pf1-critical-effects.macros.Macro.es8QoxQtcLiORJq6
+  showInQuickbar: false
+  subType: perm
+  tag: ''
+  tags: []
+  uses:
+    autoDeductChargesCost: ''
+    maxFormula: ''
+    per: ''
+    rechargeFormula: ''
+    value: null
+type: buff

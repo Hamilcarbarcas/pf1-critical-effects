@@ -4,9 +4,9 @@ Companion to [`../astora-critical-effects-plan.md`](../astora-critical-effects-p
 is the **rules concept** and stays the source of truth for the rules. This document is the
 **engineering plan**: module shape, data schemas, layer boundaries, and build order.
 
-Content authoring (severity/location/damage-type tagging of the 266 existing effect journals,
-the outcome arrays, the buff compendium) is a **separate, later track**. Everything below is
-about standing up the framework that content will plug into.
+Content authoring (putting each damage-type × body-part table's twelve rows in severity order,
+filling the placeholder rows, attaching buffs) is a **separate, later track**. Everything below
+is about standing up the framework that content will plug into.
 
 ---
 
@@ -15,10 +15,11 @@ about standing up the framework that content will plug into.
 | Question | Decision |
 |---|---|
 | Where the code lives | Grow the existing `pf1-critical-effects` module from content-only into code + content. |
-| Effect pool storage | Versioned **JSON catalog** in the module; journals stay the human-readable prose; a new **buff compendium** carries mechanics. |
+| Effect storage | Versioned **JSON catalog** in the module — a flat entry list plus one 12-row table per damage type × anatomy × body part (§3); journals stay the human-readable prose; a new **buff compendium** carries mechanics. |
+| Content authoring | Markdown worksheets in `content/`, folded into the catalog by a tool behind a per-table `approved` gate (§3). Nobody hand-edits 1,560 rows of JSON. |
 | Mechanical effects | A **typed-outcome framework** (damage / condition / buff / …) with a handler registry — not free-form scripts. |
-| Content strategy | **Journal-first.** Entries ship with prose + tags and *no* outcomes; mechanics get attached incrementally over time. |
-| Player interaction | GM-run prompt card + player-rolled roll-requests. Luck spends happen on **this module's own card**, Stroke-of-Fortune pattern (§7.3). |
+| Content strategy | **Journal-first.** Entries ship with prose and *no* mechanics; those get attached incrementally over time. |
+| Player interaction | GM-run **dialog** + player-rolled roll-requests; the player's only decisions are the dice and a called shot. *(Revised twice during phase 7 — the resolution was originally a persistent chat card, and luck-point spending was built and then removed; see §7.2 and §7.3.)* |
 | First shippable slice | **Fumble path end-to-end.** |
 
 ### Dependency posture
@@ -26,25 +27,19 @@ about standing up the framework that content will plug into.
 | | Modules | If missing |
 |---|---|---|
 | **Hard** | `pf1` system, `lib-wrapper`, `pf1-roll-requests` | Module does not function. Declared in `relationships.requires`. |
-| **Optional** | `astora-mod` | Everything runs. Luck-point spending is simply unavailable. |
+| **Optional** | `astora-mod` | Everything runs. Outcomes that deliver a buff through astora's buff automation degrade to their prose. |
 | **Content-coupled** | `astora-mod` | Individual *outcomes* may depend on it (see below). Absence degrades that entry, never the engine. |
 
 **The engine runs standalone; the back end of individual effects may not.** The resolution path —
-trigger, power, severity, location, catalog draw, card — has no astora-mod code in it at all. What
-may legitimately depend on astora-mod is the *implementation of a given effect*: a buff whose
-script calls reach into astora macros, or the dedicated-healing lifecycle behind a broken bone.
-That's acceptable and expected; it just has to fail at the granularity of one outcome, not the
-module.
+trigger, power, location, table lookup, card — has no astora-mod code in it at all. What may
+legitimately depend on astora-mod is the *implementation of a given effect*: a buff whose script
+calls reach into astora macros, or the dedicated-healing lifecycle behind a broken bone. That's
+acceptable and expected; it just has to fail at the granularity of one outcome, not the module.
 
-Concretely, this means two things the earlier draft got wrong:
-
-- **A real luck adapter with a null implementation** (`integrations/luck.mjs`, §7.3). Feature-detect
-  once at `ready`; when absent, luck affordances don't render and the stages that exist only to
-  host them collapse.
-- **This module carries its own GM socket** (`module.pf1-critical-effects`), rather than borrowing
-  astora-mod's `gmProxy`. Generic primitives only, per the same rule astora's socket follows.
-  The socket is astora-independent; only the *body* of the luck handler calls into astora, behind
-  the same feature detection.
+Concretely: **this module carries its own GM socket** (`module.pf1-critical-effects`), rather than
+borrowing astora-mod's `gmProxy`. Generic primitives only, per the same rule astora's socket
+follows, and astora-independent — anything that reaches into astora does so from an outcome
+handler, behind feature detection, never from the socket layer.
 
 ### Consequences of "grow pf1-critical-effects"
 
@@ -79,24 +74,27 @@ pf1-critical-effects/
       catalog.mjs                 ← load, index, query the pool
       schema.mjs                  ← validation + dev-time lint of the JSON
     resolve/
-      power.mjs                   ← Critical Power grade, size shift, confirm explosion, modifiers
-      severity.mjs                ← roll total → severity band
+      power.mjs                   ← Critical Power grade, size shift, modifiers, grade override
       location.mjs                ← anatomy tables, limb fallback, called-shot override
       context.mjs                 ← gathers the §7 attacker/target data into one frozen object
     outcomes/
       registry.mjs                ← registerOutcome / applyOutcomes
       handlers/                   ← one file per built-in type (§6)
     flow/
-      crit-flow.mjs               ← GM-side orchestrator for the crit path
+      crit-dialog.mjs             ← GM-side orchestrator for the crit path (ApplicationV2)
+      crit-trigger.mjs            ← attack-card threat button
+      explosion.mjs               ← the confirmation chain, rolled with the attack (§7.2)
       fumble-flow.mjs             ← GM-side orchestrator for the fumble path
+      lethal.mjs                  ← lethal flavour draws (§7.4)
+      stages.mjs                  ← the stage sequence, as data
       resolver-app.mjs            ← standalone manual resolver (ApplicationV2)
+    apps/
+      crit-dialog.hbs
     chat/
       card-buttons.mjs            ← prompt buttons on the attack card
       card-mutate.mjs             ← rewrite the attack card with crit damage / effect
-      result-card.hbs
     integrations/
       socket.mjs                  ← own GM socket, generic primitives (astora-independent)
-      luck.mjs                    ← astora-mod luck adapter + null impl; feature-detected at ready
       roll-requests.mjs           ← request helpers, quick action registration
       dedicated-healing.mjs       ← migrated from astora-mod (§8)
       pf1-pipeline.mjs            ← libWrapper suppression of native crit confirm/damage (§9)
@@ -117,13 +115,13 @@ and the fumble slice possible before the PF1 pipeline work lands.
 ```
   chat / flow      ← UI, buttons, roll requests, card mutation   (GM-side, async)
   ────────────────
-  resolve          ← pure functions: context → grade → roll → severity + location
+  resolve          ← pure functions: context → grade + location
   ────────────────
   outcomes         ← typed descriptors → registered handlers → applied state
   ────────────────
-  catalog          ← JSON pool: query(location, damageTypes, severity, tags) → entries
+  catalog          ← JSON tables: effectFor(damageType, location, total) → entry
   ────────────────
-  integrations     ← luck, roll-requests, dedicated healing, PF1 pipeline
+  integrations     ← roll-requests, dedicated healing, PF1 pipeline
 ```
 
 **Rule:** `resolve/` and `catalog/` are pure and synchronous where possible — no `game.*`
@@ -135,57 +133,112 @@ manual resolver and the automated flow share one code path.
 
 ## 3. Effect catalog schema (`data/effects.json`)
 
+> **Revised in phase 7.** This was originally a *pool*: entries tagged with `locations`,
+> `damageTypes` and a `severity` band, queried and drawn from with weights. The shipped content
+> turned out to be authored as **one 1d12 table per damage type × body part** already, which makes
+> the query, the banding and the weighted draw all abstractions over something simpler. `version: 2`
+> is that simpler thing: a flat entry list plus a table index.
+
+> **Revised again in phase 8.** `version: 3` adds **anatomy** as a real dimension and a `mortal`
+> map. Anatomy was previously implied by the location — `appendage` meant aberrant, `tail` meant
+> beast — which works right up until you ask whether a beast's `arm` should share twelve rows with
+> a humanoid's. It shouldn't: one is a hand that drops a weapon, the other is a foreleg that
+> buckles. See "the grid", below.
+
 ```jsonc
 {
-  "version": 1,
+  "version": 3,
   "entries": [
     {
       "id": "broken-knee",                    // stable slug; the join key for everything
       "name": "Broken Knee",
       "journal": "Compendium.pf1-critical-effects.critical-effects.JournalEntry.sgCaXmveumaWntYk",
-      "locations": ["leg"],                   // inclusive — an entry may list several
-      "damageTypes": ["b"],                   // inclusive
-      "severity": "severe",                   // minor | moderate | severe | grave
-      "tags": ["fracture", "mobility-loss"],
-      "anatomy": ["humanoid", "beast"],       // optional gate; omit = all
-      "weight": 1,                            // optional draw weight within its bucket
-      "outcomes": [ /* §6 — OPTIONAL; omit entirely for a journal-only entry */ ],
-      "save": {                               // optional
-        "type": "fort",                       // fort | ref | will
-        "dc": "10 + @severityIndex * 3",      // formula; @-refs resolved from the context
-        "onSuccess": [ /* reduced outcome array — never empty; see below */ ]
-      }
+      "buff": null,                           // §6 — OPTIONAL; the apply-buff back end
+      "note": null                            // §6 — OPTIONAL; plain text shown with the result
     }
-  ]
+  ],
+  "tables": {
+    "bludgeoning": {
+      "humanoid": { "arm": [ /* exactly 12 entry ids, mildest first */ ], "leg": [ … ],
+                    "torso": [ … ], "head": [ … ] },
+      "beast":    { "arm": [ … ], "leg": [ … ], "torso": [ … ], "head": [ … ],
+                    "tail": [ … ], "wing": [ … ] },
+      "aberrant": { "appendage": [ … ], "torso": [ … ], "head": [ … ] }
+    },
+    "piercing": { … }
+  },
+  "mortal": {
+    "humanoid": { "arm": "arm-torn-away", "leg": …, "torso": …, "head": … },
+    "beast":    { … },
+    "aberrant": { … }
+  }
 }
 ```
 
+### The grid
+
+| Dimension | Values | |
+|---|---|---|
+| Damage type | the ten in `DAMAGE_TYPES` | 10 |
+| Anatomy × location | humanoid arm/leg/torso/head; beast + tail/wing; aberrant appendage/torso/head | 13 pairs |
+| Rows | the d12 | 12 |
+
+**1,560 rows**, plus 13 mortal entries. `ANATOMY_LOCATIONS` in `schema.mjs` is the definition of
+those 13 pairs, and `validateAnatomy` cross-checks it against what the location tables in
+anatomy.json can actually produce — a slot the d12 can land on with no effect table behind it is
+the one failure that surfaces as "nothing happened" at the table rather than as a load-time
+complaint.
+
+**No inheritance.** Every pair is written out in full. The authoring worksheets have a
+`= humanoid` shorthand for rows that genuinely are the same wound, but it expands at fold-in time
+and the JSON stays explicit, because the engine looks a row up by index and must never chase a
+reference to find one.
+
 Notes tied to the rules concept:
 
-- **`locations` and `damageTypes` are arrays**, per §6 "Shared items" — one Knocked Prone entry
-  serves torso and leg, bludgeoning and slashing. The catalog is the pool; the old per-table
-  duplicates collapse into it.
-- **`save.onSuccess` replaces, never negates.** Tenet "critical effects are not negatable,
-  though they may be mitigatable" is enforced structurally: a save has an `onSuccess` outcome
-  array, and the validator rejects an empty one. To express "downgrade a band", author the
-  milder entry's outcomes there, or use `{ "type": "delegate", "entry": "<id>" }`.
+- **The Critical Power total IS the row.** No query, no draw, no weighting: `effectFor(damageType,
+  anatomy, location, total)` is the whole lookup, and the two clamped ends (≤0 no effect, 13+
+  save-or-die) are what make the total meaningful past both extremes.
+- **Every table has exactly 12 rows**, enforced as an *error* by the validator. Rows may repeat —
+  a location with ten distinct outcomes covers twelve faces by repeating two — but a table may
+  never be short, because the whole engine is built on "row N exists".
+- **`mortal` is additive, not a fourteenth row.** It reads *on top of* row 12 at the 13+ clamp,
+  and is authored once per anatomy × location because past row 12 the wound has stopped being
+  characterised by what made it. Optional: absent, the 13+ result is row 12 plus the Fort save,
+  which is the rule as the concept doc states it.
+- **Unwritten rows are real placeholder entries, not holes.** Callers never handle a gap; `lint()`
+  reports the placeholder count per table as a **progress metric**, which is what keeps the
+  content track honest.
 - **`journal` is display only.** Nothing in the engine parses journal prose.
-- **`outcomes` is optional and starts absent.** The content strategy is journal-first: an entry
-  with `id`, `name`, `journal`, `locations`, `damageTypes`, and `severity` is *complete* and
-  fully usable — the flow resolves it, names it, links the journal, and stops. Mechanics are
-  additive, attached entry by entry over time, and no part of the engine may assume `outcomes`
-  exists. The lint reports outcome coverage as a **progress metric**, not an error.
-- The catalog is loaded once at `ready`, indexed by `location × damageType × severity`, and
-  exposed read-only. Query returns candidates; the *draw* (weighted pick, or a d12 roll against
-  a materialized table) is a separate call so the GM can see and re-roll it.
+- **`buff` and `note` are optional and start absent.** The content strategy is journal-first: an
+  entry with `id`, `name` and `journal` is *complete* and fully usable — the flow resolves it,
+  names it, links the journal, and stops. Mechanics are additive, attached entry by entry over
+  time, and no part of the engine may assume they exist.
+- The catalog is loaded once at `ready` and exposed read-only.
+
+### Authoring: `content/` and the two tools
+
+Nobody hand-edits `effects.json` — 1,560 rows of entry ids is not reviewable. Content is written
+as markdown worksheets in `content/` (one per damage type, plus `mortal.md`) and folded in by
+`tools/worksheets-to-catalog.mjs`; `tools/scaffold-worksheets.mjs` is its inverse. Round-tripping
+an untouched catalog is byte-identical, which is the property that makes the pair safe.
+
+A worksheet section carries a **`**Status:** draft | approved`** line, and only `approved`
+sections fold in. That is the review gate: content lands one reviewed table at a time and a
+half-written worksheet is safe to leave on disk. Format, shorthands, and the shared-entry rules
+are in [`content/README.md`](content/README.md).
+
+**Severity is authoring structure, not a runtime layer** — see §5.2. The four bands are how the
+twelve rows are *grouped while being written* (three at a time, mildest band first), and
+`SEVERITY_BANDS` lives in `schema.mjs` so the worksheets, the tool and any grouped dropdown agree.
+Nothing in the resolution path reads it.
 
 ### Journals ↔ catalog drift
 
 The catalog references journals by UUID and the two are edited separately, so they will drift.
 Mitigation: a dev-only `game.criticalEffects.lint()` that reports catalog entries with dead
-journal UUIDs, journals no catalog entry points at, buckets with fewer than *N* entries, and
-outcome descriptors of unregistered types. Cheap to write, and it's the thing that keeps the
-content track honest.
+journal UUIDs, journals no catalog entry points at, and how many of each table's twelve rows are
+still placeholders. Cheap to write, and it's the thing that keeps the content track honest.
 
 ---
 
@@ -241,7 +294,7 @@ One function, `buildContext({ actionUse | manual })`, returning a frozen object 
 | `target.hp` | current / max |
 | `target.armorBySlot` | for the armor-sacrifice mechanic (§10) |
 | `target.conditions` | for stacking rules |
-| `target.critImmunity` | numeric severity reduction, not a boolean |
+| `target.critImmunity` | numeric reduction in effect-table rows, not a boolean |
 | `target.dr` | to void the effect when damage is fully absorbed |
 | `calledShot` | `{ chosen: <location>` \| `null }` |
 
@@ -250,36 +303,51 @@ One function, `buildContext({ actionUse | manual })`, returning a frozen object 
 documented function with the rule spelled out in a comment; it is the piece most likely to be
 argued about later.
 
-### 5.2 Power → severity (`power.mjs`, `severity.mjs`)
+### 5.2 Power (`power.mjs`)
 
 ```js
 gradeFor(critMult)                 // 2→solid, 3→heavy, 4→brutal
 shiftGrade(grade, steps)           // past the ends, returns { grade, flat: ±n }
 powerFormula(grade)                // "1d4" | "1d6" | "2d4" | "2d6" | "2d8"
-severityFor(total)                 // ≤0 none, 1-3 minor … 10-12 grave, 13+ grave + Fort DC total
+tiersToReach(target, { base, priorSteps })   // solve the GM's grade pick back into a shift
+computeGrade({ … })                // every input, one auditable result
 ```
 
-Grade shifts stack from three sources — size delta, confirmation explosion, luck spend — and
-the concept doc says shifts past Devastating/Glancing convert to flat ±1. So `shiftGrade`
-returns *both* a grade and a residual flat modifier, and the caller sums that with the
-light/two-handed/luck flat modifiers. Keeping the overflow inside `shiftGrade` is what stops
-that rule from being reimplemented in three places.
+Grade shifts stack from three sources — size delta, confirmation explosion, the GM's override —
+and the concept doc says shifts past Devastating/Glancing convert to flat ±1. So `shiftGrade`
+returns *both* a grade and a residual flat modifier, and `computeGrade` sums that with the
+light/two-handed modifier and the GM's own. Keeping the overflow inside `shiftGrade` is what stops
+that rule from being reimplemented in three places, and applying it once on the *summed* shift is
+what makes "up one, down one" a no-op rather than two overflows.
+
+`tiersToReach` exists because the GM's dropdown is an **absolute** choice ("make this
+devastating") while the model only knows shifts. Solving for the shift rather than nudging by the
+difference is what makes the dropdown land on the picked grade every time — the sum is forced to
+the target's own index, which is inside the ladder by definition, so nothing can clamp. It also
+absorbs whatever overflow the automatic calculation had, which is correct: once the GM has named a
+grade, "you shifted two past devastating" is no longer a fact about the result.
+
+**There is no severity layer.** The power total indexes straight into the effect table for the
+body part that was hit (§3), so the twelve rows *are* the severity ladder. The
+minor/moderate/severe/grave banding this section used to describe was an abstraction over content
+that turned out to be authored per-location already; `severity.mjs` was deleted rather than kept
+as a second, disagreeing scale. Critical immunity survives as a flat penalty to the total — rows
+shrugged off — folded into the modifier so it appears in the breakdown rather than silently moving
+the answer.
+
+The bands came *back* in phase 8, but only as far as `SEVERITY_BANDS` in `schema.mjs`: rows 1-3
+minor, 4-6 moderate, 7-9 severe, 10-12 grave. That is an **authoring** grouping — the twelve rows
+are written and reviewed three at a time — and a label a dropdown may group by. It is still not a
+layer: nothing between the power roll and the row consults it, and the worksheet's `Band` column
+is derived from the row number and checked rather than read.
 
 **Confirmation explosion** (concept §4.2) — if the confirmation roll is itself within the crit
 threat range, Critical Power goes up a tier and the confirmation is rolled again, repeating until
 it doesn't threaten.
 
-Two properties make this much easier than it first looks:
-
-- **It only fires when a critical *effect* is chosen.** A crit resolved as plain damage never
-  explodes. So it lives entirely inside our flow, downstream of the trigger stage — it is *not*
-  part of the §9 pipeline override, and the initial attack roll needs no special handling for it.
-- **It's a loop of ordinary confirmation rolls**, each one a follow-up roll request. Nothing is
-  reconstructed from the original roll; each iteration is a fresh roll against the same threat
-  range, using the same confirm formula the attack already built.
-
-The pure part is small — `explosionStep(roll, critRange)` → `{ threatened, tiersGained }` — and
-the loop itself is a stage on the prompt card (§7.2).
+This happens **with the attack roll**, not in the resolution dialog — see §7.2. The pure test for
+a single roll is `explosionStep(roll, critRange)` → `{ threatened, tiersGained }`; the loop lives
+in `flow/explosion.mjs`.
 
 ### 5.3 Location & anatomy (`location.mjs`, `data/anatomy.json`)
 
@@ -289,8 +357,10 @@ the loop itself is a stage on the prompt card (§7.2).
 - The three d12 tables from concept §5 are data.
 - Beast fallback: a rolled slot that the target doesn't have walks to the next applicable
   entry, per the `*` note. Implement as an ordered fallback chain per row, not ad-hoc.
-- Called shot / luck-spent choice bypasses the roll entirely and is recorded as such in the
-  result so the card can say "chosen" rather than "rolled".
+- A called shot bypasses the roll entirely and is recorded as such in the result so the card can
+  say "chosen" rather than "rolled". `locationOptions()` resolves the whole chart for one creature
+  *and keeps each row's location*, because a chosen row arrives from roll-requests as an index
+  with no total to look anything up with.
 
 ---
 
@@ -316,7 +386,7 @@ registerOutcome(type, handler);   // handler(descriptor, ctx) -> { summary, undo
 applyOutcomes(descriptors, ctx);  // sequential, collects summaries, GM-side
 ```
 
-`ctx` = `{ actor, token, sourceActor, sourceItem, severity, location, damageType, message }`.
+`ctx` = `{ actor, token, sourceActor, sourceItem, row, location, damageType, message }`.
 
 ### Built-in handler types
 
@@ -402,129 +472,170 @@ a misfire in one click. Worth building in from the start — retrofitting undo i
 Everything phase 1 needs already exists: the three fumble tables, the confirm hook, the
 roll-requests table rendering, the card-button pattern. Nothing here touches PF1's crit pipeline.
 
-### 7.2 Crit flow — one GM-run prompt card, roll-requests for the dice
+### 7.2 Crit flow — one GM-run dialog, roll-requests for the dice
 
-The flow is **GM-driven**: the GM works a prompt card through its stages, and the players'
+> **Revised in phase 7.** This section originally specified one persistent chat card per
+> resolution, re-rendered in place, with state in message flags. It is now a **dialog**. What
+> follows is the current design; the rationale for the change is recorded at the end of the
+> section, because the discarded option remains a reasonable one and the reasons to prefer this
+> shape are about taste and noise rather than correctness.
+
+The flow is **GM-driven**: the GM works a dialog through its stages, and the players'
 only *required* participation is rolling the dice on roll-request cards. This sidesteps the
 permission problem wholesale — the target is usually not owned by the attacking player, and
 applying a buff to an unowned actor needs a GM regardless.
 
-Concretely, this module owns **one persistent chat card per crit resolution**
-(`flow/crit-flow.mjs` + `chat/result-card.hbs`). It is created when the crit is triggered and
-**re-rendered in place** as the resolution advances, ending as the record of what happened. Its
-state lives in message flags, so it survives reload and renders identically for everyone.
+Concretely, this module owns **one ApplicationV2 per crit resolution**
+(`flow/crit-dialog.mjs` + `apps/crit-dialog.hbs`), opened when the crit is triggered and advanced
+through its stages in place. Its state lives **in memory on the instance**.
 
-| Stage | On the prompt card | Dice |
+Three consequences follow, and they are the whole of the trade:
+
+- **A GM reload or a closed window abandons the resolution.** Re-open it from the attack card's
+  button and start again. Nothing has been applied to anyone until **Apply**, so the cost is a few
+  clicks, not a corrupted world.
+- **Waiting on a player must not depend on stored state.** The Location and Power requests use
+  roll-requests' in-memory `onResult` rather than the fumble path's flag-plus-global-hook, because
+  there would be nothing left to deliver a recovered result *to*. The two paths differ because
+  their state lives in different places, not by accident.
+- **The record has to be written somewhere that persists.** When the resolution finishes it is
+  written onto the originating attack card (§7.1's pattern), so chat still tells the whole story.
+
+**What puts the button on the card: a critical *threat*, nothing more.** The confirmation roll is
+rolled and displayed but never interpreted — the button appears on every threat and is simply
+ignored when the confirmation failed. This mirrors the fumble path, where a natural 1 is the whole
+gate. The reasoning is the same in both directions: deciding "did this confirm?" means reading a
+target's AC, which is unavailable or ambiguous often enough (several targets, no target,
+touch/flat-footed variants, DR) that a wrong automatic answer costs more than an unused button.
+The GM is already driving the resolution; let them make the call.
+
+A natural 1 is explicitly **not** a threat. The fumble path fabricates `hasCritConfirm` on a
+natural 1 so its forced confirmation renders, so the threat test must exclude it or a fumble reads
+as a critical. It is also simply true — a natural 1 is an automatic miss — which is what keeps the
+two paths mutually exclusive by definition rather than by luck.
+
+| Stage | In the dialog | Dice |
 |---|---|---|
-| Trigger | GM picks effect / damage / both | — |
-| Explosion | Only if an effect was chosen; loops while the confirm threatens | roll-request `<confirm formula>`, repeated |
-| Location | GM rolls, or a player spends luck to choose | roll-request `1d12` + location table |
-| Power | GM sets grade & modifiers | roll-request `<grade formula>` + severity table |
-| Modify | Post-roll luck spend (skipped when luck is unavailable) | — |
-| Result | Entry drawn, journal linked, Apply shown if it has outcomes | — |
+| Trigger | GM picks effect / damage / both. **Damage alone ends the resolution here.** | — |
+| Location | Creature type and damage type, then **Roll Location** or **Choose Location** | roll-request `1d12` + location chart, or a `selectFromTable` pick, **attacking player** |
+| Power | Grade override + free-text modifier, then **Request Power Roll** | roll-request `<grade formula><±flat>` + the effect table, **attacking player rolls** |
+| Result | The row that came up, a dropdown to change it, **Confirm Result** | — |
+
+Only the trigger branches. Everything after it is conditional on an effect having been chosen, so
+"damage" is not a stage that does nothing — it is the absence of the remaining three.
 
 Roll-request cards carry `resultTable` + `showTable`, which gives the player-visible table with
 their row highlighted for free — concept §10's "player visible summary showing a table of the
-roll they just made" needs no new work.
+roll they just made" needs no new work. Three refinements matter:
 
-**Displaying the explosion.** The stage is a loop of identical roll requests, so render it on the
-prompt card as an accumulating **chain** rather than one result — each iteration appends a link
-showing the roll and the grade it bought:
+- **Resolve the table for the target before sending it.** A location row saying "Tail" is useless
+  on something without one, so each row is run through the fallback chain first and adjacent rows
+  that land in the same place are merged.
+- **Put the flat modifier in the formula** (`2d6+1`), not added afterwards, so the number the
+  player rolls is the number the table reads. Otherwise the highlighted row disagrees with the
+  result.
+- **The Power table is the effect table itself**, as fourteen rows: "no effect", the twelve
+  outcomes for that damage type and body part, and the save-or-die at 13+. That same list is the
+  GM's override dropdown at the Result stage, so an index into it means the same thing in both
+  places — which is why `catalog.effectAt(dt, slot, index, total)` takes the index and the total
+  separately. The save DC is a property of the *roll*, so overriding up to the deadly row on a
+  total that never reached 13 takes the floor DC rather than inventing one.
 
-```
-Confirmation   19 ✦ threat   Solid → Heavy
-               17 ✦ threat   Heavy → Brutal
-               8            stop
-                                        Critical Power: Brutal (2d6)
-```
+#### Two rules about timing
 
-Storing it as an array of `{ roll, threatened, grade }` in the card's flags means the chain
-rebuilds identically on reload and doubles as the audit trail for how the grade was arrived at —
-which matters, because by the Power stage the grade is the product of the base multiplier, size
-delta, *and* however many explosions happened, and a GM will want to see the arithmetic.
+**Dice are thrown as late as they can be.** Critical damage is rolled when the resolution is
+*committed*, not when it is chosen, so an abandoned resolution leaves no orphaned damage on the
+card. Choosing damage alone is the one exception, because that choice *is* the commit.
 
-Guard the loop with an iteration cap (a keen weapon with a wide threat range and good confirm
-bonuses can chain for a while). Cap generously — 10 is far past any realistic run — and surface
-it as a GM notice rather than a silent stop.
+**Request cards are deleted as late as they can be.** They stay in the log for the whole
+resolution rather than vanishing the moment their number arrives, so the table can still see what
+was rolled and against what while the GM is still working. They come down at the very end — on
+**Confirm**, and on cancel, because an abandoned resolution kills the process and must not leave
+cards inviting clicks. `this.requests` is keyed by kind, so re-asking a question closes the stale
+card rather than leaving two live answers to it.
 
-### 7.3 Letting players spend luck points
+#### The explosion is not a stage
 
-The open question from the concept doc. **No new roll-requests API is needed** — the pattern
-already exists in astora-mod's Stroke of Fortune
-([stroke-of-fortune.mjs:353](../astora-mod/luck-hero/stroke-of-fortune.mjs#L353)) and generalizes
-directly:
+It happens **with the attack roll** (`flow/explosion.mjs`), and the dialog reads the count off the
+attack card. Two reasons, and the first is a correctness one:
 
-1. The card renders a player-clickable button (`.sof-contribute-btn` there; ours is
-   `.ce-luck-btn`), gated to the actors eligible to spend at that stage.
-2. The click opens a DialogV2 letting the player choose the source — regular luck, Special Luck
-   Points, or the group pool — with availability shown per source.
-3. The choice is dispatched **player → GM** over this module's own socket (§0), mirroring
-   `dispatchSoF`'s shape: direct call when the clicker is the GM, socket emit otherwise. A GM
-   handler deducts the point, records the spend in the card's flags, and re-renders.
-4. The GM continues the flow with the spend already applied.
+- The dialog cannot see PF1's confirmation. When this was a stage it rolled a *fresh* d20 and
+  tested that, so a confirmation of 7 could still "explode" on a die nobody had thrown for it.
+- It is a property of dice that have already been thrown, not a decision anyone makes. Nothing is
+  chosen at that stage, so there is nothing for a stage to do.
 
-#### The luck adapter (`integrations/luck.mjs`)
+The chain is rolled on `pf1PostActionUse` rather than inside `addAttack`, so the extra dice land
+*after* the confirmation that caused them. It fires on attacks only by construction — it reads
+`chatAttack.critConfirm`, which exists nowhere outside the action-use attack pipeline, so skill
+checks, saves and (PF1's own exclusion) combat maneuvers cannot produce one. A natural 1 is
+excluded explicitly, because the fumble path fabricates a confirmation on one.
 
-Steps 2 and 3 are the *only* places that know astora-mod exists. They go behind one interface,
-resolved once at `ready`:
+The count is written to the attack card as `Critical Explosion ×N`, inside the specific
+`.chat-attack` rather than at the card's foot: a full attack can explode on one swing and not
+another, and a single line at the bottom could not say which. Guard the loop with a generous
+iteration cap (10, far past any realistic keen-weapon run) surfaced as a GM notice rather than a
+silent stop.
 
-```js
-luck.available            // false when astora-mod is absent/disabled
-luck.sourcesFor(actor)    // [{ key, label, available }] — regular / special / group
-luck.spend(actor, source) // GM-side; deducts, returns success
-luck.grant(actor)         // for monster reciprocity (§10)
-```
+#### Why a dialog rather than a persistent card
 
-The null implementation reports `available: false` and no sources. **Nothing else in the module
-branches on astora-mod.**
+The card design was not wrong; it bought reload-safety and a shared view for the price of putting
+the GM's working machinery — every intermediate stage, every button — in everyone's chat log. In
+play the noise dominates: a resolution is a handful of clicks, and the only parts the table needs
+to see are the dice and the outcome. Both of those are still public, as roll-requests and as a
+result block on the attack card.
 
-#### Degrading when luck is unavailable
+What is genuinely lost is recovery. That is accepted rather than mitigated: persisting every
+intermediate step to the world to make a few clicks survivable is a poor trade, and nothing is
+written anywhere until the GM presses **Confirm Result**.
 
-The flow is GM-driven, so every luck spend has a GM-side equivalent already — which is what makes
-this degrade cleanly rather than lose functionality:
+#### Styling
 
-| Spend | Without luck |
-|---|---|
-| Trigger the effect at all | GM decides on the trigger stage, as they already do. |
-| Grade shift (pre-roll) | Stage renders without the button; GM can still adjust the grade — it's a GM control. |
-| Choose location (pre-roll) | Location is always rolled. (The GM can still override — called shots aren't luck-gated.) |
-| Flat +1 (post-roll) | The "modify" stage is **skipped entirely**; severity computes straight off the power roll. |
+The dialog carries no `pf1` class and does not inherit the system's parchment. It uses the
+dark/amber scheme the other astora-family windows use (`--ce-accent: #e8a63e`, panels on
+`rgba(0,0,0,0.15)`, edges on `rgba(255,255,255,0.08)`), and every colour is stated rather than
+inherited so the window does not change character with the client's theme. Button rules stay
+scoped to `.ce-crit-dialog .ce-btn`: an unscoped `button { font-family: … }` overrides Font
+Awesome and turns glyphs into boxes.
 
-So the only stage that disappears is the post-roll modify stage, and it disappears cleanly
-because nothing downstream reads from it. Build the card's stage list as data with a
-`requiresLuck` marker rather than hardcoding the sequence, and the collapse costs one filter.
+### 7.3 Player agency — what was tried, and where it landed
 
-**Why the luck buttons belong on our card and not on the roll-request cards:** two of the three
-spends change *what gets rolled* — a grade shift changes the power formula, and choosing a
-location replaces the location roll entirely. A luck button living on a roll-request card would
-have to mutate that card's pending formula or cancel it outright, which is exactly the API
-surface we'd rather not add. Putting all three spends on our own card means the roll-request is
-only ever posted once the decision is settled, and it can be posted with the right formula the
-first time.
+The concept doc left open how players buy into a resolution. The answer this module shipped and
+then removed was **luck points**: an offer card posted to chat, a DialogV2 source picker, a
+player→GM socket dispatch, and a `requiresLuck` marker on the stages that could be bought.
 
-That leaves one spend that is genuinely *post*-roll: the flat **+1 after the power roll**. Handle
-it by keeping the prompt card in a brief "modify" stage after the power roll result arrives —
-the card shows the total with a `Spend 1 Luck: +1` button, and only then does it compute severity.
-The roll-request card is never edited; the prompt card owns the adjusted total. This also matches
-the concept doc's rule that the grade-shift and flat-+1 spends are mutually exclusive: they are
-two buttons on the same card in two different stages, and the card knows which one already fired.
+That is all gone. Patrick's call, and the reasoning is worth keeping because it is a good general
+one: the luck economy already has a menu of its own, and a second place to spend a point — one
+that only exists during a crit resolution, with its own affordances, its own in-flight lock and
+its own degradation path when astora-mod is absent — bought less than it cost. A luck-point
+usage item on the existing menu plus a GM typing the effect into the modifier field does the same
+work with none of the machinery.
 
-Concept §3's "luck may only be spent once per roll" is enforced in the card's flags — one spend
-record per stage, per actor.
+What survives of it, and why:
 
-**Later, optional:** if the two-card dance (prompt card + roll-request card) proves annoying at
-the table, the merge is a generic `playerActions` slot in pf1-roll-requests — descriptor-shaped
-buttons on a request card with a GM-side `onClick`, phased pre-roll/post-roll, following the
-existing `onResult`/`summaryKey` conventions (including their in-memory-callback caveat). That's
-a genuinely reusable roll-requests feature, not a crit-effects hack — but it is not needed for
-v1, and it requires roll-requests to support mutating a pending request's formula.
+- **The grade override and the free-text modifier at the Power stage.** These were built as the
+  GM-side equivalents of the two pre-roll spends; they are now simply the controls. `extraTiers`
+  and `extraFlat` on the resolution are the same fields the spends fed.
+- **Choose Location.** A called shot was a luck affordance; it is now a button, because there was
+  never a reason for a GM to be unable to hand the player the choice.
+- **Nothing else.** `integrations/luck.mjs`, `flow/luck-card.mjs`, `flow/registry.mjs` and
+  `chat/luck-offer.hbs` were deleted, along with the socket handler and the `requiresLuck` stage
+  marker. astora-mod is still a recommended dependency, but for buff automation (§6), not luck.
+
+**The one thing to preserve if this is ever revisited:** the reason the spends lived on our own
+surface rather than on the roll-request cards. Two of the three changed *what gets rolled* — a
+grade shift changes the power formula, a chosen location replaces the location roll entirely — so
+a button on a request card would have had to mutate that card's pending formula or cancel it.
+Keeping the decision on our side means the request is posted once, with the right formula, after
+the decision is settled. That constraint still holds for any future player-facing affordance, and
+it is why the generic answer, if one is ever wanted, is a `playerActions` slot in
+pf1-roll-requests rather than anything here.
 
 ### 7.4 Lethal draws
 
 Concept §2's Lethal tables are flavor-only and mechanically inert — no save, no roll-off, pure
 narration for a hit that has *already* been determined to kill. That makes them the cheapest
-thing in the whole system: a catalog subset (`severity: "lethal"`, or its own small JSON), a
-draw, and a card. No resolve layer, no outcomes, no luck.
+thing in the whole system: its own small JSON (`data/lethal.json`), a draw, and a card. No
+resolve layer, no tables, no outcomes.
 
 Two entry points, both trivial once the fumble path's plumbing exists:
 
@@ -569,8 +680,8 @@ are crit-effect buffs — but it is not a file move:
   the socket name changes.
 - It calls `game.modules.get("astora-mod").api.gmRequest("createRollRequest", …)` for the Heal
   check when a player triggers it. This module's own GM socket (§0) covers that — it already
-  exists by this phase for the luck dispatch, and it is the reason the socket is specified as
-  astora-independent rather than a thin proxy onto `gmProxy`.
+  exists by this phase, and it is the reason the socket is specified as astora-independent
+  rather than a thin proxy onto `gmProxy`.
 - `requestBoneSetting` is invoked from buff script calls (`Compendium.astora-mod.macros.…`), so
   the buff migration in §6 and this migration have to land in the same change.
 
@@ -623,6 +734,32 @@ they're actually determined, which is better theatre than the current behaviour 
 Worth confirming early in phase 7 that no other module in the load order is wrapping the same
 method, and that the confirmation pool still animates once crit damage is pulled out of it (an
 empty pool is skipped by the `if (critPool.rolls.length)` guard, so a confirm-only pool is fine).
+*(Confirmed: ckl-roll-bonuses wraps `addAttack` and `setEffectNotesHTML`, Nevela wraps
+`setEffectNotesHTML`; nothing wraps `addDamage`.)*
+
+### 9.1 The d20 override must not carry into a confirmation
+
+The attack dialog can replace the d20 with any formula, held in `rollData.d20` and spliced in at
+[action.mjs:1586](../foundryvtt-pathfinder1-v11.x/module/components/action.mjs#L1586) as
+`[rollData.d20 || D20RollPF.standardRoll, ...parts]`. Because the confirmation is rolled through
+the same `rollAttack` with the same roll data, it inherits the override — so a manual `20`
+confirms every critical automatically and `2d20kh` confirms with advantage.
+
+House rule: **an override buys the attack it was spent on, not the confirmation as well.** Both
+confirmation paths force a plain `1d20` and keep every bonus term.
+
+The two paths need different mechanisms, because only one of the rolls is ours:
+
+| | Who rolls it | Fix |
+|---|---|---|
+| Fumble confirm | us (`fumble-flow.mjs`, synchronous for DSN) | rebuild the formula with `terms[0]` — which is exactly what `D20RollPF#d20` reads — swapped for a standard d20 |
+| Crit confirm | PF1 | libWrapper **WRAPPER** on `ChatAttack.prototype.addAttack`, stripping `rollData.d20` for the `critical: true` pass only |
+
+Restore the override in a `finally`. The same roll data drives the remaining attacks of a full
+attack, and each of those should still get the override on its own attack roll — including when
+the wrapped call throws. WRAPPER rather than MIXED because this one always chains; it only edits
+data on the way past. ckl-roll-bonuses registers a WRAPPER on the same method
+([main.mjs:707](../ckl-roll-bonuses/src/main.mjs#L707)), and both are expected to run.
 
 ---
 
@@ -631,11 +768,27 @@ empty pool is skipped by the `if (critPool.rolls.length)` guard, so a confirm-on
 - **Armor sacrifice** (concept §7): turn a failed save into a success by damaging armor at half
   hardness. Needs slot-level armor tracking that PF1 doesn't model, plus GM judgment on
   coverage. Ship as a `note` outcome + a manual GM button before attempting automation.
-- **Monster reciprocity** (monster grants a PC a luck point to trade crit damage for an effect):
-  hence `luck.grant()` in the adapter, not just a spend. Unavailable without astora-mod, which
-  collapses the trade into a plain GM decision — the same degradation as every other luck stage.
+- **Monster reciprocity** (monster grants a PC a luck point to trade crit damage for an effect).
+  With luck integration removed (§7.3) this is a plain GM decision: the point is granted from
+  astora's own luck menu, and the GM picks "effect" at the trigger stage. Nothing here needs to
+  know.
 - **Feats** (concept §3, "future"): the trigger layer should read from a list of trigger
   sources rather than hardcoding the five known ones, so a feat can register a trigger later.
+- **Designating a creature crit-immune** — *no UI exists yet.* PF1 v11 models critical immunity
+  nowhere at all: there is no field, no trait, and no fortification handling to read, so the
+  resolve layer reads `flags.pf1-critical-effects.critImmunity`, a number of effect-table rows
+  the target shrugs off — applied as a penalty to the Critical Power total (§5.2). Today that
+  flag can only be set from the console:
+  ```js
+  await actor.setFlag("pf1-critical-effects", "critImmunity", 1);
+  ```
+  What's missing is the *designation*, not the mechanic. Wants some combination of: a control on
+  the actor sheet; a default derived from creature type (undead, constructs, oozes, elementals,
+  plants and swarms are all crit-immune in core PF1, which `anatomy.json` is already the natural
+  home for); and a decision on whether "immune" means full immunity (a large reduction) or the
+  house rule that everything is at least mitigable — the tenet in §1 says effects are *not
+  negatable*, which argues immunity should reduce rather than erase. Worth doing before crit
+  outcomes start applying to undead in practice.
 - **pf1-token-randomizer**: any card showing a target's name to players must route through
   `api.getDisplayName` / `shouldObscure`, or obscured NPC names leak. Applies to the fumble
   "wrong target" result and every crit-effect card.
@@ -648,13 +801,13 @@ empty pool is skipped by the `if (critPool.rolls.length)` guard, so a confirm-on
 |---|---|---|
 | **0** | Module scaffold: `module.json` esmodules/styles/lang/relationships, entry file, API stub, CSS, CHANGELOG/README. Own GM socket (generic primitives). Catalog loader + schema validator + `lint()`, all tolerant of outcome-less entries. | — |
 | **1** | **Fumble path end-to-end.** `fumbles.json` (transcribed from the existing tables + a new `natural` table), `fumble-flow.mjs`, card button + card mutation, roll-request draw with visible table. Journal-only results — no outcomes yet. | 0 |
-| **2** | **Resolve layer.** `context`/`power`/`severity`/`location` + `anatomy.json`, all pure and console-testable. No UI. | 0 |
-| **3** | **Prompt card + luck spending.** `result-card.hbs`, data-driven stage list with `requiresLuck` markers, `.ce-luck-btn` → DialogV2 → own socket → GM handler (§7.3). Luck adapter + null impl; build and test the no-astora path first, then wire the real one. | 1, 2 |
+| **2** | **Resolve layer.** `context`/`power`/`location` + `anatomy.json`, all pure and console-testable. No UI. | 0 |
+| **3** | **Resolution dialog.** `crit-dialog.hbs` + a data-driven stage list. *(Originally "prompt card + luck spending"; the card became a dialog and the luck half was built and then removed — §7.2, §7.3.)* | 1, 2 |
 | **4** | **Standalone resolver** (§7.5). Quick action + ApplicationV2 manual input driving 2+3. First usable crit tooling end to end, on journal-only content, with zero pipeline risk. **Lethal draws** (§7.4) ride along — same quick-action plumbing, no resolve layer needed. | 3 |
 | **5** | **Outcome framework.** Registry + `buff`/`condition`/`note` handlers, `effect-buffs` pack seeded from the migrated bone buffs, undo. Apply button lights up on entries that have outcomes. | 4 |
 | **6** | **Dedicated healing migration** out of astora-mod, incl. socket-channel rename + buff script-call retargeting. Removes the last content-level astora coupling. | 5 |
-| **7** | **Automated crit flow.** Attack-card trigger, roll-request sequence wired to the prompt card, crit-damage suppression + reinjection (§9), card mutation, lethal card button. | 4 |
-| **∞** | **Content track.** Journals → catalog entries (id, name, journal UUID, location, damage types, severity, tags). Runs from phase 1 onward, independent of everything else. Outcomes and buffs get attached opportunistically, entry by entry, after phase 5. | 0 |
+| **7** | **Automated crit flow.** Attack-card trigger, roll-request sequence wired to the dialog, crit-damage suppression + reinjection (§9), card mutation, lethal card button. | 4 |
+| **∞** | **Content track.** Journals → catalog entries (id, name, journal UUID), then the twelve rows of each damage-type × location table put in severity order. Runs from phase 1 onward, independent of everything else. Buffs and notes get attached opportunistically, entry by entry, after phase 5. | 0 |
 
 The reordering versus a mechanics-first build is deliberate: **phase 4 is the goal post.** After
 it, you have a working crit-effect resolver producing real, named, journal-linked results at the

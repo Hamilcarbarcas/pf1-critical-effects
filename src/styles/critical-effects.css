@@ -73,3 +73,502 @@
 .ce-dialog .ce-table-select {
   width: 100%;
 }
+
+/* --- crit resolution dialog -----------------------------------------------
+ *
+ * Dark panels and an amber accent, matching the scheme the other astora-family windows use
+ * (astora-mod/exploration). Every colour is stated rather than inherited: the dialog carries no
+ * `pf1` class, and it should not change character if the client's theme does.
+ */
+
+.ce-crit-dialog {
+  --ce-accent: #e8a63e;
+  --ce-panel: rgba(0, 0, 0, 0.15);
+  --ce-edge: rgba(255, 255, 255, 0.08);
+  --ce-text: rgba(255, 255, 255, 0.85);
+  --ce-dim: rgba(255, 255, 255, 0.5);
+  --ce-field: rgb(28, 28, 36);
+}
+
+.ce-crit-dialog .window-content {
+  background: rgba(20, 20, 26, 0.92);
+  color: var(--ce-text);
+}
+
+.ce-crit-dialog .ce-crit-dialog-body {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 8px;
+  font-family: var(--font-primary, "Signika", sans-serif);
+  font-size: 13px;
+}
+
+.ce-crit-dialog .ce-accent { color: var(--ce-accent); }
+
+.ce-crit-dialog .ce-mono {
+  font-family: var(--font-mono, monospace);
+  font-variant-numeric: tabular-nums;
+}
+
+.ce-crit-dialog .ce-muted {
+  font-size: 11px;
+  color: var(--ce-dim);
+}
+
+/* Waiting on the attacking player's roll request. */
+.ce-crit-dialog .ce-pending {
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+  padding: 5px 8px;
+  border: 1px dashed rgba(232, 166, 62, 0.35);
+  border-radius: 4px;
+  background: rgba(232, 166, 62, 0.06);
+  font-size: 12px;
+}
+
+.ce-crit-dialog .ce-pending > i { color: var(--ce-accent); }
+
+.ce-crit-dialog .ce-pending > span { flex: 1 1 auto; }
+
+.ce-crit-dialog .ce-pending > button { flex: 0 0 auto; width: auto; }
+
+.ce-crit-dialog .ce-crit-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 0.5em;
+  border-bottom: 2px solid var(--ce-edge);
+  padding-bottom: 5px;
+}
+
+.ce-crit-dialog .ce-crit-parties {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ce-dim);
+}
+
+.ce-crit-dialog .ce-crit-parties > i {
+  margin: 0 0.25em;
+  color: var(--ce-accent);
+}
+
+/* Stage rail */
+.ce-crit-dialog .ce-stage-rail {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  font-size: 11px;
+}
+
+.ce-crit-dialog .ce-stage-rail .ce-stage {
+  padding: 2px 8px;
+  border-radius: 3px;
+  border: 1px solid transparent;
+  color: var(--ce-dim);
+  opacity: 0.6;
+}
+
+.ce-crit-dialog .ce-stage-rail .ce-stage.is-done {
+  opacity: 1;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.ce-crit-dialog .ce-stage-rail .ce-stage.is-current {
+  opacity: 1;
+  color: #fff;
+  font-weight: 600;
+  border-color: rgba(232, 166, 62, 0.4);
+  background: rgba(232, 166, 62, 0.12);
+}
+
+/* What the resolution knows so far */
+.ce-crit-dialog .ce-readout {
+  padding: 6px 8px;
+  border: 1px solid var(--ce-edge);
+  border-radius: 4px;
+  background: var(--ce-panel);
+}
+
+.ce-crit-dialog .ce-line {
+  display: flex;
+  gap: 0.6em;
+  align-items: baseline;
+  font-size: 12px;
+  padding: 1px 0;
+}
+
+.ce-crit-dialog .ce-line-label {
+  flex: 0 0 5em;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-size: 10px;
+  color: var(--ce-dim);
+}
+
+.ce-crit-dialog .ce-line-value {
+  text-transform: capitalize;
+  display: flex;
+  gap: 0.4em;
+  align-items: baseline;
+  flex-wrap: wrap;
+}
+
+.ce-deadly { color: #d4574a; }
+
+.ce-crit-dialog .ce-deadly {
+  margin-top: 4px;
+  font-weight: 600;
+}
+
+.ce-crit-dialog .ce-deadly > i { margin-right: 0.3em; }
+
+/* Explosion count, on the attack card rather than in the dialog — the dice were thrown with the
+ * attack, so the count belongs beside them. Inside .chat-attack, so a full attack that explodes
+ * on one swing and not another says which. */
+.ce-explosion-count {
+  margin: 2px 0;
+  padding: 1px 6px;
+  border-left: 3px solid #8a6d1f;
+  background: rgba(138, 109, 31, 0.08);
+  font-size: var(--font-size-11, 11px);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.ce-explosion-count > i { margin-right: 0.25em; }
+
+/* Stage body + controls */
+.ce-crit-dialog .ce-stage-body {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 8px;
+  border: 1px solid rgba(232, 166, 62, 0.2);
+  border-radius: 4px;
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.ce-crit-dialog .ce-stage-hint {
+  margin: 0;
+  font-size: 12px;
+  color: var(--ce-dim);
+}
+
+.ce-crit-dialog .ce-stage-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+/* Fields: the creature/damage type selects, the grade override, the modifier and the result. */
+.ce-crit-dialog .ce-fields {
+  display: flex;
+  gap: 6px;
+}
+
+.ce-crit-dialog .ce-field {
+  flex: 1 1 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.ce-crit-dialog .ce-field-wide { flex-basis: 100%; }
+
+.ce-crit-dialog .ce-field-label {
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-size: 10px;
+  color: var(--ce-dim);
+}
+
+.ce-crit-dialog .ce-field select,
+.ce-crit-dialog .ce-field input {
+  width: 100%;
+  height: 26px;
+  padding: 0 4px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 3px;
+  background: var(--ce-field);
+  color: var(--ce-text);
+  font-size: 12px;
+  text-transform: capitalize;
+}
+
+.ce-crit-dialog .ce-field select:focus,
+.ce-crit-dialog .ce-field input:focus {
+  outline: none;
+  border-color: rgba(232, 166, 62, 0.6);
+  box-shadow: 0 0 4px rgba(232, 166, 62, 0.25);
+}
+
+/* Buttons. Scoped to the element so the icon font is never overridden globally. */
+.ce-crit-dialog .ce-btn {
+  flex: 1 1 auto;
+  padding: 6px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+
+.ce-crit-dialog .ce-btn.ce-narrow { flex: 0 0 auto; }
+
+.ce-crit-dialog .ce-primary {
+  border: 1px solid rgba(0, 0, 0, 0.3);
+  background: linear-gradient(to bottom, #c08030, #a06820);
+  color: #fff;
+}
+
+.ce-crit-dialog .ce-primary:hover:not(:disabled) {
+  background: linear-gradient(to bottom, #d09040, #b07830);
+}
+
+.ce-crit-dialog .ce-secondary {
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--ce-dim);
+}
+
+.ce-crit-dialog .ce-secondary:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+}
+
+.ce-crit-dialog .ce-btn > i { margin-right: 0.3em; }
+
+.ce-crit-dialog .ce-btn.ce-narrow > i { margin-right: 0; }
+
+/* Result */
+.ce-crit-dialog .ce-result {
+  padding: 6px 8px;
+  border: 1px solid var(--ce-edge);
+  border-left: 3px solid var(--ce-accent);
+  border-radius: 4px;
+  background: var(--ce-panel);
+}
+
+.ce-crit-dialog .ce-result-name {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 0.4em;
+  font-size: 14px;
+}
+
+.ce-crit-dialog .ce-row-badge {
+  padding: 0 5px;
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.08);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--ce-dim);
+}
+
+.ce-crit-dialog .ce-row-badge.ce-override {
+  background: rgba(232, 166, 62, 0.18);
+  color: var(--ce-accent);
+}
+
+.ce-result-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25em;
+  margin-top: 2px;
+}
+
+.ce-tag {
+  font-size: var(--font-size-11, 11px);
+  padding: 0 0.35em;
+  border-radius: 2px;
+  background: rgba(0, 0, 0, 0.08);
+  opacity: 0.8;
+}
+
+/* On the dark dialog a black wash is invisible; the tags need the opposite treatment. */
+.ce-crit-dialog .ce-tag {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--ce-dim);
+  opacity: 1;
+}
+
+.ce-empty {
+  margin: 0;
+  font-size: 11px;
+  font-style: italic;
+  color: var(--ce-dim);
+}
+
+/* --- lethal card ---------------------------------------------------------- */
+
+.ce-lethal-card {
+  border: 1px solid var(--color-border-light-tertiary, #7a7971);
+  border-left: 3px solid #3a3a3a;
+  border-radius: 3px;
+  padding: 4px 6px;
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.ce-lethal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 0.5em;
+  font-size: var(--font-size-11, 11px);
+  opacity: 0.8;
+}
+
+.ce-lethal-title {
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.ce-lethal-name {
+  margin-top: 2px;
+  font-size: var(--font-size-14, 14px);
+}
+
+/* --- standalone resolver -------------------------------------------------- */
+
+.ce-resolver .ce-resolver-body {
+  padding: 4px 2px;
+}
+
+.ce-resolver .ce-size-fields {
+  display: flex;
+  gap: 4px;
+}
+
+.ce-resolver .hint {
+  margin: 1px 0 0;
+  font-size: var(--font-size-11, 11px);
+  opacity: 0.7;
+}
+
+.ce-resolver-preview {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 0.5em;
+  margin-top: 6px;
+  padding: 3px 6px;
+  border: 1px solid var(--color-border-light-tertiary, #7a7971);
+  border-radius: 3px;
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.ce-preview-label {
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-size: var(--font-size-11, 11px);
+  opacity: 0.7;
+}
+
+.ce-preview-value {
+  text-transform: capitalize;
+  font-size: var(--font-size-14, 14px);
+}
+
+.ce-preview-from {
+  font-size: var(--font-size-11, 11px);
+  opacity: 0.6;
+}
+
+/* --- outcome apply / undo ------------------------------------------------- */
+
+.ce-outcome-controls {
+  display: flex;
+  gap: 3px;
+  margin-top: 4px;
+}
+
+.ce-outcome-summary {
+  list-style: none;
+  margin: 4px 0 0;
+  padding: 0;
+  font-size: var(--font-size-12, 12px);
+}
+
+.ce-outcome-summary li {
+  padding: 1px 0 1px 0.6em;
+  border-left: 2px solid var(--color-border-light-tertiary, #7a7971);
+  margin-bottom: 1px;
+}
+
+/* --- dedicated healing allocation dialog (migrated from astora-mod) ------- */
+
+.dedicated-healing-form {
+  padding: 0.5em 0;
+}
+
+.dedicated-healing-form .dh-incoming {
+  text-align: center;
+  font-size: 1.3em;
+  font-weight: bold;
+  margin-bottom: 0.75em;
+}
+
+.dedicated-healing-form .dh-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 0;
+}
+
+.dedicated-healing-form .dh-table th {
+  text-align: left;
+  border-bottom: 1px solid #888;
+  padding: 2px 4px;
+  font-size: 0.85em;
+  color: #555;
+}
+
+.dedicated-healing-form .dh-table td {
+  padding: 4px;
+  vertical-align: middle;
+}
+
+.dedicated-healing-form .dh-progress {
+  font-size: 0.85em;
+  color: #666;
+  white-space: nowrap;
+}
+
+.dedicated-healing-form .dh-col-input {
+  width: 80px;
+  text-align: center;
+}
+
+.dedicated-healing-form .dh-bone-input {
+  width: 70px;
+  text-align: center;
+}
+
+.dedicated-healing-form .dh-footer {
+  margin-top: 0.75em;
+  padding-top: 0.5em;
+  border-top: 1px solid #888;
+  font-size: 0.95em;
+}
+
+/* --- finished crit resolution on the attack card --------------------------
+ *
+ * Deferred critical damage has no block of its own: it is painted into PF1's own critical column
+ * (see card-mutate.mjs), so it inherits the system's styling and needs none from us.
+ */
+
+.ce-crit-result {
+  margin-top: 4px;
+  padding: 4px 6px;
+  border: 1px solid var(--color-border-light-tertiary, #7a7971);
+  border-left: 3px solid #8a6d1f;
+  border-radius: 3px;
+  background: rgba(138, 109, 31, 0.08);
+}

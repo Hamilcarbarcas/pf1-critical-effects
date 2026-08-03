@@ -1,0 +1,162 @@
+_id: c1gTv6FnlGSUo3ZM
+_key: '!items!c1gTv6FnlGSUo3ZM'
+_stats:
+  compendiumSource: null
+  coreVersion: '13.351'
+  createdTime: 1777847072406
+  duplicateSource: null
+  exportSource: null
+  lastModifiedBy: mLW1zeZBsSCEsXlw
+  modifiedTime: 1779744320001
+  systemId: pf1
+  systemVersion: '11.11'
+effects:
+  - _id: DF6bMEy0OY79fVoE
+    _key: '!items.effects!c1gTv6FnlGSUo3ZM.DF6bMEy0OY79fVoE'
+    _stats:
+      compendiumSource: null
+      coreVersion: '13.351'
+      duplicateSource: null
+      exportSource: null
+      lastModifiedBy: null
+      systemId: pf1
+      systemVersion: '11.11'
+    changes: []
+    description: ''
+    disabled: false
+    duration:
+      combat: null
+      startTime: -15704786016
+    flags:
+      pf1:
+        tracker: true
+    img: icons/skills/wounds/bone-broken-marrow-red.webp
+    name: Broken Hand
+    origin: .Item.y5e0S2cUC0067S0o
+    sort: 0
+    statuses: []
+    system:
+      end: turnStart
+    tint: '#ffffff'
+    transfer: true
+    type: buff
+flags:
+  lilhelper:
+    item:
+      autoPowerAttack: false
+      hideAttacks: false
+      keen: false
+      rollOverride: ''
+      rollmodeOverride: ''
+      skipDialog: 0
+  scene-packer:
+    hash: 0c5ae35b60de01da716b130e3e36430c5c02cbba
+    sourceId: Scene.FQ5mCt4L7UKYb3rs.Token.m4rvzr5RDEP5sZNz.Actor.aiYrAq6pSoQd8m4O.Item.y5e0S2cUC0067S0o
+folder: CEBrokenBones001
+img: icons/skills/wounds/bone-broken-marrow-red.webp
+name: Shattered Foot
+ownership:
+  default: 0
+  mLW1zeZBsSCEsXlw: 3
+sort: 1400000
+system:
+  actions:
+    - _id: KRYUYq05iuulGBDH
+      actionType: other
+      activation:
+        cost: 1
+        type: nonaction
+        unchained:
+          cost: 1
+          type: nonaction
+      ammo:
+        type: none
+      flags: {}
+      name: Set Bone
+      powerAttack:
+        critMultiplier: 1
+        damageBonus: 2
+      range:
+        units: personal
+      uses: {}
+  active: true
+  attackNotes: []
+  changeFlags:
+    heavyArmorFullSpeed: false
+    immuneToMorale: false
+    loseDexToAC: false
+    lowLightVision: false
+    mediumArmorFullSpeed: false
+    noHeavyEncumbrance: false
+    noMediumEncumbrance: false
+    seeInDarkness: false
+    seeInvisibility: false
+  changes:
+    - _id: 09WYgAhA
+      formula: '-4'
+      operator: add
+      priority: 0
+      target: ac
+      type: untyped
+    - _id: gfgcwf1W
+      formula: max(floor(@attributes.speed.land.total / 20) * 5, 5)
+      operator: set
+      priority: -10
+      target: landSpeed
+      type: untyped
+  conditions: []
+  contextNotes:
+    - target: dexSkills
+      text: -4 to if the check involves movement.
+  description:
+    instructions: ''
+    value: <p>A shattered foot involves compound breaks of multiple foot and/or ankle bones. it is painful to the touch and impossible to put weight on.</p><p><a data-article-privacy="public" data-article-id="34340b9b-7215-410b-a17a-992036d613f0" data-template-type="article" class="article-link article-explorer-link tooltipstered" data-article="34340b9b-7215-410b-a17a-992036d613f0" href="https://www.worldanvil.com/w/astora-hamilcarbarca/a/movement-article">Movement</a> rates are quartered, a -4 penalty is applied to AC and <span class="world-variable world-variable-string ability-score-dexterity"><a href="https://www.worldanvil.com/w/astora-hamilcarbarca/a/ability-scores-article#dexterity" target="_blank">Dexterity</a> checks that involve movement</span>, and running is impossible.</p><p>A character with both feet shattered cannot stand or walk unaided, and is always considered flat-footed.</p><p>A shattered foot can be healed by making a DC 15 Heal check to set the bone, followed by 30 points of healing dedicated to the break (dedicated healing does not heal hit point damage) and at least one long rest. A @UUID[Compendium.pf1.spells.Item.fxz69pwpqt9b6uss]{Restoration, Lesser} spell can be used in place of a long rest.</p>
+  duration:
+    end: ''
+    start: -15704702526
+    units: ''
+    value: null
+  effectNotes: []
+  flags:
+    boolean: {}
+    dictionary:
+      dhDC: '15'
+      dhReceived: '0'
+      dhRequired: '20'
+  hideFromToken: false
+  level: 0
+  links:
+    children: []
+  scriptCalls:
+    - _id: RBBM7aHN
+      category: use
+      hidden: false
+      img: null
+      name: ''
+      type: macro
+      value: Compendium.pf1-critical-effects.macros.Macro.2KJDXE3liCDaKEWO
+    - _id: QdH2K5gx
+      category: toggle
+      hidden: false
+      img: null
+      name: ''
+      type: macro
+      value: Compendium.pf1-critical-effects.macros.Macro.DSmUMLDLIt9z26p0
+    - _id: GZBBPTA1
+      category: preActivate
+      hidden: false
+      img: null
+      name: ''
+      type: macro
+      value: Compendium.pf1-critical-effects.macros.Macro.PEtshlwi0AEvwNJ6
+  showInQuickbar: false
+  subType: perm
+  tag: ''
+  tags: []
+  uses:
+    autoDeductChargesCost: ''
+    maxFormula: ''
+    per: ''
+    rechargeFormula: ''
+    value: null
+type: buff

@@ -1,0 +1,181 @@
+_id: R9M1ohw49YFAdyZY
+_key: '!items!R9M1ohw49YFAdyZY'
+_stats:
+  compendiumSource: null
+  coreVersion: '13.351'
+  createdTime: 1777846839030
+  duplicateSource: null
+  exportSource: null
+  lastModifiedBy: mLW1zeZBsSCEsXlw
+  modifiedTime: 1779744211312
+  systemId: pf1
+  systemVersion: '11.11'
+effects:
+  - _id: xlXggERoC6KGbixG
+    _key: '!items.effects!R9M1ohw49YFAdyZY.xlXggERoC6KGbixG'
+    _stats:
+      compendiumSource: null
+      coreVersion: '13.351'
+      duplicateSource: null
+      exportSource: null
+      lastModifiedBy: null
+      systemId: pf1
+      systemVersion: '11.11'
+    changes: []
+    description: ''
+    disabled: false
+    duration:
+      combat: null
+      startTime: -15704786016
+    flags:
+      pf1:
+        tracker: true
+    img: icons/skills/wounds/bone-broken-marrow-red.webp
+    name: Broken Hand
+    origin: .Item.8P0vYY9SnYRqNsEa
+    sort: 0
+    statuses: []
+    system:
+      end: turnStart
+    tint: '#ffffff'
+    transfer: true
+    type: buff
+flags:
+  lilhelper:
+    item:
+      autoPowerAttack: false
+      hideAttacks: false
+      keen: false
+      rollOverride: ''
+      rollmodeOverride: ''
+      skipDialog: 0
+  scene-packer:
+    hash: 73ae9d37315bd210c2380e7868eabb749ef8f237
+    sourceId: Scene.FQ5mCt4L7UKYb3rs.Token.m4rvzr5RDEP5sZNz.Actor.aiYrAq6pSoQd8m4O.Item.8P0vYY9SnYRqNsEa
+folder: CEBrokenBones001
+img: icons/skills/wounds/bone-broken-marrow-red.webp
+name: Broken Foot
+ownership:
+  default: 0
+  mLW1zeZBsSCEsXlw: 3
+sort: 1500000
+system:
+  actions:
+    - _id: KRYUYq05iuulGBDH
+      actionType: other
+      activation:
+        cost: 1
+        type: nonaction
+        unchained:
+          cost: 1
+          type: nonaction
+      ammo:
+        type: none
+      flags: {}
+      name: Set Bone
+      powerAttack:
+        critMultiplier: 1
+        damageBonus: 2
+      range:
+        units: personal
+      uses: {}
+    - _id: a4OHpeXvx1WedkiN
+      actionType: other
+      activation:
+        cost: 1
+        type: nonaction
+        unchained:
+          cost: 1
+          type: nonaction
+      ammo:
+        type: none
+      flags: {}
+      name: Use Foot
+      powerAttack:
+        critMultiplier: 1
+        damageBonus: 2
+      range:
+        units: personal
+      uses: {}
+  active: true
+  attackNotes: []
+  changeFlags:
+    heavyArmorFullSpeed: false
+    immuneToMorale: false
+    loseDexToAC: false
+    lowLightVision: false
+    mediumArmorFullSpeed: false
+    noHeavyEncumbrance: false
+    noMediumEncumbrance: false
+    seeInDarkness: false
+    seeInvisibility: false
+  changes:
+    - _id: QdGMj1Sn
+      formula: '-2'
+      operator: add
+      priority: 0
+      target: ac
+      type: untyped
+    - _id: oYZN257X
+      formula: max(floor(@attributes.speed.land.total / 10) * 5, 5)
+      operator: set
+      priority: -10
+      target: landSpeed
+      type: untyped
+  conditions: []
+  contextNotes:
+    - target: dexSkills
+      text: -2 to if the check involves movement.
+  description:
+    instructions: ''
+    value: <p>A broken foot is difficult and painful to put any amount of weight on. <a data-article-privacy="public" data-article-id="34340b9b-7215-410b-a17a-992036d613f0" data-template-type="article" class="article-link article-explorer-link tooltipstered" data-article="34340b9b-7215-410b-a17a-992036d613f0" href="https://www.worldanvil.com/w/astora-hamilcarbarca/a/movement-article">Movement</a> rates are halved, and a -2 penalty is applied to AC and <span class="world-variable world-variable-string ability-score-dexterity"><a href="https://www.worldanvil.com/w/astora-hamilcarbarca/a/ability-scores-article#dexterity" target="_blank">Dexterity</a> checks that involve movement</span>.</p><p>A character with both feet broken instead takes a -4 penalty to AC and <span class="world-variable world-variable-string ability-score-dexterity"><a href="https://www.worldanvil.com/w/astora-hamilcarbarca/a/ability-scores-article#dexterity" target="_blank">Dexterity</a></span> checks that involve movement, and has a movement rate of 5 feet.</p><p>A character with a broken foot may elect to move at full speed, and even take a <span class="world-variable world-variable-string actions-in-combat-run"><a href="https://www.worldanvil.com/w/astora-hamilcarbarca/a/actions-in-combat-article#run" target="_blank">Run</a></span> action, but they must make a DC 10 <span class="world-variable world-variable-string saving-throw-fortitude-save"><a href="https://www.worldanvil.com/w/astora-hamilcarbarca/a/saving-throws-article#fortitude_save" target="_blank">Fortitude Save</a></span> after each such act or turn their broken foot into a @UUID[Compendium.pf1-critical-effects.effect-buffs.Item.c1gTv6FnlGSUo3ZM]{Shattered Foot}.</p><p>A broken foot can be healed by making a DC 10 Heal check to set the bone, followed by 10 points of healing dedicated to the break (dedicated healing does not heal hit point damage).</p>
+  duration:
+    end: ''
+    start: -15704702526
+    units: ''
+    value: null
+  effectNotes: []
+  flags:
+    boolean: {}
+    dictionary:
+      dhDC: '10'
+      dhReceived: '0'
+      dhRequired: '10'
+      useFortSave: '10'
+  hideFromToken: false
+  level: 0
+  links:
+    children: []
+  scriptCalls:
+    - _id: RBBM7aHN
+      category: use
+      hidden: false
+      img: null
+      name: ''
+      type: macro
+      value: Compendium.pf1-critical-effects.macros.Macro.2KJDXE3liCDaKEWO
+    - _id: QdH2K5gx
+      category: toggle
+      hidden: false
+      img: null
+      name: ''
+      type: macro
+      value: Compendium.pf1-critical-effects.macros.Macro.DSmUMLDLIt9z26p0
+    - _id: GZBBPTA1
+      category: preActivate
+      hidden: false
+      img: null
+      name: ''
+      type: macro
+      value: Compendium.pf1-critical-effects.macros.Macro.PEtshlwi0AEvwNJ6
+  showInQuickbar: false
+  subType: perm
+  tag: ''
+  tags: []
+  uses:
+    autoDeductChargesCost: ''
+    maxFormula: ''
+    per: ''
+    rechargeFormula: ''
+    value: null
+type: buff

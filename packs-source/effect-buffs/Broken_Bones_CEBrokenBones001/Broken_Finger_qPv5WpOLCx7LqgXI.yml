@@ -1,0 +1,120 @@
+_id: qPv5WpOLCx7LqgXI
+_key: '!items!qPv5WpOLCx7LqgXI'
+_stats:
+  compendiumSource: null
+  coreVersion: '13.351'
+  createdTime: 1777782254996
+  duplicateSource: null
+  exportSource: null
+  lastModifiedBy: mLW1zeZBsSCEsXlw
+  modifiedTime: 1779744211312
+  systemId: pf1
+  systemVersion: '11.11'
+effects: []
+flags:
+  lilhelper:
+    item:
+      autoPowerAttack: false
+      hideAttacks: false
+      keen: false
+      rollOverride: ''
+      rollmodeOverride: ''
+      skipDialog: 0
+  scene-packer:
+    hash: ddbfc12ef7a75343c7e11518ab501098aa4822be
+folder: CEBrokenBones001
+img: icons/skills/wounds/bone-broken-marrow-red.webp
+name: Broken Finger
+ownership:
+  default: 0
+  mLW1zeZBsSCEsXlw: 3
+sort: 1600000
+system:
+  actions:
+    - _id: xcMsrkdzzy18mDkM
+      actionType: other
+      activation:
+        cost: 1
+        type: nonaction
+        unchained:
+          cost: 1
+          type: nonaction
+      ammo:
+        type: none
+      flags: {}
+      name: Set Bone
+      powerAttack:
+        critMultiplier: 1
+        damageBonus: 2
+      range:
+        units: personal
+      uses: {}
+  active: true
+  attackNotes: []
+  changeFlags:
+    heavyArmorFullSpeed: false
+    immuneToMorale: false
+    loseDexToAC: false
+    lowLightVision: false
+    mediumArmorFullSpeed: false
+    noHeavyEncumbrance: false
+    noMediumEncumbrance: false
+    seeInDarkness: false
+    seeInvisibility: false
+  changes: []
+  conditions: []
+  contextNotes:
+    - target: skills
+      text: Disadvantage on all checks using the broken finger.
+  description:
+    instructions: ''
+    value: <p>A broken finger makes it difficult to use the hand effectively. All skill checks using that hand are made with disadvantage.</p><p>If two or more fingers are broken on the same hand, you instead gain the @UUID[Compendium.pf1-critical-effects.effect-buffs.Item.DtlAHy7kmgxGZ6M7]{broken hand} condition.</p><p>A broken finger can be healed by making a DC 10 Heal check to set the bone, followed by 5 points of healing dedicated to the break (dedicated healing does not heal hit point damage).</p><p></p>
+  duration:
+    end: ''
+    start: -15704786016
+    units: ''
+    value: null
+  effectNotes: []
+  flags:
+    boolean: {}
+    dictionary:
+      dhDC: '10'
+      dhReceived: '0'
+      dhRequired: '5'
+  hideFromToken: false
+  level: 0
+  links:
+    children: []
+  scriptCalls:
+    - _id: RBBM7aHN
+      category: use
+      hidden: false
+      img: null
+      name: ''
+      type: macro
+      value: Compendium.pf1-critical-effects.macros.Macro.2KJDXE3liCDaKEWO
+    - _id: QdH2K5gx
+      category: toggle
+      hidden: false
+      img: null
+      name: ''
+      type: macro
+      value: Compendium.pf1-critical-effects.macros.Macro.DSmUMLDLIt9z26p0
+    - _id: POndNrHa
+      category: preActivate
+      hidden: false
+      img: null
+      name: ''
+      type: macro
+      value: Compendium.pf1-critical-effects.macros.Macro.PEtshlwi0AEvwNJ6
+  showInQuickbar: false
+  subType: perm
+  tag: ''
+  tags: []
+  uses:
+    autoDeductChargesCost: ''
+    maxFormula: ''
+    per: ''
+    rechargeFormula: ''
+    value: null
+type: buff

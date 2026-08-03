@@ -1,0 +1,171 @@
+_id: iW21pBBpukvTBKWP
+_key: '!items!iW21pBBpukvTBKWP'
+_stats:
+  compendiumSource: null
+  coreVersion: '13.351'
+  createdTime: 1777845759979
+  duplicateSource: null
+  exportSource: null
+  lastModifiedBy: 5TJ0maasMfWJUe3N
+  modifiedTime: 1782252593053
+  systemId: pf1
+  systemVersion: '11.11'
+effects:
+  - _id: DF6bMEy0OY79fVoE
+    _key: '!items.effects!iW21pBBpukvTBKWP.DF6bMEy0OY79fVoE'
+    _stats:
+      compendiumSource: null
+      coreVersion: '13.351'
+      duplicateSource: null
+      exportSource: null
+      lastModifiedBy: null
+      systemId: pf1
+      systemVersion: '11.11'
+    changes: []
+    description: ''
+    disabled: false
+    duration:
+      combat: null
+      startTime: -15704786016
+    flags:
+      pf1:
+        tracker: true
+    img: icons/skills/wounds/bone-broken-marrow-red.webp
+    name: Broken Hand
+    origin: .Item.y5e0S2cUC0067S0o
+    sort: 0
+    statuses: []
+    system:
+      end: turnStart
+    tint: '#ffffff'
+    transfer: true
+    type: buff
+flags:
+  lilhelper:
+    item:
+      autoPowerAttack: false
+      hideAttacks: false
+      keen: false
+      rollOverride: ''
+      rollmodeOverride: ''
+      skipDialog: 0
+  scene-packer:
+    hash: 79af6de8f8ea5b9763a1b343c77e87ce4834a04b
+    sourceId: Scene.FQ5mCt4L7UKYb3rs.Token.m4rvzr5RDEP5sZNz.Actor.aiYrAq6pSoQd8m4O.Item.y5e0S2cUC0067S0o
+folder: CEBrokenBones001
+img: icons/skills/wounds/bone-broken-marrow-red.webp
+name: Broken Arm
+ownership:
+  default: 0
+  mLW1zeZBsSCEsXlw: 3
+sort: 1200000
+system:
+  actions:
+    - _id: KRYUYq05iuulGBDH
+      actionType: other
+      activation:
+        cost: 1
+        type: nonaction
+        unchained:
+          cost: 1
+          type: nonaction
+      ammo:
+        type: none
+      flags: {}
+      name: Set Bone
+      powerAttack:
+        critMultiplier: 1
+        damageBonus: 2
+      range:
+        units: personal
+      uses: {}
+    - _id: a4OHpeXvx1WedkiN
+      actionType: other
+      activation:
+        cost: 1
+        type: nonaction
+        unchained:
+          cost: 1
+          type: nonaction
+      ammo:
+        type: none
+      flags: {}
+      name: Use Arm
+      powerAttack:
+        critMultiplier: 1
+        damageBonus: 2
+      range:
+        units: personal
+      uses: {}
+  active: true
+  attackNotes: []
+  changeFlags:
+    heavyArmorFullSpeed: false
+    immuneToMorale: false
+    loseDexToAC: false
+    lowLightVision: false
+    mediumArmorFullSpeed: false
+    noHeavyEncumbrance: false
+    noMediumEncumbrance: false
+    seeInDarkness: false
+    seeInvisibility: false
+  changes: []
+  conditions: []
+  contextNotes:
+    - target: skills
+      text: -4 on all checks using broken hand.
+    - target: attack
+      text: -4 on all attacks using broken hand.
+  description:
+    instructions: ''
+    value: <p>A broken arm covers any break between the shoulder and wrist, and makes it difficult to use the arm or hand effectively.</p><p>A -6 penalty is incurred to any roll relying on the use of said arm.</p><p>Whenever a broken arm is used in an attack or skill check, make a DC 10 Fortitude save. Failure turns the broken arm into a @UUID[Compendium.pf1-critical-effects.effect-buffs.Item.indkK9vv0zFP4vCV]{Shattered Arm}.</p><p>A broken arm can be healed by making a DC 10 Heal check to set the bone, followed by 15 points of healing dedicated to the break (dedicated healing does not heal hit point damage).</p>
+  duration:
+    end: ''
+    start: -15704702412
+    units: ''
+    value: null
+  effectNotes: []
+  flags:
+    boolean: {}
+    dictionary:
+      dhDC: '10'
+      dhReceived: '0'
+      dhRequired: '15'
+      useFortSave: '10'
+  hideFromToken: false
+  level: 0
+  links:
+    children: []
+  scriptCalls:
+    - _id: RBBM7aHN
+      category: use
+      hidden: false
+      img: null
+      name: ''
+      type: macro
+      value: Compendium.pf1-critical-effects.macros.Macro.2KJDXE3liCDaKEWO
+    - _id: QdH2K5gx
+      category: toggle
+      hidden: false
+      img: null
+      name: ''
+      type: macro
+      value: Compendium.pf1-critical-effects.macros.Macro.DSmUMLDLIt9z26p0
+    - _id: GZBBPTA1
+      category: preActivate
+      hidden: false
+      img: null
+      name: ''
+      type: macro
+      value: Compendium.pf1-critical-effects.macros.Macro.PEtshlwi0AEvwNJ6
+  showInQuickbar: false
+  subType: perm
+  tag: ''
+  tags: []
+  uses:
+    autoDeductChargesCost: ''
+    maxFormula: ''
+    per: ''
+    rechargeFormula: ''
+    value: null
+type: buff

@@ -23,7 +23,20 @@ import { fileURLToPath } from "node:url";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const TABLE_DIR = path.join(ROOT, "packs-source", "critical-tables", "Critical_Tables_z7PvpigOgvVDTBtl");
+const JOURNAL_DIR = path.join(ROOT, "packs-source", "critical-effects");
 const OUT = path.join(ROOT, "data", "fumbles.json");
+const LETHAL_OUT = path.join(ROOT, "data", "lethal.json");
+
+/* Lethal content is transcribed from the JOURNAL folders, not the RollTables: the three
+ * "Lethal - …" RollTables that ship in the pack are empty (`results: []`, no formula), so the
+ * folders are the only place the entries exist. Folder name prefix -> PF1 damage type. */
+const LETHAL_DAMAGE_TYPES = {
+  Arrow: "p",
+  Piercing: "p",
+  Slashing: "s",
+  Bludgeoning: "b",
+  "Unarmed Strike": "b",
+};
 
 /** Which RollTable file feeds which table key. Order matters: the first table to
  *  introduce an effect name donates its journal UUID as the canonical one. */
@@ -130,16 +143,85 @@ async function main() {
   const json = JSON.stringify(out, null, 2)
     .replace(/\[\s+(\d+),\s+(\d+)\s+\]/g, "[$1, $2]") + "\n";
 
+  const lethal = await buildLethal(yaml, warnings);
+  const lethalJson = JSON.stringify(lethal, null, 2) + "\n";
+
   for (const w of warnings) console.error(`WARN  ${w}`);
   console.error(`\n${out.entries.length} distinct effects across ${Object.keys(tables).length} tables.`);
+  console.error(`${lethal.entries.length} lethal entries.`);
 
   if (process.argv.includes("--write")) {
     fs.mkdirSync(path.dirname(OUT), { recursive: true });
     fs.writeFileSync(OUT, json, "utf8");
-    console.error(`Wrote ${path.relative(ROOT, OUT)}`);
+    fs.writeFileSync(LETHAL_OUT, lethalJson, "utf8");
+    console.error(`Wrote ${path.relative(ROOT, OUT)} and ${path.relative(ROOT, LETHAL_OUT)}`);
   } else {
     process.stdout.write(json);
+    process.stdout.write(lethalJson);
     console.error("(dry run — pass --write to save)");
+  }
+}
+
+/**
+ * Transcribe the Lethal journal folders into data/lethal.json.
+ *
+ * Lethal entries are flavour-only and mechanically inert (concept §2), used when a hit has
+ * ALREADY been determined to kill. There is no table and no ranges — a draw is a uniform pick
+ * from the entries matching the damage type — so this file is much simpler than fumbles.json.
+ */
+async function buildLethal(yaml, warnings) {
+  const entries = [];
+
+  for (const folder of walkFolders(JOURNAL_DIR)) {
+    const meta = path.join(folder, "_Folder.yml");
+    if (!fs.existsSync(meta)) continue;
+
+    const name = yaml.load(fs.readFileSync(meta, "utf8"))?.name ?? "";
+    const match = /^(.*?)\s*-\s*Lethal$/i.exec(name);
+    if (!match) continue;
+
+    const damageType = LETHAL_DAMAGE_TYPES[match[1].trim()];
+    if (!damageType) { warnings.push(`lethal: folder "${name}" has no damage-type mapping; skipped`); continue; }
+
+    const files = fs.readdirSync(folder).filter((f) => f.endsWith(".yml") && f !== "_Folder.yml");
+    if (!files.length) { warnings.push(`lethal: folder "${name}" is empty`); continue; }
+
+    for (const file of files) {
+      const doc = yaml.load(fs.readFileSync(path.join(folder, file), "utf8"));
+      if (!doc?._id || !doc?.name) { warnings.push(`lethal: ${file} has no _id/name; skipped`); continue; }
+
+      const id = slug(doc.name);
+      const existing = entries.find((e) => e.id === id);
+      if (existing) {
+        // Same flavour reachable from two damage types — widen it rather than duplicating.
+        if (!existing.damageTypes.includes(damageType)) existing.damageTypes.push(damageType);
+        continue;
+      }
+
+      entries.push({
+        id,
+        name: doc.name,
+        journal: `Compendium.pf1-critical-effects.critical-effects.JournalEntry.${doc._id}`,
+        damageTypes: [damageType],
+        source: name,
+      });
+    }
+  }
+
+  for (const type of ["b", "p", "s"]) {
+    const count = entries.filter((e) => e.damageTypes.includes(type)).length;
+    if (count === 0) warnings.push(`lethal: no entries for damage type "${type}"`);
+  }
+
+  return { version: 1, _generated: "transcribed from the '… - Lethal' journal folders by tools/tables-to-json.mjs", entries };
+}
+
+/** Every directory under `root`, inclusive. */
+function* walkFolders(root) {
+  if (!fs.existsSync(root)) return;
+  yield root;
+  for (const entry of fs.readdirSync(root, { withFileTypes: true })) {
+    if (entry.isDirectory()) yield* walkFolders(path.join(root, entry.name));
   }
 }
 

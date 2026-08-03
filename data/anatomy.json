@@ -1,0 +1,53 @@
+{
+  "version": 1,
+  "_note": "Anatomy defaults and the three d12 location tables (DESIGN.md §5.3, concept §5). The type→anatomy mapping is data rather than code so a world can disagree with it without a patch; per-actor overrides live in flags.pf1-critical-effects.anatomy / .limbs.",
+
+  "default": { "anatomy": "humanoid", "limbs": ["arm", "leg"] },
+
+  "_byCreatureTypeNote": "Keyed by PF1 creature type (pf1.config.creatureTypes). `limbs` is what the target is assumed to HAVE; a table row naming a limb the target lacks falls through to the next candidate.",
+  "byCreatureType": {
+    "aberration":        { "anatomy": "aberrant",  "limbs": ["appendage"] },
+    "animal":            { "anatomy": "beast",     "limbs": ["leg", "tail"] },
+    "construct":         { "anatomy": "humanoid",  "limbs": ["arm", "leg"] },
+    "dragon":            { "anatomy": "beast",     "limbs": ["leg", "arm", "wing", "tail"] },
+    "fey":               { "anatomy": "humanoid",  "limbs": ["arm", "leg"] },
+    "humanoid":          { "anatomy": "humanoid",  "limbs": ["arm", "leg"] },
+    "magicalBeast":      { "anatomy": "beast",     "limbs": ["leg", "tail"] },
+    "monstrousHumanoid": { "anatomy": "humanoid",  "limbs": ["arm", "leg"] },
+    "ooze":              { "anatomy": "aberrant",  "limbs": [] },
+    "outsider":          { "anatomy": "humanoid",  "limbs": ["arm", "leg"] },
+    "plant":             { "anatomy": "aberrant",  "limbs": ["appendage"] },
+    "undead":            { "anatomy": "humanoid",  "limbs": ["arm", "leg"] },
+    "vermin":            { "anatomy": "beast",     "limbs": ["leg"] }
+  },
+
+  "_tablesNote": "Each row is an ORDERED list of candidates. The first whose slot the target has wins; `torso` and `head` are universal and always match. A row whose candidates all fail falls back to torso — an ooze rolling an appendage it doesn't have is hit in the body, not nowhere.",
+  "_fallbackSlot": "torso",
+  "tables": {
+    "humanoid": [
+      { "range": [1, 2],   "candidates": [{ "slot": "leg",   "side": "left" }] },
+      { "range": [3, 4],   "candidates": [{ "slot": "leg",   "side": "right" }] },
+      { "range": [5, 6],   "candidates": [{ "slot": "arm",   "side": "left" }] },
+      { "range": [7, 8],   "candidates": [{ "slot": "arm",   "side": "right" }] },
+      { "range": [9, 11],  "candidates": [{ "slot": "torso" }] },
+      { "range": [12, 12], "candidates": [{ "slot": "head" }] }
+    ],
+    "beast": [
+      { "range": [1, 1],   "candidates": [{ "slot": "leg",  "side": "left" }] },
+      { "range": [2, 2],   "candidates": [{ "slot": "leg",  "side": "right" }] },
+      { "range": [3, 3],   "candidates": [{ "slot": "tail" }, { "slot": "leg", "side": "left" }] },
+      { "range": [4, 4],   "candidates": [{ "slot": "tail" }, { "slot": "leg", "side": "right" }] },
+      { "range": [5, 5],   "candidates": [{ "slot": "arm",  "side": "left" },  { "slot": "leg", "side": "left" },  { "slot": "wing", "side": "left" }] },
+      { "range": [6, 6],   "candidates": [{ "slot": "wing", "side": "left" },  { "slot": "leg", "side": "left" },  { "slot": "arm",  "side": "left" }] },
+      { "range": [7, 7],   "candidates": [{ "slot": "arm",  "side": "right" }, { "slot": "leg", "side": "right" }, { "slot": "wing", "side": "right" }] },
+      { "range": [8, 8],   "candidates": [{ "slot": "wing", "side": "right" }, { "slot": "leg", "side": "right" }, { "slot": "arm",  "side": "right" }] },
+      { "range": [9, 11],  "candidates": [{ "slot": "torso" }] },
+      { "range": [12, 12], "candidates": [{ "slot": "head" }] }
+    ],
+    "aberrant": [
+      { "range": [1, 6],   "candidates": [{ "slot": "appendage" }] },
+      { "range": [7, 10],  "candidates": [{ "slot": "torso" }] },
+      { "range": [11, 12], "candidates": [{ "slot": "head" }] }
+    ]
+  }
+}

@@ -1,0 +1,193 @@
+_id: D9kusrPYLyV5hWAC
+_key: '!items!D9kusrPYLyV5hWAC'
+_stats:
+  compendiumSource: null
+  coreVersion: '13.351'
+  createdTime: 1777849171310
+  duplicateSource: null
+  exportSource: null
+  lastModifiedBy: mLW1zeZBsSCEsXlw
+  modifiedTime: 1779744240050
+  systemId: pf1
+  systemVersion: '11.11'
+effects:
+  - _id: xlXggERoC6KGbixG
+    _key: '!items.effects!D9kusrPYLyV5hWAC.xlXggERoC6KGbixG'
+    _stats:
+      compendiumSource: null
+      coreVersion: '13.351'
+      duplicateSource: null
+      exportSource: null
+      lastModifiedBy: null
+      systemId: pf1
+      systemVersion: '11.11'
+    changes: []
+    description: ''
+    disabled: false
+    duration:
+      combat: null
+      startTime: -15704786016
+    flags:
+      pf1:
+        tracker: true
+    img: icons/skills/wounds/bone-broken-marrow-red.webp
+    name: Broken Rib
+    origin: .Item.nmbQOhfRRMnAupTV
+    sort: 0
+    statuses:
+      - fatigued
+    system:
+      end: turnStart
+    tint: '#ffffff'
+    transfer: true
+    type: buff
+flags:
+  lilhelper:
+    item:
+      autoPowerAttack: false
+      hideAttacks: false
+      keen: false
+      rollOverride: ''
+      rollmodeOverride: ''
+      skipDialog: 0
+  nevelas-automation-suite:
+    itemReactiveEffects:
+      onHitByAction: {}
+      onHitByActionOverride: {}
+      onStruck:
+        buffRows: []
+        conditionRows: []
+        effects: []
+        enabled: false
+        filters:
+          excludeReach: true
+          meleeOnly: true
+        message: true
+        onStruckFunction: none
+  scene-packer:
+    hash: dbc498664c4a515c649c52004b428fc8d0e7709d
+    sourceId: Scene.FQ5mCt4L7UKYb3rs.Token.m4rvzr5RDEP5sZNz.Actor.aiYrAq6pSoQd8m4O.Item.nmbQOhfRRMnAupTV
+folder: CEBrokenBones001
+img: icons/skills/wounds/bone-broken-marrow-red.webp
+name: Broken Back
+ownership:
+  default: 0
+  mLW1zeZBsSCEsXlw: 3
+sort: 800000
+system:
+  actions:
+    - _id: KRYUYq05iuulGBDH
+      actionType: other
+      activation:
+        cost: 1
+        type: nonaction
+        unchained:
+          cost: 1
+          type: nonaction
+      ammo:
+        type: none
+      flags: {}
+      name: Set Bone
+      powerAttack:
+        critMultiplier: 1
+        damageBonus: 2
+      range:
+        units: personal
+      uses: {}
+  active: true
+  attackNotes: []
+  changeFlags:
+    heavyArmorFullSpeed: false
+    immuneToMorale: false
+    loseDexToAC: false
+    lowLightVision: false
+    mediumArmorFullSpeed: false
+    noHeavyEncumbrance: false
+    noMediumEncumbrance: false
+    seeInDarkness: false
+    seeInvisibility: false
+  changes:
+    - _id: 5bFnDSfj
+      formula: '-4'
+      operator: add
+      priority: 0
+      target: ac
+      type: untyped
+    - _id: QtWFlzG7
+      formula: '-8'
+      operator: add
+      priority: 0
+      target: attack
+      type: untyped
+    - _id: tjIcmMp5
+      formula: '-8'
+      operator: add
+      priority: 0
+      target: strSkills
+      type: untyped
+    - _id: IV35BTzQ
+      formula: '-8'
+      operator: add
+      priority: 0
+      target: dexSkills
+      type: untyped
+    - _id: 1guGlSVH
+      formula: '0'
+      operator: set
+      priority: -10
+      target: landSpeed
+      type: untyped
+  conditions: []
+  contextNotes: []
+  description:
+    instructions: ''
+    value: <p>A broken back involves a break in the vertebrae of the spine, and is severely debilitating.</p><p><a data-article-privacy="public" data-article-id="34340b9b-7215-410b-a17a-992036d613f0" data-template-type="article" class="article-link article-explorer-link tooltipstered" data-article="34340b9b-7215-410b-a17a-992036d613f0" href="https://www.worldanvil.com/w/astora-hamilcarbarca/a/movement-article">Movement</a> is set to 0 and the character suffers a -8 penalty to attack rolls and strength and dexterity checks, as well as a -4 penalty to AC.</p><p>If a character with a broken back would be given the broken back condition again, they gain the @UUID[Compendium.pf1-critical-effects.effect-buffs.Item.mxJgNxUw7r8X1hAi]{Shattered Back} condition instead.</p><p>A broken back can be healed by making a DC 15 Heal check to set the bone, followed by 30 points of healing dedicated to the break (dedicated healing does not heal hit point damage) and two full days of bed-rest. a @UUID[Compendium.pf1.spells.Item.anya5qwdjhdfyk8u]{Restoration } spell can be used in place of a full day of bed-rest.</p>
+  duration:
+    end: ''
+    start: -15704702526
+    units: ''
+    value: null
+  effectNotes: []
+  flags:
+    boolean: {}
+    dictionary:
+      dhDC: '15'
+      dhReceived: '0'
+      dhRequired: '30'
+  hideFromToken: false
+  level: 0
+  links:
+    children: []
+  scriptCalls:
+    - _id: RBBM7aHN
+      category: use
+      hidden: false
+      img: null
+      name: ''
+      type: macro
+      value: Compendium.pf1-critical-effects.macros.Macro.2KJDXE3liCDaKEWO
+    - _id: QdH2K5gx
+      category: toggle
+      hidden: false
+      img: null
+      name: ''
+      type: macro
+      value: Compendium.pf1-critical-effects.macros.Macro.DSmUMLDLIt9z26p0
+    - _id: GZBBPTA1
+      category: preActivate
+      hidden: false
+      img: null
+      name: ''
+      type: macro
+      value: Compendium.pf1-critical-effects.macros.Macro.PEtshlwi0AEvwNJ6
+  showInQuickbar: false
+  subType: perm
+  tag: ''
+  tags: []
+  uses:
+    autoDeductChargesCost: ''
+    maxFormula: ''
+    per: ''
+    rechargeFormula: ''
+    value: null
+type: buff

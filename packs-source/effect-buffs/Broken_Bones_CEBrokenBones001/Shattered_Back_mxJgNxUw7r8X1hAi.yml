@@ -1,0 +1,205 @@
+_id: mxJgNxUw7r8X1hAi
+_key: '!items!mxJgNxUw7r8X1hAi'
+_stats:
+  compendiumSource: null
+  coreVersion: '13.351'
+  createdTime: 1777849714060
+  duplicateSource: null
+  exportSource: null
+  lastModifiedBy: mLW1zeZBsSCEsXlw
+  modifiedTime: 1779744211312
+  systemId: pf1
+  systemVersion: '11.11'
+effects:
+  - _id: xlXggERoC6KGbixG
+    _key: '!items.effects!mxJgNxUw7r8X1hAi.xlXggERoC6KGbixG'
+    _stats:
+      compendiumSource: null
+      coreVersion: '13.351'
+      duplicateSource: null
+      exportSource: null
+      lastModifiedBy: null
+      systemId: pf1
+      systemVersion: '11.11'
+    changes: []
+    description: ''
+    disabled: false
+    duration:
+      combat: null
+      startTime: -15704786016
+    flags:
+      pf1:
+        tracker: true
+    img: icons/skills/wounds/bone-broken-marrow-red.webp
+    name: Broken Back
+    origin: .Item.pF0VjrsD03opcN5H
+    sort: 0
+    statuses:
+      - fatigued
+    system:
+      end: turnStart
+    tint: '#ffffff'
+    transfer: true
+    type: buff
+flags:
+  lilhelper:
+    item:
+      autoPowerAttack: false
+      hideAttacks: false
+      keen: false
+      rollOverride: ''
+      rollmodeOverride: ''
+      skipDialog: 0
+  nevelas-automation-suite:
+    itemReactiveEffects:
+      onHitByAction: {}
+      onHitByActionOverride: {}
+      onStruck:
+        buffRows: []
+        conditionRows: []
+        effects: []
+        enabled: false
+        filters:
+          excludeReach: true
+          meleeOnly: true
+        message: true
+        onStruckFunction: none
+  scene-packer:
+    hash: eba1c5a33dc32a154d8fe57f4e3cee7bf0cd5a4a
+    sourceId: Scene.FQ5mCt4L7UKYb3rs.Token.m4rvzr5RDEP5sZNz.Actor.aiYrAq6pSoQd8m4O.Item.pF0VjrsD03opcN5H
+folder: CEBrokenBones001
+img: icons/skills/wounds/bone-broken-marrow-red.webp
+name: Shattered Back
+ownership:
+  default: 0
+  mLW1zeZBsSCEsXlw: 3
+sort: 700000
+system:
+  actions:
+    - _id: KRYUYq05iuulGBDH
+      actionType: other
+      activation:
+        cost: 1
+        type: nonaction
+        unchained:
+          cost: 1
+          type: nonaction
+      ammo:
+        type: none
+      flags: {}
+      name: Set Bone
+      powerAttack:
+        critMultiplier: 1
+        damageBonus: 2
+      range:
+        units: personal
+      uses: {}
+  active: true
+  attackNotes: []
+  changeFlags:
+    heavyArmorFullSpeed: false
+    immuneToMorale: false
+    loseDexToAC: false
+    lowLightVision: false
+    mediumArmorFullSpeed: false
+    noHeavyEncumbrance: false
+    noMediumEncumbrance: false
+    seeInDarkness: false
+    seeInvisibility: false
+  changes:
+    - _id: Ip863NBz
+      formula: '-6'
+      operator: add
+      priority: 0
+      target: ac
+      type: untyped
+    - _id: QiOVl1d1
+      formula: '0'
+      operator: set
+      priority: -10
+      target: landSpeed
+      type: untyped
+    - _id: xDIMcnSv
+      formula: '1'
+      operator: set
+      priority: -10
+      target: dex
+      type: untyped
+    - _id: iMi6XIcB
+      formula: '-8'
+      operator: add
+      priority: 0
+      target: attack
+      type: untyped
+    - _id: tXOwpc5L
+      formula: '-8'
+      operator: add
+      priority: 0
+      target: strSkills
+      type: untyped
+    - _id: lt1Tdlz8
+      formula: '-8'
+      operator: add
+      priority: 0
+      target: dexSkills
+      type: untyped
+  conditions: []
+  contextNotes:
+    - target: attack
+      text: '@Save[fort;dc=15] to take the action.'
+    - target: strSkills
+      text: '@Save[fort;dc=15] to take the action.'
+    - target: dexSkills
+      text: '@Save[fort;dc=15] to take the action.'
+  description:
+    instructions: ''
+    value: <p>A shattered back involves extensive damage to the vertebrae of the spine, and renders a creature nearly <span class="world-variable world-variable-string condition-helpless"><a href="https://www.worldanvil.com/w/astora-hamilcarbarca/a/conditions-article#helpless" target="_blank">Helpless</a></span>.</p><p><a data-article-privacy="public" data-article-id="34340b9b-7215-410b-a17a-992036d613f0" data-template-type="article" class="article-link article-explorer-link tooltipstered" data-article="34340b9b-7215-410b-a17a-992036d613f0" href="https://www.worldanvil.com/w/astora-hamilcarbarca/a/movement-article">Movement</a> is set to 0, the character cannot stand without assistance, their <span class="world-variable world-variable-string ability-score-dexterity"><a href="https://www.worldanvil.com/w/astora-hamilcarbarca/a/ability-scores-article#dexterity" target="_blank">Dexterity</a></span> is set to 1, they suffer a -6 penalty to AC, and they must suceed on a DC 15 <span class="world-variable world-variable-string saving-throw-fortitude-save"><a href="https://www.worldanvil.com/w/astora-hamilcarbarca/a/saving-throws-article#fortitude_save" target="_blank">Fortitude Save</a></span> in order to make an attack, cast a spell, or perform any other similar task using only their upper body. When they are able to do so, any check or attack roll made as part of the action is done at a -8 penalty.</p><p>A shattered back can be healed by making a DC 20 Heal check to set the bone, followed by 60 points of healing dedicated to the break (dedicated healing does not heal hit point damage) and five full days of bed-rest. a @UUID[Compendium.pf1.spells.Item.anya5qwdjhdfyk8u]{Restoration } spell can be used in place of a full day of bed-rest.</p>
+  duration:
+    end: ''
+    start: -15704786016
+    units: ''
+    value: null
+  effectNotes: []
+  flags:
+    boolean: {}
+    dictionary:
+      dhDC: '20'
+      dhReceived: '0'
+      dhRequired: '60'
+  hideFromToken: false
+  level: 0
+  links:
+    children: []
+  scriptCalls:
+    - _id: RBBM7aHN
+      category: use
+      hidden: false
+      img: null
+      name: ''
+      type: macro
+      value: Compendium.pf1-critical-effects.macros.Macro.2KJDXE3liCDaKEWO
+    - _id: QdH2K5gx
+      category: toggle
+      hidden: false
+      img: null
+      name: ''
+      type: macro
+      value: Compendium.pf1-critical-effects.macros.Macro.DSmUMLDLIt9z26p0
+    - _id: GZBBPTA1
+      category: preActivate
+      hidden: false
+      img: null
+      name: ''
+      type: macro
+      value: Compendium.pf1-critical-effects.macros.Macro.PEtshlwi0AEvwNJ6
+  showInQuickbar: false
+  subType: perm
+  tag: ''
+  tags: []
+  uses:
+    autoDeductChargesCost: ''
+    maxFormula: ''
+    per: ''
+    rechargeFormula: ''
+    value: null
+type: buff

@@ -1,0 +1,80 @@
+{{!-- Standalone manual resolver (DESIGN.md §7.5). Feeds resolve/context.mjs by hand, then opens
+      the same prompt card the automated flow uses. --}}
+<div class="ce-resolver-body">
+
+  <div class="form-group">
+    <label>Target</label>
+    <div class="form-fields">
+      {{#if hasTargets}}
+        <select name="targetId">
+          {{#each targets}}<option value="{{id}}" {{#if (eq id ../seed.targetId)}}selected{{/if}}>{{name}}</option>{{/each}}
+        </select>
+      {{else}}
+        <select name="targetId" disabled><option value="">no tokens on this scene</option></select>
+      {{/if}}
+    </div>
+    <p class="hint">Anatomy and size are read from the target unless overridden below.</p>
+  </div>
+
+  <div class="form-group">
+    <label>Critical multiplier</label>
+    <div class="form-fields">
+      <select name="critMult">
+        {{#each critMults}}<option value="{{this}}" {{#if (eq this ../seed.critMult)}}selected{{/if}}>&times;{{this}}</option>{{/each}}
+      </select>
+    </div>
+  </div>
+
+  <div class="form-group">
+    <label>Damage type</label>
+    <div class="form-fields">
+      <select name="damageType">
+        {{#each damageTypes}}<option value="{{key}}" {{#if (eq key ../seed.damageType)}}selected{{/if}}>{{label}}</option>{{/each}}
+      </select>
+    </div>
+  </div>
+
+  <div class="form-group">
+    <label>Weapon class</label>
+    <div class="form-fields">
+      <select name="weaponClass">
+        {{#each weaponClasses}}<option value="{{key}}" {{#if (eq key ../seed.weaponClass)}}selected{{/if}}>{{label}}</option>{{/each}}
+      </select>
+    </div>
+  </div>
+
+  <div class="form-group">
+    <label>Size (attacker / target)</label>
+    <div class="form-fields ce-size-fields">
+      <input type="number" name="attackerSize" value="{{seed.attackerSize}}" min="0" max="8" step="1">
+      <input type="number" name="targetSize" value="{{seed.targetSize}}" min="0" max="8" step="1">
+    </div>
+    <p class="hint">PF1 size index: 0 Fine … 4 Medium … 8 Colossal. One step of difference shifts the grade one tier.</p>
+  </div>
+
+  <div class="form-group">
+    <label>Anatomy override</label>
+    <div class="form-fields">
+      <select name="anatomy">
+        <option value="" {{#unless seed.anatomy}}selected{{/unless}}>— from the target —</option>
+        {{#each anatomies}}<option value="{{this}}" {{#if (eq this ../seed.anatomy)}}selected{{/if}}>{{this}}</option>{{/each}}
+      </select>
+    </div>
+  </div>
+
+  {{!-- What the inputs currently buy, before committing to them. --}}
+  <div class="ce-resolver-preview">
+    <span class="ce-preview-label">Critical Power</span>
+    <span class="ce-preview-value">
+      {{preview.grade}} &mdash; {{preview.formula}}{{#if preview.flat}}{{#if (gt preview.flat 0)}} +{{preview.flat}}{{else}} {{preview.flat}}{{/if}}{{/if}}
+    </span>
+    {{#unless (eq preview.base preview.grade)}}
+      <span class="ce-preview-from">shifted from {{preview.base}}</span>
+    {{/unless}}
+  </div>
+
+</div>
+
+<footer class="form-footer">
+  <button type="submit"><i class="fa-solid fa-burst"></i> Open Resolution</button>
+</footer>

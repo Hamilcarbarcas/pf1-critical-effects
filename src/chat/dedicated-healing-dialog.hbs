@@ -1,0 +1,29 @@
+<form class="dedicated-healing-form">
+  <p class="dh-incoming">{{totalHealing}} HP incoming</p>
+  <table class="dh-table">
+    <thead>
+      <tr>
+        <th class="dh-col-name">Condition</th>
+        <th class="dh-col-progress">Progress</th>
+        <th class="dh-col-input">Allocate</th>
+      </tr>
+    </thead>
+    <tbody>
+      {{#each buffs}}
+      <tr>
+        <td class="dh-name">{{name}}</td>
+        <td class="dh-progress">{{received}} / {{required}} HP</td>
+        <td>
+          <input type="number" class="dh-bone-input"
+                 data-item-id="{{id}}"
+                 min="0" max="{{remaining}}"
+                 value="0">
+        </td>
+      </tr>
+      {{/each}}
+    </tbody>
+  </table>
+  <div class="dh-footer">
+    <span>Missing HP: <strong>{{maxHpHealable}}</strong></span>
+  </div>
+</form>

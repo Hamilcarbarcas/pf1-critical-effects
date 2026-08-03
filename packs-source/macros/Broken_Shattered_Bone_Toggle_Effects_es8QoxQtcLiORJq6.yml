@@ -1,0 +1,67 @@
+_id: es8QoxQtcLiORJq6
+_key: '!macros!es8QoxQtcLiORJq6'
+_stats:
+  compendiumSource: null
+  coreVersion: '13.351'
+  createdTime: 1777850873969
+  duplicateSource: null
+  exportSource: null
+  lastModifiedBy: mLW1zeZBsSCEsXlw
+  modifiedTime: 1777852578603
+  systemId: pf1
+  systemVersion: '11.11'
+author: mLW1zeZBsSCEsXlw
+command: |-
+  if (state) {
+    if (item.name === "Fractured Neck") {
+      await actor.update({ "system.attributes.hp.value": 0 });
+      actor.rollSavingThrow("fort", { skipDialog: false, dc: 20 });
+
+    } else if (item.name === "Broken Neck") {
+      const { value: hp, nonlethal } = actor.system.attributes.hp;
+      await actor.update({ "system.attributes.hp.nonlethal": Math.max(hp, nonlethal) });
+
+    } else if (item.name === "Broken Skull") {
+      await actor.update({ "system.attributes.hp.value": 0 });
+
+      const intRoll = await new Roll("2d4").evaluate();
+      await intRoll.toMessage({ flavor: "Broken Skull — Intelligence Damage" });
+      await actor.update({ "system.abilities.int.damage": actor.system.abilities.int.damage + intRoll.total });
+
+      const wisRoll = await new Roll("2d4").evaluate();
+      await wisRoll.toMessage({ flavor: "Broken Skull — Wisdom Damage" });
+      await actor.update({ "system.abilities.wis.damage": actor.system.abilities.wis.damage + wisRoll.total });
+
+    } else if (item.name === "Fractured Skull") {
+      actor.rollSavingThrow("fort", { skipDialog: false, dc: 20 }).then(async (saveResult) => {
+        if (!saveResult) return;
+
+        const total = saveResult.rolls?.[0]?.total;
+        if (total === undefined) return ui.notifications.warn("Could not read fort save result.");
+
+        if (total < 20) return; // user handles death on failure
+
+        await actor.update({ "system.attributes.hp.value": 0 });
+
+        const intRoll = await new Roll("4d4").evaluate();
+        await intRoll.toMessage({ flavor: "Fractured Skull — Intelligence Damage" });
+        await actor.update({ "system.abilities.int.damage": actor.system.abilities.int.damage + intRoll.total });
+
+        const wisRoll = await new Roll("4d4").evaluate();
+        await wisRoll.toMessage({ flavor: "Fractured Skull — Wisdom Damage" });
+        await actor.update({ "system.abilities.wis.damage": actor.system.abilities.wis.damage + wisRoll.total });
+      });
+    }
+  }
+flags:
+  scene-packer:
+    hash: 40b37ca008ff2ec49e1c3283259b8ee8fbc1fdff
+folder: null
+img: icons/svg/dice-target.svg
+name: Broken/Shattered Bone Toggle Effects
+ownership:
+  default: 0
+  mLW1zeZBsSCEsXlw: 3
+scope: global
+sort: 0
+type: script

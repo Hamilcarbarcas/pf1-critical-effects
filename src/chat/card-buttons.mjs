@@ -13,6 +13,29 @@ const DEFAULT_ICON = "fa-solid fa-burst";
 /** type -> handler(descriptor, { message, event }) */
 const HANDLERS = new Map();
 
+/* message id -> tail of that message's pending flag writes.
+ *
+ * Both addButtons and removeButton are read-modify-write on one array, and independent features
+ * attach to the SAME card from the SAME hook: `pf1PostActionUse` invokes its callbacks
+ * synchronously without awaiting them, so two features' getFlag reads both complete before either
+ * setFlag lands and the later write silently discards the earlier button. Serialising per message
+ * makes each mutation read what the previous one wrote. */
+const QUEUES = new Map();
+
+function enqueue(message, mutate) {
+  const key = message.id;
+  const prev = QUEUES.get(key) ?? Promise.resolve();
+  // Errors are contained so one failed write can't poison every later write to the same card.
+  const next = prev.then(mutate, mutate).catch((err) => {
+    console.error(`${MODULE_ID} | card-buttons: updating ${key} failed:`, err);
+  });
+  QUEUES.set(key, next);
+  next.finally(() => {
+    if (QUEUES.get(key) === next) QUEUES.delete(key);
+  });
+  return next;
+}
+
 export function registerButtonType(type, handler) {
   if (HANDLERS.has(type)) console.error(`${MODULE_ID} | card-buttons: type "${type}" re-registered`);
   HANDLERS.set(type, handler);
@@ -25,15 +48,21 @@ export function registerButtonType(type, handler) {
  */
 export async function addButtons(message, descriptors) {
   if (!message || !descriptors?.length) return;
-  const existing = message.getFlag(MODULE_ID, BUTTONS_FLAG) ?? [];
   const stamped = descriptors.map((d) => ({ id: d.id ?? foundry.utils.randomID(), ...d }));
-  await message.setFlag(MODULE_ID, BUTTONS_FLAG, [...existing, ...stamped]);
+  // Read inside the queued turn, so it sees any button another feature just added to this card.
+  return enqueue(message, async () => {
+    const existing = message.getFlag(MODULE_ID, BUTTONS_FLAG) ?? [];
+    await message.setFlag(MODULE_ID, BUTTONS_FLAG, [...existing, ...stamped]);
+  });
 }
 
 export async function removeButton(message, id) {
-  const existing = message.getFlag(MODULE_ID, BUTTONS_FLAG);
-  if (!Array.isArray(existing)) return;
-  await message.setFlag(MODULE_ID, BUTTONS_FLAG, existing.filter((d) => d.id !== id));
+  if (!message) return;
+  return enqueue(message, async () => {
+    const existing = message.getFlag(MODULE_ID, BUTTONS_FLAG);
+    if (!Array.isArray(existing)) return;
+    await message.setFlag(MODULE_ID, BUTTONS_FLAG, existing.filter((d) => d.id !== id));
+  });
 }
 
 async function dispatch(descriptor, ctx) {
