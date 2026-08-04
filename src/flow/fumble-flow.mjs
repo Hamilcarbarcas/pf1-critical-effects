@@ -4,7 +4,7 @@
  *                          critical-fumble.mjs). Synchronous, so Dice So Nice sees the die.
  *   2. pf1PostActionUse  — attach a "Resolve Fumble" button to the attack card.
  *   3. click             — GM picks the attack type (pre-selected from the weapon).
- *   4. draw              — a targeted 1d12 roll request carrying the table, which the PLAYER
+ *   4. draw              — a targeted 1d20 roll request carrying the table, which the PLAYER
  *                          clicks to roll. Posting it ends the GM's turn in the flow.
  *   5. result            — picked up from the rollComplete hook whenever that roll lands, then
  *                          appended to the original attack card, journal linked.
@@ -87,21 +87,33 @@ export function standardConfirmFormula(attackRoll) {
 /**
  * Which fumble table this action draws from.
  *
- * Natural attacks are their own item subtype. Everything else keys off the action's attack type:
- * a ranged weapon in the bow/crossbow groups draws from `bow`, any other ranged attack from
- * `thrown`, and melee from `melee`.
+ * Best-effort, and only ever a **pre-selection**: the Resolve Fumble dialog shows the full list
+ * with this choice highlighted, so a wrong guess costs one click. That is why nothing here strains
+ * to be clever.
+ *
+ * `bows` and `crossbows` come straight from PF1's own weapon groups, so that split is exact.
+ * `unarmed` is the soft one — PF1 has no first-class marker for an unarmed strike (there is no
+ * `unarmed` weapon group and no attack subtype for it), so it is recognised by name and by the
+ * `close` weapon group, and anything unrecognised falls through to `melee`. Detecting it wrongly
+ * is cheap; guessing elaborately would not be.
  */
 export function inferAttackType(item, action) {
   if (item?.type === "attack" && item.system?.subType === "natural") return "natural";
 
-  const actionType = action?.data?.actionType ?? action?.actionType;
-  const isRanged = actionType === "rwak" || actionType === "rsak";
-  if (!isRanged) return "melee";
-
   const groups = item?.system?.weaponGroups?.value ?? item?.system?.weaponGroups?.base ?? [];
   const list = Array.isArray(groups) ? groups : Object.keys(groups ?? {});
-  if (list.includes("bows") || list.includes("crossbows")) return "bow";
-  return "thrown";
+
+  const actionType = action?.data?.actionType ?? action?.actionType;
+  const isRanged = actionType === "rwak" || actionType === "rsak";
+
+  if (isRanged) {
+    if (list.includes("crossbows")) return "crossbows";
+    if (list.includes("bows")) return "bows";
+    return "thrown";
+  }
+
+  if (/\bunarmed\b/i.test(item?.name ?? "") || list.includes("close")) return "unarmed";
+  return "melee";
 }
 
 /* A natural 1 is the whole gate. The confirmation roll is rolled and displayed, but nothing

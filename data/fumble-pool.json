@@ -1,0 +1,233 @@
+{
+  "version": 1,
+  "_source": "THE source for fumble content. data/fumbles.json is generated from this file by tools/fumbles-to-tables.mjs and must not be hand-edited.",
+  "_tags": "`attackTypes` selects which of the six fumble tables an entry can appear in. There is no rank: the twenty rows of a fumble table are unordered peers, so the die picks flavour rather than severity.",
+  "entries": [
+    {
+      "id": "broken-arrow",
+      "name": "Broken Arrow",
+      "attackTypes": [
+        "bows",
+        "crossbows"
+      ],
+      "journal": "Compendium.pf1-critical-effects.critical-effects.JournalEntry.1NpFUxV9qeFIc51T",
+      "buff": null,
+      "note": null
+    },
+    {
+      "id": "broken-string",
+      "name": "Broken String",
+      "attackTypes": [
+        "bows",
+        "crossbows"
+      ],
+      "journal": "Compendium.pf1-critical-effects.critical-effects.JournalEntry.QW0upC5AImqltdJK",
+      "buff": null,
+      "note": null
+    },
+    {
+      "id": "broken-weapon",
+      "name": "Broken Weapon",
+      "attackTypes": [
+        "thrown"
+      ],
+      "journal": "Compendium.pf1-critical-effects.critical-effects.JournalEntry.WxoRUheGhavqQZwq",
+      "buff": null,
+      "note": null
+    },
+    {
+      "id": "dislocated-elbow",
+      "name": "Dislocated Elbow",
+      "attackTypes": [
+        "bows",
+        "crossbows",
+        "melee",
+        "natural",
+        "thrown"
+      ],
+      "journal": "Compendium.pf1-critical-effects.critical-effects.JournalEntry.qfIRnk10XvHn05MT",
+      "buff": null,
+      "note": null
+    },
+    {
+      "id": "dislocated-shoulder",
+      "name": "Dislocated Shoulder",
+      "attackTypes": [
+        "bows",
+        "crossbows",
+        "natural",
+        "thrown"
+      ],
+      "journal": "Compendium.pf1-critical-effects.critical-effects.JournalEntry.SnESOs7oVjfR23C6",
+      "buff": null,
+      "note": null
+    },
+    {
+      "id": "dropped-arrow",
+      "name": "Dropped Arrow",
+      "attackTypes": [
+        "bows",
+        "crossbows"
+      ],
+      "journal": "Compendium.pf1-critical-effects.critical-effects.JournalEntry.AksyYKSQXHpeQkDr",
+      "buff": null,
+      "note": null
+    },
+    {
+      "id": "dropped-bow",
+      "name": "Dropped Bow",
+      "attackTypes": [
+        "bows",
+        "crossbows"
+      ],
+      "journal": "Compendium.pf1-critical-effects.critical-effects.JournalEntry.UDN3rCe3D6xQQpBe",
+      "buff": null,
+      "note": null
+    },
+    {
+      "id": "dropped-weapon",
+      "name": "Dropped Weapon",
+      "attackTypes": [
+        "melee",
+        "thrown"
+      ],
+      "journal": "Compendium.pf1-critical-effects.critical-effects.JournalEntry.DkQDSoaapXkYV9iY",
+      "buff": null,
+      "note": null
+    },
+    {
+      "id": "fall-down",
+      "name": "Fall Down",
+      "attackTypes": [
+        "bows",
+        "crossbows"
+      ],
+      "journal": "Compendium.pf1-critical-effects.critical-effects.JournalEntry.IjUYwxF4kQRtfLvu",
+      "buff": null,
+      "note": null
+    },
+    {
+      "id": "fell-down",
+      "name": "Fell Down",
+      "attackTypes": [
+        "melee",
+        "natural",
+        "thrown"
+      ],
+      "journal": "Compendium.pf1-critical-effects.critical-effects.JournalEntry.RmyPFJ882jp4lcq4",
+      "buff": null,
+      "note": null
+    },
+    {
+      "id": "flung-weapon",
+      "name": "Flung Weapon",
+      "attackTypes": [
+        "melee",
+        "thrown"
+      ],
+      "journal": "Compendium.pf1-critical-effects.critical-effects.JournalEntry.1RNKuvxB8Et77i7u",
+      "buff": null,
+      "note": null
+    },
+    {
+      "id": "horrific-facial-scar",
+      "name": "Horrific Facial Scar",
+      "attackTypes": [
+        "melee",
+        "natural"
+      ],
+      "journal": "Compendium.pf1-critical-effects.critical-effects.JournalEntry.mD3jUxZfPXFESOYx",
+      "buff": null,
+      "note": null
+    },
+    {
+      "id": "juggled-weapon",
+      "name": "Juggled Weapon",
+      "attackTypes": [
+        "melee",
+        "thrown"
+      ],
+      "journal": "Compendium.pf1-critical-effects.critical-effects.JournalEntry.FL96GikENrj0KvNm",
+      "buff": null,
+      "note": null
+    },
+    {
+      "id": "slipped-vertebrae",
+      "name": "Slipped Vertebrae",
+      "attackTypes": [
+        "bows",
+        "crossbows",
+        "melee",
+        "natural",
+        "thrown"
+      ],
+      "journal": "Compendium.pf1-critical-effects.critical-effects.JournalEntry.EwcIVTS7vmNFQS7B",
+      "buff": null,
+      "note": null
+    },
+    {
+      "id": "sprained-ankle",
+      "name": "Sprained Ankle",
+      "attackTypes": [
+        "melee",
+        "natural"
+      ],
+      "journal": "Compendium.pf1-critical-effects.critical-effects.JournalEntry.vyS7PHcNDqEsV5RL",
+      "buff": null,
+      "note": null
+    },
+    {
+      "id": "sprained-wrist",
+      "name": "Sprained Wrist",
+      "attackTypes": [
+        "bows",
+        "crossbows",
+        "melee",
+        "natural",
+        "thrown"
+      ],
+      "journal": "Compendium.pf1-critical-effects.critical-effects.JournalEntry.EjqnsX0UXdtrOyBT",
+      "buff": null,
+      "note": null
+    },
+    {
+      "id": "stumble",
+      "name": "Stumble",
+      "attackTypes": [
+        "bows",
+        "crossbows",
+        "melee",
+        "natural",
+        "thrown"
+      ],
+      "journal": "Compendium.pf1-critical-effects.critical-effects.JournalEntry.BwcfrmpL99MqtxCr",
+      "buff": null,
+      "note": null
+    },
+    {
+      "id": "twisted-knee",
+      "name": "Twisted Knee",
+      "attackTypes": [
+        "melee",
+        "natural"
+      ],
+      "journal": "Compendium.pf1-critical-effects.critical-effects.JournalEntry.H3p2gxoc5kvEFncu",
+      "buff": null,
+      "note": null
+    },
+    {
+      "id": "wrong-target",
+      "name": "Wrong Target",
+      "attackTypes": [
+        "bows",
+        "crossbows",
+        "melee",
+        "natural",
+        "thrown"
+      ],
+      "journal": "Compendium.pf1-critical-effects.critical-effects.JournalEntry.Qr1LUgaUs4URNZjO",
+      "buff": null,
+      "note": null
+    }
+  ]
+}

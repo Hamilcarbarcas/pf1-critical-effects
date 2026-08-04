@@ -4,9 +4,9 @@ Companion to [`../astora-critical-effects-plan.md`](../astora-critical-effects-p
 is the **rules concept** and stays the source of truth for the rules. This document is the
 **engineering plan**: module shape, data schemas, layer boundaries, and build order.
 
-Content authoring (putting each damage-type × body-part table's twelve rows in severity order,
-filling the placeholder rows, attaching buffs) is a **separate, later track**. Everything below
-is about standing up the framework that content will plug into.
+Content authoring (tagging effects into the pool, ranking them, attaching buffs) is a
+**separate, parallel track** with its own guide in [`content/README.md`](content/README.md).
+Everything below is about the framework that content plugs into.
 
 ---
 
@@ -16,7 +16,7 @@ is about standing up the framework that content will plug into.
 |---|---|
 | Where the code lives | Grow the existing `pf1-critical-effects` module from content-only into code + content. |
 | Effect storage | Versioned **JSON catalog** in the module — a flat entry list plus one 12-row table per damage type × anatomy × body part (§3); journals stay the human-readable prose; a new **buff compendium** carries mechanics. |
-| Content authoring | Markdown worksheets in `content/`, folded into the catalog by a tool behind a per-table `approved` gate (§3). Nobody hand-edits 1,560 rows of JSON. |
+| Content authoring | A **tagged pool** (`data/pool.json`) that generates the tables (§3). One effect tagged for several damage types and body parts covers many rows, so the grid is saturated by a few hundred effects rather than 1,560. |
 | Mechanical effects | A **typed-outcome framework** (damage / condition / buff / …) with a handler registry — not free-form scripts. |
 | Content strategy | **Journal-first.** Entries ship with prose and *no* mechanics; those get attached incrementally over time. |
 | Player interaction | GM-run **dialog** + player-rolled roll-requests; the player's only decisions are the dice and a called shot. *(Revised twice during phase 7 — the resolution was originally a persistent chat card, and luck-point spending was built and then removed; see §7.2 and §7.3.)* |
@@ -65,9 +65,18 @@ pf1-critical-effects/
                                      new:      effect-buffs (Item), macros (Macro)
   packs-source/
   data/
-    effects.json                  ← the catalog (§3)
+    pool.json                     ← THE content source: tagged effect pool (§3)
+    effects.json                  ← GENERATED from pool.json — the catalog (§3)
     fumbles.json                  ← fumble catalog (§4)
     anatomy.json                  ← creature-type → anatomy defaults (§5.3)
+  content/
+    README.md                     ← pool format, tagging rules, how to fill it
+    mortal.md                     ← the 13+ addendum, 13 rows (§3)
+    COVERAGE.md                   ← GENERATED work queue
+  tools/
+    pool-to-tables.mjs            ← pool.json + mortal.md → effects.json
+    pool-report.mjs               ← pool.json → content/COVERAGE.md
+    tables-to-json.mjs            ← fumble RollTables → fumbles.json
   src/
     critical-effects.mjs          ← entry: init/ready wiring, API surface
     catalog/
@@ -119,7 +128,7 @@ and the fumble slice possible before the PF1 pipeline work lands.
   ────────────────
   outcomes         ← typed descriptors → registered handlers → applied state
   ────────────────
-  catalog          ← JSON tables: effectFor(damageType, location, total) → entry
+  catalog          ← JSON tables: effectFor(damageType, anatomy, location, total) → entry
   ────────────────
   integrations     ← roll-requests, dedicated healing, PF1 pipeline
 ```
@@ -216,17 +225,52 @@ Notes tied to the rules concept:
   time, and no part of the engine may assume they exist.
 - The catalog is loaded once at `ready` and exposed read-only.
 
-### Authoring: `content/` and the two tools
+### Authoring: the tagged pool
 
-Nobody hand-edits `effects.json` — 1,560 rows of entry ids is not reviewable. Content is written
-as markdown worksheets in `content/` (one per damage type, plus `mortal.md`) and folded in by
-`tools/worksheets-to-catalog.mjs`; `tools/scaffold-worksheets.mjs` is its inverse. Round-tripping
-an untouched catalog is byte-identical, which is the property that makes the pair safe.
+> **Revised in phase 9 — the pool is back.** §3 has now gone pool → tables → pool, so the history
+> is worth stating plainly rather than looking like a flip-flop. Phase 7 collapsed the v1 tagged
+> pool into flat tables on the grounds that *"the shipped content turned out to be authored as one
+> 1d12 table per damage type × body part already"*. That premise was retired by the discovery that
+> **every shipped journal and effect is a placeholder** — the buffs are the refined part, and where
+> they sit in the chart was never settled. With no authored tables to preserve, the argument for
+> flattening evaporated and the pool's arithmetic reasserted itself.
 
-A worksheet section carries a **`**Status:** draft | approved`** line, and only `approved`
-sections fold in. That is the review gate: content lands one reviewed table at a time and a
-half-written worksheet is safe to leave on disk. Format, shorthands, and the shared-entry rules
-are in [`content/README.md`](content/README.md).
+`data/pool.json` is the source of truth. `data/effects.json` is **build output** and is not
+hand-edited; `tools/pool-to-tables.mjs` regenerates it. Runtime is untouched by this — the engine
+still looks a row up by index in a stored 12-row table, and nothing queries the pool at the table.
+
+The reason is arithmetic. The grid is 1,560 rows and authoring it directly is not a real plan; but
+one effect tagged for four damage types and five body parts covers twenty of those rows, so
+saturating the grid needs a pool on the order of a **few hundred** effects. Tag once, land
+everywhere it fits.
+
+A pool entry carries `rank`, `slots` and `damageTypes` alongside the usual `journal` / `buff` /
+`note`. Slots are anatomy-qualified (`humanoid/arm`, or `*/torso` for anatomy-agnostic).
+
+**Rank is a severity score, not a row address**, and that distinction is the design. If rank were
+an address the pool would need an exact peg for all 1,560 holes — an effect written as a 6 for
+bludgeoning could not help a slashing table that already has a 6 and needs a 7, and every near-miss
+would demand a brand new effect. Instead each candidate is seated at the free row **nearest its
+rank, within ±1**, which is loose enough that one effect covers most of a three-row band.
+
+The cap matters as much as the flex. Beyond ±1 a row stays a **placeholder** rather than reaching
+further, because an unbounded fit would drop a rank-8 wound on row 12 and then count it as filled —
+wrecking the severity ladder and the progress metric in one move. `--drift n` adjusts the window
+for a more playable build from a thin pool. `pins` nail the handful of placements that are an
+authorial decision rather than a consequence of a score.
+
+Placement is global to a table, not incremental, so adding an effect can shift existing rows. That
+is the price of never being deadlocked, and it is why the tables are generated. It is fully
+deterministic: same pool in, same tables out.
+
+`tools/pool-report.mjs` writes `content/COVERAGE.md`, which is the work queue — band-gaps in
+tables that already have content (cheap wins) separated from untouched tables (from-scratch jobs),
+plus the untriaged entries that have no rank and therefore land nowhere. Full rules in
+[`content/README.md`](content/README.md).
+
+**Mortal is not pool-shaped** and stays a 13-row worksheet in `content/mortal.md`: it is authored
+once per anatomy × location and is damage-type agnostic, so there is nothing to tag and nothing to
+select. The generator reads it alongside the pool.
 
 **Severity is authoring structure, not a runtime layer** — see §5.2. The four bands are how the
 twelve rows are *grouped while being written* (three at a time, mildest band first), and
@@ -244,34 +288,62 @@ still placeholders. Cheap to write, and it's the thing that keeps the content tr
 
 ## 4. Fumble catalog (`data/fumbles.json`)
 
-Deliberately simpler — flat d12 per attack type, no location, no damage type, matching both
-the concept doc and the tables already in `packs/critical-tables`.
+Deliberately simpler than the effect catalog — no location, no damage type, no severity. A flat
+**d20 per attack type**, generated from a tagged pool exactly as the effect tables are.
 
 ```jsonc
+// data/fumble-pool.json — THE source
 {
   "version": 1,
-  "tables": {
-    "melee":   [ { "range": [1,1], "id": "dislocated-elbow" }, /* … */ ],
-    "bow":     [ /* … */ ],
-    "thrown":  [ /* … */ ],
-    "natural": [ /* … */ ]
-  },
   "entries": [
-    { "id": "dislocated-elbow", "name": "Dislocated Elbow", "band": "moderate",
-      "journal": "Compendium.pf1-critical-effects.critical-effects.JournalEntry.…",
-      "outcomes": [ … ] }
+    { "id": "dropped-weapon", "name": "Dropped Weapon",
+      "attackTypes": ["melee", "thrown", "bows", "crossbows"],   // the only tag
+      "journal": "Compendium.…", "buff": null, "note": null }
   ]
+}
+
+// data/fumbles.json — GENERATED by tools/fumbles-to-tables.mjs
+{
+  "version": 2,
+  "tables": {
+    "melee":     [ { "range": [1,1], "id": "dropped-weapon" }, /* …20 rows */ ],
+    "thrown":    [ … ], "bows":    [ … ], "crossbows": [ … ],
+    "unarmed":   [ … ], "natural": [ … ]
+  },
+  "entries": [ … ]
 }
 ```
 
-`natural` does not exist in the current pack — it's the one fumble table that needs authoring
-before phase 1 closes. Bow / Melee / Thrown transcribe directly from the existing RollTables.
+### Six attack types
 
-**Why the JSON and not the RollTables:** the RollTables stay as GM-facing browsable content,
-but the flow draws from JSON so it can attach outcomes, reason about bands, and run without a
-compendium round-trip. Same relationship as catalog↔journals. A one-off transcription script
-(`tools/tables-to-json.mjs`) generates the initial JSON from `packs-source/` so this isn't
-hand-typing 35 rows.
+`melee`, `thrown`, `bows`, `crossbows`, `unarmed`, `natural`. Bows and crossbows are split because
+PF1's own weapon groups are (`pf1.config.weaponGroups`) and because they fail differently — a
+bowstring snaps, a crossbow's mechanism jams. Unarmed and natural are likewise distinct: "you break
+a finger" reads for a fist and not for a bite.
+
+`inferAttackType` pre-selects from the weapon; bows/crossbows come straight off the weapon group, so
+that split is exact. **Unarmed is a soft guess** — PF1 has no first-class unarmed marker (no weapon
+group, no attack subtype), so it keys off the name and the `close` group and otherwise falls through
+to `melee`. It is only ever a pre-selection: the dialog shows all six, so a wrong guess costs a click.
+
+### No rank, and why
+
+The twenty rows are **unordered peers**. An effect table's twelve rows are a severity ladder where
+row 12 must be worse than row 6; a fumble table's twenty are not, because a fumble never threatens
+mortal peril (concept §2), so there is nothing for a rank to measure. The d20 picks *which* fumble,
+not *how bad*. Placement is therefore just "everything tagged for this type, sorted by id" — no
+nearest-fit, no drift cap, none of the machinery §3 needs.
+
+One consequence worth stating: a short table gets **placeholders, not repeats**. With peers a repeat
+is not neutral filler — it silently doubles that outcome's odds, which is a design decision nobody
+made. A placeholder says "this table wants six more fumbles", which is the truth. (The effect tables
+do allow repeats within the drift cap, because there a repeat is a deliberate "this row is the same
+wound as its neighbour" and the ladder still holds.)
+
+**Why the JSON and not the RollTables:** the RollTables stay as GM-facing browsable content, but the
+flow draws from JSON so it can attach outcomes and run without a compendium round-trip. Same
+relationship as catalog↔journals. `tools/tables-to-json.mjs` did the original transcription from
+`packs-source/`; the pool has since taken over as the source.
 
 ---
 
@@ -309,16 +381,32 @@ argued about later.
 gradeFor(critMult)                 // 2→solid, 3→heavy, 4→brutal
 shiftGrade(grade, steps)           // past the ends, returns { grade, flat: ±n }
 powerFormula(grade)                // "1d4" | "1d6" | "2d4" | "2d6" | "2d8"
+weaponClassTiers(weaponClass)      // TIER: light/secondary −1, two-handed/sole +1
+sizeModifier(attackerSize, target)  // FLAT: ±1 per size category
 tiersToReach(target, { base, priorSteps })   // solve the GM's grade pick back into a shift
 computeGrade({ … })                // every input, one auditable result
 ```
 
-Grade shifts stack from three sources — size delta, confirmation explosion, the GM's override —
-and the concept doc says shifts past Devastating/Glancing convert to flat ±1. So `shiftGrade`
-returns *both* a grade and a residual flat modifier, and `computeGrade` sums that with the
-light/two-handed modifier and the GM's own. Keeping the overflow inside `shiftGrade` is what stops
-that rule from being reimplemented in three places, and applying it once on the *summed* shift is
-what makes "up one, down one" a no-op rather than two overflows.
+Every input lands on one of two sides, and which side is the interesting part:
+
+| | Tier — moves the grade, changes the die pool | Flat — moves the total only |
+|---|---|---|
+| | weapon class (light / two-handed / natural) | **size difference**, ±1 per category |
+| | confirmation explosion | ladder overflow |
+| | the GM's grade override | critical immunity, the GM's own modifier |
+
+> **Swapped in phase 10.** Size used to be a tier shift and weapon class a flat ±1. The arithmetic
+> of each is unchanged; only the side it lands on. It matters because the two are not
+> interchangeable: a tier alters the *spread* as well as the average (1d4 → 2d8) and is bounded by
+> the five-rung ladder, while a flat modifier is unbounded and moves nothing but the total. So a
+> large size gap now scales without limit instead of saturating at Devastating, and
+> light-vs-two-handed now changes how swingy the roll is instead of nudging it.
+
+Tier shifts stack from three sources and the concept doc says shifts past Devastating/Glancing
+convert to a flat ±1 per step. So `shiftGrade` returns *both* a grade and a residual flat modifier,
+and `computeGrade` sums that with the size gap and the GM's own. Keeping the overflow inside
+`shiftGrade` is what stops that rule from being reimplemented at every call site, and applying it
+once on the *summed* shift is what makes "up one, down one" a no-op rather than two overflows.
 
 `tiersToReach` exists because the GM's dropdown is an **absolute** choice ("make this
 devastating") while the model only knows shifts. Solving for the shift rather than nudging by the
@@ -326,6 +414,10 @@ difference is what makes the dropdown land on the picked grade every time — th
 the target's own index, which is inside the ladder by definition, so nothing can clamp. It also
 absorbs whatever overflow the automatic calculation had, which is correct: once the GM has named a
 grade, "you shifted two past devastating" is no longer a fact about the result.
+
+Its `priorSteps` is now **weapon class + explosion**, not size + explosion. Size no longer touches
+the grade, so a grade override leaves the size modifier standing — which is right: naming a grade
+says nothing about how much bigger the attacker was.
 
 **There is no severity layer.** The power total indexes straight into the effect table for the
 body part that was hit (§3), so the twelve rows *are* the severity ladder. The

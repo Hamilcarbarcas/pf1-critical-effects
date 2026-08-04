@@ -5,6 +5,7 @@
  */
 
 import { MODULE_ID } from "../const.mjs";
+import { FUMBLE_ROWS } from "../catalog/schema.mjs";
 
 /** Set on the REQUEST card, pointing back at the attack card the result belongs to. */
 export const DRAW_FLAG = "fumbleDraw";
@@ -44,7 +45,7 @@ export async function postFumbleDraw({ token, resultTable, flavor, sourceMessage
 
   const message = await game.pf1RollRequests.createRequest({
     type: "dice",
-    key: "1d12",
+    key: `1d${FUMBLE_ROWS}`,
     mode: "targeted",
     flavor,
     targetedActors: [{ id: token.id }],

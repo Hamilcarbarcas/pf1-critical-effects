@@ -3,10 +3,13 @@
  * Loaded once at `ready` and exposed read-only. Everything here is pure and synchronous after
  * the load — no `game.*` mutation, no dialogs, no chat (§2).
  *
- * Effects are **tables, not a pool**. The shipped content is authored as one 1d12 table per
- * damage type × body part, so a resolution is a lookup rather than a query: the Critical Power
- * total indexes straight into the row. There is no severity band, no weighting, and no draw —
- * `effectFor()` is the whole of it.
+ * **At runtime, effects are tables, not a pool**: one 1d12 table per damage type × anatomy × body
+ * part, so a resolution is a lookup rather than a query. The Critical Power total indexes straight
+ * into the row — no severity band, no weighting, no draw. `effectFor()` is the whole of it.
+ *
+ * Content is *authored* as a tagged pool (`data/pool.json`) and compiled into those tables ahead of
+ * time by `tools/pool-to-tables.mjs`; fumbles work the same way from `data/fumble-pool.json`. That
+ * is a build step, not a runtime one — nothing in this file has ever seen a pool.
  */
 
 import { MODULE_ID } from "../const.mjs";

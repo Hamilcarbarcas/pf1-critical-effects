@@ -9,11 +9,28 @@
   location pairs × 12 rows.
 - **Mortal effects.** A `mortal[anatomy][location]` entry, read *on top of* row 12 at the 13+
   clamp and damage-type agnostic. Optional — absent, 13+ stays "row 12 plus the Fort save".
-- **Content worksheets** (`content/`). Effect content is authored as markdown — one file per
-  damage type plus `mortal.md` — and folded into the catalog by
-  `tools/worksheets-to-catalog.mjs`, behind a per-table `**Status:** approved` review gate.
-  `tools/scaffold-worksheets.mjs` is its inverse; the round trip is byte-identical. Format and
-  rules: `content/README.md`.
+- **Tagged effect pool** (`data/pool.json`), now the source of truth for effect content;
+  `data/effects.json` becomes generated build output. Each effect carries a `rank` (1-12 severity
+  score), anatomy-qualified `slots` (`humanoid/arm`, `*/torso`) and `damageTypes`, and
+  `tools/pool-to-tables.mjs` works out which of the 130 roll tables it lands in. One effect tagged
+  across several damage types and body parts covers many rows, so saturating the 1,560-row grid
+  takes a few hundred effects rather than 1,560. Runtime is unchanged — the engine still indexes a
+  stored 12-row table and never queries the pool.
+- **Nearest-fit placement with a drift cap.** Rank is a severity score, not a row address: a
+  candidate is seated at the free row nearest its rank, within ±1 (`--drift n`). That flex is what
+  stops the pool needing an exact peg for every hole — an effect written as a 6 for bludgeoning
+  also serves a slashing table that needs a 7. The cap is what stops a rank-8 wound landing on row
+  12 and counting as filled; out-of-range rows stay placeholders. `pins` override placement for
+  authorial decisions.
+- **Coverage report** (`content/COVERAGE.md`, via `tools/pool-report.mjs`) — the content work
+  queue for all three tracks. Band-gaps in tables that already have content are listed
+  closest-to-done first and kept separate from wholly untouched tables, plus untriaged (rankless)
+  and untagged entries, fumble counts per attack type, and lethal counts per damage type.
+- **Fumble pool** (`data/fumble-pool.json`), the same tag-and-generate treatment as effects;
+  `data/fumbles.json` becomes generated output (`tools/fumbles-to-tables.mjs`). The only tag is
+  `attackTypes` — there is **no rank**, because a fumble table's rows are unordered peers rather
+  than a severity ladder, so the die picks which fumble and not how bad it is. A short table gets
+  placeholders rather than repeats: with peers a repeat silently doubles that outcome's odds.
 - **Severity bands** (`SEVERITY_BANDS`) as authoring structure — 1-3 minor, 4-6 moderate,
   7-9 severe, 10-12 grave. Still not a runtime layer: the power total indexes straight into the
   row and nothing in the resolution path reads a band.
@@ -33,7 +50,7 @@
   buckets, unregistered outcome types, and outcome coverage as a progress metric.
 - **Fumble path, end to end.** A natural 1 forces a confirmation roll and puts a GM-only
   **Resolve Fumble** button on the attack card. The button picks an attack type
-  (pre-selected from the weapon) and posts a targeted `1d12` roll request showing the whole
+  (pre-selected from the weapon) and posts a targeted `1d20` roll request showing the whole
   table; the **player** clicks to roll it. Whenever that roll lands, the drawn effect is written
   back onto the attack card as a journal link — completed from a global hook, so an open-ended
   wait or a GM reload doesn't lose the pending draw.
@@ -304,6 +321,32 @@
   ApplicationV2 reserves ten names — `classList`, `element`, `form`, `hasFrame`, `id`, `minimized`,
   `rendered`, `state`, `title`, `window` — and a subclass that assigns to any of them throws on
   construction. Overriding `title` with a getter, which this dialog does, remains fine.
+
+### Changed
+- **Size and weapon class swapped sides in the Critical Power roll.** The weapon class
+  (light / two-handed / secondary or sole natural) now shifts the **grade tier** instead of giving
+  a flat ±1, and the attacker/target size difference now gives a **flat ±1 per size category**
+  instead of shifting the tier. The arithmetic of each is unchanged — only which half of the result
+  it lands in.
+  This is not a reshuffle: a tier changes the die pool, so it alters the spread as well as the
+  average (1d4 → 2d8) and is bounded by the five-rung ladder, while a flat modifier is unbounded
+  and moves only the total. A large size gap therefore scales without limit rather than saturating
+  at Devastating, and light-vs-two-handed changes how swingy the roll is rather than nudging it.
+  `flatModifierFor` → `weaponClassTiers`, `sizeShift` → `sizeModifier`, and the `breakdown` keys
+  `size` / `weapon` → `sizeFlat` / `weaponTiers`. A GM grade override now leaves the size modifier
+  standing, since naming a grade says nothing about how much bigger the attacker was.
+- **Fumble tables are d20, not d12, and there are six of them.** `bow` splits into `bows` and
+  `crossbows` (PF1 has both as weapon groups, and they fail differently), and `unarmed` separates
+  from `natural`. Each table is 20 rows, one outcome per face, up from 12 faces covered by ranges.
+  `inferAttackType` pre-selects the new types from the weapon; unarmed is a soft guess (PF1 has no
+  first-class unarmed marker) and falls through to melee, which the dialog dropdown corrects.
+
+### Removed
+- **Per-damage-type content worksheets** and their two tools (`scaffold-worksheets.mjs`,
+  `worksheets-to-catalog.mjs`), superseded by the tagged pool. `tools/effect-tables-to-json.mjs`
+  goes too: it regenerated `effects.json` from the shipped RollTables, which now silently
+  clobbers generated output. `content/mortal.md` stays — the 13+ addendum is authored per body
+  part and is not pool-shaped.
 
 ### Changed
 - Fumble confirmation moved here from astora-mod (`scripts/critical-fumble.mjs`), which no

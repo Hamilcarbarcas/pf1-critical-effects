@@ -61,13 +61,15 @@ export function shiftGrade(grade, steps) {
 }
 
 /**
- * Grade shift from the size difference between attacker and target (concept §4 step 3).
+ * **Flat** modifier from the size difference between attacker and target (concept §4 step 3).
  *
- * PF1 v11 stores `system.traits.size.value` as a numeric index into `pf1.config.sizeChart`, so
- * one category of difference is one integer — the delta is a plain subtraction. A larger
- * attacker shifts up.
+ * PF1 v11 stores `system.traits.size.value` as a numeric index into `pf1.config.sizeChart`, so one
+ * category of difference is one integer — the delta is a plain subtraction. A larger attacker adds.
+ *
+ * This used to shift the grade a tier per category and now adds to the total instead; the weapon
+ * class went the other way. See the note on `weaponClassTiers`.
  */
-export function sizeShift(attackerSize, targetSize) {
+export function sizeModifier(attackerSize, targetSize) {
   const a = Number(attackerSize);
   const t = Number(targetSize);
   if (!Number.isFinite(a) || !Number.isFinite(t)) return 0;
@@ -75,13 +77,27 @@ export function sizeShift(attackerSize, targetSize) {
 }
 
 /**
- * Flat modifier contributed by how the weapon is held (concept §4 step 5).
+ * **Tier** shift from how the weapon is held (concept §4 step 5).
  *
- * Light weapon / secondary natural attack: −1. Two-handed / sole natural attack: +1. A sole
- * natural attack is the one that gets 1.5× the ability modifier to damage; see
+ * Light weapon / secondary natural attack: one tier down. Two-handed / sole natural attack: one
+ * tier up. A sole natural attack is the one that gets 1.5× the ability modifier to damage; see
  * `weaponClassFor` in context.mjs for how that is derived.
+ *
+ * ── The swap ────────────────────────────────────────────────────────────────
+ *
+ * These two inputs traded places: size used to move the tier and weapon class used to add a flat
+ * ±1, and it is now the other way round. The arithmetic of each is unchanged — what changed is
+ * which half of the result it lands in.
+ *
+ * It matters more than a reshuffle, because the two are not interchangeable. A tier changes the
+ * *die pool*, so it widens or narrows the spread as well as moving the average (1d4 → 2d8), and it
+ * is bounded by the five-rung ladder with the overflow rule catching anything past the ends. A flat
+ * modifier moves the total and nothing else, and is unbounded. So putting size on the flat side
+ * means a big size gap now scales without limit rather than saturating at Devastating, and putting
+ * weapon class on the tier side means light-vs-two-handed changes how swingy the roll is rather
+ * than nudging it.
  */
-export function flatModifierFor(weaponClass) {
+export function weaponClassTiers(weaponClass) {
   switch (weaponClass) {
     case "light":
     case "naturalSecondary":
@@ -133,8 +149,11 @@ function naturalFace(roll) {
  * The GM's grade dropdown is an ABSOLUTE choice — "make this devastating" — but the model only
  * knows shifts, so the pick has to be expressed as one. Solving for the shift rather than nudging
  * by the difference is what makes the dropdown land on the picked grade every time: the sum
- * `base + size + explosion + extra` is forced to the target's own index, which is inside the
+ * `base + weapon + explosion + extra` is forced to the target's own index, which is inside the
  * ladder by definition, so `shiftGrade` produces no overflow and cannot clamp somewhere else.
+ *
+ * Note that the size gap is NOT part of `priorSteps` any more — it is a flat modifier now and does
+ * not move the grade at all, so overriding the grade leaves it untouched, which is correct.
  *
  * It also absorbs any overflow the automatic calculation had. That is the point: once the GM has
  * named a grade, "you shifted two past devastating" is no longer a fact about the result.
@@ -142,7 +161,7 @@ function naturalFace(roll) {
  * @param {string} target      the grade the GM picked
  * @param {object} opts
  * @param {string} opts.base   the multiplier's own grade, from `gradeFor`
- * @param {number} opts.priorSteps  every shift that is not the GM's — size + explosion
+ * @param {number} opts.priorSteps  every shift that is not the GM's — weapon class + explosion
  * @returns {number}
  */
 export function tiersToReach(target, { base, priorSteps = 0 } = {}) {
@@ -155,9 +174,12 @@ export function tiersToReach(target, { base, priorSteps = 0 } = {}) {
 /**
  * Compose every grade input into one auditable result.
  *
- * Shifts stack (size delta + explosion tiers + any GM adjustment) and are applied together so
+ * Shifts stack (weapon class + explosion tiers + any GM adjustment) and are applied together so
  * that overflow past the ends is computed once, on the summed shift, rather than per source —
  * shifting up one and down one must be a no-op, not two separate overflows.
+ *
+ * The size gap is on the **flat** side and the weapon class on the **tier** side; they swapped
+ * places. See `weaponClassTiers` for why that is a real change and not a reshuffle.
  *
  * `extraTiers` and `extraFlat` are the GM's thumb on the scale: the Power stage offers a grade
  * override and a free-text modifier, and both arrive here rather than being applied to the total
@@ -177,12 +199,15 @@ export function computeGrade({
 } = {}) {
   const base = gradeFor(critMult);
 
-  const size = attackerSize == null || targetSize == null ? 0 : sizeShift(attackerSize, targetSize);
-  const steps = size + (Number(explosionTiers) || 0) + (Number(extraTiers) || 0);
+  // Tier side: weapon class, the explosion, and the GM's grade pick.
+  const weaponTiers = weaponClassTiers(weaponClass);
+  const steps = weaponTiers + (Number(explosionTiers) || 0) + (Number(extraTiers) || 0);
 
   const { grade, flat: overflow } = shiftGrade(base, steps);
-  const weapon = flatModifierFor(weaponClass);
-  const flat = overflow + weapon + (Number(extraFlat) || 0);
+
+  // Flat side: the size gap, whatever the tier shift overflowed by, and the GM's own modifier.
+  const sizeFlat = attackerSize == null || targetSize == null ? 0 : sizeModifier(attackerSize, targetSize);
+  const flat = overflow + sizeFlat + (Number(extraFlat) || 0);
 
   return {
     base,
@@ -191,11 +216,11 @@ export function computeGrade({
     steps,
     flat,
     breakdown: {
-      size,
+      weaponTiers,
       explosionTiers: Number(explosionTiers) || 0,
       extraTiers: Number(extraTiers) || 0,
       overflow,
-      weapon,
+      sizeFlat,
       extraFlat: Number(extraFlat) || 0,
     },
   };

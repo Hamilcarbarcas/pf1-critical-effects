@@ -107,7 +107,26 @@ export const DAMAGE_TYPE_LABELS = {
 export const damageTypeOptions = () =>
   DAMAGE_TYPES.map((key) => ({ key, label: DAMAGE_TYPE_LABELS[key] ?? key }));
 
-export const FUMBLE_TABLES = ["melee", "bow", "thrown", "natural"];
+/**
+ * The six fumble tables, keyed by how the attack was delivered.
+ *
+ * `bows` and `crossbows` are separate because PF1's own weapon groups are (`pf1.config.weaponGroups`)
+ * and because they fail differently — a bowstring snaps, a crossbow's mechanism jams. `unarmed` and
+ * `natural` are likewise distinct: a natural attack is a claw or a bite, an unarmed strike is a
+ * person's fist, and "you break a finger" only reads for one of them.
+ */
+export const FUMBLE_TABLES = ["melee", "thrown", "bows", "crossbows", "unarmed", "natural"];
+
+/**
+ * Rows in a fumble table. A d20, unlike the effect tables' d12.
+ *
+ * The two ladders are not the same scale and are not meant to be: an effect table's twelve rows
+ * run from a bruise to a mortal wound, while a fumble table's twenty are **unordered peers** — all
+ * equally likely, none worse than another, the die picking flavour rather than severity. Fumbles
+ * never threaten mortal peril (concept doc §2), so there is nothing for a severity ladder to
+ * measure and fumble pool entries carry no rank.
+ */
+export const FUMBLE_ROWS = 20;
 
 export const ANATOMIES = ["humanoid", "beast", "aberrant"];
 
@@ -279,7 +298,7 @@ export function validateFumbles(data) {
   const tables = {};
 
   if (!isPlainObject(data)) return { errors: ["fumbles.json: root is not an object"], warnings, tables, entries };
-  if (data.version !== 1) warnings.push(`fumbles.json: version is ${data.version}, expected 1`);
+  if (data.version !== 2) warnings.push(`fumbles.json: version is ${data.version}, expected 2`);
   if (!Array.isArray(data.entries)) return { errors: ["fumbles.json: `entries` is not an array"], warnings, tables, entries };
   if (!isPlainObject(data.tables)) return { errors: ["fumbles.json: `tables` is not an object"], warnings, tables, entries };
 
@@ -319,7 +338,9 @@ export function validateFumbles(data) {
       expected = max + 1;
     }
 
-    if (expected !== 13) warnings.push(`fumbles.json: table "${key}" covers 1-${expected - 1}, expected 1-12`);
+    if (expected !== FUMBLE_ROWS + 1) {
+      warnings.push(`fumbles.json: table "${key}" covers 1-${expected - 1}, expected 1-${FUMBLE_ROWS}`);
+    }
     if (ok) tables[key] = sorted;
   }
 

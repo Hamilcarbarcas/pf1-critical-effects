@@ -256,7 +256,7 @@ export class CritResolution extends HandlebarsApplicationMixin(ApplicationV2) {
         const grade = this.crit.grade ?? this.#computeGrade();
         const extraTiers = power.tiersToReach(value, {
           base: grade.base,
-          priorSteps: grade.breakdown.size + grade.breakdown.explosionTiers,
+          priorSteps: grade.breakdown.weaponTiers + grade.breakdown.explosionTiers,
         });
         return this.patch({ extraTiers, grade: this.#computeGrade({ extraTiers }) });
       }

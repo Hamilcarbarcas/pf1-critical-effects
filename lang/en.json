@@ -9,8 +9,10 @@
       "ResultLabel": "Fumble",
       "Table": {
         "melee": "Melee",
-        "bow": "Bow",
         "thrown": "Thrown",
+        "bows": "Bows",
+        "crossbows": "Crossbows",
+        "unarmed": "Unarmed",
         "natural": "Natural"
       }
     }

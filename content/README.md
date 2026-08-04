@@ -1,135 +1,187 @@
-# Content worksheets
+# Content
 
-Effect content is authored **here**, in markdown, and folded into `data/effects.json` by a tool.
-Nobody hand-edits the catalog: it is 1,560 rows of entry ids, which is not a thing a person can
-review.
+Effect content is a **tagged pool**, not a set of hand-written tables. You write effects; the
+generator works out which of the 130 roll tables each one lands in, and where.
+
+There are **three** content tracks, and they are shaped differently because they *are* different.
 
 ```
-content/<damageType>.md   one file per damage type, 13 sections of 12 rows
-content/mortal.md         the 13+ addendum, 13 rows, damage-type agnostic
+data/pool.json          ← critical effects. Tagged: rank + slots + damageTypes.
+content/mortal.md       ← the 13+ addendum. 13 rows, one per body part.
+        ↓  node tools/pool-to-tables.mjs --write
+data/effects.json       ← GENERATED. Do not hand-edit.
+
+data/fumble-pool.json   ← fumbles. Tagged: attackTypes only. No rank.
+        ↓  node tools/fumbles-to-tables.mjs --write
+data/fumbles.json       ← GENERATED. Do not hand-edit.
+
+data/lethal.json        ← lethal narration. Hand-edited; no generator.
+
+        ↓  node tools/pool-report.mjs --write
+content/COVERAGE.md     ← GENERATED. The work queue for all three.
 ```
 
 | | |
 |---|---|
-| `node tools/scaffold-worksheets.mjs --write` | catalog → worksheets. Won't overwrite an existing file without `--force`. |
-| `node tools/worksheets-to-catalog.mjs --write` | worksheets → catalog. Folds in `approved` sections only. |
+| `node tools/pool-to-tables.mjs --write` | effect pool → tables. `--drift n` changes the placement window. |
+| `node tools/fumbles-to-tables.mjs --write` | fumble pool → fumble tables. |
+| `node tools/pool-report.mjs --write` | all three → `COVERAGE.md`. Run after any content edit. |
 
-The two are inverses: scaffolding an untouched catalog and folding it straight back in produces
-byte-identical JSON. That round trip is the safety property — if it ever breaks, one of the two
-tools is losing content.
+| Track | Grid | Tags | Ordered? |
+|---|---|---|---|
+| **Effects** | 10 damage × 13 body parts × d12 = 1,560 | `rank`, `slots`, `damageTypes` | Severity ladder |
+| **Fumbles** | 6 attack types × d20 = 120 | `attackTypes` | No — unordered peers |
+| **Lethal** | none — a flat list | `damageTypes` | No |
 
----
-
-## The grid
-
-Four dimensions, and every cell is written out in full — there is no inheritance in the catalog.
-
-| Dimension | Values | |
-|---|---|---|
-| **Damage type** | bludgeoning, piercing, slashing, fire, cold, electric, acid, sonic, positive, negative | 10 |
-| **Anatomy** | humanoid, beast, aberrant | 3 |
-| **Location** | humanoid: arm, leg, torso, head<br>beast: + tail, wing<br>aberrant: appendage, torso, head | 13 pairs |
-| **Severity** | minor (1-3), moderate (4-6), severe (7-9), grave (10-12) | 4 bands × 3 rows |
-
-10 × 13 × 12 = **1,560 rows**, plus 13 mortal entries.
-
-**Anatomy is a real dimension, not something location implies.** `arm` is a weapon hand on a
-humanoid and a foreleg on a beast; a humanoid arm table can say *Dropped Weapon* and a beast arm
-table cannot. The two ladders diverge from row 1.
-
-## Severity is authoring structure, not a runtime layer
-
-The engine has no severity band. The Critical Power total indexes **straight into the row**:
-roll a 7, get row 7. The bands exist because twelve rows are easier to write and review three at a
-time, and because "is this really worse than the row above it?" is the question that matters most
-while authoring.
-
-So the `Band` column is derived from the row number. The tool checks it and complains if it
-disagrees, but never reads it — reordering rows means moving the *text*, not editing the band.
-
-**The ladder must be monotonic.** Row 6 must be worse than row 5 and better than row 7, across the
-whole twelve. This is the one thing worth re-reading a finished table for: the transcribed
-bludgeoning/piercing/slashing tables came out of the RollTables in *alphabetical* order, which is
-why `Broken Finger` currently sits at row 10 and `Broken Neck` at row 2.
+**Runtime is unaffected by any of this.** The engine still looks a row up by index in a stored
+12-row table. The pool is a build-time input, never a query at the table.
 
 ---
 
-## Worksheet format
+## Why a pool
 
-```markdown
-## Humanoid · Arm
-**Status:** draft
+The grid is 10 damage types × 13 anatomy/location pairs × 12 rows = **1,560 rows**. Authoring that
+directly is not a real plan. But one effect tagged for four damage types and five body parts covers
+twenty of those rows, so the pool needed to saturate the grid is on the order of a **few hundred
+effects**, not 1,560.
 
-|  # | Band     | Effect          | Mechanic                                       |
-|---:|----------|-----------------|------------------------------------------------|
-|  1 | Minor    | Jammed Thumb    | -1 on attack rolls with this arm for 1 minute  |
-| …  |          |                 |                                                |
-| 12 | Grave    | Shattered Elbow | Arm is useless until healed; dedicated DC 20   |
+That is the whole bet: tag once, land everywhere it fits.
+
+## A pool entry
+
+```jsonc
+{
+  "id": "broken-arm",                  // slug of the name; the join key for journal + buff
+  "name": "Broken Arm",
+  "rank": 6,                           // 1-12 severity score, or null = untriaged
+  "slots": ["humanoid/arm"],           // anatomy/location pairs; "*/torso" = every anatomy
+  "damageTypes": ["bludgeoning", "slashing"],   // or ["*"] for all ten
+  "journal": "Compendium.pf1-critical-effects.critical-effects.JournalEntry.…",
+  "buff": null,                        // the mechanics; the part that's actually locked in
+  "note": "Broken Arm condition: -6 on attacks and skills using that arm…",
+  "pins": { "slashing/humanoid/head": 12 }      // OPTIONAL, and rare — see below
+}
 ```
 
-**Status is the review gate.** `draft` sections are ignored by the fold-in tool, so a worksheet
-can sit half-written on disk with none of it reaching the module. Change one word to `approved`
-and that table — and only that table — lands. Every scaffolded section starts at `draft`,
-including the ones that already have twelve rows in them: status is a statement about *review*,
-not about completeness.
+### `slots`
 
-### Columns
+Anatomy-qualified, because anatomy is a real dimension: `humanoid/arm` is a hand that drops a
+weapon, `beast/arm` is a foreleg that buckles. `*/torso` means every anatomy that has a torso — use
+it when the effect genuinely doesn't care, since it keeps applying if an anatomy is ever added,
+where three literal pairs would silently not.
 
-| Column | |
-|---|---|
-| `#` | 1-12. The Critical Power total that produces this row. |
-| `Band` | Derived from `#`. Checked, never trusted. |
-| `Effect` | The effect's **name** — what the chat card says happened. Becomes the entry id (slugged). |
-| `Mechanic` | The rules text. Becomes the entry's `note`. Leave blank for pure flavour. |
+The 13 valid pairs are `ANATOMY_LOCATIONS` in `src/catalog/schema.mjs`. A slot outside them is a
+hard error.
 
-### Two shorthands
+### `rank` — a score, not an address
 
-**Blank `Effect`** — an unwritten row. Folds in as a `placeholder` entry, which keeps "12 rows,
-always" true while `lint()` reports the row as still to author. Never leave a *hole*; leave a
-blank cell.
+Rank is **how bad this wound is**, on the same 1-12 scale the tables are indexed by. It is *not* a
+statement about which row the effect occupies.
 
-**`= humanoid`** in the `Effect` cell — reuse whatever that anatomy's table has at the same row,
-for the same damage type and location. For rows that genuinely are the same wound: a crossbow bolt
-through a shoulder is a crossbow bolt through a shoulder. This is an **authoring** shorthand only;
-it expands at fold-in time and the catalog stays fully explicit, because the engine looks a row up
-by index and must never chase a reference to find one.
+That distinction is the point. If rank were an address, the pool would need an exact peg for all
+1,560 holes: an effect written as a 6 for bludgeoning couldn't help a slashing table that already
+has a 6 and needs a 7, and you'd be writing a new effect for every near-miss forever.
 
-Reach for `= humanoid` sparingly. If a beast table is twelve `= humanoid` rows, the honest thing
-was for beast not to be a dimension — and if it is *mostly* those, the interesting question is
-which rows aren't.
+Instead the generator seats each candidate at the **free row nearest its rank, within ±1**. A
+rank-6 effect fills row 5, 6 or 7 — enough that one effect can cover most of a three-row band.
+
+**Beyond ±1 it will not go.** A row with nothing in range stays a placeholder, and that is
+deliberate: an unbounded fit would drop a rank-8 wound on row 12 and then count that row as
+*filled*, wrecking the severity ladder and the progress metric together. "There is no grave
+slashing arm wound yet" is a fact worth being able to see. Change the window with `--drift n` if
+you want a more playable build from a thin pool; `--drift 0` shows only exact fits.
+
+Bands (minor 1-3, moderate 4-6, severe 7-9, grave 10-12) are derived from rank. They are how
+coverage is *reported* — three candidates per band is the target, because a band is three rows.
+
+`rank: null` means untriaged: the effect is inventory and is placed in **no table at all**.
+`COVERAGE.md` lists them.
+
+### `pins` — the escape hatch
+
+`{ "<damageType>/<anatomy>/<location>": <row> }` nails an effect to one row of one table, exempt
+from the drift cap and immovable. For placements that are an authorial decision rather than a
+consequence of a score — Beheaded belongs at the bottom of slashing/head whatever the arithmetic
+says. Use sparingly; a pool that needs many pins is a pool whose ranks are wrong.
 
 ---
 
-## Entries are shared by name
+## How to fill the pool
 
-An entry's id is the slug of its name, and **the same name in two tables is the same entry**. A
-`Dropped Weapon` is a dropped weapon whether a mace or an axe did it. This is what keeps the pool
-at a few hundred entries rather than 1,560, and what lets a buff, once attached to an entry, apply
-everywhere that effect appears.
+1. Open [COVERAGE.md](COVERAGE.md).
+2. **Work queue** first — band-gaps in tables that already have content. Cheapest wins: a table
+   with two of three grave wounds needs exactly one effect.
+3. **Untouched tables** next. Listed by damage type rather than line by line, because they're
+   from-scratch jobs — and because one well-tagged effect can close several at once.
+4. Add entries to `data/pool.json`, then regenerate both files.
 
-The cost: two different wounds may not share a name. If the same name turns up with conflicting
-`Mechanic` text the fold is **refused** — silently keeping one of the two would put rules text on
-a card nobody wrote for it. Rename one. `Severed Wing` and `Severed Tail` read better on a card
-than two `Severed`s anyway.
+Before writing something new, check whether an existing effect should simply be **tagged more
+broadly**. Widening `slots` or `damageTypes` on an effect you already have is free content, and it
+is usually the right answer — a crushed windpipe is a crushed windpipe whether a mace or a boot
+did it.
 
-Renaming an effect in a worksheet creates a *new* entry and orphans the old one, which the tool
-prunes. An entry's `journal` and `buff` are keyed to its id, so **renaming severs both**. That's
-survivable while the pack is young; once journals are attached in bulk, rename by editing
-`data/effects.json` and the worksheet together.
+## Placement moves
 
-## What the worksheets don't carry
+The assignment is global to a table, not incremental, so **adding an effect can shift existing
+rows**. That is the price of never being deadlocked, and it is why tables are generated rather than
+stored by hand. It is fully deterministic — same pool in, same tables out, ties broken on rank then
+id — so a regenerate with no pool change is a no-op. Pin anything that must not move.
 
-`journal` and `buff` uuids. Those are attached in the catalog and are preserved across a fold —
-worksheets know an effect's name and what it does, and nothing else about it. The journal-first
-content strategy (DESIGN.md §3) is unchanged: an entry with a name is complete and usable, and
-mechanics are additive.
+## What the effect pool doesn't hold
 
-## Mortal
+**Mortal.** The 13+ addendum is authored once per anatomy × location and is damage-type agnostic,
+so there is nothing to tag and nothing to select. It stays a 13-row table in
+[mortal.md](mortal.md), and the generator reads it alongside the pool.
 
-`content/mortal.md` is shaped differently because the data is: the 13+ addendum is authored once
-per anatomy × location, not per damage type, so it's 13 rows in one file with a single status.
+---
 
-It reads **on top of** row 12, never instead of it, and always alongside the Fort save
-(DC = the Critical Power total) that the 13+ clamp already carries. The `Mechanic` column is
-therefore the *extra* — what this body part does to someone past saving — not a restatement of
-either.
+## Fumbles (`data/fumble-pool.json`)
+
+Six d20 tables — melee, thrown, bows, crossbows, unarmed, natural — filled from one pool. The only
+tag is `attackTypes`:
+
+```jsonc
+{ "id": "dropped-weapon", "name": "Dropped Weapon",
+  "attackTypes": ["melee", "thrown", "bows", "crossbows"],
+  "journal": null, "buff": null, "note": null }
+```
+
+**No rank, no bands.** The twenty rows are *unordered peers*: the die picks which fumble, not how
+bad it is. A fumble never threatens mortal peril, so there's no ladder for a rank to measure and
+none of §3's placement machinery applies — the generator just takes everything tagged for a type,
+sorts by id, and lays it out.
+
+That has one consequence worth knowing: **a short table gets placeholders, not repeats.** With
+peers, a repeat isn't neutral filler — it silently doubles that outcome's odds, which is a design
+decision nobody made. A placeholder says "this table wants six more fumbles" instead.
+
+More than twenty candidates for one type is reported as *surplus* rather than silently truncated;
+that means the type has outgrown its table and wants a prune or a split.
+
+## Lethal (`data/lethal.json`)
+
+**Flavour only, and hand-edited — no pool, no generator, no rank.** A lethal result narrates a kill
+that something else already decided (HP loss, a coup de grace). No save, no roll-off, no location
+axis. The one tag is `damageTypes`, and one entry is drawn at random from whatever matches.
+
+```jsonc
+{ "id": "heart-pierced", "name": "Heart Pierced",
+  "damageTypes": ["piercing"],
+  "journal": "Compendium.…" }
+```
+
+There's no target count, so an empty damage type isn't a gap in the sense the tables use — it just
+means a kill of that sort gets no narration. COVERAGE.md reports the counts so the thin ones are
+visible.
+
+Do **not** confuse this with mortal. Mortal is the 13+ clamp on a critical effect and is part of
+the resolution; lethal is post-hoc narration for a death that has already happened.
+
+## Journals and buffs
+
+`journal` is display only — nothing in the engine parses prose, and the current journals are
+placeholders. `buff` is the real payload and is the part that is locked in; the content strategy
+(DESIGN.md §3) is unchanged in that an entry with just a name is complete and usable.
+
+Both are keyed to the entry `id`, which is the slug of the `name` — so **renaming an effect severs
+both**. Rename the `id` and the `name` together, deliberately.
