@@ -31,15 +31,35 @@ resolution — you always get a named, journal-linked result.
 3. Clicking it asks which table to draw from. The attack type is pre-selected from the weapon:
    natural attacks use the natural table, bows and crossbows the bow table, other ranged attacks
    the thrown table, everything else melee.
-4. A `1d12` roll request is posted for the fumbling token. **The player clicks to roll it** — the
-   card shows the whole table, with their row highlighted once it lands, so they can see what
-   they avoided.
+4. A `1d20` roll request is posted for the fumbling token. **The player clicks to roll it** — the
+   card shows the flavor line and the button only, not the table, so the eleven fumbles that
+   didn't happen stay unspoiled. The result still arrives as the entry's name rather than a
+   number.
 5. Whenever that roll comes in, the result is written back onto the original attack card as a
    link to its journal entry. The GM doesn't have to be waiting on it, and a reload in between
    doesn't lose it.
 
 The button offers, it never decides. Every natural 1 gets one, and ignoring it is a normal
 outcome rather than a missed step.
+
+#### Drawing a fumble by hand
+
+The **Fumble** quick action in pf1-roll-requests does the same thing with no attack card behind
+it — a house rule, a hazard, an attack rolled before the module was watching, a fumble the GM
+simply decides has happened.
+
+**Select the fumbling token first**; the draw is posted to it, and the quick action says so rather
+than guessing if you haven't. It then asks which table to draw from — nothing to infer the attack
+type from here, so the list opens on its first entry — and posts the same `1d20` request the
+button does, for the same person to click.
+
+Because there is no attack card to write the result onto, the draw **posts a card of its own**
+when it lands, carrying the fumbler's name and then the usual result block and journal link. It is
+the same block an attack card gets, rendered by the same code.
+
+The fumbler comes from the canvas selection rather than roll-requests' actor prompt on purpose:
+that prompt lists assigned player characters and player-owned NPCs, so the creature that most
+often fumbles — a monster, or an unlinked mook — would never appear in it.
 
 ### Confirmation rolls ignore the d20 override
 
@@ -67,8 +87,9 @@ The dialog is yours alone. What the table sees is the dice — Location and Powe
 requests for the **attacking player** to click, each carrying its table so they can read what their
 result bought:
 
-- The **location chart is resolved for the target first**. A wolf's card reads "Left Leg" where a
-  naga's reads "Torso" for the same face, because the fallback chain has already been walked.
+- The **location chart is built for the target first**. A four-limbed dragon's card reads "Wing"
+  where a wolf's reads "Leg" and an ooze's reads "Torso" for the same face, because the chart is
+  generated from that creature's own limbs rather than shared and patched up afterwards.
 - The **Power roll indexes straight into the effect table** for that damage type and body part —
   the number rolled *is* the row, 1 mildest to 12 worst, with 0 or less as no effect and 13+ as
   row 12 plus a Fortitude save at a DC equal to the total.
@@ -89,7 +110,8 @@ below, so a world not using this system sees no change to its criticals at all.
 The automation infers a lot, and some of it can be wrong, so each stage lets you correct what it
 inferred rather than making you cancel and start over:
 
-- **Location** — the creature type and the damage type, both of which decide which tables get used.
+- **Location** — the creature type, its **limb layout**, and the damage type, all of which decide
+  which tables get used. See [Hit location](#hit-location) for what the layout does.
 - **Power** — the grade, as a dropdown, and a free-text modifier (`+1`, `-2`). Picking a grade sets
   it *absolutely*: whatever the size difference and the explosions did, the pool becomes the one
   you named.
@@ -107,6 +129,42 @@ Cancelling the dialog kills the process, so its cards go too.
 Resolution state lives in the window, not in the world. Closing it or reloading abandons the
 resolution; re-open it from the attack card's button and start over. Nothing is written anywhere
 until you press **Confirm Result**.
+
+#### Hit location
+
+Hit location is a **d20**, laid out the same way for every creature:
+
+| Roll | Where |
+|---|---|
+| 1–12 | limbs / appendages, divided between whatever the creature has |
+| 13–18 | Torso |
+| 19–20 | Head |
+
+What fills the 1–12 band depends on the creature type you picked:
+
+- **Humanoid** — fixed. 1–6 a Leg, 7–12 an Arm.
+- **Beast** — tick which of **Legs / Arms / Wings / Tail** it has and the band is split evenly
+  between them: 3 faces each for all four, 4 each for three, 6 each for two, all 12 for one. A
+  four-limbed dragon and a legs-only spider both get an even chart with no wasted rows.
+- **Aberrant** — up to **four appendage types**, each with a name you can type in. The name is
+  description only; every appendage rolls on the same appendage effect table whatever you call it,
+  so "Tentacle" and "Pincer" cost nothing to add and just make the card read better. Leave a name
+  blank and it reads "Appendage".
+
+Tick nothing — an ooze, a snake, a creature that's all body — and the limb band folds into the
+torso, so it reads **1–18 Torso, 19–20 Head**.
+
+The bands you'll get are listed live under the checkboxes, so you can see what a change buys before
+anything is rolled against it.
+
+**Sides aren't tracked.** A location is "a Leg", not "the left leg" — which side it was is your
+call in the moment it matters, and having the chart decide it doubled every table without changing
+a single effect.
+
+Whatever you set here is **saved onto the creature** as you set it, so you describe a hydra once
+rather than once per critical. It saves to the actor in the sidebar, not to the individual token,
+so every goblin on the scene picks it up. Defaults come from the PF1 creature type, and you can
+pre-set them by hand — see [The resolve layer](#the-resolve-layer).
 
 #### Deferring critical damage
 
@@ -133,10 +191,28 @@ reload either way.
 
 ### Resolving a critical effect by hand
 
-The **Critical Effect** quick action in pf1-roll-requests opens a manual resolver: pick a target
-and fill in the crit multiplier, damage type, weapon class, sizes and (optionally) an anatomy
-override. It shows live what Critical Power those inputs buy, then opens the same resolution dialog
-the automated flow uses.
+The **Critical Effect** quick action in pf1-roll-requests opens a manual resolver: pick a source
+and a target, then set the crit multiplier, weapon class, and the two sizes. Sizes are named
+rather than numbered and are filled in from the tokens you chose. It shows live what Critical
+Power those inputs buy, then opens the same resolution dialog the automated flow uses.
+
+The token you have **selected** when you click it becomes the **source** — whose player is asked
+to roll the hit location and the Critical Power, exactly as the attacking player is in the
+automated flow. Select several and the first is used; a resolution has one source. Select nothing
+and the source starts blank, which is fine: the dropdown offers every token on the scene, and with
+the source left at **— none —** there is nobody to ask, so the GM rolls both locally instead. The
+**target** needs no selecting either — the dropdown opens on whichever token you have targeted.
+
+Two things are deliberately *not* asked here. **Creature type and damage type** are asked for in
+the resolution dialog's Location stage regardless, so asking twice would only let the two answers
+disagree. And the dialog **opens at Location rather than Trigger**: the Trigger question chooses
+between critical damage and a critical effect, and a hand-driven resolution has no attack card
+behind it — so there is no suppressed critical damage to release, and two of its three answers
+mean nothing.
+
+Because there's no attack card to write the result onto, confirming the resolution **posts a card
+of its own** — source → target, the Critical Power grade and roll, then the effect block and its
+Apply-buff button. It's the same block an attack card gets, rendered by the same code.
 
 This is the fallback for everything the automation can't see — an off-card kill, a GM ruling, an
 attack resolved before the module was installed, a creature the pipeline doesn't understand.
@@ -144,6 +220,11 @@ attack resolved before the module was installed, a creature the pipeline doesn't
 ```js
 game.criticalEffects.openResolver();                    // blank
 game.criticalEffects.openResolver({ critMult: 3 });     // pre-filled
+game.criticalEffects.openResolver({ sourceId, targetId });   // token document ids
+
+// `damageType` and `anatomy` have no field of their own, but a seed still carries them
+// through to the resolution rather than being dropped.
+game.criticalEffects.openResolver({ damageType: "piercing" });
 ```
 
 ### Lethal blows
@@ -263,6 +344,9 @@ await game.criticalEffects.lint();
 game.criticalEffects.fumbles.table("melee");     // the rows
 game.criticalEffects.fumbles.draw("melee", 7);   // what a 7 means
 game.criticalEffects.fumbles.entry("stumble");   // one entry
+game.criticalEffects.fumbles.prompt();           // what the quick action does: pick a table and
+                                                 // post a draw for the selected token
+game.criticalEffects.fumbles.prompt({ token });  // ...or for one you name
 
 // The effect tables — one 12-row table per damage type x body part. The Critical Power total
 // IS the row: 1 is the mildest outcome for that location, 12 the worst.
@@ -288,24 +372,42 @@ R.shiftGrade("brutal", 2);        // -> { grade: "devastating", flat: 1 }
 // The GM's grade dropdown is an absolute pick, so it is solved back into a shift.
 R.tiersToReach("devastating", { base: "heavy", priorSteps: 0 });   // -> 2
 
-// Hit location. A limb the target lacks falls through to the next candidate.
-R.locationFor({ anatomy: "beast", limbs: ["leg", "arm"], total: 3 });
-// -> left leg, fellBack: true, from: { slot: "tail" }
+// Hit location (d20). The table is generated from the creature's own limbs.
+R.locationFor({ anatomy: "beast", limbConfig: { beastLimbs: ["leg", "arm"] }, total: 3 });
+// -> { slot: "leg", label: null, rolled: 3, chosen: false }
 
-// Reading anatomy off a real actor
+// The whole chart, as bands — what the dialog lists under the checkboxes.
+R.locationBands({ anatomy: "aberrant", limbConfig: { appendages: ["Tentacle", "Pincer"] } });
+// -> 1-6 Tentacle, 7-12 Pincer, 13-18 Torso, 19-20 Head
+
+// Reading a real actor's layout
 R.anatomyFor(actor);              // "humanoid" | "beast" | "aberrant"
-R.limbsFor(actor);                // Set of slots the creature has
+R.limbConfigFor(actor);           // { beastLimbs: [...], appendages: [...] }
 ```
 
-Per-actor overrides, for creatures the creature-type defaults get wrong:
+Per-actor overrides, for creatures the creature-type defaults get wrong. These are what the
+dialog's Location stage writes, so setting them by hand and setting them in the UI are the same
+thing:
 
 ```js
 await actor.setFlag("pf1-critical-effects", "anatomy", "beast");
-await actor.setFlag("pf1-critical-effects", "limbs", ["leg", "wing", "tail"]);
+await actor.setFlag("pf1-critical-effects", "beastLimbs", ["leg", "wing", "tail"]);
 await actor.setFlag("pf1-critical-effects", "critImmunity", 1);  // shrug off one table row
+
+// Aberrants instead name their appendages. "" is an unnamed one, and reads as "Appendage".
+await actor.setFlag("pf1-critical-effects", "anatomy", "aberrant");
+await actor.setFlag("pf1-critical-effects", "appendages", ["Tentacle", "Pincer"]);
 ```
 
-`limbs` **replaces** the default rather than merging, so a limb can be taken away.
+Both lists **replace** the default rather than merging, so a limb can be taken away — an empty
+array is a creature with none, which folds its limb band into the torso.
+
+> Set these on the **actor in the sidebar**, not on an unlinked token's own copy, or only that one
+> token gets them. The dialog does this for you.
+>
+> The pre-d20 `limbs` flag is still read for backwards compatibility — its beast half maps over
+> unchanged, and `["appendage"]` becomes a single unnamed appendage — and is cleared the first time
+> a layout is saved over it.
 
 ### The resolution dialog
 

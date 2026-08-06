@@ -6,7 +6,8 @@
  *
  * Four stages, and the shape is deliberately flat:
  *
- *   trigger   the only branch point — damage alone ends the resolution here
+ *   trigger   the only branch point — damage alone ends the resolution here; skipped entirely
+ *             when the caller has already made the choice
  *   location  which body part, rolled or chosen by the player
  *   power     the die pool, its modifiers, and the roll that indexes the effect table
  *   result    the drawn row, adjustable by the GM, committed to the attack card
@@ -23,6 +24,11 @@ export const STAGES = [
     key: "trigger",
     label: "Trigger",
     hint: "Critical damage, a critical effect, or both?",
+    /* A resolution opened with its choice already made never sees this stage — not even as a
+     * completed step on the rail, because it was never a question. That is the standalone
+     * resolver: no attack card behind it means no suppressed critical damage to release, so two
+     * of the three answers here are unavailable rather than merely unchosen. */
+    applies: (state) => !state?.choiceLocked,
   },
   {
     key: "location",

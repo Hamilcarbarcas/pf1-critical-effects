@@ -9,7 +9,7 @@
  */
 
 import { MODULE_ID } from "../const.mjs";
-import { anatomyFor, limbsFor } from "./location.mjs";
+import { anatomyFor, limbConfigFor } from "./location.mjs";
 
 /**
  * Build a frozen resolution context.
@@ -50,7 +50,10 @@ export function buildContext({ actionUse = null, chatAttack = null, target = nul
       token: targetToken,
       size: manual.targetSize ?? sizeOf(targetActor),
       anatomy: manual.anatomy ?? anatomyFor(targetActor),
-      limbs: manual.limbs ? new Set(manual.limbs) : limbsFor(targetActor),
+
+      // Which beast categories this creature has, and what its appendages are called (§5.3). The
+      // beast and aberrant location tables are generated from it, so it travels with the anatomy.
+      limbConfig: manual.limbConfig ?? limbConfigFor(targetActor),
       hp: hpOf(targetActor),
       conditions: conditionsOf(targetActor),
 

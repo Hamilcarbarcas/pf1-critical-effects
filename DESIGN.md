@@ -84,7 +84,7 @@ pf1-critical-effects/
       schema.mjs                  ← validation + dev-time lint of the JSON
     resolve/
       power.mjs                   ← Critical Power grade, size shift, modifiers, grade override
-      location.mjs                ← anatomy tables, limb fallback, called-shot override
+      location.mjs                ← anatomy, generated location tables, called-shot override
       context.mjs                 ← gathers the §7 attacker/target data into one frozen object
     outcomes/
       registry.mjs                ← registerOutcome / applyOutcomes
@@ -105,6 +105,7 @@ pf1-critical-effects/
     integrations/
       socket.mjs                  ← own GM socket, generic primitives (astora-independent)
       roll-requests.mjs           ← request helpers, quick action registration
+      token-randomizer.mjs        ← name obfuscation, optional (§10)
       dedicated-healing.mjs       ← migrated from astora-mod (§8)
       pf1-pipeline.mjs            ← libWrapper suppression of native crit confirm/damage (§9)
     styles/critical-effects.css
@@ -190,13 +191,17 @@ manual resolver and the automated flow share one code path.
 |---|---|---|
 | Damage type | the ten in `DAMAGE_TYPES` | 10 |
 | Anatomy × location | humanoid arm/leg/torso/head; beast + tail/wing; aberrant appendage/torso/head | 13 pairs |
-| Rows | the d12 | 12 |
+| Rows | the Critical Power d12 | 12 |
 
 **1,560 rows**, plus 13 mortal entries. `ANATOMY_LOCATIONS` in `schema.mjs` is the definition of
-those 13 pairs, and `validateAnatomy` cross-checks it against what the location tables in
-anatomy.json can actually produce — a slot the d12 can land on with no effect table behind it is
-the one failure that surfaces as "nothing happened" at the table rather than as a load-time
-complaint.
+those 13 pairs, and `validateAnatomy` cross-checks it against what the location layouts in
+anatomy.json can actually produce — a slot the location roll can land on with no effect table
+behind it is the one failure that surfaces as "nothing happened" at the table rather than as a
+load-time complaint.
+
+> Note the two dice do not have to agree, and since phase 9 they don't: **location** is a d20, and
+> the twelve rows here are indexed by the **Critical Power** roll. The 12 in this table is the
+> severity ladder, not a die face.
 
 **No inheritance.** Every pair is written out in full. The authoring worksheets have a
 `= humanoid` shorthand for rows that genuinely are the same wound, but it expands at fold-in time
@@ -362,7 +367,7 @@ One function, `buildContext({ actionUse | manual })`, returning a frozen object 
 | `attacker.confirmRoll` | the confirmation `D20RollPF` |
 | `target.size` | as above |
 | `target.anatomy` | §5.3 |
-| `target.limbs` | which of leg/arm/wing/tail exist |
+| `target.limbConfig` | `{ beastLimbs, appendages }` — the creature's limb layout, §5.3 |
 | `target.hp` | current / max |
 | `target.armorBySlot` | for the armor-sacrifice mechanic (§10) |
 | `target.conditions` | for stacking rules |
@@ -443,16 +448,63 @@ in `flow/explosion.mjs`.
 
 ### 5.3 Location & anatomy (`location.mjs`, `data/anatomy.json`)
 
-- Default anatomy derived from PF1 creature type, overridable per-actor via a module flag
-  (`flags.pf1-critical-effects.anatomy` = `humanoid|beast|aberrant`, plus a `limbs` array).
-  `anatomy.json` holds the type→category defaults so the mapping is data, not code.
-- The three d12 tables from concept §5 are data.
-- Beast fallback: a rolled slot that the target doesn't have walks to the next applicable
-  entry, per the `*` note. Implement as an ordered fallback chain per row, not ad-hoc.
-- A called shot bypasses the roll entirely and is recorded as such in the result so the card can
-  say "chosen" rather than "rolled". `locationOptions()` resolves the whole chart for one creature
-  *and keeps each row's location*, because a chosen row arrives from roll-requests as an index
-  with no total to look anything up with.
+> **Revised in phase 9.** The die became a **d20**, sides were dropped, and the beast and aberrant
+> tables stopped being written down: they are **generated** from the creature's own limb layout.
+> The three enumerated d12 tables with their fallback chains are gone. What follows is the current
+> design; §5.3's history is in the CHANGELOG.
+
+**The band layout.** One shape for every anatomy, in `anatomy.json`:
+
+| Faces | Location |
+|---|---|
+| 1–12 | the creature's limbs / appendages, divided between them |
+| 13–18 | Torso |
+| 19–20 | Head |
+
+Twelve faces is the point of the d20. It divides evenly by 1, 2, 3 **and** 4, so every limb layout
+comes out even without a remainder rule and without a fallback chain — which is what makes
+generating the tables viable at all. `maxAppendages` is 4 for the same reason; 5 would not divide.
+
+**The three anatomies.**
+
+- **Humanoid** is the one fixed table (1–6 Leg, 7–12 Arm). Its two categories are not a choice, so
+  it has no controls and stays written out in `anatomy.json`.
+- **Beast** divides the limb band between whichever of **Legs / Arms / Wings / Tail** the creature
+  has, always in that order: 3 apiece for four, 4 for three, 6 for two, all 12 for one.
+- **Aberrant** divides it between up to **four named appendage types**. The name is descriptive
+  only — every appendage reads the same `appendage` effect table however it is labelled, so naming
+  them costs nothing in content and buys a card that says "Tentacle". Unnamed ones read as
+  "Appendage", numbering off only if there is more than one blank.
+- **No limbs at all** (an ooze, or a beast with everything unchecked) leaves the limb band
+  unclaimed and the torso row grows down to cover it: `1–18 Torso, 19–20 Head`.
+
+**No sides.** A location is a body part, not a left or right one. Which side it was is the GM's
+call in the moment it matters, and enumerating it doubled every table to say something no effect
+content ever keyed off.
+
+**Where the layout comes from.** Per-actor flags first, then the creature-type default in
+`anatomy.json`, then the file default:
+
+```
+flags.pf1-critical-effects.anatomy      "humanoid" | "beast" | "aberrant"
+flags.pf1-critical-effects.beastLimbs   ["leg", "tail"]
+flags.pf1-critical-effects.appendages   ["Tentacle", "Pincer"]   // "" = unnamed
+```
+
+The GM edits all three at the resolution dialog's Location stage, and the edits are **saved back to
+the actor as they are made** — the layout describes the creature, not the resolution, so an
+abandoned resolution should still leave it correct. Writes go to the **world actor**, resolved via
+`token.baseActor`, never to an unlinked token's synthetic copy: a hydra has three heads whichever
+hydra it is. Reads go through the token's own actor, which inherits base flags unless its delta
+deliberately overrides them.
+
+The v1 `limbs` array still reads — its beast half maps over unchanged, and `["appendage"]` becomes
+one unnamed appendage — and is retired the first time a full layout is saved over it.
+
+**A called shot** bypasses the roll entirely and is recorded as such in the result so the card can
+say "chosen" rather than "rolled". `locationOptions()` resolves the whole chart for one creature
+*and keeps each row's location*, because a chosen row arrives from roll-requests as an index with
+no total to look anything up with.
 
 ---
 
@@ -555,14 +607,36 @@ a misfire in one click. Worth building in from the start — retrofitting undo i
    in `renderChatMessageHTML`.
 3. GM clicks → small dialog: attack type pre-selected from the weapon (melee/bow/thrown/natural),
    overridable.
-4. d12 draw. Player-facing: a roll-requests card with
-   `type: "dice", key: "1d12", mode: "targeted", autoRoll: true, resultTable: <the fumble table>,
-   showTable: true` — that gives the player-visible table with their row highlighted, for free.
+4. d20 draw. Player-facing: a roll-requests card with
+   `type: "dice", key: "1d20", mode: "targeted", autoRoll: false, resultTable: <the fumble table>`
+   — `resultTable` maps the total onto its entry's name, so the result reads as the fumble rather
+   than as a number. **No `showTable`**, unlike the crit resolution's Location and Power rolls
+   (§7.5): those charts explain what the number bought, whereas a fumble table is twenty unordered
+   peers, and printing all of them spoils the nineteen that didn't happen.
 5. Result appended to the original attack card (`card-mutate.mjs`), plus an **Apply** button when
    the entry has outcomes.
 
 Everything phase 1 needs already exists: the three fumble tables, the confirm hook, the
 roll-requests table rendering, the card-button pattern. Nothing here touches PF1's crit pipeline.
+
+**Second entry point: a `Fumble` quick action.** Steps 1-2 only fire on a nat-1 the module was
+watching, which leaves every hand-called fumble — a house rule, a hazard, an attack rolled before
+the module was installed — with no way in. A roll-requests quick action joins the flow at step 3
+and rejoins the same code from there, exactly as §7.5's resolver does for crits.
+
+The fumbler is the **canvas selection**, *not* roll-requests' `promptActors` picker. That picker
+offers assigned PCs and player-owned linked NPCs only (`RollRequestDialog#_getPromptActors`), so a
+monster or an unlinked mook — the usual fumbler — is not in it at all, and what it returns is an
+*actor* id that then has to be guessed back into one of that actor's tokens. A draw is addressed to
+a token, and a controlled one is the token meant. First controlled token; nothing selected is a
+notice, not a guess. §7.5's quick action takes its source the same way and for the same reasons.
+
+Step 5 is the one place the two paths differ: with no attack card to record onto, the draw gets a
+card of its own (`createFumbleResultCard`), created when the roll lands rather than when it is
+posted — so an abandoned draw leaves nothing behind — and the render hook then paints it from the
+flag like any other. Same answer as §7.5, same renderer. The fumbler's name and the card's speaker
+are captured at post time and carried on the request's flag, because the wait is open-ended and the
+token may be gone by the time it is rolled; the name is sanitised per §10 on the way in.
 
 ### 7.2 Crit flow — one GM-run dialog, roll-requests for the dice
 
@@ -609,7 +683,7 @@ two paths mutually exclusive by definition rather than by luck.
 | Stage | In the dialog | Dice |
 |---|---|---|
 | Trigger | GM picks effect / damage / both. **Damage alone ends the resolution here.** | — |
-| Location | Creature type and damage type, then **Roll Location** or **Choose Location** | roll-request `1d12` + location chart, or a `selectFromTable` pick, **attacking player** |
+| Location | Creature type, its limb layout and damage type, then **Roll Location** or **Choose Location** | roll-request `1d20` + location chart, or a `selectFromTable` pick, **attacking player** |
 | Power | Grade override + free-text modifier, then **Request Power Roll** | roll-request `<grade formula><±flat>` + the effect table, **attacking player rolls** |
 | Result | The row that came up, a dropdown to change it, **Confirm Result** | — |
 
@@ -620,9 +694,9 @@ Roll-request cards carry `resultTable` + `showTable`, which gives the player-vis
 their row highlighted for free — concept §10's "player visible summary showing a table of the
 roll they just made" needs no new work. Three refinements matter:
 
-- **Resolve the table for the target before sending it.** A location row saying "Tail" is useless
-  on something without one, so each row is run through the fallback chain first and adjacent rows
-  that land in the same place are merged.
+- **Build the table for the target before sending it.** A location row saying "Tail" is useless on
+  something without one, so the table is generated from that creature's own layout (§5.3) and
+  adjacent rows that land in the same place are merged.
 - **Put the flat modifier in the formula** (`2d6+1`), not added afterwards, so the number the
   player rolls is the number the table reads. Otherwise the highlighted row disagrees with the
   result.
@@ -755,10 +829,47 @@ astora-mod's `dying-manager.mjs` is the reference for where the death threshold 
 
 ### 7.5 Standalone resolver
 
-`registerQuickAction({ key: "pf1-critical-effects-resolver", label: "Critical Effect", promptActors: true })`
-against pf1-roll-requests. Opens `resolver-app.mjs` with manual inputs for grade, modifiers,
-location, damage type, and target, then runs the *same* `resolve/` + `outcomes/` path as the
-automated flow. This is the fallback for every case the automation can't see.
+`registerQuickAction({ key: "pf1-critical-effects-resolver", label: "Critical Effect" })`
+against pf1-roll-requests. Opens `resolver-app.mjs`, which runs the *same* `resolve/` +
+`outcomes/` path as the automated flow. This is the fallback for every case the automation can't
+see.
+
+It asks only for what nothing else will ask for: **source, target, crit multiplier, weapon class,
+and the two sizes** — i.e. exactly the inputs to `power.computeGrade`, plus the two sides. Creature
+type and damage type are *not* among them, because §7.2's Location stage asks for both regardless;
+a resolver field for either would be a second question whose answer can contradict the first. They
+are still accepted as a seed (`openResolver({ damageType })`) for a caller that knows them.
+
+The **source** is the standalone stand-in for the attacking player: it is passed through as
+`manual.attackerToken` / `manual.attackerActor`, which is what the `manual` branch of
+`context.mjs` exists for, and it is what §7.2's roll requests are addressed to. The quick action
+seeds it from the **canvas selection** (first controlled token if several — a resolution has one
+source), for the reasons §7.1 sets out: `promptActors` cannot offer a monster or an unlinked token,
+and it answers with an actor where a request needs a token. It is optional; with no source there is
+nobody to ask and §7.2 falls back to rolling GM-side, so the resolver still works from the console
+with nothing selected, and its own dropdown offers every token on the scene regardless. The target
+needs no seeding — that dropdown is ordered targeted-first, so it already opens on the GM's target.
+
+The resolution it opens **starts at Location**, passing `choice: "effect"` to
+`startCritResolution`. §7.2's Trigger stage chooses between critical damage and a critical effect,
+and that choice only exists because §9 suppressed the card's crit damage — a resolution with no
+attack card behind it has none to release. The stage is dropped from the sequence rather than
+marked complete (`stages.mjs` gates it on `choiceLocked`): it was not skipped, it was never a
+question. When there is no source either, the dialog's header and title omit the `attacker →`
+clause entirely rather than printing a placeholder.
+
+Both windows carry `ce-window`, which is where the dark-panel/amber theme lives — the resolver
+hands straight off to the resolution dialog, and the two must not read as different tools.
+
+**Where the result goes.** §7.2 records onto the originating attack card; a resolution from here
+has none, so `createCritResultCard` (`chat/card-mutate.mjs`) makes one and `record()` treats it
+identically. The card's own HTML carries only what the attack card would have supplied — the two
+parties, and the Critical Power grade and roll. The effect is *not* written into it: it goes into
+the same `critResult` flag, and the same render hook draws it. That is the whole reason this is
+cheap rather than a second renderer — every hook in that file already works on any message
+carrying the flag, and `.card-buttons` is in the card so §6's Apply-buff button lands there too.
+The card's speaker is the source, but with the alias replaced by the name §10 already sanitised,
+because `getSpeaker` would otherwise stamp an obscured NPC's real name onto a public card.
 
 ---
 
@@ -892,7 +1003,7 @@ data on the way past. ckl-roll-bonuses registers a WRAPPER on the same method
 | Phase | Deliverable | Depends on |
 |---|---|---|
 | **0** | Module scaffold: `module.json` esmodules/styles/lang/relationships, entry file, API stub, CSS, CHANGELOG/README. Own GM socket (generic primitives). Catalog loader + schema validator + `lint()`, all tolerant of outcome-less entries. | — |
-| **1** | **Fumble path end-to-end.** `fumbles.json` (transcribed from the existing tables + a new `natural` table), `fumble-flow.mjs`, card button + card mutation, roll-request draw with visible table. Journal-only results — no outcomes yet. | 0 |
+| **1** | **Fumble path end-to-end.** `fumbles.json` (transcribed from the existing tables + a new `natural` table), `fumble-flow.mjs`, card button + card mutation, roll-request draw. Journal-only results — no outcomes yet. | 0 |
 | **2** | **Resolve layer.** `context`/`power`/`location` + `anatomy.json`, all pure and console-testable. No UI. | 0 |
 | **3** | **Resolution dialog.** `crit-dialog.hbs` + a data-driven stage list. *(Originally "prompt card + luck spending"; the card became a dialog and the luck half was built and then removed — §7.2, §7.3.)* | 1, 2 |
 | **4** | **Standalone resolver** (§7.5). Quick action + ApplicationV2 manual input driving 2+3. First usable crit tooling end to end, on journal-only content, with zero pipeline risk. **Lethal draws** (§7.4) ride along — same quick-action plumbing, no resolve layer needed. | 3 |

@@ -35,14 +35,14 @@ export const SEVERITY_BANDS = [
 export const bandForRow = (row) =>
   SEVERITY_BANDS.find(({ rows: [min, max] }) => row >= min && row <= max) ?? null;
 
-/** Body locations the d12 location tables can produce (§5.3). Unknown values are warned about,
+/** Body locations the d20 location tables can produce (§5.3). Unknown values are warned about,
  *  not rejected — content may legitimately introduce a location before the tables catch up. */
 export const LOCATIONS = ["head", "torso", "arm", "leg", "wing", "tail", "appendage"];
 
 /**
  * Which locations each anatomy can actually be hit in — the effect grid's real shape.
  *
- * Derived from the three d12 location tables in anatomy.json, and the reason the grid is 13
+ * Derived from what the three d20 location layouts can produce, and the reason the grid is 13
  * anatomy × location pairs rather than 3 × 7 = 21: a humanoid has no tail to shatter and an
  * ooze has no arm to break, so those tables are not merely unwritten, they are meaningless.
  * The validator uses this to tell "still to author" apart from "does not exist", which is what
@@ -402,8 +402,13 @@ export function validateLethal(data) {
  * Structural check of data/anatomy.json.
  *
  * Returns a flat list of problems rather than the errors/warnings split the other two use: a
- * broken location table has no partial-credit reading — either the d12 resolves or it doesn't —
+ * broken location table has no partial-credit reading — either the d20 resolves or it doesn't —
  * so there is nothing here to salvage row by row.
+ *
+ * Since v2 only humanoid is a written table; beast and aberrant are generated from the creature's
+ * own layout (resolve/location.mjs). So this checks two different things: the humanoid table row
+ * by row, and the PARAMETERS the generator works from — the bands, the category order, and the
+ * appendage cap — because a bad band leaves a hole in every generated table at once.
  *
  * @returns {string[]}
  */
@@ -411,55 +416,116 @@ export function validateAnatomy(data) {
   const problems = [];
 
   if (!isPlainObject(data)) return ["anatomy.json: root is not an object"];
-  if (data.version !== 1) problems.push(`anatomy.json: version is ${data.version}, expected 1`);
+  if (data.version !== 2) problems.push(`anatomy.json: version is ${data.version}, expected 2`);
   if (!ANATOMIES.includes(data.default?.anatomy)) problems.push("anatomy.json: `default.anatomy` must be a known anatomy");
-  if (!isPlainObject(data.tables)) return [...problems, "anatomy.json: `tables` is not an object"];
 
-  for (const anatomy of ANATOMIES) {
-    const rows = data.tables[anatomy];
-    if (!Array.isArray(rows)) { problems.push(`anatomy.json: no "${anatomy}" table`); continue; }
+  const die = data.die;
+  if (!Number.isInteger(die) || die < 2) problems.push(`anatomy.json: \`die\` must be an integer face count, found ${die}`);
 
+  /* The bands have to tile 1..die with no gap and no overlap, in this order: a hole here is a roll
+   * that resolves to no body part at all. */
+  const bands = data.bands;
+  if (!isPlainObject(bands)) {
+    problems.push("anatomy.json: `bands` is not an object");
+  } else {
     let expected = 1;
-    for (const row of [...rows].sort((a, b) => (a.range?.[0] ?? 0) - (b.range?.[0] ?? 0))) {
-      const [min, max] = row?.range ?? [];
+    for (const key of ["limbs", "torso", "head"]) {
+      const [min, max] = bands[key] ?? [];
       if (!Number.isInteger(min) || !Number.isInteger(max) || max < min) {
-        problems.push(`anatomy.json: "${anatomy}" has a row with an invalid \`range\``);
+        problems.push(`anatomy.json: band "${key}" is not a valid [min, max]`);
+        expected = null;
         continue;
       }
-      if (min !== expected) problems.push(`anatomy.json: "${anatomy}" expected coverage to resume at ${expected}, found ${min}`);
+      if (expected !== null && min !== expected) {
+        problems.push(`anatomy.json: band "${key}" starts at ${min}, expected ${expected}`);
+      }
       expected = max + 1;
+    }
+    if (expected !== null && Number.isInteger(die) && expected !== die + 1) {
+      problems.push(`anatomy.json: bands cover 1-${expected - 1}, expected 1-${die}`);
+    }
+  }
 
-      if (!Array.isArray(row.candidates) || row.candidates.length === 0) {
-        problems.push(`anatomy.json: "${anatomy}" row ${min}-${max} has no candidates`);
-        continue;
-      }
-      for (const candidate of row.candidates) {
-        if (!SLOTS.includes(candidate?.slot)) problems.push(`anatomy.json: "${anatomy}" row ${min}-${max} names unknown slot "${candidate?.slot}"`);
-        if (candidate?.side && !["left", "right"].includes(candidate.side)) {
-          problems.push(`anatomy.json: "${anatomy}" row ${min}-${max} has invalid side "${candidate.side}"`);
-        }
-        /* The two halves of the grid's shape have to agree. A slot this table can produce but
-         * ANATOMY_LOCATIONS doesn't list is a hit location with no effect table behind it — the
-         * one failure mode that surfaces as "nothing happened" at the table rather than as a
-         * load-time complaint. */
-        if (SLOTS.includes(candidate?.slot) && !ANATOMY_LOCATIONS[anatomy]?.includes(candidate.slot)) {
-          problems.push(
-            `anatomy.json: "${anatomy}" row ${min}-${max} can produce "${candidate.slot}", which ANATOMY_LOCATIONS does not list for it`
-          );
-        }
+  const order = data.beastOrder;
+  if (!Array.isArray(order) || !order.length) {
+    problems.push("anatomy.json: `beastOrder` must be a non-empty array of slots");
+  } else {
+    for (const slot of order) {
+      if (!SLOTS.includes(slot)) problems.push(`anatomy.json: \`beastOrder\` names unknown slot "${slot}"`);
+      /* The two halves of the grid's shape have to agree. A slot the generator can produce but
+       * ANATOMY_LOCATIONS doesn't list is a hit location with no effect table behind it — the one
+       * failure mode that surfaces as "nothing happened" at the table rather than as a load-time
+       * complaint. */
+      else if (!ANATOMY_LOCATIONS.beast?.includes(slot)) {
+        problems.push(`anatomy.json: \`beastOrder\` can produce "${slot}", which ANATOMY_LOCATIONS does not list for beast`);
       }
     }
-    if (expected !== 13) problems.push(`anatomy.json: "${anatomy}" covers 1-${expected - 1}, expected 1-12`);
+  }
+
+  if (!ANATOMY_LOCATIONS.aberrant?.includes("appendage")) {
+    problems.push("anatomy.json: aberrant layouts produce \"appendage\", which ANATOMY_LOCATIONS does not list for aberrant");
+  }
+
+  /* Every count up to the cap has to divide the limb band evenly, or some appendage silently gets
+   * a wider slice than its neighbour. The generator handles a remainder rather than breaking, so
+   * this is a warning about the layout being lopsided, not about it being invalid. */
+  const cap = data.maxAppendages;
+  const faces = Array.isArray(bands?.limbs) ? bands.limbs[1] - bands.limbs[0] + 1 : null;
+  if (!Number.isInteger(cap) || cap < 1) {
+    problems.push(`anatomy.json: \`maxAppendages\` must be a positive integer, found ${cap}`);
+  } else if (Number.isInteger(faces)) {
+    for (let n = 1; n <= cap; n++) {
+      if (faces % n) problems.push(`anatomy.json: ${faces} limb faces do not divide evenly by ${n}, so a ${n}-appendage layout is lopsided`);
+    }
   }
 
   // The terminal fallback has to be a slot every creature is guaranteed to have.
   const fallback = data._fallbackSlot ?? "torso";
   if (!["torso", "head"].includes(fallback)) problems.push(`anatomy.json: \`_fallbackSlot\` "${fallback}" is not a universal slot`);
 
+  // Only humanoid is written out; the other two have no table to check.
+  if (!isPlainObject(data.tables)) return [...problems, "anatomy.json: `tables` is not an object"];
+
+  const rows = data.tables.humanoid;
+  if (!Array.isArray(rows)) {
+    problems.push("anatomy.json: no \"humanoid\" table");
+  } else {
+    let expected = 1;
+    for (const row of [...rows].sort((a, b) => (a.range?.[0] ?? 0) - (b.range?.[0] ?? 0))) {
+      const [min, max] = row?.range ?? [];
+      if (!Number.isInteger(min) || !Number.isInteger(max) || max < min) {
+        problems.push("anatomy.json: \"humanoid\" has a row with an invalid `range`");
+        continue;
+      }
+      if (min !== expected) problems.push(`anatomy.json: "humanoid" expected coverage to resume at ${expected}, found ${min}`);
+      expected = max + 1;
+
+      if (!SLOTS.includes(row.slot)) problems.push(`anatomy.json: "humanoid" row ${min}-${max} names unknown slot "${row.slot}"`);
+      else if (!ANATOMY_LOCATIONS.humanoid?.includes(row.slot)) {
+        problems.push(`anatomy.json: "humanoid" row ${min}-${max} can produce "${row.slot}", which ANATOMY_LOCATIONS does not list for it`);
+      }
+    }
+    if (Number.isInteger(die) && expected !== die + 1) {
+      problems.push(`anatomy.json: "humanoid" covers 1-${expected - 1}, expected 1-${die}`);
+    }
+  }
+
   for (const [type, entry] of Object.entries(data.byCreatureType ?? {})) {
     if (!ANATOMIES.includes(entry?.anatomy)) problems.push(`anatomy.json: creature type "${type}" maps to unknown anatomy "${entry?.anatomy}"`);
-    if (!Array.isArray(entry?.limbs)) problems.push(`anatomy.json: creature type "${type}" has no \`limbs\` array`);
-    else for (const limb of entry.limbs) if (!SLOTS.includes(limb)) problems.push(`anatomy.json: creature type "${type}" lists unknown limb "${limb}"`);
+
+    // Both lists are optional — a humanoid type needs neither — but a present one must be usable.
+    if (entry?.beastLimbs != null) {
+      if (!Array.isArray(entry.beastLimbs)) problems.push(`anatomy.json: creature type "${type}" has a non-array \`beastLimbs\``);
+      else for (const limb of entry.beastLimbs) {
+        if (!Array.isArray(order) || !order.includes(limb)) problems.push(`anatomy.json: creature type "${type}" lists "${limb}", which is not in \`beastOrder\``);
+      }
+    }
+    if (entry?.appendages != null) {
+      if (!Array.isArray(entry.appendages)) problems.push(`anatomy.json: creature type "${type}" has a non-array \`appendages\``);
+      else if (Number.isInteger(cap) && entry.appendages.length > cap) {
+        problems.push(`anatomy.json: creature type "${type}" lists ${entry.appendages.length} appendages, more than \`maxAppendages\` (${cap})`);
+      }
+    }
   }
 
   return problems;

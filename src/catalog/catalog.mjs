@@ -28,7 +28,7 @@ let effects = { entries: [], byId: new Map(), tables: {}, mortal: {} };
 /** @type {{ entries: object[], byId: Map<string, object>, tables: object }} */
 let fumbles = { entries: [], byId: new Map(), tables: {} };
 
-/** Anatomy defaults + the three d12 location tables. Consumed by resolve/location.mjs. */
+/** Anatomy defaults + the d20 band layout and humanoid table. Consumed by resolve/location.mjs. */
 let anatomy = null;
 
 /** Lethal flavour entries (§7.4) — no severity, no location, no outcomes. */

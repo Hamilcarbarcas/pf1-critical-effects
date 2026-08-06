@@ -1,80 +1,87 @@
 {{!-- Standalone manual resolver (DESIGN.md §7.5). Feeds resolve/context.mjs by hand, then opens
-      the same prompt card the automated flow uses. --}}
-<div class="ce-resolver-body">
+      the same resolution dialog the automated flow uses, already past its Trigger stage.
 
-  <div class="form-group">
-    <label>Target</label>
-    <div class="form-fields">
-      {{#if hasTargets}}
+      Source and target are both here because the resolution needs both: the source is who gets
+      asked to roll (the standalone stand-in for the attacking player), and the target is whose
+      body the location chart belongs to.
+
+      Anatomy and damage type are deliberately NOT asked for: the resolution dialog asks for both
+      at its Location stage regardless, and asking twice invites the two answers to disagree.
+      Anatomy comes off the chosen target; damage type is chosen there. --}}
+<div class="ce-body">
+
+  <div class="ce-fields">
+    <label class="ce-field">
+      <span class="ce-field-label">Source</span>
+      <select name="sourceId" {{#unless hasTokens}}disabled{{/unless}}>
+        <option value="">— none —</option>
+        {{#each tokens}}<option value="{{id}}" {{#if (eq id ../seed.sourceId)}}selected{{/if}}>{{name}}</option>{{/each}}
+      </select>
+    </label>
+    <label class="ce-field">
+      <span class="ce-field-label">Target</span>
+      {{#if hasTokens}}
         <select name="targetId">
-          {{#each targets}}<option value="{{id}}" {{#if (eq id ../seed.targetId)}}selected{{/if}}>{{name}}</option>{{/each}}
+          {{#each tokens}}<option value="{{id}}" {{#if (eq id ../seed.targetId)}}selected{{/if}}>{{name}}</option>{{/each}}
         </select>
       {{else}}
         <select name="targetId" disabled><option value="">no tokens on this scene</option></select>
       {{/if}}
-    </div>
-    <p class="hint">Anatomy and size are read from the target unless overridden below.</p>
+    </label>
   </div>
+  <span class="ce-hint">The source's player is asked to roll the hit location and the Critical Power; with
+  no source the GM rolls both. Creature type comes from the target, and the resolution lets you correct it.</span>
 
-  <div class="form-group">
-    <label>Critical multiplier</label>
-    <div class="form-fields">
+  <div class="ce-fields">
+    <label class="ce-field">
+      <span class="ce-field-label">Critical multiplier</span>
       <select name="critMult">
         {{#each critMults}}<option value="{{this}}" {{#if (eq this ../seed.critMult)}}selected{{/if}}>&times;{{this}}</option>{{/each}}
       </select>
-    </div>
-  </div>
-
-  <div class="form-group">
-    <label>Damage type</label>
-    <div class="form-fields">
-      <select name="damageType">
-        {{#each damageTypes}}<option value="{{key}}" {{#if (eq key ../seed.damageType)}}selected{{/if}}>{{label}}</option>{{/each}}
-      </select>
-    </div>
-  </div>
-
-  <div class="form-group">
-    <label>Weapon class</label>
-    <div class="form-fields">
+    </label>
+    <label class="ce-field">
+      <span class="ce-field-label">Weapon class</span>
       <select name="weaponClass">
         {{#each weaponClasses}}<option value="{{key}}" {{#if (eq key ../seed.weaponClass)}}selected{{/if}}>{{label}}</option>{{/each}}
       </select>
-    </div>
+    </label>
   </div>
 
-  <div class="form-group">
-    <label>Size (attacker / target)</label>
-    <div class="form-fields ce-size-fields">
-      <input type="number" name="attackerSize" value="{{seed.attackerSize}}" min="0" max="8" step="1">
-      <input type="number" name="targetSize" value="{{seed.targetSize}}" min="0" max="8" step="1">
-    </div>
-    <p class="hint">PF1 size index: 0 Fine … 4 Medium … 8 Colossal. One step of difference shifts the grade one tier.</p>
-  </div>
-
-  <div class="form-group">
-    <label>Anatomy override</label>
-    <div class="form-fields">
-      <select name="anatomy">
-        <option value="" {{#unless seed.anatomy}}selected{{/unless}}>— from the target —</option>
-        {{#each anatomies}}<option value="{{this}}" {{#if (eq this ../seed.anatomy)}}selected{{/if}}>{{this}}</option>{{/each}}
+  <div class="ce-fields">
+    <label class="ce-field">
+      {{!-- Labelled "source" to match the field above; the name stays `attackerSize`, which is
+            what resolve/context.mjs and resolve/power.mjs call it. --}}
+      <span class="ce-field-label">Source size</span>
+      <select name="attackerSize">
+        {{#each sizes}}<option value="{{index}}" {{#if (eq index ../seed.attackerSize)}}selected{{/if}}>{{label}}</option>{{/each}}
       </select>
+    </label>
+    <label class="ce-field">
+      <span class="ce-field-label">Target size</span>
+      <select name="targetSize">
+        {{#each sizes}}<option value="{{index}}" {{#if (eq index ../seed.targetSize)}}selected{{/if}}>{{label}}</option>{{/each}}
+      </select>
+    </label>
+  </div>
+  <span class="ce-hint">One step of difference is worth &plusmn;1 on the Critical Power total.</span>
+
+  {{!-- What the inputs currently buy, before committing to them. Same readout the resolution
+        dialog opens with, so the number doesn't appear to change on the way through. --}}
+  <div class="ce-readout">
+    <div class="ce-line">
+      <span class="ce-line-label">Power</span>
+      <span class="ce-line-value">
+        <strong class="ce-accent">{{preview.grade}}</strong>
+        <span class="ce-mono">{{previewFormula}}</span>
+        {{#unless (eq preview.base preview.grade)}}<em class="ce-muted">from {{preview.base}}</em>{{/unless}}
+      </span>
     </div>
   </div>
 
-  {{!-- What the inputs currently buy, before committing to them. --}}
-  <div class="ce-resolver-preview">
-    <span class="ce-preview-label">Critical Power</span>
-    <span class="ce-preview-value">
-      {{preview.grade}} &mdash; {{preview.formula}}{{#if preview.flat}}{{#if (gt preview.flat 0)}} +{{preview.flat}}{{else}} {{preview.flat}}{{/if}}{{/if}}
-    </span>
-    {{#unless (eq preview.base preview.grade)}}
-      <span class="ce-preview-from">shifted from {{preview.base}}</span>
-    {{/unless}}
+  <div class="ce-stage-controls ce-submit">
+    <button type="submit" class="ce-btn ce-primary">
+      <i class="fa-solid fa-burst"></i> Open Resolution
+    </button>
   </div>
 
 </div>
-
-<footer class="form-footer">
-  <button type="submit"><i class="fa-solid fa-burst"></i> Open Resolution</button>
-</footer>

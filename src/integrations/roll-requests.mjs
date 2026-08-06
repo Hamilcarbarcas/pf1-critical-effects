@@ -1,7 +1,13 @@
 /* pf1-roll-requests helpers.
  *
- * Every die a player rolls during a resolution goes through a roll request, so the player gets
- * the card, the table, and their highlighted row for free (DESIGN.md §7.1 step 4).
+ * Every die a player rolls during a resolution goes through a roll request, so the player gets a
+ * card to click and the result comes back mapped to its table row rather than as a bare number.
+ *
+ * Whether the table is PRINTED onto that card differs by draw, and deliberately so: the crit
+ * resolution's Location and Power rolls show theirs, because the chart is what makes the number
+ * mean anything to the player who rolled it (DESIGN.md §7.5). The fumble draw does not — its
+ * table is a flat d20 of twenty unrelated mishaps, and showing it spoils the nineteen that didn't
+ * happen.
  */
 
 import { MODULE_ID } from "../const.mjs";
@@ -26,11 +32,22 @@ export const available = () => !!game.pf1RollRequests;
  * @param {TokenDocument} opts.token       the fumbling token
  * @param {object[]} opts.resultTable      threshold rows from catalog.fumbleResultTable()
  * @param {string} opts.flavor
- * @param {string} opts.sourceMessageId    the attack card to write the result back onto
+ * @param {string|null} opts.sourceMessageId  the attack card to write the result back onto; null
+ *                                            for a hand-started draw, which gets a card of its own
  * @param {string} opts.tableKey
+ * @param {string|null} [opts.fumblerName]    carried for that card's header
+ * @param {object|null} [opts.speaker]        carried for that card's speaker
  * @returns {Promise<ChatMessage|null>} the request card
  */
-export async function postFumbleDraw({ token, resultTable, flavor, sourceMessageId, tableKey }) {
+export async function postFumbleDraw({
+  token,
+  resultTable,
+  flavor,
+  sourceMessageId = null,
+  tableKey,
+  fumblerName = null,
+  speaker = null,
+}) {
   if (!available()) {
     ui.notifications.warn(`${MODULE_ID}: pf1-roll-requests is not active; cannot post the fumble draw.`);
     return null;
@@ -51,7 +68,9 @@ export async function postFumbleDraw({ token, resultTable, flavor, sourceMessage
     targetedActors: [{ id: token.id }],
     autoRoll: false, // the player clicks to roll
     resultTable,
-    showTable: true,
+    // No `showTable`: the draw is a d20 against a table nobody needs to read to roll it, and
+    // printing all twenty outcomes onto the card spoils nineteen fumbles to save reading one.
+    // `resultTable` stays, so the result still lands as its entry's name rather than a number.
     showResults: true,
   });
 
@@ -60,7 +79,10 @@ export async function postFumbleDraw({ token, resultTable, flavor, sourceMessage
   // Stamped after creation because createRequest takes no flag passthrough. The window before
   // this lands is a render plus a human reaction, so a roll cannot realistically beat it; a roll
   // that somehow did would simply find no flag and be ignored.
-  await message.setFlag(MODULE_ID, DRAW_FLAG, { sourceMessageId, tableKey });
+  //
+  // The fumbler's name and speaker are stored rather than re-derived when the roll lands: a draw
+  // waits on a human, and by then the token may have been deleted or the scene changed.
+  await message.setFlag(MODULE_ID, DRAW_FLAG, { sourceMessageId, tableKey, fumblerName, speaker });
 
   return message;
 }

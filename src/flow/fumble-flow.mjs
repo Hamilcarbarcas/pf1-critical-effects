@@ -12,14 +12,19 @@
  * Steps 4 and 5 are deliberately disconnected: the wait for a player's click is open-ended, so
  * the link between the two lives in a flag on the request card rather than in memory.
  *
+ * Steps 3-5 have a second way in: a roll-requests quick action, which draws for the selected token
+ * with no attack card behind it. It joins at step 3 and rejoins the same code from there; the only
+ * difference is at step 5, where a draw with no attack card gets a card of its own.
+ *
  * Nothing here touches PF1's crit pipeline; that is phase 7.
  */
 
 import { MODULE_ID } from "../const.mjs";
 import * as catalog from "../catalog/catalog.mjs";
 import { registerButtonType, addButtons, removeButton } from "../chat/card-buttons.mjs";
-import { setFumbleResult } from "../chat/card-mutate.mjs";
+import { setFumbleResult, createFumbleResultCard } from "../chat/card-mutate.mjs";
 import { postFumbleDraw, totalFromResult, DRAW_FLAG } from "../integrations/roll-requests.mjs";
+import { displayName } from "../integrations/token-randomizer.mjs";
 
 const BUTTON_TYPE = "resolve-fumble";
 
@@ -175,29 +180,45 @@ async function promptAttackType(preselected) {
 
 // --- 4. post the draw -------------------------------------------------------
 
-/* Posts the request and stops. The player rolls it in their own time, and `completeDraw` below
- * finishes the job off the rollComplete hook — so nothing here holds state across the wait. */
-async function resolveFumble(descriptor, { message }) {
-  const attackType = await promptAttackType(descriptor.data?.attackType);
-  if (!attackType) return; // cancelled
+/**
+ * Prompt for the table and post the draw. The single implementation behind both entry points.
+ *
+ * Posts the request and stops. The player rolls it in their own time, and `completeDraw` below
+ * finishes the job off the rollComplete hook — so nothing here holds state across the wait.
+ *
+ * Returns null for a cancelled prompt and for a failed post alike, having said so where it
+ * mattered; the callers treat both the same way, which is to leave everything as it was.
+ *
+ * @param {object} opts
+ * @param {TokenDocument} opts.token             the fumbling token
+ * @param {string|null} [opts.preselected]       attack type to open the prompt on
+ * @param {string|null} [opts.sourceMessageId]   attack card to record onto; null for a hand-started
+ *                                               draw, which gets a card of its own when it lands
+ * @returns {Promise<ChatMessage|null>} the request card
+ */
+async function startDraw({ token, preselected = null, sourceMessageId = null }) {
+  const attackType = await promptAttackType(preselected);
+  if (!attackType) return null; // cancelled
 
   const resultTable = catalog.fumbleResultTable(attackType);
   if (!resultTable) {
     ui.notifications.error(`${MODULE_ID}: no "${attackType}" fumble table.`);
-    return;
+    return null;
   }
 
-  const token = resolveToken(descriptor, message);
-  if (!token) {
-    ui.notifications.warn(`${MODULE_ID}: could not find the fumbling token; the draw needs one to target.`);
-    return;
-  }
+  /* Only a hand-started draw carries these. The button path records onto the attack card, which
+   * already says who swung; a standalone one has to say it itself, so the name is captured now —
+   * sanitised (§10) — rather than read off a token that may be gone by the time it is rolled. */
+  const standalone = sourceMessageId
+    ? {}
+    : { fumblerName: displayName(token) ?? "—", speaker: speakerFor(token) };
 
   const request = await postFumbleDraw({
     token,
     resultTable,
     tableKey: attackType,
-    sourceMessageId: message.id,
+    sourceMessageId,
+    ...standalone,
     flavor: game.i18n.format("CRITICAL_EFFECTS.Fumble.DrawFlavor", {
       type: game.i18n.localize(`CRITICAL_EFFECTS.Fumble.Table.${attackType}`),
     }),
@@ -205,11 +226,63 @@ async function resolveFumble(descriptor, { message }) {
 
   if (!request) {
     ui.notifications.warn(`${MODULE_ID}: could not post the fumble draw.`);
+    return null;
+  }
+
+  return request;
+}
+
+/* The card's speaker, with the alias replaced by the name §10 already sanitised — `getSpeaker`
+ * would otherwise stamp an obscured NPC's real name onto a public card. Mirrors the standalone
+ * crit card's speaker for the same reason. */
+function speakerFor(token) {
+  const actor = token?.actor ?? null;
+  if (!token && !actor) return null;
+  return {
+    ...ChatMessage.getSpeaker({ actor, token }),
+    alias: displayName(token) ?? game.i18n.localize("CRITICAL_EFFECTS.Fumble.ResultLabel"),
+  };
+}
+
+/* Entry point 1: the attack card's button. */
+async function resolveFumble(descriptor, { message }) {
+  const token = resolveToken(descriptor, message);
+  if (!token) {
+    ui.notifications.warn(`${MODULE_ID}: could not find the fumbling token; the draw needs one to target.`);
     return;
   }
 
+  const request = await startDraw({
+    token,
+    preselected: descriptor.data?.attackType,
+    sourceMessageId: message.id,
+  });
+  if (!request) return;
+
   // The button has handed off; a second click would post a duplicate request.
   await removeButton(message, descriptor.id);
+}
+
+/**
+ * Entry point 2: the roll-requests quick action, for a fumble with no attack card behind it —
+ * a house rule, a hazard, an attack rolled before the module was watching.
+ *
+ * The fumbler defaults to the GM's **canvas selection**, not roll-requests' actor picker. That
+ * picker offers assigned PCs and player-owned linked NPCs only, so the creature that most often
+ * fumbles is not in it at all, and what it hands back is an actor id that then has to be guessed
+ * back into one of the actor's tokens. A controlled token is the exact answer to both.
+ *
+ * @param {object} [opts]
+ * @param {TokenDocument|null} [opts.token]  overrides the selection, for a console caller
+ */
+export async function promptFumbleDraw({ token = null } = {}) {
+  token ??= canvas.tokens?.controlled?.[0]?.document ?? null;
+  if (!token) {
+    ui.notifications.warn(game.i18n.localize("CRITICAL_EFFECTS.Fumble.NoSelection"));
+    return;
+  }
+  // No attack behind it, so nothing to infer the table from: the prompt opens on its first entry.
+  await startDraw({ token });
 }
 
 // --- 5. record the result ---------------------------------------------------
@@ -223,18 +296,27 @@ async function completeDraw({ messageId, result }) {
   const draw = request?.getFlag(MODULE_ID, DRAW_FLAG);
   if (!draw) return; // not one of ours
 
-  const source = game.messages.get(draw.sourceMessageId);
-  if (!source) {
-    console.error(`${MODULE_ID} | fumble draw resolved but its attack card ${draw.sourceMessageId} is gone`);
-    return;
-  }
-
   const total = totalFromResult(result);
   if (total == null) return;
 
   const entry = catalog.drawFumble(draw.tableKey, total);
   if (!entry) {
     ui.notifications.warn(`${MODULE_ID}: d12 rolled ${total}, which the "${draw.tableKey}" table does not cover.`);
+    return;
+  }
+
+  /* Where the record goes. The attack card when the draw came from one; otherwise a card made for
+   * it here — the same answer §7.5 gives a hand-driven crit resolution, and the same renderer
+   * paints both. Created only now that there is a result to put in it, so an unmapped draw never
+   * leaves an empty card behind. */
+  const source = draw.sourceMessageId
+    ? game.messages.get(draw.sourceMessageId)
+    : await createFumbleResultCard({ fumblerName: draw.fumblerName, speaker: draw.speaker });
+
+  if (!source) {
+    if (draw.sourceMessageId) {
+      console.error(`${MODULE_ID} | fumble draw resolved but its attack card ${draw.sourceMessageId} is gone`);
+    }
     return;
   }
 
@@ -290,4 +372,20 @@ export function registerFumbleFlow() {
   });
 
   registerButtonType(BUTTON_TYPE, resolveFumble);
+}
+
+/** Registered against pf1-roll-requests at `ready`; see lethal.mjs and resolver-app.mjs for the siblings. */
+export function registerFumbleQuickAction() {
+  if (!game.pf1RollRequests) return;
+
+  game.pf1RollRequests.registerQuickAction({
+    key: "critical-effects-fumble",
+    // Localized by roll-requests, which runs every quick action's label through `localize`.
+    label: "CRITICAL_EFFECTS.Fumble.QuickAction",
+    icon: "fa-face-dizzy",
+    // No `promptActors`: the fumbler is the canvas selection (see promptFumbleDraw). The dialog is
+    // left open, because a click with nothing selected is answered with a warning and the GM needs
+    // it still there to try again.
+    callback: () => promptFumbleDraw(),
+  });
 }

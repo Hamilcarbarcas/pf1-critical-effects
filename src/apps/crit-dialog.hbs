@@ -2,10 +2,14 @@
       GM-only and in-memory: unlike the chat card this replaced, nothing here is regenerated from
       stored state, so it can afford to be a working surface rather than a record. The record is
       written onto the attack card when the resolution is confirmed. --}}
-<div class="ce-crit-dialog-body">
+<div class="ce-body">
 
+  {{!-- A hand-driven resolution has no attacker, so the whole "X →" clause drops rather than
+        naming a placeholder. --}}
   <header class="ce-crit-header">
-    <span class="ce-crit-parties">{{display.attackerName}} <i class="fa-solid fa-arrow-right"></i> {{display.targetName}}</span>
+    <span class="ce-crit-parties">
+      {{#if display.attackerName}}{{display.attackerName}} <i class="fa-solid fa-arrow-right"></i> {{/if}}{{display.targetName}}
+    </span>
   </header>
 
   {{!-- Stage rail: where the resolution is, and where it still has to go. --}}
@@ -34,7 +38,6 @@
         <span class="ce-line-value">
           {{locationLabel}}
           {{#if state.location.chosen}}<em class="ce-muted">chosen</em>{{else}}<em class="ce-muted">rolled {{state.location.rolled}}</em>{{/if}}
-          {{#if state.location.fellBack}}<em class="ce-muted">(no {{state.location.from.slot}})</em>{{/if}}
         </span>
       </div>
     {{/if}}
@@ -63,7 +66,7 @@
   {{#if pending}}
     <div class="ce-pending">
       <i class="fa-solid fa-hourglass-half"></i>
-      <span>Waiting for {{display.attackerName}} to roll {{pending.label}}&hellip;</span>
+      <span>Waiting for {{#if display.attackerName}}{{display.attackerName}}{{else}}the attacker{{/if}} to roll {{pending.label}}&hellip;</span>
       <button type="button" class="ce-btn ce-secondary" data-action="cancelRequest">Cancel</button>
     </div>
   {{/if}}
@@ -102,6 +105,46 @@
                 </select>
               </label>
             </div>
+
+            {{!-- The creature's limb layout: which categories the 1-12 band is divided between.
+                  Saved back to the target actor as it is edited, so a creature is described once
+                  rather than once per critical. Humanoid has no controls — its two categories are
+                  not a choice. --}}
+            {{#if ../showBeastLimbs}}
+              <div class="ce-layout">
+                <span class="ce-field-label">Limbs</span>
+                <div class="ce-checks">
+                  {{#each ../beastLimbOptions}}
+                    <label class="ce-check">
+                      <input type="checkbox" name="beastLimb" value="{{slot}}" {{#if checked}}checked{{/if}} />
+                      <span>{{label}}</span>
+                    </label>
+                  {{/each}}
+                </div>
+              </div>
+            {{/if}}
+
+            {{#if ../showAppendages}}
+              <div class="ce-layout">
+                <span class="ce-field-label">Appendages</span>
+                {{#each ../appendageSlots}}
+                  <label class="ce-appendage {{#unless on}}is-off{{/unless}}">
+                    <input type="checkbox" name="appendageOn" value="{{index}}" {{#if on}}checked{{/if}} />
+                    <input type="text" name="appendageName" data-index="{{index}}" value="{{name}}" placeholder="Appendage" />
+                  </label>
+                {{/each}}
+                <p class="ce-hint">Names are description only — every appendage reads the same effect table.</p>
+              </div>
+            {{/if}}
+
+            {{!-- What the layout buys, before anything is rolled against it. --}}
+            {{#if ../locationBands}}
+              <ul class="ce-bands">
+                {{#each ../locationBands}}
+                  <li><span class="ce-mono">{{range}}</span> {{label}}</li>
+                {{/each}}
+              </ul>
+            {{/if}}
 
             <div class="ce-stage-controls">
               <button type="button" class="ce-btn ce-primary" data-action="requestLocation">

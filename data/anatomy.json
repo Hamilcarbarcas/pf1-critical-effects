@@ -1,53 +1,48 @@
 {
-  "version": 1,
-  "_note": "Anatomy defaults and the three d12 location tables (DESIGN.md §5.3, concept §5). The type→anatomy mapping is data rather than code so a world can disagree with it without a patch; per-actor overrides live in flags.pf1-critical-effects.anatomy / .limbs.",
+  "version": 2,
+  "_note": "Anatomy defaults, the d20 band layout, and the one fixed location table (DESIGN.md §5.3, concept §5). The type→anatomy mapping is data rather than code so a world can disagree with it without a patch; per-actor overrides live in flags.pf1-critical-effects.anatomy / .beastLimbs / .appendages.",
 
-  "default": { "anatomy": "humanoid", "limbs": ["arm", "leg"] },
-
-  "_byCreatureTypeNote": "Keyed by PF1 creature type (pf1.config.creatureTypes). `limbs` is what the target is assumed to HAVE; a table row naming a limb the target lacks falls through to the next candidate.",
-  "byCreatureType": {
-    "aberration":        { "anatomy": "aberrant",  "limbs": ["appendage"] },
-    "animal":            { "anatomy": "beast",     "limbs": ["leg", "tail"] },
-    "construct":         { "anatomy": "humanoid",  "limbs": ["arm", "leg"] },
-    "dragon":            { "anatomy": "beast",     "limbs": ["leg", "arm", "wing", "tail"] },
-    "fey":               { "anatomy": "humanoid",  "limbs": ["arm", "leg"] },
-    "humanoid":          { "anatomy": "humanoid",  "limbs": ["arm", "leg"] },
-    "magicalBeast":      { "anatomy": "beast",     "limbs": ["leg", "tail"] },
-    "monstrousHumanoid": { "anatomy": "humanoid",  "limbs": ["arm", "leg"] },
-    "ooze":              { "anatomy": "aberrant",  "limbs": [] },
-    "outsider":          { "anatomy": "humanoid",  "limbs": ["arm", "leg"] },
-    "plant":             { "anatomy": "aberrant",  "limbs": ["appendage"] },
-    "undead":            { "anatomy": "humanoid",  "limbs": ["arm", "leg"] },
-    "vermin":            { "anatomy": "beast",     "limbs": ["leg"] }
+  "_dieNote": "Hit location is a d20 (v2; it was a d12 through v1). The limb band is twelve faces wide so it divides evenly by 1, 2, 3 or 4 body parts, which is what lets beast and aberrant layouts be generated rather than enumerated.",
+  "die": 20,
+  "bands": {
+    "limbs": [1, 12],
+    "torso": [13, 18],
+    "head": [19, 20]
   },
 
-  "_tablesNote": "Each row is an ORDERED list of candidates. The first whose slot the target has wins; `torso` and `head` are universal and always match. A row whose candidates all fail falls back to torso — an ooze rolling an appendage it doesn't have is hit in the body, not nowhere.",
+  "default": { "anatomy": "humanoid", "beastLimbs": ["leg", "arm"], "appendages": [] },
+
+  "_beastOrderNote": "The order the checked beast categories fill the limb band in, whichever subset is checked. Also the full set of categories the checkboxes offer.",
+  "beastOrder": ["leg", "arm", "wing", "tail"],
+
+  "_maxAppendagesNote": "How many appendage types an aberrant layout offers. Twelve divides evenly by every count up to this, which is the constraint on raising it (5 would not).",
+  "maxAppendages": 4,
+
+  "_byCreatureTypeNote": "Keyed by PF1 creature type (pf1.config.creatureTypes). `beastLimbs` seeds the beast checkboxes, `appendages` the aberrant name fields — an empty string is an unnamed appendage, which reads as \"Appendage\". Only the list matching the mapped anatomy is used; the other is ignored.",
+  "byCreatureType": {
+    "aberration":        { "anatomy": "aberrant",  "appendages": [""] },
+    "animal":            { "anatomy": "beast",     "beastLimbs": ["leg", "tail"] },
+    "construct":         { "anatomy": "humanoid" },
+    "dragon":            { "anatomy": "beast",     "beastLimbs": ["leg", "arm", "wing", "tail"] },
+    "fey":               { "anatomy": "humanoid" },
+    "humanoid":          { "anatomy": "humanoid" },
+    "magicalBeast":      { "anatomy": "beast",     "beastLimbs": ["leg", "tail"] },
+    "monstrousHumanoid": { "anatomy": "humanoid" },
+    "ooze":              { "anatomy": "aberrant",  "appendages": [] },
+    "outsider":          { "anatomy": "humanoid" },
+    "plant":             { "anatomy": "aberrant",  "appendages": [""] },
+    "undead":            { "anatomy": "humanoid" },
+    "vermin":            { "anatomy": "beast",     "beastLimbs": ["leg"] }
+  },
+
+  "_tablesNote": "Only humanoid is a fixed table — its two limb categories are not a choice. Beast and aberrant are GENERATED from the creature's own layout (resolve/location.mjs), which is why they are absent here: their rows depend on which categories are checked, so there is no single table to write down. A layout with no limbs at all leaves the limb band unclaimed and the torso row grows to cover it.",
   "_fallbackSlot": "torso",
   "tables": {
     "humanoid": [
-      { "range": [1, 2],   "candidates": [{ "slot": "leg",   "side": "left" }] },
-      { "range": [3, 4],   "candidates": [{ "slot": "leg",   "side": "right" }] },
-      { "range": [5, 6],   "candidates": [{ "slot": "arm",   "side": "left" }] },
-      { "range": [7, 8],   "candidates": [{ "slot": "arm",   "side": "right" }] },
-      { "range": [9, 11],  "candidates": [{ "slot": "torso" }] },
-      { "range": [12, 12], "candidates": [{ "slot": "head" }] }
-    ],
-    "beast": [
-      { "range": [1, 1],   "candidates": [{ "slot": "leg",  "side": "left" }] },
-      { "range": [2, 2],   "candidates": [{ "slot": "leg",  "side": "right" }] },
-      { "range": [3, 3],   "candidates": [{ "slot": "tail" }, { "slot": "leg", "side": "left" }] },
-      { "range": [4, 4],   "candidates": [{ "slot": "tail" }, { "slot": "leg", "side": "right" }] },
-      { "range": [5, 5],   "candidates": [{ "slot": "arm",  "side": "left" },  { "slot": "leg", "side": "left" },  { "slot": "wing", "side": "left" }] },
-      { "range": [6, 6],   "candidates": [{ "slot": "wing", "side": "left" },  { "slot": "leg", "side": "left" },  { "slot": "arm",  "side": "left" }] },
-      { "range": [7, 7],   "candidates": [{ "slot": "arm",  "side": "right" }, { "slot": "leg", "side": "right" }, { "slot": "wing", "side": "right" }] },
-      { "range": [8, 8],   "candidates": [{ "slot": "wing", "side": "right" }, { "slot": "leg", "side": "right" }, { "slot": "arm",  "side": "right" }] },
-      { "range": [9, 11],  "candidates": [{ "slot": "torso" }] },
-      { "range": [12, 12], "candidates": [{ "slot": "head" }] }
-    ],
-    "aberrant": [
-      { "range": [1, 6],   "candidates": [{ "slot": "appendage" }] },
-      { "range": [7, 10],  "candidates": [{ "slot": "torso" }] },
-      { "range": [11, 12], "candidates": [{ "slot": "head" }] }
+      { "range": [1, 6],   "slot": "leg" },
+      { "range": [7, 12],  "slot": "arm" },
+      { "range": [13, 18], "slot": "torso" },
+      { "range": [19, 20], "slot": "head" }
     ]
   }
 }

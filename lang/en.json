@@ -2,6 +2,8 @@
   "CRITICAL_EFFECTS": {
     "Fumble": {
       "ResolveButton": "Resolve Fumble",
+      "QuickAction": "Fumble",
+      "NoSelection": "Select the fumbling token first — the draw is posted to it.",
       "DialogTitle": "Resolve Fumble",
       "PickTable": "Which fumble table should this draw from?",
       "Draw": "Draw",

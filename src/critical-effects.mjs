@@ -15,7 +15,12 @@ import * as catalog from "./catalog/catalog.mjs";
 import { registerSocket, gmRequest } from "./integrations/socket.mjs";
 import { registerCardButtons, addButtons, removeButton, registerButtonType } from "./chat/card-buttons.mjs";
 import { registerCardMutation } from "./chat/card-mutate.mjs";
-import { registerFumbleFlow, inferAttackType } from "./flow/fumble-flow.mjs";
+import {
+  registerFumbleFlow,
+  registerFumbleQuickAction,
+  promptFumbleDraw,
+  inferAttackType,
+} from "./flow/fumble-flow.mjs";
 import * as power from "./resolve/power.mjs";
 import * as location from "./resolve/location.mjs";
 import { buildContext, weaponClassFor } from "./resolve/context.mjs";
@@ -61,6 +66,7 @@ Hooks.once("ready", async () => {
   } else {
     registerResolverQuickAction();
     registerLethalQuickAction();
+    registerFumbleQuickAction();
   }
 
   game.criticalEffects = {
@@ -116,6 +122,9 @@ Hooks.once("ready", async () => {
       entry: catalog.getFumbleEntry,
       draw: catalog.drawFumble,
       inferAttackType,
+      // What the quick action does: pick a table and post a draw for the selected token (or one
+      // passed in), with no attack card behind it.
+      prompt: promptFumbleDraw,
     },
 
     // GM socket — generic primitives only (§0)

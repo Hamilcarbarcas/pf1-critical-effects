@@ -3,6 +3,18 @@
 ## Unreleased
 
 ### Added
+- **Fumble quick action** in pf1-roll-requests, a second way into the fumble flow for a fumble with
+  no attack card behind it — a house rule, a hazard, an attack rolled before the module was
+  watching. It asks the same table question and posts the same player-rolled `1d20` draw the
+  **Resolve Fumble** button does; only the entry point differs.
+  - The fumbler is the **selected token**, not roll-requests' actor prompt. That prompt lists
+    assigned PCs and player-owned linked NPCs only, so the creature that most often fumbles is not
+    in it, and what it returns is an actor id that then has to be guessed back into one of the
+    actor's tokens. Nothing selected is answered with a notice rather than a guess.
+  - A draw with no attack card **posts a card of its own** when the roll lands, carrying the
+    fumbler's name — the same answer the standalone resolver gives a hand-driven crit, and the same
+    renderer paints the result into both. Created only once there is a result to put in it, so an
+    abandoned or unmapped draw leaves nothing behind.
 - **Anatomy is a catalog dimension** (`effects.json` v3). Effect tables are now keyed
   `damageType → anatomy → location` rather than `damageType → location`: a beast's foreleg and a
   humanoid's weapon hand no longer share twelve rows. The grid is 10 damage types × 13 anatomy ×
@@ -50,8 +62,10 @@
   buckets, unregistered outcome types, and outcome coverage as a progress metric.
 - **Fumble path, end to end.** A natural 1 forces a confirmation roll and puts a GM-only
   **Resolve Fumble** button on the attack card. The button picks an attack type
-  (pre-selected from the weapon) and posts a targeted `1d20` roll request showing the whole
-  table; the **player** clicks to roll it. Whenever that roll lands, the drawn effect is written
+  (pre-selected from the weapon) and posts a targeted `1d20` roll request — the table is *not*
+  printed onto the card, so the nineteen fumbles that didn't happen stay unspoiled, but the result
+  still reads as the entry's name; the **player** clicks to roll it. Whenever that roll lands, the
+  drawn effect is written
   back onto the attack card as a journal link — completed from a global hook, so an open-ended
   wait or a GM reload doesn't lose the pending draw.
 - **Fumble tables** transcribed from the shipped RollTables into `data/fumbles.json` by
@@ -290,6 +304,12 @@
     real cell count, colspans and melding instead of a guess at them.
 
 ### Fixed
+- **The manual resolver could not open at all** — `Template part "form" must render a single HTML
+  element`. Its template had two roots, the body `<div>` and the submit `<footer>`, and
+  ApplicationV2 requires exactly one per part. The footer is now its own part on core's generic
+  footer template. The input `change` listener moved from `_onRender` to `_onFirstRender` as well:
+  it is bound to the persistent frame element and re-renders the app, so per-render binding stacked
+  one listener per re-render.
 - **"Compound Fracture" collapsed eight distinct journals into one catalog entry.** Entry ids are
   slugged names and the pack ships eight separate Compound Fracture journals — the arm and leg
   versions differ materially (1d6 bleed / DC 10 vs 1d8 bleed / DC 15), so every table pointed at
@@ -323,6 +343,69 @@
   construction. Overriding `title` with a getter, which this dialog does, remains fine.
 
 ### Changed
+- **The Critical Effect quick action takes its source from the canvas selection** rather than
+  roll-requests' actor prompt, for the same reasons the new Fumble action does: the prompt cannot
+  offer a monster or an unlinked token, and it answers with an actor where a roll request needs a
+  token. The selected token seeds the source; with nothing selected the source starts blank and the
+  resolver's own dropdown still offers every token on the scene, which a source-less resolution has
+  always supported. The target is unaffected — its dropdown already opens on the targeted token.
+- **Hit location is a d20, and the beast and aberrant tables are now generated per creature**
+  (`anatomy.json` v2). The band layout is the same for every anatomy — **1-12 limbs, 13-18 torso,
+  19-20 head** — and the limb band is divided between the body parts that creature actually has.
+  Twelve faces is the whole point of the die: it splits evenly by 1, 2, 3 **and** 4, so every layout
+  comes out even with no remainder rule and no fallback chain.
+  - **Beast** gains checkboxes for **Legs / Arms / Wings / Tail** at the dialog's Location stage.
+    The band splits evenly between whatever is ticked: 3 faces apiece for four, 4 for three, 6 for
+    two, all 12 for one.
+  - **Aberrant** gains up to **four appendage types, each with a name you can type in**. The name is
+    descriptive only — every appendage reads the same `appendage` effect table however it is
+    labelled — so a card can say "Tentacle" at no content cost. Blank names read as "Appendage".
+  - **A creature with no limbs ticked** folds the limb band into the torso and reads
+    `1-18 Torso, 19-20 Head`, which is what an ooze wanted all along.
+  - The layout is **saved onto the target actor as it is edited**, so a creature is described once
+    rather than once per critical. Writes go to the world actor even when the crit was against an
+    unlinked token, so every token of that creature picks it up.
+  - The dialog lists the resulting bands live under the controls, so a change's effect on the odds
+    is visible before anything is rolled against it.
+  - Previously the three tables were written out in full and a creature that lacked a limb fell
+    through a chain of candidates to something it did have. That left the odds at the mercy of the
+    fallback: a wolf and a dragon read the same rows, and the wolf's missing wings quietly became
+    extra legs.
+- **The standalone resolver wears the resolution dialog's theme.** Both windows now carry a shared
+  `ce-window` class holding the dark-panel/amber scheme, so the resolver no longer opens as a
+  system-parchment form that hands off to a dark dialog. Its submit button moved out of core's
+  generic footer part into the body for the same reason — the footer's button is core-styled.
+- **A resolution with no attack card behind it now posts a card of its own.** Previously `record()`
+  returned early when there was no source message, so a hand-driven resolution's result existed
+  nowhere but the GM's dialog — which closes on Confirm. It now creates a card carrying the two
+  facts the attack card would have supplied (source → target, and the Critical Power grade and
+  roll), and the effect goes onto it through the same `critResult` flag an attack card gets. The
+  existing render hook draws it, so the result block looks identical on both, and the Apply-buff
+  button attaches by the same route.
+- **The resolver has a source, and its rolls go out as roll requests again.** The actor picked in
+  the quick action's prompt is now the *source* — whose player is asked to roll the hit location
+  and the Critical Power — rather than the target. It previously became the target, which left the
+  resolution with no attacker at all: `attackerToken` was always null, so every roll fell through
+  to the GM-side fallback and no request card was ever posted. The source is a dropdown beside the
+  target and can be set to **— none —**, which keeps the old local-roll behaviour deliberately.
+  Several picked actors resolve to the first; a resolution has one source.
+- **Source and target size are named dropdowns**, not numeric spinners: Fine through Colossal,
+  labelled from `pf1.config.actorSizes`. Both are filled in from the chosen tokens rather than
+  defaulting to Medium, and re-derived when the token on that side changes.
+- **The resolver no longer asks for damage type or an anatomy override.** The resolution dialog
+  asks for both at its Location stage regardless, so the resolver was collecting answers that a
+  second question could then contradict. Both are still honoured when passed to `openResolver()`
+  as a seed. A resolution opened from the resolver therefore starts with damage type unset and
+  must have one chosen at the Location stage.
+- **The resolver opens the resolution at Location, not Trigger.** The Trigger stage chooses between
+  critical damage and a critical effect; a hand-driven resolution has no attack card behind it, so
+  there is no suppressed critical damage to release and two of its three answers were dead. The
+  stage is dropped from the rail entirely rather than shown as completed — it was never asked.
+  `startCritResolution` takes a `choice` for this.
+- **No more `—` for an attacker that doesn't exist.** A resolution with genuinely no attacker —
+  the resolver with its source set to none, or `openResolver()` from the console — drops the whole
+  `attacker →` clause from the dialog's header and title instead of naming a placeholder. Both
+  sides' names now route through pf1-token-randomizer, which previously only the target's did.
 - **Size and weapon class swapped sides in the Critical Power roll.** The weapon class
   (light / two-handed / secondary or sole natural) now shifts the **grade tier** instead of giving
   a flat ±1, and the attacker/target size difference now gives a **flat ±1 per size category**
@@ -342,6 +425,11 @@
   first-class unarmed marker) and falls through to melee, which the dialog dropdown corrects.
 
 ### Removed
+- **Left and right hit locations.** A location is a body part now, not a left or right one — which
+  side of the creature it was is the GM's call in the moment it matters. Enumerating it doubled
+  every location table to say something no effect content ever keyed off. `locationFor` no longer
+  returns `side`, `fellBack` or `from`, and results read "Leg" where they used to read "Left Leg".
+  Records already written onto old cards are stored strings and are unaffected.
 - **Per-damage-type content worksheets** and their two tools (`scaffold-worksheets.mjs`,
   `worksheets-to-catalog.mjs`), superseded by the tagged pool. `tools/effect-tables-to-json.mjs`
   goes too: it regenerated `effects.json` from the shipped RollTables, which now silently

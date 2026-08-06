@@ -37,10 +37,11 @@ import { damageTypeOptions } from "../catalog/schema.mjs";
 import * as power from "../resolve/power.mjs";
 import * as location from "../resolve/location.mjs";
 import { stagesFor, nextStage } from "./stages.mjs";
-import { setCritResult, explosionCount } from "../chat/card-mutate.mjs";
+import { setCritResult, explosionCount, createCritResultCard } from "../chat/card-mutate.mjs";
 import { offerBuffButton } from "./effect-buff.mjs";
 import { rollDeferredCritDamage, suppressionEnabled } from "../integrations/pf1-pipeline.mjs";
 import { postTableRoll, postTableSelect, closeRequest } from "../integrations/roll-requests.mjs";
+import { displayName } from "../integrations/token-randomizer.mjs";
 
 const { ApplicationV2, HandlebarsApplicationMixin } = foundry.applications.api;
 
@@ -54,8 +55,9 @@ const BACK = {
 export class CritResolution extends HandlebarsApplicationMixin(ApplicationV2) {
   static DEFAULT_OPTIONS = {
     // No `pf1` class: this is a module window, not a system sheet, and it carries its own
-    // dark/orange styling rather than the system's parchment.
-    classes: ["ce-crit-dialog"],
+    // dark/orange styling rather than the system's parchment. `ce-window` is where that styling
+    // lives; the standalone resolver wears it too.
+    classes: ["ce-window", "ce-crit-dialog"],
     window: { title: "Critical Effect", icon: "fa-solid fa-burst", resizable: true },
     position: { width: 440, height: "auto" },
     actions: {
@@ -91,8 +93,10 @@ export class CritResolution extends HandlebarsApplicationMixin(ApplicationV2) {
    * @param {object} opts.context           a frozen context from resolve/context.mjs
    * @param {string} [opts.sourceMessageId] the attack card this came from
    * @param {number} [opts.attackIndex]     which attack on that card threatened
+   * @param {"effect"|"damage"|"both"} [opts.choice]  settle the Trigger question up front and
+   *                                        skip that stage; used by the standalone resolver
    */
-  constructor({ context, sourceMessageId = null, attackIndex = 0 } = {}, options = {}) {
+  constructor({ context, sourceMessageId = null, attackIndex = 0, choice = null } = {}, options = {}) {
     super(options);
 
     /* The resolution's own state. NOT `this.state` — ApplicationV2 owns that name, along with
@@ -106,7 +110,11 @@ export class CritResolution extends HandlebarsApplicationMixin(ApplicationV2) {
       stage: "trigger",
       sourceMessageId,
       attackIndex,
-      choice: null,
+      choice,
+
+      /* Whether the Trigger stage is a question at all. Read by stages.mjs, which drops the stage
+       * outright rather than marking it done — it was never asked. */
+      choiceLocked: !!choice,
 
       /* How many times this attack's confirmation came up a threat, read off the card rather
        * than rolled here — the dice were already thrown with the attack (flow/explosion.mjs).
@@ -121,12 +129,22 @@ export class CritResolution extends HandlebarsApplicationMixin(ApplicationV2) {
       extraTiers: 0,
       extraFlat: 0,
 
-      /* Both of these start from the context and are editable at the Location stage, because both
-       * are things the automation infers and can infer wrongly — and neither has any recourse
-       * once the resolution is under way. A missing damage type in particular would otherwise
+      /* All of these start from the context and are editable at the Location stage, because they
+       * are things the automation infers and can infer wrongly — and none has any recourse once
+       * the resolution is under way. A missing damage type in particular would otherwise
        * dead-end the Power stage, since the effect tables are keyed by it. */
       anatomy: context?.target?.anatomy ?? "humanoid",
       damageType: context?.damageType ?? null,
+
+      /* The creature's limb layout, which the beast and aberrant location tables are generated
+       * from (§5.3). Unlike the rest of the state these edits are SAVED back to the target actor
+       * as they are made — they describe the creature, not this resolution.
+       *
+       * Appendages are held as a fixed-length list of slots rather than the compact array the flag
+       * stores, so unchecking the second of three doesn't shuffle the third one's name up into it,
+       * and a name typed into an unchecked row survives being checked. */
+      beastLimbs: [...(context?.target?.limbConfig?.beastLimbs ?? [])],
+      appendageSlots: appendageSlotsFrom(context?.target?.limbConfig?.appendages),
 
       grade: null,
       location: null,
@@ -139,12 +157,14 @@ export class CritResolution extends HandlebarsApplicationMixin(ApplicationV2) {
 
       // A display snapshot, so nothing downstream has to reach back into the world.
       display: {
-        attackerName: context?.attacker?.actor?.name ?? "—",
-        targetName: targetDisplayName(context),
+        /* Null rather than a dash when there is genuinely no attacker — a resolution opened from
+         * the console with no source — so the header and title omit the whole "X →" clause rather
+         * than naming a placeholder. The standalone resolver normally does name one. */
+        attackerName: partyDisplayName(context?.attacker),
+        targetName: partyDisplayName(context?.target, "—"),
         critMult: context?.attacker?.critMult ?? 2,
         critRange: context?.attacker?.critRange ?? 20,
         weaponClass: context?.attacker?.weaponClass ?? null,
-        limbs: [...(context?.target?.limbs ?? [])],
         attackerSize: context?.attacker?.size ?? null,
         targetSize: context?.target?.size ?? null,
         critImmunity: context?.target?.critImmunity ?? 0,
@@ -155,8 +175,12 @@ export class CritResolution extends HandlebarsApplicationMixin(ApplicationV2) {
       },
     };
 
-    // Seed the grade before the first render, so Trigger already shows what is at stake.
+    // Seed the grade before the first render, so the first stage already shows what is at stake.
     this.crit.grade = this.#computeGrade();
+
+    // Start at the first stage that still has something to ask, which is Location when the
+    // Trigger answer came in with the constructor.
+    this.crit.stage = stagesFor({ state: this.crit })[0]?.key ?? "trigger";
 
     /**
      * Roll-request cards this resolution has posted, keyed by kind. They stay in the log until
@@ -170,7 +194,8 @@ export class CritResolution extends HandlebarsApplicationMixin(ApplicationV2) {
   }
 
   get title() {
-    return `Critical Effect — ${this.crit.display.attackerName} → ${this.crit.display.targetName}`;
+    const { attackerName, targetName } = this.crit.display;
+    return attackerName ? `Critical Effect — ${attackerName} → ${targetName}` : `Critical Effect — ${targetName}`;
   }
 
   // --- rendering ------------------------------------------------------------
@@ -196,6 +221,21 @@ export class CritResolution extends HandlebarsApplicationMixin(ApplicationV2) {
       anatomies: location.ANATOMIES.map((key) => ({ key, selected: key === state.anatomy })),
       damageTypes: damageTypeOptions().map((t) => ({ ...t, selected: t.key === state.damageType })),
       locationLabel: state.location ? location.locationLabel(state.location) : null,
+
+      /* The layout controls, shown only for the anatomy they describe — humanoid's two categories
+       * are not a choice, so it has none. */
+      showBeastLimbs: state.anatomy === "beast",
+      showAppendages: state.anatomy === "aberrant",
+      beastLimbOptions: location.beastOrder().map((slot) => ({
+        slot,
+        label: location.beastLimbLabel(slot),
+        checked: state.beastLimbs.includes(slot),
+      })),
+      appendageSlots: state.appendageSlots.map((slot, index) => ({ index, ...slot })),
+
+      /* What the layout above just bought, as bands. Shown because the checkboxes move the odds
+       * and there is otherwise no way to see how before something is rolled against them. */
+      locationBands: location.locationBands({ anatomy: state.anatomy, limbConfig: this.limbConfig }),
 
       // Power stage
       gradeOptions: power.GRADES.map((key) => ({ key, selected: key === grade.grade })),
@@ -245,7 +285,35 @@ export class CritResolution extends HandlebarsApplicationMixin(ApplicationV2) {
       case "anatomy":
         // A different creature type is a different location chart, so anything already rolled
         // against the old one is no longer meaningful.
+        await this.saveLayout({ anatomy: value });
         return this.patch({ anatomy: value, location: null });
+
+      case "beastLimb": {
+        // Kept in table order rather than click order, so the bands never depend on which box the
+        // GM happened to tick first.
+        const checked = new Set(this.crit.beastLimbs);
+        if (field.checked) checked.add(field.value);
+        else checked.delete(field.value);
+        const beastLimbs = location.beastOrder().filter((slot) => checked.has(slot));
+
+        await this.saveLayout({ beastLimbs });
+        return this.patch({ beastLimbs, location: null });
+      }
+
+      case "appendageOn": {
+        const appendageSlots = this.#withAppendage(Number(field.value), { on: field.checked });
+        await this.saveLayout({ appendages: compactAppendages(appendageSlots) });
+        return this.patch({ appendageSlots, location: null });
+      }
+
+      case "appendageName": {
+        /* Saved but deliberately NOT re-rendered. `change` fires on blur, so a GM tabbing from one
+         * name to the next would have the field they just landed in destroyed underneath them. The
+         * name is a label, not a band boundary — nothing on screen is stale without it. */
+        const appendageSlots = this.#withAppendage(Number(field.dataset.index), { name: value });
+        this.crit.appendageSlots = appendageSlots;
+        return this.saveLayout({ appendages: compactAppendages(appendageSlots) });
+      }
 
       case "damageType":
         return this.patch({ damageType: value || null, rowOverride: null });
@@ -269,6 +337,56 @@ export class CritResolution extends HandlebarsApplicationMixin(ApplicationV2) {
 
       case "rowOverride":
         return this.patch({ rowOverride: Number.parseInt(value, 10) });
+    }
+  }
+
+  /** One appendage slot changed; the rest are carried through untouched. */
+  #withAppendage(index, patch) {
+    return this.crit.appendageSlots.map((slot, i) => (i === index ? { ...slot, ...patch } : slot));
+  }
+
+  /** The creature's layout in the shape resolve/location.mjs generates tables from. */
+  get limbConfig() {
+    return {
+      beastLimbs: this.crit.beastLimbs,
+      appendages: compactAppendages(this.crit.appendageSlots),
+    };
+  }
+
+  /**
+   * The target as the layout should be saved against — the TokenDocument when there is one, so
+   * `saveLimbConfig` can find the world actor behind an unlinked token rather than writing to the
+   * one token's own synthetic copy.
+   */
+  get layoutTarget() {
+    const d = this.crit.display ?? {};
+    const token = d.targetTokenId ? canvas.scene?.tokens?.get(d.targetTokenId) : null;
+    return token ?? (d.targetActorId ? game.actors.get(d.targetActorId) : null);
+  }
+
+  /**
+   * Write the layout back to the target creature (§5.3).
+   *
+   * The WHOLE layout every time, not just the field that changed: a creature still carrying the v1
+   * `limbs` flag has its layout read out of it, and saving only the edited half would leave the
+   * other half derived-but-unwritten while the flag it came from is retired underneath it.
+   *
+   * Non-fatal by design: a layout that fails to save still applies to THIS resolution, which is
+   * what the GM was in the middle of. A target that is gone, or one the GM somehow can't update,
+   * shouldn't take the resolution down with it.
+   *
+   * @param {object} [pending]  the change being made, which state does not carry yet
+   */
+  async saveLayout(pending = {}) {
+    try {
+      await location.saveLimbConfig(this.layoutTarget, {
+        anatomy: this.crit.anatomy,
+        ...this.limbConfig,
+        ...pending,
+      });
+    } catch (err) {
+      console.error(`${MODULE_ID} | crit-dialog: could not save the target's limb layout:`, err);
+      ui.notifications.warn(`${MODULE_ID}: that layout applies to this crit but could not be saved to the target.`);
     }
   }
 
@@ -353,7 +471,7 @@ export class CritResolution extends HandlebarsApplicationMixin(ApplicationV2) {
     return this.advance({ choice });
   }
 
-  /** Location: a d12 the attacking player rolls, against this creature's own location chart. */
+  /** Location: a d20 the attacking player rolls, against this creature's own location chart. */
   async onRequestLocation() {
     const options = this.#locationOptions();
     if (!options) return;
@@ -361,14 +479,14 @@ export class CritResolution extends HandlebarsApplicationMixin(ApplicationV2) {
     return this.request({
       kind: "location",
       label: "the hit location",
-      formula: "1d12",
+      formula: location.locationFormula(),
       resultTable: options.map(({ min, label }) => (min === undefined ? { label } : { min, label })),
       flavor: `Hit Location — ${this.crit.display.targetName}`,
       onDone: ({ total }) =>
         this.advance({
           location: location.locationFor({
             anatomy: this.crit.anatomy,
-            limbs: this.crit.display.limbs,
+            limbConfig: this.limbConfig,
             total,
           }),
         }),
@@ -398,7 +516,7 @@ export class CritResolution extends HandlebarsApplicationMixin(ApplicationV2) {
           ui.notifications.warn(`${MODULE_ID}: that location could not be resolved.`);
           return;
         }
-        return this.advance({ location: location.chooseLocation(picked.slot, picked.side) });
+        return this.advance({ location: location.chooseLocation(picked.slot, picked.label) });
       },
     });
   }
@@ -407,7 +525,7 @@ export class CritResolution extends HandlebarsApplicationMixin(ApplicationV2) {
   #locationOptions() {
     const options = location.locationOptions({
       anatomy: this.crit.anatomy,
-      limbs: this.crit.display.limbs,
+      limbConfig: this.limbConfig,
     });
 
     if (!options.length) {
@@ -576,15 +694,29 @@ export class CritResolution extends HandlebarsApplicationMixin(ApplicationV2) {
 
   /** The record of what happened, on the card the attack was made from (§7.1's pattern). */
   async record() {
-    const source = this.sourceMessage;
-    if (!source) return; // a manual resolution has no attack card to write to
-
     const state = this.crit;
     const outcome = this.outcome;
 
     // Damage alone leaves no block: the damage itself is the record, and it is already in PF1's
-    // own critical column. An empty "Critical Effect —" header would be noise.
+    // own critical column. An empty "Critical Effect —" header would be noise. Checked before the
+    // card is fetched, so a resolution with nothing to say never creates one.
     if (!outcome?.entry && !outcome?.deadly) return;
+
+    /* Where the record goes. The attack card when there is one; otherwise a card created for it.
+     * A hand-driven resolution has nothing to write onto, and this dialog closes on Confirm — so
+     * without a card of its own the whole result would vanish with the window. */
+    const source =
+      this.sourceMessage ??
+      (await createCritResultCard({
+        attackerName: state.display.attackerName,
+        targetName: state.display.targetName,
+        grade: state.grade?.grade ?? null,
+        formula: state.powerRoll?.formula ?? null,
+        total: state.powerRoll?.total ?? null,
+        speaker: this.#speaker(),
+      }));
+
+    if (!source) return;
 
     await setCritResult(source, {
       choice: state.choice,
@@ -615,6 +747,20 @@ export class CritResolution extends HandlebarsApplicationMixin(ApplicationV2) {
 
   get sourceMessage() {
     return this.crit.sourceMessageId ? (game.messages.get(this.crit.sourceMessageId) ?? null) : null;
+  }
+
+  /**
+   * Who a created result card is attributed to: the source, when the resolution has one.
+   *
+   * The alias is overridden with the name this dialog already computed, because `getSpeaker` uses
+   * the token's REAL name — which for an obscured NPC is exactly the leak §10 is about.
+   */
+  #speaker() {
+    const d = this.crit.display;
+    const token = this.attackerToken;
+    const actor = token?.actor ?? (d.attackerActorId ? game.actors.get(d.attackerActorId) : null);
+    if (!token && !actor) return { alias: "Critical Effect" };
+    return { ...ChatMessage.getSpeaker({ actor, token }), alias: d.attackerName ?? "Critical Effect" };
   }
 
   /** Whose player is asked to roll. Falls back to any token of the attacking actor. */
@@ -657,17 +803,35 @@ export class CritResolution extends HandlebarsApplicationMixin(ApplicationV2) {
 
 // --- helpers ----------------------------------------------------------------
 
-/** Route a target's name through pf1-token-randomizer so an obscured NPC name cannot leak (§10). */
-function targetDisplayName(context) {
-  const token = context?.target?.token;
-  const fallback = context?.target?.actor?.name ?? "—";
-  const api = game.modules.get("pf1-token-randomizer")?.api;
-  if (!token || !api?.getDisplayName) return fallback;
-  try {
-    return api.getDisplayName(token) ?? fallback;
-  } catch {
-    return fallback;
-  }
+/**
+ * The compact appendage list a creature's flag stores, as the fixed-length slots the dialog edits.
+ *
+ * Always `maxAppendages` long: the checkboxes are positional, so an absent appendage has to be a
+ * present-but-unchecked row rather than a missing one.
+ */
+function appendageSlotsFrom(appendages = []) {
+  const names = appendages ?? [];
+  return Array.from({ length: location.maxAppendages() }, (_, index) => ({
+    on: index < names.length,
+    name: names[index] ?? "",
+  }));
+}
+
+/** The reverse: the checked slots, in order, as the flag's compact array of names. */
+function compactAppendages(slots = []) {
+  return slots.filter((slot) => slot.on).map((slot) => slot.name ?? "");
+}
+
+/**
+ * One side's name for display, routed through pf1-token-randomizer so an obscured NPC name cannot
+ * leak (§10) — which now matters for the attacker too, since the standalone resolver lets the GM
+ * name any token on the scene as the source.
+ *
+ * @param {object} party        a context branch: `context.attacker` or `context.target`
+ * @param {string|null} empty   what a side with nothing on it reads as
+ */
+function partyDisplayName(party, empty = null) {
+  return displayName(party?.token, party?.actor?.name ?? empty);
 }
 
 /**
@@ -676,10 +840,10 @@ function targetDisplayName(context) {
  * Kept as a function with the original name and shape so every caller — the attack-card trigger
  * and the standalone resolver — is unaffected by the card-to-dialog move.
  */
-export function startCritResolution({ context, sourceMessageId = null, attackIndex = 0 } = {}) {
+export function startCritResolution({ context, sourceMessageId = null, attackIndex = 0, choice = null } = {}) {
   if (!game.user.isGM) {
     console.error(`${MODULE_ID} | crit-dialog: resolutions are opened GM-side`);
     return null;
   }
-  return new CritResolution({ context, sourceMessageId, attackIndex }).render(true);
+  return new CritResolution({ context, sourceMessageId, attackIndex, choice }).render(true);
 }

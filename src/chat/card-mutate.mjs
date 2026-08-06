@@ -1,7 +1,10 @@
-/* Writing resolution results back onto the originating chat card.
+/* Writing resolution results onto a chat card — the originating attack card when there is one,
+ * and a card created here when there is not (`createCritResultCard`).
  *
  * The result lives in a message flag and is rendered from it on every draw, for the same reason
  * the buttons do: stored HTML would not survive a re-render and would not match across clients.
+ * That is also what makes the standalone card cheap — it is a container, and every renderer in
+ * this file already works on any message that carries the flag.
  */
 
 import { MODULE_ID } from "../const.mjs";
@@ -23,6 +26,35 @@ export async function setFumbleResult(message, result) {
 
 export const getFumbleResult = (message) => message.getFlag(MODULE_ID, RESULT_FLAG) ?? null;
 
+/**
+ * A card of its own, for a fumble with no attack behind it.
+ *
+ * The quick-action draw (§7.1) is started by hand, so there is no attack card to write the result
+ * onto — exactly the position the standalone crit resolver is in, and answered the same way:
+ * a container carrying only who fumbled, into which the render hook below draws the result from
+ * the flag. One renderer, one appearance.
+ *
+ * @param {object} opts
+ * @param {string} opts.fumblerName  already routed through the name-obfuscation API by the caller
+ * @param {object|null} [opts.speaker]
+ * @returns {Promise<ChatMessage|undefined>}
+ */
+export async function createFumbleResultCard({ fumblerName = null, speaker = null } = {}) {
+  // Coalesced rather than defaulted: the name is read off a stored flag, where "nobody recorded
+  // one" arrives as an explicit null and a parameter default would not fire.
+  const who = foundry.utils.escapeHTML(fumblerName ?? "—");
+
+  const content = `
+    <div class="ce-fumble-card chat-card">
+      <header class="ce-fumble-card-header">
+        <span class="ce-fumble-card-parties">${who}</span>
+      </header>
+    </div>
+    <div class="card-buttons"></div>`;
+
+  return ChatMessage.create({ content, ...(speaker ? { speaker } : {}) });
+}
+
 const CRIT_RESULT_FLAG = "critResult";
 
 /**
@@ -42,6 +74,58 @@ export async function setCritResult(message, result) {
 }
 
 export const getCritResult = (message) => message.getFlag(MODULE_ID, CRIT_RESULT_FLAG) ?? null;
+
+/**
+ * A card of its own, for a resolution with no attack behind it.
+ *
+ * A hand-driven resolution (§7.5) has no attack card to write onto, and without one its result
+ * would exist nowhere but the GM's dialog — which closes on Confirm. So it gets a card, and
+ * `record()` then treats it exactly like an attack card.
+ *
+ * The HTML here carries **only** what the attack card would have supplied: who hit whom, and what
+ * the Critical Power roll came to. The effect itself is deliberately *not* written into it — that
+ * goes into the same `critResult` flag, and the same render hook below draws it, appending inside
+ * this card's `.chat-card`. One renderer, one appearance, and the buff button attaches by the same
+ * route because `.card-buttons` is here for it to find.
+ *
+ * @param {object} opts
+ * @param {string|null} opts.attackerName  omitted from the header when there is no source
+ * @param {string} opts.targetName
+ * @param {string|null} opts.grade
+ * @param {string|null} opts.formula
+ * @param {number|null} opts.total
+ * @param {object|null} opts.speaker
+ * @returns {Promise<ChatMessage|undefined>}
+ */
+export async function createCritResultCard({
+  attackerName = null,
+  targetName = "—",
+  grade = null,
+  formula = null,
+  total = null,
+  speaker = null,
+} = {}) {
+  const escape = foundry.utils.escapeHTML;
+
+  // Each name is escaped on its own, because the arrow between them is markup and must not be.
+  const parties = attackerName
+    ? `${escape(attackerName)} <i class="fa-solid fa-arrow-right"></i> ${escape(targetName)}`
+    : escape(targetName);
+
+  const roll = formula && total != null ? `${formula} = ${total}` : formula;
+  const power = [grade, roll].filter(Boolean).map((part) => escape(String(part))).join(" · ");
+
+  const content = `
+    <div class="ce-crit-card chat-card">
+      <header class="ce-crit-card-header">
+        <span class="ce-crit-card-parties">${parties}</span>
+        ${power ? `<span class="ce-crit-card-power">${power}</span>` : ""}
+      </header>
+    </div>
+    <div class="card-buttons"></div>`;
+
+  return ChatMessage.create({ content, ...(speaker ? { speaker } : {}) });
+}
 
 const EXPLOSION_FLAG = "explosions";
 
