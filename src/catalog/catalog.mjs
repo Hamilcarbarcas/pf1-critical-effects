@@ -7,6 +7,10 @@
  * part, so a resolution is a lookup rather than a query. The Critical Power total indexes straight
  * into the row — no severity band, no weighting, no draw. `effectFor()` is the whole of it.
  *
+ * The body-part axis exists only for the three weapon damage types. Everything else is
+ * non-localized and has one `general` table per anatomy; `slotFor` in schema.mjs is where that is
+ * decided, once, so no caller has to know which kind of damage type it is holding.
+ *
  * Content is *authored* as a tagged pool (`data/pool.json`) and compiled into those tables ahead of
  * time by `tools/pool-to-tables.mjs`; fumbles work the same way from `data/fumble-pool.json`. That
  * is a build step, not a runtime one — nothing in this file has ever seen a pool.
@@ -18,8 +22,14 @@ import {
   validateFumbles,
   validateAnatomy,
   validateLethal,
+  ANATOMIES,
   DAMAGE_TYPES,
-  anatomyLocationPairs,
+  GENERAL_SLOT,
+  gridCells,
+  isLocalized,
+  LOCALIZED_DAMAGE_TYPES,
+  mortalCells,
+  slotFor,
 } from "./schema.mjs";
 
 /** @type {{ entries: object[], byId: Map<string, object>, tables: object, mortal: object }} */
@@ -134,29 +144,40 @@ export const TABLE_ROWS = 12;
  * Anatomy is part of the key, not implied by the location: `arm` is a weapon hand on a humanoid
  * and a foreleg on a beast, and the two ladders diverge from row 1.
  *
+ * **Location is only part of the key for the three weapon types.** Everything else is non-localized
+ * (`isLocalized`) and has one `general` table per anatomy, so whatever location is passed is
+ * ignored — `slotFor` is the single place that decision is made, which is what lets every caller
+ * hand over the location it happens to have without first asking whether it means anything.
+ *
  * Always 12 entries or null; unwritten rows are real placeholder entries rather than holes, so
  * callers never have to handle a gap.
  *
  * @returns {object[]|null} 12 entries, index 0 = row 1
  */
 export function effectTable(damageType, anatomy, location) {
-  const ids = effects.tables?.[damageType]?.[anatomy]?.[location];
+  const ids = effects.tables?.[damageType]?.[anatomy]?.[slotFor(damageType, location)];
   if (!ids?.length) return null;
   return ids.map((id) => getEntry(id));
 }
 
 /**
- * The mortal addendum for a body part — the 13+ clamp's extra text.
+ * The mortal addendum — the 13+ clamp's extra text. Reads ON TOP of row 12, never instead of it,
+ * which is why it is a separate lookup rather than a fourteenth row.
  *
- * Damage-type agnostic on purpose: past row 12 the wound has stopped being characterised by what
- * made it and is simply killing them, so this is authored once per anatomy × location. It reads
- * ON TOP of row 12, never instead of it, which is why it is a separate lookup rather than a
- * fourteenth row.
+ * **Which axis it is keyed by depends on the damage type**, and the asymmetry is deliberate
+ * (see `mortalCells` in schema.mjs):
+ *
+ *   weapon damage    by anatomy × location, damage-type agnostic — past row 12 a torn-off arm is a
+ *                    torn-off arm whether a sword or a mace did it
+ *   everything else  by damage type, anatomy agnostic — there is no body part to name, and burned
+ *                    to ash and blasted apart are not one result
  *
  * @returns {object|null} null when unwritten — the 13+ result is then row 12 plus the save alone
  */
-export function mortalFor(anatomy, location) {
-  const id = effects.mortal?.[anatomy]?.[location];
+export function mortalFor(damageType, anatomy, location) {
+  const id = isLocalized(damageType)
+    ? effects.mortal?.byPart?.[anatomy]?.[location]
+    : effects.mortal?.byDamageType?.[damageType];
   return id ? getEntry(id) : null;
 }
 
@@ -191,6 +212,8 @@ export function effectAt(damageType, anatomy, location, index, total = index) {
   const table = effectTable(damageType, anatomy, location);
   if (!table) return null;
 
+  const slot = slotFor(damageType, location);
+
   const i = Math.max(0, Math.min(Math.trunc(Number(index) || 0), TABLE_ROWS + 1));
   if (i === 0) return { entry: null, row: null, index: 0, deadly: false, save: null, mortal: null };
 
@@ -206,7 +229,7 @@ export function effectAt(damageType, anatomy, location, index, total = index) {
     save: deadly ? { type: "fort", dc: Math.max(Math.trunc(Number(total) || 0), TABLE_ROWS + 1) } : null,
     // Additive to row 12, and only on the deadly index. Null when that body part has no mortal
     // written yet, which leaves the save as the whole of it.
-    mortal: deadly ? mortalFor(anatomy, location) : null,
+    mortal: deadly ? mortalFor(damageType, anatomy, slot) : null,
   };
 }
 
@@ -244,7 +267,10 @@ export function effectResultTable(damageType, anatomy, location) {
 
   const rows = [{ label: "No effect" }];
   table.forEach((entry, index) => rows.push({ min: index + 1, label: entry?.name ?? `Row ${index + 1}` }));
-  rows.push({ min: TABLE_ROWS + 1, label: deadlyLabel(table.at(-1)?.name, mortalFor(anatomy, location)?.name) });
+  rows.push({
+    min: TABLE_ROWS + 1,
+    label: deadlyLabel(table.at(-1)?.name, mortalFor(damageType, anatomy, slotFor(damageType, location))?.name),
+  });
 
   return rows;
 }
@@ -324,34 +350,39 @@ export async function lint() {
    * so what matters is how many of those rows are still placeholders. Reported per table, because
    * "60% written" is far less actionable than "slashing/beast/wing is entirely unwritten".
    *
-   * The grid is walked from DAMAGE_TYPES × anatomyLocationPairs() rather than from what the file
-   * happens to contain, so a table that is absent altogether counts against the total instead of
-   * quietly shrinking the denominator. */
-  for (const damageType of DAMAGE_TYPES) {
-    for (const { anatomy, location } of anatomyLocationPairs()) {
-      const key = `${damageType}/${anatomy}/${location}`;
-      const ids = effects.tables?.[damageType]?.[anatomy]?.[location];
+   * The grid is walked from gridCells() rather than from what the file happens to contain, so a
+   * table that is absent altogether counts against the total instead of quietly shrinking the
+   * denominator — and a non-localized damage type contributes its three `general` tables rather
+   * than thirteen body parts it never rolls for. */
+  for (const { damageType, anatomy, location } of gridCells()) {
+    const key = `${damageType}/${anatomy}/${location}`;
+    const ids = effects.tables?.[damageType]?.[anatomy]?.[location];
 
-      if (!ids) {
-        report.tables.missing.push(key);
-        report.tables.placeholder += TABLE_ROWS;
-        continue;
-      }
-
-      const written = ids.filter((id) => !getEntry(id)?.placeholder).length;
-      report.tables.byTable[key] = { written, of: ids.length };
-      report.tables.written += written;
-      report.tables.placeholder += ids.length - written;
+    if (!ids) {
+      report.tables.missing.push(key);
+      report.tables.placeholder += TABLE_ROWS;
+      continue;
     }
+
+    const written = ids.filter((id) => !getEntry(id)?.placeholder).length;
+    report.tables.byTable[key] = { written, of: ids.length };
+    report.tables.written += written;
+    report.tables.placeholder += ids.length - written;
   }
   const totalRows = report.tables.written + report.tables.placeholder;
   report.tables.percent = totalRows ? Math.round((report.tables.written / totalRows) * 100) : 0;
 
-  // Mortal is one entry per body part, not per damage type — 13 of them for the whole module.
-  for (const { anatomy, location } of anatomyLocationPairs()) {
+  /* Mortal's two halves are keyed by different axes, so the walk asks each cell its own question:
+   * a body-part cell is looked up through any localized damage type, a damage-type cell through
+   * any anatomy. `mortalCells` is what keeps that asymmetry in one place. */
+  for (const cell of mortalCells()) {
     report.mortal.of += 1;
-    if (mortalFor(anatomy, location)) report.mortal.written += 1;
-    else report.mortal.missing.push(`${anatomy}/${location}`);
+    const written =
+      cell.kind === "part"
+        ? mortalFor(LOCALIZED_DAMAGE_TYPES[0], cell.anatomy, cell.location)
+        : mortalFor(cell.damageType, ANATOMIES[0], GENERAL_SLOT);
+    if (written) report.mortal.written += 1;
+    else report.mortal.missing.push(cell.key);
   }
 
   for (const entry of fumbles.entries) {

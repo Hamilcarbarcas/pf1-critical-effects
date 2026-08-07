@@ -33,7 +33,7 @@
 
 import { MODULE_ID } from "../const.mjs";
 import * as catalog from "../catalog/catalog.mjs";
-import { damageTypeOptions } from "../catalog/schema.mjs";
+import { damageTypeOptions, isLocalized, slotFor } from "../catalog/schema.mjs";
 import * as power from "../resolve/power.mjs";
 import * as location from "../resolve/location.mjs";
 import { stagesFor, nextStage } from "./stages.mjs";
@@ -64,6 +64,7 @@ export class CritResolution extends HandlebarsApplicationMixin(ApplicationV2) {
       choose: CritResolution.#act("onChoose"),
       requestLocation: CritResolution.#act("onRequestLocation"),
       chooseLocation: CritResolution.#act("onChooseLocation"),
+      proceed: CritResolution.#act("onProceed"),
       requestPower: CritResolution.#act("onRequestPower"),
       cancelRequest: CritResolution.#act("onCancelRequest"),
       confirm: CritResolution.#act("onConfirm"),
@@ -206,10 +207,16 @@ export class CritResolution extends HandlebarsApplicationMixin(ApplicationV2) {
     const grade = state.grade ?? this.#computeGrade();
     const currentIndex = applicable.findIndex((s) => s.key === state.stage);
 
-    const options = state.location
-      ? (catalog.effectResultTable(state.damageType, state.anatomy, state.location.slot) ?? [])
-      : [];
+    const slot = this.slot;
+    const options = slot ? (catalog.effectResultTable(state.damageType, state.anatomy, slot) ?? []) : [];
     const outcome = this.outcome;
+
+    /* Whether this damage type lands somewhere. The three weapon types roll a hit location; the
+     * rest wash over the whole creature and read one `general` table per anatomy, so this stage
+     * asks its two questions and then simply continues. A damage type that has not been picked yet
+     * is neither: it must not silently take the non-localized path, so both sets of controls wait
+     * on it. */
+    const localized = isLocalized(state.damageType);
 
     return {
       state,
@@ -221,11 +228,18 @@ export class CritResolution extends HandlebarsApplicationMixin(ApplicationV2) {
       anatomies: location.ANATOMIES.map((key) => ({ key, selected: key === state.anatomy })),
       damageTypes: damageTypeOptions().map((t) => ({ ...t, selected: t.key === state.damageType })),
       locationLabel: state.location ? location.locationLabel(state.location) : null,
+      /* Named in the readout, not just in the select on the stage that set it: for a non-localized
+       * type it is the only thing that says which of the seven tables the result came from, and
+       * the Location line that used to carry that weight is gone. */
+      damageTypeLabel: damageTypeOptions().find((t) => t.key === state.damageType)?.label ?? null,
+      localized,
+      needsDamageType: !state.damageType,
 
       /* The layout controls, shown only for the anatomy they describe — humanoid's two categories
-       * are not a choice, so it has none. */
-      showBeastLimbs: state.anatomy === "beast",
-      showAppendages: state.anatomy === "aberrant",
+       * are not a choice, so it has none — and only when a location is going to be rolled at all.
+       * The layout divides the d20's limb band; with no d20 there is nothing for it to divide. */
+      showBeastLimbs: localized && state.anatomy === "beast",
+      showAppendages: localized && state.anatomy === "aberrant",
       beastLimbOptions: location.beastOrder().map((slot) => ({
         slot,
         label: location.beastLimbLabel(slot),
@@ -235,7 +249,9 @@ export class CritResolution extends HandlebarsApplicationMixin(ApplicationV2) {
 
       /* What the layout above just bought, as bands. Shown because the checkboxes move the odds
        * and there is otherwise no way to see how before something is rolled against them. */
-      locationBands: location.locationBands({ anatomy: state.anatomy, limbConfig: this.limbConfig }),
+      locationBands: localized
+        ? location.locationBands({ anatomy: state.anatomy, limbConfig: this.limbConfig })
+        : [],
 
       // Power stage
       gradeOptions: power.GRADES.map((key) => ({ key, selected: key === grade.grade })),
@@ -315,8 +331,15 @@ export class CritResolution extends HandlebarsApplicationMixin(ApplicationV2) {
         return this.saveLayout({ appendages: compactAppendages(appendageSlots) });
       }
 
-      case "damageType":
-        return this.patch({ damageType: value || null, rowOverride: null });
+      case "damageType": {
+        /* Crossing between a localized damage type and one that isn't invalidates any location
+         * that was settled — a fire critical has nowhere to have landed, and a slashing one that
+         * inherits "general" from the type before it would read the wrong table. Within a kind it
+         * is left alone: correcting slashing to piercing should not throw away a rolled location. */
+        const damageType = value || null;
+        const crossed = isLocalized(this.crit.damageType) !== isLocalized(damageType);
+        return this.patch({ damageType, rowOverride: null, ...(crossed ? { location: null } : {}) });
+      }
 
       case "gradeOverride": {
         /* Solved for rather than nudged: see power.tiersToReach. `priorSteps` is every shift the
@@ -343,6 +366,19 @@ export class CritResolution extends HandlebarsApplicationMixin(ApplicationV2) {
   /** One appendage slot changed; the rest are carried through untouched. */
   #withAppendage(index, patch) {
     return this.crit.appendageSlots.map((slot, i) => (i === index ? { ...slot, ...patch } : slot));
+  }
+
+  /**
+   * The effect table this resolution reads — the settled body part, or `general`.
+   *
+   * The one thing the rest of the dialog asks instead of `state.location.slot`, because a
+   * non-localized damage type never settles a location and would otherwise read as unfinished
+   * forever. Null means the resolution genuinely cannot look a table up yet: no damage type, or a
+   * localized one whose location has not been rolled.
+   */
+  get slot() {
+    const { damageType, location: hit } = this.crit;
+    return damageType ? slotFor(damageType, hit?.slot ?? null) : null;
   }
 
   /** The creature's layout in the shape resolve/location.mjs generates tables from. */
@@ -442,13 +478,14 @@ export class CritResolution extends HandlebarsApplicationMixin(ApplicationV2) {
    */
   get outcome() {
     const state = this.crit;
-    if (!state.location) return null;
+    const slot = this.slot;
+    if (!slot) return null;
 
     const total = state.powerRoll?.total;
     if (total == null && !Number.isInteger(state.rowOverride)) return null;
 
     const index = Number.isInteger(state.rowOverride) ? state.rowOverride : catalog.optionIndexFor(total);
-    return catalog.effectAt(state.damageType, state.anatomy, state.location.slot, index, total ?? index);
+    return catalog.effectAt(state.damageType, state.anatomy, slot, index, total ?? index);
   }
 
   // --- stage actions --------------------------------------------------------
@@ -521,6 +558,20 @@ export class CritResolution extends HandlebarsApplicationMixin(ApplicationV2) {
     });
   }
 
+  /**
+   * Leave the Location stage without settling one — the non-localized path.
+   *
+   * Nothing to record: `location` stays null all the way through, so the card's result block omits
+   * the location line and `slot` answers `general` from the damage type alone.
+   */
+  async onProceed() {
+    if (!this.crit.damageType) {
+      ui.notifications.warn(`${MODULE_ID}: pick a damage type first — the effect tables are keyed by it.`);
+      return;
+    }
+    return this.advance();
+  }
+
   /** The resolved location chart for this creature, or null with a notification. */
   #locationOptions() {
     const options = location.locationOptions({
@@ -543,11 +594,12 @@ export class CritResolution extends HandlebarsApplicationMixin(ApplicationV2) {
    * with the result. */
   async onRequestPower() {
     const state = this.crit;
-    const resultTable = catalog.effectResultTable(state.damageType, state.anatomy, state.location?.slot);
+    const slot = this.slot;
+    const resultTable = slot ? catalog.effectResultTable(state.damageType, state.anatomy, slot) : null;
 
     if (!resultTable) {
       ui.notifications.error(
-        `${MODULE_ID}: no effect table for ${state.damageType ?? "?"} / ${state.anatomy ?? "?"} / ${state.location?.slot ?? "?"}.`
+        `${MODULE_ID}: no effect table for ${state.damageType ?? "?"} / ${state.anatomy ?? "?"} / ${slot ?? "?"}.`
       );
       return;
     }

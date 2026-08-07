@@ -8,7 +8,7 @@
  * ── Rank is a soft target, not an address ───────────────────────────────────
  *
  * The obvious reading of "rank 6" is "this effect goes on row 6", and it is the wrong one. It
- * makes the pool a set of 1,560 exact pegs for 1,560 exact holes: an effect written as a 6 for
+ * makes the pool a set of 720 exact pegs for 720 exact holes: an effect written as a 6 for
  * bludgeoning cannot help a slashing table that already has a 6 and needs a 7, so every near-miss
  * demands a brand new effect and the pool never converges.
  *
@@ -39,7 +39,15 @@ import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
-import { DAMAGE_TYPES, TABLE_ROWS, anatomyLocationPairs, ANATOMY_LOCATIONS } from "../src/catalog/schema.mjs";
+import {
+  DAMAGE_TYPES,
+  TABLE_ROWS,
+  ANATOMY_LOCATIONS,
+  GENERAL_SLOT,
+  gridCells,
+  isLocalized,
+  mortalCells,
+} from "../src/catalog/schema.mjs";
 import { parseMortalWorksheet } from "./worksheets.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
@@ -58,8 +66,11 @@ if (!Number.isInteger(MAX_DRIFT) || MAX_DRIFT < 0) {
   process.exit(1);
 }
 const problems = [];
+/** Non-fatal: tagging that costs coverage but leaves the build correct. */
+const notes = [];
 
-/** Does an effect's `slots` cover this anatomy/location? `*\/loc` matches every anatomy with it. */
+/** Does an effect's `slots` cover this anatomy/location? `*\/loc` matches every anatomy with it —
+ *  including `*\/general`, which is how one effect covers all three anatomies of an energy type. */
 const coversSlot = (entry, anatomy, location) =>
   entry.slots?.some((slot) => slot === `${anatomy}/${location}` || slot === `*/${location}`);
 
@@ -89,7 +100,7 @@ const coversDamage = (entry, damageType) =>
  * same time. "We have no grave slashing arm wound" is a fact worth being able to see.
  *
  * ±1 is deliberately loose enough that one effect can cover a whole three-row band, which is what
- * keeps the pool from having to contain an exact peg for all 1,560 holes: an effect written as a 6
+ * keeps the pool from having to contain an exact peg for all 720 holes: an effect written as a 6
  * for bludgeoning also serves a slashing table that needs a 7. Raise it with `--drift n` for a
  * more playable build with a thin pool, or `--drift 0` to see only exact fits.
  *
@@ -160,102 +171,137 @@ for (const entry of pool.entries) {
   }
   for (const slot of entry.slots ?? []) {
     const [anatomy, location] = slot.split("/");
-    const known = anatomy === "*"
-      ? Object.values(ANATOMY_LOCATIONS).some((ls) => ls.includes(location))
-      : ANATOMY_LOCATIONS[anatomy]?.includes(location);
+    /* `general` is a real slot to tag for — it is where the non-localized damage types keep their
+     * tables — but it belongs to no anatomy in particular, so it is checked separately rather than
+     * being bolted into ANATOMY_LOCATIONS and leaking into the location roll. */
+    const known = location === GENERAL_SLOT
+      ? anatomy === "*" || anatomy in ANATOMY_LOCATIONS
+      : anatomy === "*"
+        ? Object.values(ANATOMY_LOCATIONS).some((ls) => ls.includes(location))
+        : ANATOMY_LOCATIONS[anatomy]?.includes(location);
     if (!known) problems.push(`pool "${entry.id}": slot "${slot}" is not a real anatomy/location pair`);
   }
   for (const dt of entry.damageTypes ?? []) {
     if (dt !== "*" && !DAMAGE_TYPES.includes(dt)) problems.push(`pool "${entry.id}": unknown damage type "${dt}"`);
   }
+
+  /* The two halves of the grid are tagged differently, so a tag can select nothing at all: a
+   * `general` slot means nothing to a weapon damage type, and a body part means nothing to one
+   * that never rolls for a location. Worth saying, but NOT fatal — `damageTypes: ["*"]` alongside
+   * body-part slots is a reasonable thing to write, and it costs only the energy half. */
+  if (entry.rank != null) {
+    const tagged = DAMAGE_TYPES.filter((dt) => coversDamage(entry, dt));
+    const hasGeneral = entry.slots?.some((s) => s.endsWith(`/${GENERAL_SLOT}`));
+    const hasBodyPart = entry.slots?.some((s) => !s.endsWith(`/${GENERAL_SLOT}`));
+
+    if (tagged.some((dt) => !isLocalized(dt)) && !hasGeneral) {
+      notes.push(`"${entry.id}": tagged for damage types that roll no location, but has no "…/${GENERAL_SLOT}" slot — those tags select nothing`);
+    }
+    if (tagged.some(isLocalized) && !hasBodyPart) {
+      notes.push(`"${entry.id}": tagged for weapon damage types, but has only "…/${GENERAL_SLOT}" slots — those tags select nothing`);
+    }
+  }
 }
 
-for (const damageType of DAMAGE_TYPES) {
-  tables[damageType] = {};
-  for (const { anatomy, location } of anatomyLocationPairs()) {
-    const candidates = pool.entries
-      .filter((e) => e.rank != null && coversDamage(e, damageType) && coversSlot(e, anatomy, location))
-      .sort((a, b) => a.rank - b.rank || a.id.localeCompare(b.id));
+for (const { damageType, anatomy, location } of gridCells()) {
+  const candidates = pool.entries
+    .filter((e) => e.rank != null && coversDamage(e, damageType) && coversSlot(e, anatomy, location))
+    .sort((a, b) => a.rank - b.rank || a.id.localeCompare(b.id));
 
-    const pins = new Map();
-    for (const entry of pool.entries) {
-      const row = entry.pins?.[`${damageType}/${anatomy}/${location}`];
-      if (row != null) pins.set(entry.id, row);
-    }
-
-    const { rows, drift, repeats, surplus } = assign(candidates, pins, MAX_DRIFT);
-
-    for (let i = 0; i < TABLE_ROWS; i++) {
-      if (rows[i]) {
-        const source = pool.entries.find((e) => e.id === rows[i]);
-        addEntry(catalogEntry(source));
-        report.unplaced.delete(rows[i]);
-      } else {
-        const id = `todo-${damageType}-${anatomy}-${location}-${String(i + 1).padStart(2, "0")}`;
-        addEntry({ id, name: `(unwritten — ${damageType} ${anatomy} ${location} ${i + 1})`, journal: null, buff: null, note: null, placeholder: true });
-        rows[i] = id;
-      }
-    }
-
-    (tables[damageType][anatomy] ??= {})[location] = rows;
-    report.cells.push({
-      key: `${damageType}/${anatomy}/${location}`,
-      candidates: candidates.length,
-      filled: rows.filter((id) => !entries.get(id)?.placeholder).length,
-      distinct: new Set(rows.filter((id) => !entries.get(id)?.placeholder)).size,
-      drift,
-      repeats,
-      surplus,
-    });
+  const pins = new Map();
+  for (const entry of pool.entries) {
+    const row = entry.pins?.[`${damageType}/${anatomy}/${location}`];
+    if (row != null) pins.set(entry.id, row);
   }
+
+  const { rows, drift, repeats, surplus } = assign(candidates, pins, MAX_DRIFT);
+
+  for (let i = 0; i < TABLE_ROWS; i++) {
+    if (rows[i]) {
+      const source = pool.entries.find((e) => e.id === rows[i]);
+      addEntry(catalogEntry(source));
+      report.unplaced.delete(rows[i]);
+    } else {
+      const id = `todo-${damageType}-${anatomy}-${location}-${String(i + 1).padStart(2, "0")}`;
+      addEntry({ id, name: `(unwritten — ${damageType} ${anatomy} ${location} ${i + 1})`, journal: null, buff: null, note: null, placeholder: true });
+      rows[i] = id;
+    }
+  }
+
+  ((tables[damageType] ??= {})[anatomy] ??= {})[location] = rows;
+  report.cells.push({
+    key: `${damageType}/${anatomy}/${location}`,
+    candidates: candidates.length,
+    filled: rows.filter((id) => !entries.get(id)?.placeholder).length,
+    distinct: new Set(rows.filter((id) => !entries.get(id)?.placeholder)).size,
+    drift,
+    repeats,
+    surplus,
+  });
 }
 
 // --- mortal -----------------------------------------------------------------
 
-const mortal = {};
-for (const { anatomy, location } of anatomyLocationPairs()) (mortal[anatomy] ??= {})[location] = null;
+/* Two halves keyed by different axes — body part for the weapon types, damage type for the rest.
+ * Both are pre-seeded to null from `mortalCells` so an unwritten cell is a visible hole in the
+ * output rather than an absent key. */
+const mortal = { byPart: {}, byDamageType: {} };
+for (const cell of mortalCells()) {
+  if (cell.kind === "part") (mortal.byPart[cell.anatomy] ??= {})[cell.location] = null;
+  else mortal.byDamageType[cell.damageType] = null;
+}
 
 if (fs.existsSync(MORTAL)) {
   const { rows, problems: parseProblems } = parseMortalWorksheet(fs.readFileSync(MORTAL, "utf8"));
   problems.push(...parseProblems);
-  for (const { anatomy, location, name, mechanic } of rows) {
-    if (!name) continue;
-    const id = name.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+  for (const row of rows) {
+    if (!row.name) continue;
+    const id = row.name.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
     const existing = pool.entries.find((e) => e.id === id);
-    addEntry({ id, name, journal: existing?.journal ?? null, buff: existing?.buff ?? null, note: mechanic || existing?.note || null });
-    mortal[anatomy][location] = id;
+    addEntry({ id, name: row.name, journal: existing?.journal ?? null, buff: existing?.buff ?? null, note: row.mechanic || existing?.note || null });
+    if (row.kind === "part") mortal.byPart[row.anatomy][row.location] = id;
+    else mortal.byDamageType[row.damageType] = id;
   }
 }
 
 // --- emit -------------------------------------------------------------------
 
 const output = {
-  version: 3,
+  version: 4,
   _generated: "GENERATED by tools/pool-to-tables.mjs from data/pool.json — do not hand-edit. Edit the pool.",
   _shape:
     "tables[damageType][anatomy][location] = 12 entry ids. Anatomy is a real dimension: `arm` is " +
-    "a weapon hand on a humanoid and a foreleg on a beast, and the two ladders diverge from row 1.",
+    "a weapon hand on a humanoid and a foreleg on a beast, and the two ladders diverge from row 1. " +
+    "Location is a dimension only for bludgeoning/piercing/slashing; every other damage type rolls " +
+    "no hit location and keeps one `general` table per anatomy.",
   _placement:
     "Rows are assigned by NEAREST RANK, not by exact match — a rank-6 effect fills row 7 when " +
     "nothing better is tagged for that table. See content/COVERAGE.md for per-table drift.",
   _mortal:
-    "mortal[anatomy][location] is the 13+ addendum — read ON TOP of row 12, not instead of it, " +
-    "and damage-type agnostic. Authored in content/mortal.md.",
+    "The 13+ addendum — read ON TOP of row 12, not instead of it. Two halves keyed by different " +
+    "axes: mortal.byPart[anatomy][location] for the weapon damage types (damage-type agnostic), " +
+    "mortal.byDamageType[damageType] for the rest (anatomy agnostic). Authored in content/mortal.md.",
   entries: [...entries.values()].sort((a, b) => a.id.localeCompare(b.id)),
   tables,
   mortal,
 };
 
 const real = output.entries.filter((e) => !e.placeholder).length;
-const slots = DAMAGE_TYPES.length * anatomyLocationPairs().length * TABLE_ROWS;
+const slots = report.cells.length * TABLE_ROWS;
 const filled = report.cells.reduce((n, c) => n + c.filled, 0);
 const distinct = report.cells.reduce((n, c) => n + c.distinct, 0);
 
 console.error(`pool     : ${pool.entries.length} entries (${pool.entries.filter((e) => e.rank != null).length} ranked)`);
 console.error(`entries  : ${output.entries.length} (${real} real, ${output.entries.length - real} placeholder)`);
+console.error(`tables   : ${report.cells.length} (${DAMAGE_TYPES.length} damage types, location only for ${DAMAGE_TYPES.filter(isLocalized).length})`);
 console.error(`slots    : ${filled} of ${slots} filled (${Math.round((filled / slots) * 100)}%), ${distinct} of them distinct`);
 console.error(`unplaced : ${report.unplaced.size} ranked pool entries land in no table`);
 if (report.unplaced.size) console.error(`           ${[...report.unplaced].join(", ")}`);
+
+if (notes.length) {
+  console.error(`\n${notes.length} tagging note(s) — the build is fine, the coverage isn't:`);
+  for (const note of notes) console.error(`  - ${note}`);
+}
 
 if (problems.length) {
   console.error(`\n${problems.length} problem(s) — nothing written:`);

@@ -32,6 +32,16 @@
       </span>
     </div>
 
+    {{#if damageTypeLabel}}
+      <div class="ce-line">
+        <span class="ce-line-label">Damage</span>
+        <span class="ce-line-value">
+          {{damageTypeLabel}}
+          {{#unless localized}}<em class="ce-muted">no location</em>{{/unless}}
+        </span>
+      </div>
+    {{/if}}
+
     {{#if locationLabel}}
       <div class="ce-line">
         <span class="ce-line-label">Location</span>
@@ -138,7 +148,7 @@
             {{/if}}
 
             {{!-- What the layout buys, before anything is rolled against it. --}}
-            {{#if ../locationBands}}
+            {{#if ../locationBands.length}}
               <ul class="ce-bands">
                 {{#each ../locationBands}}
                   <li><span class="ce-mono">{{range}}</span> {{label}}</li>
@@ -146,14 +156,28 @@
               </ul>
             {{/if}}
 
-            <div class="ce-stage-controls">
-              <button type="button" class="ce-btn ce-primary" data-action="requestLocation">
-                <i class="fa-solid fa-dice-d20"></i> Roll Location
-              </button>
-              <button type="button" class="ce-btn ce-primary" data-action="chooseLocation">
-                <i class="fa-solid fa-hand-pointer"></i> Choose Location
-              </button>
-            </div>
+            {{!-- Three ways out of this stage, and which one you get is the damage type's doing.
+                  A weapon type rolls or picks a body part; anything else has none to settle and
+                  just continues; no damage type at all settles nothing, because the effect tables
+                  are keyed by it and guessing would only mean guessing wrong later. --}}
+            {{#if ../needsDamageType}}
+              <p class="ce-empty">Pick a damage type — the effect tables are keyed by it.</p>
+            {{else if ../localized}}
+              <div class="ce-stage-controls">
+                <button type="button" class="ce-btn ce-primary" data-action="requestLocation">
+                  <i class="fa-solid fa-dice-d20"></i> Roll Location
+                </button>
+                <button type="button" class="ce-btn ce-primary" data-action="chooseLocation">
+                  <i class="fa-solid fa-hand-pointer"></i> Choose Location
+                </button>
+              </div>
+            {{else}}
+              <div class="ce-stage-controls">
+                <button type="button" class="ce-btn ce-primary" data-action="proceed">
+                  <i class="fa-solid fa-chevron-right"></i> Continue
+                </button>
+              </div>
+            {{/if}}
           {{/if}}
 
           {{#if (eq key "power")}}
@@ -189,7 +213,7 @@
                 </select>
               </label>
             {{else}}
-              <p class="ce-empty">No effect table for {{../state.damageType}} / {{../locationLabel}}.</p>
+              <p class="ce-empty">No effect table for {{../state.damageType}} / {{../state.anatomy}}{{#if ../locationLabel}} / {{../locationLabel}}{{/if}}.</p>
             {{/if}}
 
             <div class="ce-stage-controls">

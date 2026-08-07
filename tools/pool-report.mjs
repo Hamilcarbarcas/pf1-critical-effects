@@ -20,8 +20,8 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 import {
-  DAMAGE_TYPES, DAMAGE_TYPE_LABELS, ANATOMY_LOCATIONS, SEVERITY_BANDS,
-  TABLE_ROWS, bandForRow, anatomyLocationPairs, FUMBLE_TABLES, FUMBLE_ROWS,
+  DAMAGE_TYPES, DAMAGE_TYPE_LABELS, SEVERITY_BANDS, TABLE_ROWS, bandForRow,
+  anatomyLocationPairs, gridCells, isLocalized, FUMBLE_TABLES, FUMBLE_ROWS,
 } from "../src/catalog/schema.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
@@ -45,18 +45,16 @@ const PER_BAND = TABLE_ROWS / SEVERITY_BANDS.length;
 const gaps = [];
 const cells = [];
 
-for (const damageType of DAMAGE_TYPES) {
-  for (const { anatomy, location } of anatomyLocationPairs()) {
-    const candidates = ranked.filter((e) => coversDamage(e, damageType) && coversSlot(e, anatomy, location));
-    const byBand = {};
-    for (const band of SEVERITY_BANDS) byBand[band.key] = 0;
-    for (const entry of candidates) byBand[bandForRow(entry.rank).key] += 1;
+for (const { damageType, anatomy, location } of gridCells()) {
+  const candidates = ranked.filter((e) => coversDamage(e, damageType) && coversSlot(e, anatomy, location));
+  const byBand = {};
+  for (const band of SEVERITY_BANDS) byBand[band.key] = 0;
+  for (const entry of candidates) byBand[bandForRow(entry.rank).key] += 1;
 
-    cells.push({ damageType, anatomy, location, byBand, total: candidates.length });
-    for (const band of SEVERITY_BANDS) {
-      const have = byBand[band.key];
-      if (have < PER_BAND) gaps.push({ damageType, anatomy, location, band: band.label, have, need: PER_BAND });
-    }
+  cells.push({ damageType, anatomy, location, byBand, total: candidates.length });
+  for (const band of SEVERITY_BANDS) {
+    const have = byBand[band.key];
+    if (have < PER_BAND) gaps.push({ damageType, anatomy, location, band: band.label, have, need: PER_BAND });
   }
 }
 
@@ -88,9 +86,10 @@ function table(header, rows, align = []) {
   return [line(header), rule, ...rows.map(line)].join("\n");
 }
 
-const totalSlots = DAMAGE_TYPES.length * anatomyLocationPairs().length * TABLE_ROWS;
+const totalSlots = cells.length * TABLE_ROWS;
 const saturated = cells.filter((c) => SEVERITY_BANDS.every((b) => c.byBand[b.key] >= PER_BAND)).length;
 const empty = cells.filter((c) => c.total === 0).length;
+const localizedTypes = DAMAGE_TYPES.filter(isLocalized);
 
 const out = [
   "# Coverage",
@@ -98,7 +97,9 @@ const out = [
   "**Generated** by `node tools/pool-report.mjs --write`. Do not edit.",
   "",
   `Pool: **${pool.entries.length} effects**, ${ranked.length} ranked, ${pool.entries.length - ranked.length} untriaged.`,
-  `Grid: **${cells.length} tables** (${DAMAGE_TYPES.length} damage types × ${anatomyLocationPairs().length} anatomy/location pairs), ${totalSlots} rows.`,
+  `Grid: **${cells.length} tables**, ${totalSlots} rows — ${localizedTypes.length} weapon damage types ×`,
+  `${anatomyLocationPairs().length} anatomy/location pairs, plus ${DAMAGE_TYPES.length - localizedTypes.length} damage types that roll no`,
+  `location and keep one \`general\` table per anatomy.`,
   `**${saturated} of ${cells.length} tables are saturated** (every band has its ${PER_BAND} candidates); ${empty} have no candidates at all.`,
   "",
   "A table is always twelve rows — the generator backfills gaps by reusing the nearest-ranked",
@@ -146,11 +147,14 @@ for (const cell of emptyCells) {
 }
 out.push(table(
   ["Damage type", "Empty", "Body parts"],
-  [...byDamage].map(([dt, parts]) => [
-    DAMAGE_TYPE_LABELS[dt] ?? dt,
-    `${parts.length}/${anatomyLocationPairs().length}`,
-    parts.length === anatomyLocationPairs().length ? "**all**" : parts.join(", "),
-  ]),
+  [...byDamage].map(([dt, parts]) => {
+    const of = anatomyLocationPairs(dt).length;
+    return [
+      DAMAGE_TYPE_LABELS[dt] ?? dt,
+      `${parts.length}/${of}`,
+      parts.length === of ? "**all**" : parts.join(", "),
+    ];
+  }),
   [null, "right"]
 ));
 

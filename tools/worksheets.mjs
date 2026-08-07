@@ -2,19 +2,32 @@
  *
  * Mortal is the one piece of effect content that is NOT pool-shaped, which is why it still has a
  * worksheet of its own while the per-damage-type worksheets have been retired in favour of
- * `data/pool.json`. The 13+ addendum is authored once per anatomy × location and is damage-type
- * agnostic, so there is nothing to tag and nothing to select: it is thirteen rows, one per body
- * part, and a markdown table is the right shape for that.
+ * `data/pool.json`. There is nothing to tag and nothing to select: every cell is written exactly
+ * once, and a markdown table is the right shape for that.
+ *
+ * **Two tables, because the two halves are keyed by different axes** (`mortalCells`). The weapon
+ * damage types share a mortal per body part; everything else shares one per damage type.
  *
  *   | Body part        | Effect        | Mechanic                        |
  *   |------------------|---------------|---------------------------------|
  *   | Humanoid · Arm   | Arm Torn Away | The arm is severed at the …     |
  *
- * `tools/pool-to-tables.mjs` reads this alongside the pool and writes both into `effects.json`.
- * Prose sections after the table are ignored, so GM notes can live in the same file.
+ *   | Damage type      | Effect        | Mechanic                        |
+ *   |------------------|---------------|---------------------------------|
+ *   | Fire             | Burned to Ash | Nothing recognisable is left …  |
+ *
+ * Both are parsed by the same walk: every table row is classified by its first cell, so the two
+ * can sit anywhere in the file in any order. `tools/pool-to-tables.mjs` reads this alongside the
+ * pool and writes both into `effects.json`. Prose sections are ignored, so GM notes can live in
+ * the same file.
  */
 
-import { ANATOMY_LOCATIONS } from "../src/catalog/schema.mjs";
+import {
+  ANATOMY_LOCATIONS,
+  DAMAGE_TYPE_LABELS,
+  generalDamageTypes,
+  mortalCells,
+} from "../src/catalog/schema.mjs";
 
 export const STATUSES = ["draft", "approved"];
 
@@ -23,16 +36,41 @@ export const slug = (name) =>
 
 const titleCase = (s) => s.charAt(0).toUpperCase() + s.slice(1);
 
-/** `Humanoid · Arm` -> `{ anatomy, location }`. Punctuation between the two is not load-bearing. */
+/**
+ * A mortal row's first cell -> which cell of the grid it names, or null if it names neither.
+ *
+ * Two forms, and which one it is decides which half of `mortal` the row lands in:
+ *
+ *   `Humanoid · Arm`   -> `{ kind: "part", anatomy, location }`   punctuation is not load-bearing
+ *   `Fire`, `Force`    -> `{ kind: "damageType", damageType }`    key or display label, either way
+ *
+ * Returning null is how the walk skips a header row or a table that isn't one of these — a normal
+ * outcome, not a fault.
+ */
 export function parseSectionHeading(text) {
   const parts = String(text).toLowerCase().split(/[^a-z]+/).filter(Boolean);
+
   const anatomy = parts.find((p) => p in ANATOMY_LOCATIONS);
-  if (!anatomy) return null;
-  const location = parts.find((p) => ANATOMY_LOCATIONS[anatomy].includes(p));
-  return location ? { anatomy, location } : null;
+  if (anatomy) {
+    const location = parts.find((p) => ANATOMY_LOCATIONS[anatomy].includes(p));
+    return location ? { kind: "part", anatomy, location } : null;
+  }
+
+  /* Matched on the registry key OR the display label, because the two diverge: `electric` is
+   * written "Electricity" and `positive` is written "Positive Energy". Only the non-localized types
+   * are candidates — the weapon types take their mortal from the body-part table. */
+  const phrase = parts.join(" ");
+  const damageType = generalDamageTypes().find(
+    (dt) => parts.includes(dt) || DAMAGE_TYPE_LABELS[dt]?.toLowerCase() === phrase
+  );
+  return damageType ? { kind: "damageType", damageType } : null;
 }
 
-export const sectionHeading = (anatomy, location) => `${titleCase(anatomy)} · ${titleCase(location)}`;
+/** The first-cell text for a cell of either half. */
+export const sectionHeading = (cell) =>
+  cell.kind === "part"
+    ? `${titleCase(cell.anatomy)} · ${titleCase(cell.location)}`
+    : (DAMAGE_TYPE_LABELS[cell.damageType] ?? titleCase(cell.damageType));
 
 /** Split a markdown table row into trimmed cells, tolerating ragged padding and missing edge pipes. */
 const cells = (line) =>
@@ -41,7 +79,10 @@ const cells = (line) =>
 const isSeparatorRow = (line) => /^\s*\|?[\s:|-]+\|[\s:|-]*$/.test(line) && line.includes("-");
 
 /**
- * Parse content/mortal.md — one row per anatomy × location, no row numbers.
+ * Parse content/mortal.md — one row per grid cell, no row numbers.
+ *
+ * Both tables are walked in one pass: a line is a row if its first cell names a body part or a
+ * non-localized damage type, so the two tables need no markers and can appear in either order.
  *
  * Structural faults are collected rather than thrown: this is a document a person is editing, so
  * everything wrong with it wants reporting at once.
@@ -76,7 +117,7 @@ export function parseMortalWorksheet(text, where = "mortal.md") {
 
   const seen = new Set();
   for (const row of rows) {
-    const key = `${row.anatomy}/${row.location}`;
+    const key = row.kind === "part" ? `${row.anatomy}/${row.location}` : row.damageType;
     if (seen.has(key)) problems.push(`${where}: ${key} appears twice`);
     seen.add(key);
   }
@@ -92,29 +133,48 @@ function renderTable(header, rows) {
   return [line(header), `|${widths.map((w) => "-".repeat(w + 2)).join("|")}|`, ...rows.map(line)].join("\n");
 }
 
-/** Render content/mortal.md from scratch. `rows` is keyed `"<anatomy>/<location>"`. */
+/**
+ * Render content/mortal.md from scratch.
+ *
+ * `rows` is keyed by `mortalCells().key` — `"humanoid/arm"` for a body part, `"fire"` for a damage
+ * type. The two never collide, because only the first form contains a slash.
+ */
 export function renderMortalWorksheet(rows, status = "draft") {
-  const table = [];
-  for (const [anatomy, locations] of Object.entries(ANATOMY_LOCATIONS)) {
-    for (const location of locations) {
-      const entry = rows[`${anatomy}/${location}`] ?? {};
-      table.push([sectionHeading(anatomy, location), entry.name ?? "", entry.mechanic ?? ""]);
-    }
-  }
+  const row = (cell) => {
+    const entry = rows[cell.key] ?? {};
+    return [sectionHeading(cell), entry.name ?? "", entry.mechanic ?? ""];
+  };
+
+  const grid = mortalCells();
+  const parts = grid.filter((c) => c.kind === "part").map(row);
+  const damageTypes = grid.filter((c) => c.kind === "damageType").map(row);
 
   return [
     "# Mortal",
     "",
-    "The **13+** addendum, one per anatomy × location and damage-type agnostic — past row 12 the",
-    "wound has stopped being characterised by what made it and is simply killing them.",
+    "The **13+** addendum — past row 12 the wound has stopped being a wound and is simply killing",
+    "them.",
     "",
     "Read **on top of** row 12, never instead of it, and always alongside the Fort save",
     "(DC = the Critical Power total) the 13+ clamp already carries. So the Mechanic column is the",
-    "*extra* — what this body part does to someone past saving, not a restatement of row 12.",
+    "*extra* — what this result does to someone past saving, not a restatement of row 12.",
     "",
     `**Status:** ${status}`,
     "",
-    renderTable(["Body part", "Effect", "Mechanic"], table),
+    "## By body part",
+    "",
+    "For **bludgeoning, piercing and slashing**. Damage-type agnostic: a torn-off arm is a torn-off",
+    "arm whether a sword or a mace did it, so what is left to name is the body part.",
+    "",
+    renderTable(["Body part", "Effect", "Mechanic"], parts),
+    "",
+    "## By damage type",
+    "",
+    "For everything else. Those types roll no hit location, so there is no body part to name and the",
+    "damage type is the whole of what distinguishes the result. Anatomy drops out on this side — a",
+    "mortal fire result is the same story for a humanoid and a beast.",
+    "",
+    renderTable(["Damage type", "Effect", "Mechanic"], damageTypes),
     "",
   ].join("\n");
 }

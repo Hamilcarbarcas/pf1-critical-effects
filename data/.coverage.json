@@ -584,7 +584,7 @@
     "surplus": []
   },
   {
-    "key": "fire/humanoid/arm",
+    "key": "fire/humanoid/general",
     "candidates": 0,
     "filled": 0,
     "distinct": 0,
@@ -593,7 +593,7 @@
     "surplus": []
   },
   {
-    "key": "fire/humanoid/leg",
+    "key": "fire/beast/general",
     "candidates": 0,
     "filled": 0,
     "distinct": 0,
@@ -602,7 +602,7 @@
     "surplus": []
   },
   {
-    "key": "fire/humanoid/torso",
+    "key": "fire/aberrant/general",
     "candidates": 0,
     "filled": 0,
     "distinct": 0,
@@ -611,7 +611,7 @@
     "surplus": []
   },
   {
-    "key": "fire/humanoid/head",
+    "key": "cold/humanoid/general",
     "candidates": 0,
     "filled": 0,
     "distinct": 0,
@@ -620,7 +620,7 @@
     "surplus": []
   },
   {
-    "key": "fire/beast/arm",
+    "key": "cold/beast/general",
     "candidates": 0,
     "filled": 0,
     "distinct": 0,
@@ -629,7 +629,7 @@
     "surplus": []
   },
   {
-    "key": "fire/beast/leg",
+    "key": "cold/aberrant/general",
     "candidates": 0,
     "filled": 0,
     "distinct": 0,
@@ -638,7 +638,7 @@
     "surplus": []
   },
   {
-    "key": "fire/beast/torso",
+    "key": "electric/humanoid/general",
     "candidates": 0,
     "filled": 0,
     "distinct": 0,
@@ -647,7 +647,7 @@
     "surplus": []
   },
   {
-    "key": "fire/beast/head",
+    "key": "electric/beast/general",
     "candidates": 0,
     "filled": 0,
     "distinct": 0,
@@ -656,7 +656,7 @@
     "surplus": []
   },
   {
-    "key": "fire/beast/tail",
+    "key": "electric/aberrant/general",
     "candidates": 0,
     "filled": 0,
     "distinct": 0,
@@ -665,7 +665,7 @@
     "surplus": []
   },
   {
-    "key": "fire/beast/wing",
+    "key": "acid/humanoid/general",
     "candidates": 0,
     "filled": 0,
     "distinct": 0,
@@ -674,7 +674,7 @@
     "surplus": []
   },
   {
-    "key": "fire/aberrant/appendage",
+    "key": "acid/beast/general",
     "candidates": 0,
     "filled": 0,
     "distinct": 0,
@@ -683,7 +683,7 @@
     "surplus": []
   },
   {
-    "key": "fire/aberrant/torso",
+    "key": "acid/aberrant/general",
     "candidates": 0,
     "filled": 0,
     "distinct": 0,
@@ -692,7 +692,7 @@
     "surplus": []
   },
   {
-    "key": "fire/aberrant/head",
+    "key": "sonic/humanoid/general",
     "candidates": 0,
     "filled": 0,
     "distinct": 0,
@@ -701,7 +701,7 @@
     "surplus": []
   },
   {
-    "key": "cold/humanoid/arm",
+    "key": "sonic/beast/general",
     "candidates": 0,
     "filled": 0,
     "distinct": 0,
@@ -710,7 +710,7 @@
     "surplus": []
   },
   {
-    "key": "cold/humanoid/leg",
+    "key": "sonic/aberrant/general",
     "candidates": 0,
     "filled": 0,
     "distinct": 0,
@@ -719,7 +719,7 @@
     "surplus": []
   },
   {
-    "key": "cold/humanoid/torso",
+    "key": "force/humanoid/general",
     "candidates": 0,
     "filled": 0,
     "distinct": 0,
@@ -728,7 +728,7 @@
     "surplus": []
   },
   {
-    "key": "cold/humanoid/head",
+    "key": "force/beast/general",
     "candidates": 0,
     "filled": 0,
     "distinct": 0,
@@ -737,7 +737,7 @@
     "surplus": []
   },
   {
-    "key": "cold/beast/arm",
+    "key": "force/aberrant/general",
     "candidates": 0,
     "filled": 0,
     "distinct": 0,
@@ -746,7 +746,7 @@
     "surplus": []
   },
   {
-    "key": "cold/beast/leg",
+    "key": "positive/humanoid/general",
     "candidates": 0,
     "filled": 0,
     "distinct": 0,
@@ -755,7 +755,7 @@
     "surplus": []
   },
   {
-    "key": "cold/beast/torso",
+    "key": "positive/beast/general",
     "candidates": 0,
     "filled": 0,
     "distinct": 0,
@@ -764,7 +764,7 @@
     "surplus": []
   },
   {
-    "key": "cold/beast/head",
+    "key": "positive/aberrant/general",
     "candidates": 0,
     "filled": 0,
     "distinct": 0,
@@ -773,7 +773,7 @@
     "surplus": []
   },
   {
-    "key": "cold/beast/tail",
+    "key": "negative/humanoid/general",
     "candidates": 0,
     "filled": 0,
     "distinct": 0,
@@ -782,7 +782,7 @@
     "surplus": []
   },
   {
-    "key": "cold/beast/wing",
+    "key": "negative/beast/general",
     "candidates": 0,
     "filled": 0,
     "distinct": 0,
@@ -791,610 +791,7 @@
     "surplus": []
   },
   {
-    "key": "cold/aberrant/appendage",
-    "candidates": 0,
-    "filled": 0,
-    "distinct": 0,
-    "drift": [],
-    "repeats": [],
-    "surplus": []
-  },
-  {
-    "key": "cold/aberrant/torso",
-    "candidates": 0,
-    "filled": 0,
-    "distinct": 0,
-    "drift": [],
-    "repeats": [],
-    "surplus": []
-  },
-  {
-    "key": "cold/aberrant/head",
-    "candidates": 0,
-    "filled": 0,
-    "distinct": 0,
-    "drift": [],
-    "repeats": [],
-    "surplus": []
-  },
-  {
-    "key": "electric/humanoid/arm",
-    "candidates": 0,
-    "filled": 0,
-    "distinct": 0,
-    "drift": [],
-    "repeats": [],
-    "surplus": []
-  },
-  {
-    "key": "electric/humanoid/leg",
-    "candidates": 0,
-    "filled": 0,
-    "distinct": 0,
-    "drift": [],
-    "repeats": [],
-    "surplus": []
-  },
-  {
-    "key": "electric/humanoid/torso",
-    "candidates": 0,
-    "filled": 0,
-    "distinct": 0,
-    "drift": [],
-    "repeats": [],
-    "surplus": []
-  },
-  {
-    "key": "electric/humanoid/head",
-    "candidates": 0,
-    "filled": 0,
-    "distinct": 0,
-    "drift": [],
-    "repeats": [],
-    "surplus": []
-  },
-  {
-    "key": "electric/beast/arm",
-    "candidates": 0,
-    "filled": 0,
-    "distinct": 0,
-    "drift": [],
-    "repeats": [],
-    "surplus": []
-  },
-  {
-    "key": "electric/beast/leg",
-    "candidates": 0,
-    "filled": 0,
-    "distinct": 0,
-    "drift": [],
-    "repeats": [],
-    "surplus": []
-  },
-  {
-    "key": "electric/beast/torso",
-    "candidates": 0,
-    "filled": 0,
-    "distinct": 0,
-    "drift": [],
-    "repeats": [],
-    "surplus": []
-  },
-  {
-    "key": "electric/beast/head",
-    "candidates": 0,
-    "filled": 0,
-    "distinct": 0,
-    "drift": [],
-    "repeats": [],
-    "surplus": []
-  },
-  {
-    "key": "electric/beast/tail",
-    "candidates": 0,
-    "filled": 0,
-    "distinct": 0,
-    "drift": [],
-    "repeats": [],
-    "surplus": []
-  },
-  {
-    "key": "electric/beast/wing",
-    "candidates": 0,
-    "filled": 0,
-    "distinct": 0,
-    "drift": [],
-    "repeats": [],
-    "surplus": []
-  },
-  {
-    "key": "electric/aberrant/appendage",
-    "candidates": 0,
-    "filled": 0,
-    "distinct": 0,
-    "drift": [],
-    "repeats": [],
-    "surplus": []
-  },
-  {
-    "key": "electric/aberrant/torso",
-    "candidates": 0,
-    "filled": 0,
-    "distinct": 0,
-    "drift": [],
-    "repeats": [],
-    "surplus": []
-  },
-  {
-    "key": "electric/aberrant/head",
-    "candidates": 0,
-    "filled": 0,
-    "distinct": 0,
-    "drift": [],
-    "repeats": [],
-    "surplus": []
-  },
-  {
-    "key": "acid/humanoid/arm",
-    "candidates": 0,
-    "filled": 0,
-    "distinct": 0,
-    "drift": [],
-    "repeats": [],
-    "surplus": []
-  },
-  {
-    "key": "acid/humanoid/leg",
-    "candidates": 0,
-    "filled": 0,
-    "distinct": 0,
-    "drift": [],
-    "repeats": [],
-    "surplus": []
-  },
-  {
-    "key": "acid/humanoid/torso",
-    "candidates": 0,
-    "filled": 0,
-    "distinct": 0,
-    "drift": [],
-    "repeats": [],
-    "surplus": []
-  },
-  {
-    "key": "acid/humanoid/head",
-    "candidates": 0,
-    "filled": 0,
-    "distinct": 0,
-    "drift": [],
-    "repeats": [],
-    "surplus": []
-  },
-  {
-    "key": "acid/beast/arm",
-    "candidates": 0,
-    "filled": 0,
-    "distinct": 0,
-    "drift": [],
-    "repeats": [],
-    "surplus": []
-  },
-  {
-    "key": "acid/beast/leg",
-    "candidates": 0,
-    "filled": 0,
-    "distinct": 0,
-    "drift": [],
-    "repeats": [],
-    "surplus": []
-  },
-  {
-    "key": "acid/beast/torso",
-    "candidates": 0,
-    "filled": 0,
-    "distinct": 0,
-    "drift": [],
-    "repeats": [],
-    "surplus": []
-  },
-  {
-    "key": "acid/beast/head",
-    "candidates": 0,
-    "filled": 0,
-    "distinct": 0,
-    "drift": [],
-    "repeats": [],
-    "surplus": []
-  },
-  {
-    "key": "acid/beast/tail",
-    "candidates": 0,
-    "filled": 0,
-    "distinct": 0,
-    "drift": [],
-    "repeats": [],
-    "surplus": []
-  },
-  {
-    "key": "acid/beast/wing",
-    "candidates": 0,
-    "filled": 0,
-    "distinct": 0,
-    "drift": [],
-    "repeats": [],
-    "surplus": []
-  },
-  {
-    "key": "acid/aberrant/appendage",
-    "candidates": 0,
-    "filled": 0,
-    "distinct": 0,
-    "drift": [],
-    "repeats": [],
-    "surplus": []
-  },
-  {
-    "key": "acid/aberrant/torso",
-    "candidates": 0,
-    "filled": 0,
-    "distinct": 0,
-    "drift": [],
-    "repeats": [],
-    "surplus": []
-  },
-  {
-    "key": "acid/aberrant/head",
-    "candidates": 0,
-    "filled": 0,
-    "distinct": 0,
-    "drift": [],
-    "repeats": [],
-    "surplus": []
-  },
-  {
-    "key": "sonic/humanoid/arm",
-    "candidates": 0,
-    "filled": 0,
-    "distinct": 0,
-    "drift": [],
-    "repeats": [],
-    "surplus": []
-  },
-  {
-    "key": "sonic/humanoid/leg",
-    "candidates": 0,
-    "filled": 0,
-    "distinct": 0,
-    "drift": [],
-    "repeats": [],
-    "surplus": []
-  },
-  {
-    "key": "sonic/humanoid/torso",
-    "candidates": 0,
-    "filled": 0,
-    "distinct": 0,
-    "drift": [],
-    "repeats": [],
-    "surplus": []
-  },
-  {
-    "key": "sonic/humanoid/head",
-    "candidates": 0,
-    "filled": 0,
-    "distinct": 0,
-    "drift": [],
-    "repeats": [],
-    "surplus": []
-  },
-  {
-    "key": "sonic/beast/arm",
-    "candidates": 0,
-    "filled": 0,
-    "distinct": 0,
-    "drift": [],
-    "repeats": [],
-    "surplus": []
-  },
-  {
-    "key": "sonic/beast/leg",
-    "candidates": 0,
-    "filled": 0,
-    "distinct": 0,
-    "drift": [],
-    "repeats": [],
-    "surplus": []
-  },
-  {
-    "key": "sonic/beast/torso",
-    "candidates": 0,
-    "filled": 0,
-    "distinct": 0,
-    "drift": [],
-    "repeats": [],
-    "surplus": []
-  },
-  {
-    "key": "sonic/beast/head",
-    "candidates": 0,
-    "filled": 0,
-    "distinct": 0,
-    "drift": [],
-    "repeats": [],
-    "surplus": []
-  },
-  {
-    "key": "sonic/beast/tail",
-    "candidates": 0,
-    "filled": 0,
-    "distinct": 0,
-    "drift": [],
-    "repeats": [],
-    "surplus": []
-  },
-  {
-    "key": "sonic/beast/wing",
-    "candidates": 0,
-    "filled": 0,
-    "distinct": 0,
-    "drift": [],
-    "repeats": [],
-    "surplus": []
-  },
-  {
-    "key": "sonic/aberrant/appendage",
-    "candidates": 0,
-    "filled": 0,
-    "distinct": 0,
-    "drift": [],
-    "repeats": [],
-    "surplus": []
-  },
-  {
-    "key": "sonic/aberrant/torso",
-    "candidates": 0,
-    "filled": 0,
-    "distinct": 0,
-    "drift": [],
-    "repeats": [],
-    "surplus": []
-  },
-  {
-    "key": "sonic/aberrant/head",
-    "candidates": 0,
-    "filled": 0,
-    "distinct": 0,
-    "drift": [],
-    "repeats": [],
-    "surplus": []
-  },
-  {
-    "key": "positive/humanoid/arm",
-    "candidates": 0,
-    "filled": 0,
-    "distinct": 0,
-    "drift": [],
-    "repeats": [],
-    "surplus": []
-  },
-  {
-    "key": "positive/humanoid/leg",
-    "candidates": 0,
-    "filled": 0,
-    "distinct": 0,
-    "drift": [],
-    "repeats": [],
-    "surplus": []
-  },
-  {
-    "key": "positive/humanoid/torso",
-    "candidates": 0,
-    "filled": 0,
-    "distinct": 0,
-    "drift": [],
-    "repeats": [],
-    "surplus": []
-  },
-  {
-    "key": "positive/humanoid/head",
-    "candidates": 0,
-    "filled": 0,
-    "distinct": 0,
-    "drift": [],
-    "repeats": [],
-    "surplus": []
-  },
-  {
-    "key": "positive/beast/arm",
-    "candidates": 0,
-    "filled": 0,
-    "distinct": 0,
-    "drift": [],
-    "repeats": [],
-    "surplus": []
-  },
-  {
-    "key": "positive/beast/leg",
-    "candidates": 0,
-    "filled": 0,
-    "distinct": 0,
-    "drift": [],
-    "repeats": [],
-    "surplus": []
-  },
-  {
-    "key": "positive/beast/torso",
-    "candidates": 0,
-    "filled": 0,
-    "distinct": 0,
-    "drift": [],
-    "repeats": [],
-    "surplus": []
-  },
-  {
-    "key": "positive/beast/head",
-    "candidates": 0,
-    "filled": 0,
-    "distinct": 0,
-    "drift": [],
-    "repeats": [],
-    "surplus": []
-  },
-  {
-    "key": "positive/beast/tail",
-    "candidates": 0,
-    "filled": 0,
-    "distinct": 0,
-    "drift": [],
-    "repeats": [],
-    "surplus": []
-  },
-  {
-    "key": "positive/beast/wing",
-    "candidates": 0,
-    "filled": 0,
-    "distinct": 0,
-    "drift": [],
-    "repeats": [],
-    "surplus": []
-  },
-  {
-    "key": "positive/aberrant/appendage",
-    "candidates": 0,
-    "filled": 0,
-    "distinct": 0,
-    "drift": [],
-    "repeats": [],
-    "surplus": []
-  },
-  {
-    "key": "positive/aberrant/torso",
-    "candidates": 0,
-    "filled": 0,
-    "distinct": 0,
-    "drift": [],
-    "repeats": [],
-    "surplus": []
-  },
-  {
-    "key": "positive/aberrant/head",
-    "candidates": 0,
-    "filled": 0,
-    "distinct": 0,
-    "drift": [],
-    "repeats": [],
-    "surplus": []
-  },
-  {
-    "key": "negative/humanoid/arm",
-    "candidates": 0,
-    "filled": 0,
-    "distinct": 0,
-    "drift": [],
-    "repeats": [],
-    "surplus": []
-  },
-  {
-    "key": "negative/humanoid/leg",
-    "candidates": 0,
-    "filled": 0,
-    "distinct": 0,
-    "drift": [],
-    "repeats": [],
-    "surplus": []
-  },
-  {
-    "key": "negative/humanoid/torso",
-    "candidates": 0,
-    "filled": 0,
-    "distinct": 0,
-    "drift": [],
-    "repeats": [],
-    "surplus": []
-  },
-  {
-    "key": "negative/humanoid/head",
-    "candidates": 0,
-    "filled": 0,
-    "distinct": 0,
-    "drift": [],
-    "repeats": [],
-    "surplus": []
-  },
-  {
-    "key": "negative/beast/arm",
-    "candidates": 0,
-    "filled": 0,
-    "distinct": 0,
-    "drift": [],
-    "repeats": [],
-    "surplus": []
-  },
-  {
-    "key": "negative/beast/leg",
-    "candidates": 0,
-    "filled": 0,
-    "distinct": 0,
-    "drift": [],
-    "repeats": [],
-    "surplus": []
-  },
-  {
-    "key": "negative/beast/torso",
-    "candidates": 0,
-    "filled": 0,
-    "distinct": 0,
-    "drift": [],
-    "repeats": [],
-    "surplus": []
-  },
-  {
-    "key": "negative/beast/head",
-    "candidates": 0,
-    "filled": 0,
-    "distinct": 0,
-    "drift": [],
-    "repeats": [],
-    "surplus": []
-  },
-  {
-    "key": "negative/beast/tail",
-    "candidates": 0,
-    "filled": 0,
-    "distinct": 0,
-    "drift": [],
-    "repeats": [],
-    "surplus": []
-  },
-  {
-    "key": "negative/beast/wing",
-    "candidates": 0,
-    "filled": 0,
-    "distinct": 0,
-    "drift": [],
-    "repeats": [],
-    "surplus": []
-  },
-  {
-    "key": "negative/aberrant/appendage",
-    "candidates": 0,
-    "filled": 0,
-    "distinct": 0,
-    "drift": [],
-    "repeats": [],
-    "surplus": []
-  },
-  {
-    "key": "negative/aberrant/torso",
-    "candidates": 0,
-    "filled": 0,
-    "distinct": 0,
-    "drift": [],
-    "repeats": [],
-    "surplus": []
-  },
-  {
-    "key": "negative/aberrant/head",
+    "key": "negative/aberrant/general",
     "candidates": 0,
     "filled": 0,
     "distinct": 0,

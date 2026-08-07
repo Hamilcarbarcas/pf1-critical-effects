@@ -1,7 +1,7 @@
 {
   "version": 1,
   "_source": "THE source of truth for effect content. data/effects.json is generated from this file by tools/pool-to-tables.mjs and must not be hand-edited.",
-  "_tags": "`slots` are anatomy/location pairs; `*/<location>` means every anatomy that has that location. `damageTypes` may be [\"*\"] for all ten. `rank` is 1-12 and the severity band derives from it (1-3 minor, 4-6 moderate, 7-9 severe, 10-12 grave), as does the order of the three rows inside a band. `rank: null` means untriaged — see content/COVERAGE.md.",
+  "_tags": "`slots` are anatomy/location pairs; `*/<location>` means every anatomy that has that location. Only bludgeoning, piercing and slashing roll a hit location: every other damage type keeps ONE table per anatomy, tagged `<anatomy>/general` (or `*/general`), so an effect meant for fire or acid needs a general slot or its damage tags select nothing. `damageTypes` may be [\"*\"] for all eleven. `rank` is 1-12 and the severity band derives from it (1-3 minor, 4-6 moderate, 7-9 severe, 10-12 grave), as does the order of the three rows inside a band. `rank: null` means untriaged — see content/COVERAGE.md.",
   "_pins": "Optional `pins`: { \"<damageType>/<anatomy>/<location>\": <row> } forces this effect onto a specific row of a specific table, overriding the rank-driven placement.",
   "entries": [
     {

@@ -17,16 +17,16 @@
     abandoned or unmapped draw leaves nothing behind.
 - **Anatomy is a catalog dimension** (`effects.json` v3). Effect tables are now keyed
   `damageType → anatomy → location` rather than `damageType → location`: a beast's foreleg and a
-  humanoid's weapon hand no longer share twelve rows. The grid is 10 damage types × 13 anatomy ×
-  location pairs × 12 rows.
+  humanoid's weapon hand no longer share twelve rows. (The location half of that key has since
+  become weapon-damage-only — see Changed.)
 - **Mortal effects.** A `mortal[anatomy][location]` entry, read *on top of* row 12 at the 13+
   clamp and damage-type agnostic. Optional — absent, 13+ stays "row 12 plus the Fort save".
 - **Tagged effect pool** (`data/pool.json`), now the source of truth for effect content;
   `data/effects.json` becomes generated build output. Each effect carries a `rank` (1-12 severity
   score), anatomy-qualified `slots` (`humanoid/arm`, `*/torso`) and `damageTypes`, and
-  `tools/pool-to-tables.mjs` works out which of the 130 roll tables it lands in. One effect tagged
-  across several damage types and body parts covers many rows, so saturating the 1,560-row grid
-  takes a few hundred effects rather than 1,560. Runtime is unchanged — the engine still indexes a
+  `tools/pool-to-tables.mjs` works out which of the roll tables it lands in. One effect tagged
+  across several damage types and body parts covers many rows, so saturating the grid takes a few
+  hundred effects rather than one per row. Runtime is unchanged — the engine still indexes a
   stored 12-row table and never queries the pool.
 - **Nearest-fit placement with a drift cap.** Rank is a severity score, not a row address: a
   candidate is seated at the free row nearest its rank, within ±1 (`--drift n`). That flex is what
@@ -343,6 +343,41 @@
   construction. Overriding `title` with a getter, which this dialog does, remains fine.
 
 ### Changed
+- **Only bludgeoning, piercing and slashing roll a hit location** (`effects.json` v4). Fire, cold,
+  electricity, acid, sonic, force, positive and negative energy arrive as a wash rather than as a
+  blow, so there is nothing for a location roll to mean and no called shot to make. They keep the
+  *anatomy* axis — burning a humanoid is not burning an ooze — and drop the location one, collapsing
+  thirteen tables each into one per anatomy under the pseudo-slot `general`. The grid goes from 130
+  tables / 1,560 rows to **63 tables / 756 rows**.
+  - **`mortal` splits into two halves keyed by different axes**, because the axis that
+    distinguishes a death is not the same on both sides of the grid.
+    `mortal.byPart[anatomy][location]` covers the weapon types and ignores which of the three did
+    it — a torn-off arm is a torn-off arm whether a sword or a mace did it — while
+    `mortal.byDamageType[damageType]` covers the rest and ignores anatomy, because burned to ash and
+    blasted apart are plainly not one result and a mortal fire result is the same story for a
+    humanoid and a beast. 13 entries plus 8, and `mortalCells()` enumerates both so nothing has to
+    reconstruct the rule. `mortalFor` now takes the damage type as its first argument.
+  - `LOCALIZED_DAMAGE_TYPES` names the three, and `slotFor(damageType, location)` is the single
+    place that decision is made: a non-localized type answers `general` whatever location it is
+    handed, so `effectFor("fire", "beast", "wing", 7)` is a lookup that ignores an axis rather than
+    a mistake. `general` is deliberately absent from `SLOTS` — no location table can produce it and
+    nothing in the resolve layer knows it exists.
+  - **The dialog's Location stage narrows rather than disappearing.** It is the only place the
+    creature type and the damage type are chosen and the tables are keyed by both, so for those
+    seven it presents itself as **Target**: the two selects stay, the limb layout and location chart
+    go, and the two location buttons become one **Continue**. With no damage type picked yet neither
+    path is offered — an unset type must not silently take the non-localized one. The readout gained
+    a **Damage** line, since for those seven it is the only thing that says which table a result
+    came from.
+  - **Content:** pool effects for the energy types are tagged `<anatomy>/general` (or `*/general`).
+    An effect whose damage tags select nothing — a fire tag with only body-part slots, or the
+    reverse — is reported by `pool-to-tables.mjs` without failing the build. `content/mortal.md`
+    becomes two tables, told apart by each row's first cell so they can sit anywhere in the file.
+    Nothing was lost in the change: every energy table in the pool was empty.
+- **`force` is a damage type the module keeps tables for**, and follows the energy types in every
+  respect: no hit location, one table per anatomy, its own mortal row. It had been excluded
+  alongside `untyped`, `precision` and `nonlethal` on the grounds that those describe how damage is
+  dealt rather than what it does to a body, which is not true of force.
 - **The Critical Effect quick action takes its source from the canvas selection** rather than
   roll-requests' actor prompt, for the same reasons the new Fumble action does: the prompt cannot
   offer a monster or an unlinked token, and it answers with an actor where a roll request needs a

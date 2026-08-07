@@ -35,10 +35,6 @@ export const SEVERITY_BANDS = [
 export const bandForRow = (row) =>
   SEVERITY_BANDS.find(({ rows: [min, max] }) => row >= min && row <= max) ?? null;
 
-/** Body locations the d20 location tables can produce (§5.3). Unknown values are warned about,
- *  not rejected — content may legitimately introduce a location before the tables catch up. */
-export const LOCATIONS = ["head", "torso", "arm", "leg", "wing", "tail", "appendage"];
-
 /**
  * Which locations each anatomy can actually be hit in — the effect grid's real shape.
  *
@@ -57,10 +53,16 @@ export const ANATOMY_LOCATIONS = {
   aberrant: ["appendage", "torso", "head"],
 };
 
-/** Every (anatomy, location) pair the grid covers, in a stable order. 13 of them. */
-export const anatomyLocationPairs = () =>
+/**
+ * Every (anatomy, location) pair a damage type's tables cover, in a stable order.
+ *
+ * Omit `damageType` for the **localized** shape — the 13 body-part pairs, which is what `mortal`
+ * and the location layer are built on. Pass one and a non-localized type answers with its three
+ * `general` pairs instead (see `LOCALIZED_DAMAGE_TYPES`).
+ */
+export const anatomyLocationPairs = (damageType = null) =>
   Object.entries(ANATOMY_LOCATIONS).flatMap(([anatomy, locations]) =>
-    locations.map((location) => ({ anatomy, location }))
+    (damageType === null ? locations : slotsFor(damageType, anatomy)).map((location) => ({ anatomy, location }))
   );
 
 /**
@@ -72,9 +74,9 @@ export const anatomyLocationPairs = () =>
  * damage type and compared it against a letter never matched, and the dropdown was never
  * pre-filled.
  *
- * Narrower than PF1's registry on purpose: `untyped`, `force`, `precision`, `nonlethal` and
- * `areaOfEffect` describe how damage is dealt rather than what it does to a body, and there is no
- * table for them.
+ * Narrower than PF1's registry on purpose: `untyped`, `precision`, `nonlethal` and `areaOfEffect`
+ * describe how damage is dealt rather than what it does to a body, and there is no table for them.
+ * `force` is in, and follows the energy types in every respect — no hit location, its own mortal.
  */
 export const DAMAGE_TYPES = [
   "bludgeoning",
@@ -85,6 +87,7 @@ export const DAMAGE_TYPES = [
   "electric",
   "acid",
   "sonic",
+  "force",
   "positive",
   "negative",
 ];
@@ -99,6 +102,7 @@ export const DAMAGE_TYPE_LABELS = {
   electric: "Electricity",
   acid: "Acid",
   sonic: "Sonic",
+  force: "Force",
   positive: "Positive Energy",
   negative: "Negative Energy",
 };
@@ -106,6 +110,86 @@ export const DAMAGE_TYPE_LABELS = {
 /** The list a `<select>` wants. */
 export const damageTypeOptions = () =>
   DAMAGE_TYPES.map((key) => ({ key, label: DAMAGE_TYPE_LABELS[key] ?? key }));
+
+/**
+ * The damage types whose effects depend on WHERE they landed — the three weapon types.
+ *
+ * Everything else (fire, cold, electric, acid, sonic, force, positive, negative) is
+ * **non-localized**: it arrives as an area or a wash rather than as a blow, so there is no body part
+ * to roll for and no called shot to make. Those types still vary by anatomy — a fire critical does
+ * something different to a humanoid than to an ooze — so the grid keeps its anatomy axis and drops
+ * only the location one, collapsing to a single `general` table per anatomy.
+ *
+ * This is a **rules** distinction, not a data-shape one: keeping it named here rather than
+ * inferring it from which tables happen to exist is what stops "this type has no arm table" and
+ * "this type has no arms" from being the same statement.
+ */
+export const LOCALIZED_DAMAGE_TYPES = ["bludgeoning", "piercing", "slashing"];
+
+/** Does this damage type roll for a hit location? Unknown and absent types read as non-localized. */
+export const isLocalized = (damageType) => LOCALIZED_DAMAGE_TYPES.includes(damageType);
+
+/**
+ * The one pseudo-location a non-localized damage type's tables live under.
+ *
+ * Deliberately NOT in `LOCATIONS` or `SLOTS`: no location table can ever produce it, and nothing
+ * in `resolve/location.mjs` knows it exists. It is a table key, not a body part — which is what
+ * keeps the catalog's shape uniform (`tables[dt][anatomy][slot]`) without pretending a fire
+ * critical hit someone's leg.
+ */
+export const GENERAL_SLOT = "general";
+
+/** Which slots a damage type's tables cover for one anatomy: the body parts, or just `general`. */
+export const slotsFor = (damageType, anatomy) =>
+  isLocalized(damageType) ? (ANATOMY_LOCATIONS[anatomy] ?? []) : [GENERAL_SLOT];
+
+/**
+ * The table key a lookup should use.
+ *
+ * The single normalization point for the whole engine: a caller may hand over whatever location it
+ * has — a rolled one, a stale one, or none — and a non-localized damage type answers `general`
+ * regardless. That is why `effectFor("fire", "beast", "wing", 7)` is not a bug, it is a lookup that
+ * quietly ignores an axis that does not apply.
+ */
+export const slotFor = (damageType, location) => (isLocalized(damageType) ? (location ?? null) : GENERAL_SLOT);
+
+/** Every (damage type, anatomy, location) cell of the effect grid — 63 tables, 756 rows. */
+export const gridCells = () =>
+  DAMAGE_TYPES.flatMap((damageType) =>
+    anatomyLocationPairs(damageType).map((pair) => ({ damageType, ...pair }))
+  );
+
+/** The non-localized damage types, in DAMAGE_TYPES order. Each keeps one mortal row. */
+export const generalDamageTypes = () => DAMAGE_TYPES.filter((dt) => !isLocalized(dt));
+
+/**
+ * Every cell `mortal` covers, and the two are keyed by **different axes** — which is the whole of
+ * what makes mortal awkward and is why it is enumerated here rather than derived at each use.
+ *
+ * | | Keyed by | Agnostic to | Count |
+ * |---|---|---|---|
+ * | `part` | anatomy × location | damage type | 13 |
+ * | `damageType` | damage type | anatomy | 8 |
+ *
+ * The asymmetry is a rules judgement, not an oversight. For a weapon wound, past row 12 the injury
+ * has stopped being characterised by what made it — a torn-off arm is a torn-off arm whether a
+ * sword or a mace did it — so the body part is what is left to name. For non-localized damage there
+ * is no body part to name and the *damage type* is the whole of what distinguishes it: burned to
+ * ash and blasted apart are not one result. Anatomy drops out on that side because a mortal fire
+ * result is the same story for a humanoid and a beast.
+ *
+ * @returns {{ kind: "part"|"damageType", key: string, anatomy?: string, location?: string,
+ *             damageType?: string }[]}
+ */
+export const mortalCells = () => [
+  ...anatomyLocationPairs().map(({ anatomy, location }) => ({
+    kind: "part",
+    key: `${anatomy}/${location}`,
+    anatomy,
+    location,
+  })),
+  ...generalDamageTypes().map((damageType) => ({ kind: "damageType", key: damageType, damageType })),
+];
 
 /**
  * The six fumble tables, keyed by how the attack was delivered.
@@ -130,8 +214,14 @@ export const FUMBLE_ROWS = 20;
 
 export const ANATOMIES = ["humanoid", "beast", "aberrant"];
 
-/** Slots a location table row may name. Superset of LOCATIONS: `appendage` is what the aberrant
- *  table produces, and is a real catalog location rather than a synonym for `arm`. */
+/**
+ * Body parts a d20 location table row may name (§5.3) — every location the effect grid's localized
+ * half is keyed by. `appendage` is what the aberrant table produces and is a location in its own
+ * right, not a synonym for `arm`.
+ *
+ * `GENERAL_SLOT` is deliberately absent: it is a table key for the damage types that never roll
+ * here at all.
+ */
 export const SLOTS = ["head", "torso", "arm", "leg", "wing", "tail", "appendage"];
 
 const isPlainObject = (v) => v != null && typeof v === "object" && !Array.isArray(v);
@@ -155,20 +245,25 @@ export const TABLE_ROWS = 12;
  *
  * **Anatomy is a real dimension** (v3), not something location implies. `arm` means a hand that
  * drops a weapon on a humanoid and a foreleg that buckles on a beast, and the two want different
- * twelve rows even though they share a slot name. The grid is therefore 10 damage types × the 13
- * anatomy × location pairs in `ANATOMY_LOCATIONS`, each fully written out — there is no
- * inheritance between anatomies in the data. (The *worksheets* have a "same as humanoid"
- * shorthand; it expands at fold-in time, so the JSON stays explicit.)
+ * twelve rows even though they share a slot name. There is no inheritance between anatomies in the
+ * data — every table is written out in full.
+ *
+ * **Location is a dimension only for the three weapon types** (v4). A non-localized damage type
+ * arrives as a wash rather than as a blow, so it keeps the anatomy axis and drops the location one:
+ * its tables live under the single `general` slot. The grid is therefore 3 localized types × 13
+ * anatomy/location pairs, plus 8 non-localized types × 3 anatomies — 63 tables, 756 rows.
+ * `gridCells()` is the definition of it, and `slotsFor()` is the per-cell shape.
  *
  * **12 rows is an invariant, not a convention.** The resolution indexes into the table with a
  * clamped roll and never checks for a hole, so a short table is an error here rather than a
  * surprise at the table. Unwritten content is expressed as `placeholder: true` entries, which
  * keeps the invariant true while `lint()` reports how much is still to author.
  *
- * `mortal[anatomy][location]` is the 13+ addendum — one entry per body part, damage-type
- * agnostic, read on top of row 12 rather than instead of it. Optional: an absent mortal entry
- * leaves the 13+ result as "row 12 plus the Fort save", which is what the rules said before any
- * of them were written.
+ * `mortal` is the 13+ addendum, read on top of row 12 rather than instead of it, and it has **two
+ * halves keyed by different axes** (see `mortalCells`): `mortal.byPart[anatomy][location]` for the
+ * weapon types, `mortal.byDamageType[damageType]` for everything else. Optional throughout: an
+ * absent entry leaves the 13+ result as "row 12 plus the Fort save", which is what the rules said
+ * before any of them were written.
  *
  * @returns {{ errors: string[], warnings: string[], entries: object[], tables: object,
  *             mortal: object }}
@@ -178,12 +273,12 @@ export function validateEffects(data) {
   const warnings = [];
   const entries = [];
   const tables = {};
-  const mortal = {};
+  const mortal = { byPart: {}, byDamageType: {} };
 
   const bail = (message) => ({ errors: [...errors, message], warnings, entries, tables, mortal });
 
   if (!isPlainObject(data)) return bail("effects.json: root is not an object");
-  if (data.version !== 3) warnings.push(`effects.json: version is ${data.version}, expected 3`);
+  if (data.version !== 4) warnings.push(`effects.json: version is ${data.version}, expected 4`);
   if (!Array.isArray(data.entries)) return bail("effects.json: `entries` is not an array");
 
   const seen = new Set();
@@ -231,11 +326,15 @@ export function validateEffects(data) {
       tables[damageType][anatomy] = {};
       for (const [location, ids] of Object.entries(locations)) {
         const where = `effects.json tables.${damageType}.${anatomy}.${location}`;
-        if (!LOCATIONS.includes(location)) warnings.push(`${where}: unknown location`);
-        else if (!ANATOMY_LOCATIONS[anatomy]?.includes(location)) {
-          // Harmless but dead: the location table for this anatomy can never produce that slot,
-          // so nothing will ever read these twelve rows.
-          warnings.push(`${where}: a ${anatomy} is never hit in the ${location}; this table is unreachable`);
+        /* Harmless but dead: nothing can ever ask for these twelve rows. Two ways to get there —
+         * a body part this anatomy does not have, or any body part at all under a damage type
+         * that does not roll for one. */
+        if (!slotsFor(damageType, anatomy).includes(location)) {
+          warnings.push(
+            isLocalized(damageType)
+              ? `${where}: a ${anatomy} is never hit in the ${location}; this table is unreachable`
+              : `${where}: ${damageType} does not roll for a location, so only "${GENERAL_SLOT}" is read; this table is unreachable`
+          );
         }
 
         if (!Array.isArray(ids)) {
@@ -258,28 +357,59 @@ export function validateEffects(data) {
     }
   }
 
-  /* Mortal: one optional entry id per anatomy × location, damage-type agnostic. Missing is fine
-   * and silent — the 13+ clamp degrades to "row 12 plus the save", which is the rule as written.
-   * A mortal pointing at an entry that does not exist is not fine, because the card would render
-   * a blank addendum on the one result that kills someone. */
+  /* Mortal: optional entry ids, in two halves keyed by different axes (see mortalCells). Missing is
+   * fine and silent — the 13+ clamp degrades to "row 12 plus the save", which is the rule as
+   * written. A mortal pointing at an entry that does not exist is NOT fine, because the card would
+   * render a blank addendum on the one result that kills someone. */
+  const readMortalId = (id, where) => {
+    if (id == null) return null;
+    if (!isNonEmptyString(id)) { errors.push(`${where}: must be an entry id string`); return null; }
+    if (!seen.has(id)) { errors.push(`${where}: references unknown entry "${id}"`); return null; }
+    return id;
+  };
+
   if (data.mortal != null && !isPlainObject(data.mortal)) {
     errors.push("effects.json: `mortal` is not an object");
   } else {
-    for (const [anatomy, locations] of Object.entries(data.mortal ?? {})) {
-      if (anatomy.startsWith("_")) continue;
-      if (!ANATOMIES.includes(anatomy)) warnings.push(`effects.json: mortal.${anatomy}: unknown anatomy`);
-      if (!isPlainObject(locations)) {
-        errors.push(`effects.json: mortal.${anatomy} is not an object`);
-        continue;
-      }
+    const byPart = data.mortal?.byPart;
+    if (byPart != null && !isPlainObject(byPart)) {
+      errors.push("effects.json: `mortal.byPart` is not an object");
+    } else {
+      for (const [anatomy, locations] of Object.entries(byPart ?? {})) {
+        if (anatomy.startsWith("_")) continue;
+        if (!ANATOMIES.includes(anatomy)) warnings.push(`effects.json: mortal.byPart.${anatomy}: unknown anatomy`);
+        if (!isPlainObject(locations)) {
+          errors.push(`effects.json: mortal.byPart.${anatomy} is not an object`);
+          continue;
+        }
 
-      mortal[anatomy] = {};
-      for (const [location, id] of Object.entries(locations)) {
-        const where = `effects.json mortal.${anatomy}.${location}`;
-        if (id == null) continue;
-        if (!isNonEmptyString(id)) { errors.push(`${where}: must be an entry id string`); continue; }
-        if (!seen.has(id)) { errors.push(`${where}: references unknown entry "${id}"`); continue; }
-        mortal[anatomy][location] = id;
+        mortal.byPart[anatomy] = {};
+        for (const [location, id] of Object.entries(locations)) {
+          const where = `effects.json mortal.byPart.${anatomy}.${location}`;
+          /* The half that is keyed by body part is the LOCALIZED half. `general` here would be a
+           * mortal nothing can reach: the non-localized types read the other map entirely. */
+          if (location === GENERAL_SLOT) {
+            warnings.push(`${where}: non-localized damage reads mortal.byDamageType, so this entry is unreachable`);
+          }
+          const entryId = readMortalId(id, where);
+          if (entryId) mortal.byPart[anatomy][location] = entryId;
+        }
+      }
+    }
+
+    const byDamageType = data.mortal?.byDamageType;
+    if (byDamageType != null && !isPlainObject(byDamageType)) {
+      errors.push("effects.json: `mortal.byDamageType` is not an object");
+    } else {
+      for (const [damageType, id] of Object.entries(byDamageType ?? {})) {
+        if (damageType.startsWith("_")) continue;
+        const where = `effects.json mortal.byDamageType.${damageType}`;
+        if (!DAMAGE_TYPES.includes(damageType)) warnings.push(`${where}: unknown damage type`);
+        else if (isLocalized(damageType)) {
+          warnings.push(`${where}: ${damageType} rolls a location, so its mortal comes from mortal.byPart; this entry is unreachable`);
+        }
+        const entryId = readMortalId(id, where);
+        if (entryId) mortal.byDamageType[damageType] = entryId;
       }
     }
   }

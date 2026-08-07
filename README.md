@@ -94,6 +94,22 @@ result bought:
   the number rolled *is* the row, 1 mildest to 12 worst, with 0 or less as no effect and 13+ as
   row 12 plus a Fortitude save at a DC equal to the total.
 
+#### Damage that doesn't land anywhere
+
+Only **bludgeoning, piercing and slashing** roll a hit location. Fire, cold, electricity, acid,
+sonic, force, positive and negative energy arrive as a wash rather than as a blow, so there is
+nothing for a location roll to mean and no called shot to make.
+
+They still vary by **creature type** — burning a humanoid is not burning an ooze — so each has one
+effect table per anatomy instead of thirteen. In the dialog the Location stage becomes **Target**:
+it still asks for the creature type and the damage type, and then simply continues. There is one
+roll instead of two, and the result reads as "Scorched · row 7" with no body part in it.
+
+The **13+ result** follows the same logic. A weapon critical past row 12 is named by the body part
+it took — an arm torn away is an arm torn away whether a sword or a mace did it — while these are
+named by the damage type, because burned to ash and blasted apart are not the same death. One
+mortal result per damage type, shared across all three creature types.
+
 #### Critical explosion
 
 When a critical confirmation is *itself* a threat, Critical Power goes up a grade and the
@@ -110,8 +126,10 @@ below, so a world not using this system sees no change to its criticals at all.
 The automation infers a lot, and some of it can be wrong, so each stage lets you correct what it
 inferred rather than making you cancel and start over:
 
-- **Location** — the creature type, its **limb layout**, and the damage type, all of which decide
-  which tables get used. See [Hit location](#hit-location) for what the layout does.
+- **Location** (or **Target**) — the creature type, its **limb layout**, and the damage type, all of
+  which decide which tables get used. See [Hit location](#hit-location) for what the layout does.
+  The limb layout and the location buttons only appear for the three damage types that roll a
+  location; everything else gets a **Continue** instead.
 - **Power** — the grade, as a dropdown, and a free-text modifier (`+1`, `-2`). Picking a grade sets
   it *absolutely*: whatever the size difference and the explosions did, the pool becomes the one
   you named.
@@ -132,7 +150,9 @@ until you press **Confirm Result**.
 
 #### Hit location
 
-Hit location is a **d20**, laid out the same way for every creature:
+Hit location is a **d20**, rolled for **bludgeoning, piercing and slashing only** — see
+[Damage that doesn't land anywhere](#damage-that-doesnt-land-anywhere) for the rest. It is laid out
+the same way for every creature:
 
 | Roll | Where |
 |---|---|
@@ -242,7 +262,7 @@ DR may absorb some of it, and "kills" in this system isn't `hp <= 0`. It only de
 button is offered — the quick action is always there regardless.
 
 ```js
-game.criticalEffects.lethal.forType("s");   // what's available for slashing
+game.criticalEffects.lethal.forType("slashing");   // what's available for slashing
 game.criticalEffects.lethal.prompt();       // pick a damage type and draw
 ```
 
@@ -348,11 +368,15 @@ game.criticalEffects.fumbles.prompt();           // what the quick action does: 
                                                  // post a draw for the selected token
 game.criticalEffects.fumbles.prompt({ token });  // ...or for one you name
 
-// The effect tables — one 12-row table per damage type x body part. The Critical Power total
-// IS the row: 1 is the mildest outcome for that location, 12 the worst.
-game.criticalEffects.catalog.effectTable("s", "arm");        // the twelve entries
-game.criticalEffects.catalog.effectFor("s", "arm", 7);       // what a 7 lands on
-game.criticalEffects.catalog.effectFor("s", "arm", 15).save; // -> { type: "fort", dc: 15 }
+// The effect tables — one 12-row table per damage type x anatomy x body part. The Critical Power
+// total IS the row: 1 is the mildest outcome for that location, 12 the worst.
+game.criticalEffects.catalog.effectTable("slashing", "humanoid", "arm");        // the twelve entries
+game.criticalEffects.catalog.effectFor("slashing", "humanoid", "arm", 7);       // what a 7 lands on
+game.criticalEffects.catalog.effectFor("slashing", "humanoid", "arm", 15).save; // -> { type: "fort", dc: 15 }
+
+// Damage types that roll no location keep one table per anatomy, under "general". The location
+// argument is ignored for them rather than being an error, so a caller never has to check first.
+game.criticalEffects.catalog.effectFor("fire", "beast", null, 7);
 ```
 
 ### The resolve layer
@@ -417,7 +441,7 @@ A critical resolution runs in a GM-only window that advances through its stages.
 const R = game.criticalEffects.resolve;
 const ctx = R.buildContext({
   target: canvas.tokens.controlled[0],
-  manual: { critMult: 3, damageType: "s", weaponClass: "twoHanded", attackerSize: 4 },
+  manual: { critMult: 3, damageType: "slashing", weaponClass: "twoHanded", attackerSize: 4 },
 });
 await game.criticalEffects.crit.start({ context: ctx });
 ```

@@ -16,7 +16,7 @@ Everything below is about the framework that content plugs into.
 |---|---|
 | Where the code lives | Grow the existing `pf1-critical-effects` module from content-only into code + content. |
 | Effect storage | Versioned **JSON catalog** in the module — a flat entry list plus one 12-row table per damage type × anatomy × body part (§3); journals stay the human-readable prose; a new **buff compendium** carries mechanics. |
-| Content authoring | A **tagged pool** (`data/pool.json`) that generates the tables (§3). One effect tagged for several damage types and body parts covers many rows, so the grid is saturated by a few hundred effects rather than 1,560. |
+| Content authoring | A **tagged pool** (`data/pool.json`) that generates the tables (§3). One effect tagged for several damage types and body parts covers many rows, so the grid is saturated by a few hundred effects rather than one per row. |
 | Mechanical effects | A **typed-outcome framework** (damage / condition / buff / …) with a handler registry — not free-form scripts. |
 | Content strategy | **Journal-first.** Entries ship with prose and *no* mechanics; those get attached incrementally over time. |
 | Player interaction | GM-run **dialog** + player-rolled roll-requests; the player's only decisions are the dice and a called shot. *(Revised twice during phase 7 — the resolution was originally a persistent chat card, and luck-point spending was built and then removed; see §7.2 and §7.3.)* |
@@ -71,7 +71,7 @@ pf1-critical-effects/
     anatomy.json                  ← creature-type → anatomy defaults (§5.3)
   content/
     README.md                     ← pool format, tagging rules, how to fill it
-    mortal.md                     ← the 13+ addendum, 13 rows (§3)
+    mortal.md                     ← the 13+ addendum, 21 rows in two tables (§3)
     COVERAGE.md                   ← GENERATED work queue
   tools/
     pool-to-tables.mjs            ← pool.json + mortal.md → effects.json
@@ -155,9 +155,17 @@ manual resolver and the automated flow share one code path.
 > a humanoid's. It shouldn't: one is a hand that drops a weapon, the other is a foreleg that
 > buckles. See "the grid", below.
 
+> **Revised again in phase 11.** `version: 4` makes **location a dimension of only three damage
+> types**. Bludgeoning, piercing and slashing land somewhere; fire, cold, electricity, acid, sonic,
+> force, positive and negative energy do not, so there is nothing for a hit location to mean. Those
+> eight keep the anatomy axis — burning a humanoid is not burning an ooze — and collapse their
+> thirteen location tables into one, under the pseudo-slot `general`. `mortal` splits in the same
+> change: it now has two halves keyed by different axes, because the axis that distinguishes a
+> mortal result is not the same one on both sides of the grid.
+
 ```jsonc
 {
-  "version": 3,
+  "version": 4,
   "entries": [
     {
       "id": "broken-knee",                    // stable slug; the join key for everything
@@ -175,29 +183,52 @@ manual resolver and the automated flow share one code path.
                     "tail": [ … ], "wing": [ … ] },
       "aberrant": { "appendage": [ … ], "torso": [ … ], "head": [ … ] }
     },
-    "piercing": { … }
+    "piercing": { … },
+    "fire": {                              // non-localized: one table per anatomy
+      "humanoid": { "general": [ … ] },
+      "beast":    { "general": [ … ] },
+      "aberrant": { "general": [ … ] }
+    }
   },
   "mortal": {
-    "humanoid": { "arm": "arm-torn-away", "leg": …, "torso": …, "head": … },
-    "beast":    { … },
-    "aberrant": { … }
+    // the weapon types: by body part, damage-type agnostic
+    "byPart": {
+      "humanoid": { "arm": "arm-torn-away", "leg": …, "torso": …, "head": … },
+      "beast":    { … },
+      "aberrant": { … }
+    },
+    // everything else: by damage type, anatomy agnostic
+    "byDamageType": { "fire": "burned-to-ash", "force": "blasted-apart", … }
   }
 }
 ```
 
 ### The grid
 
-| Dimension | Values | |
+| Damage types | Slots per anatomy | Tables |
 |---|---|---|
-| Damage type | the ten in `DAMAGE_TYPES` | 10 |
-| Anatomy × location | humanoid arm/leg/torso/head; beast + tail/wing; aberrant appendage/torso/head | 13 pairs |
-| Rows | the Critical Power d12 | 12 |
+| **Localized** — bludgeoning, piercing, slashing | the 13 anatomy × location pairs | 39 |
+| **Non-localized** — fire, cold, electric, acid, sonic, force, positive, negative | `general` | 24 |
 
-**1,560 rows**, plus 13 mortal entries. `ANATOMY_LOCATIONS` in `schema.mjs` is the definition of
-those 13 pairs, and `validateAnatomy` cross-checks it against what the location layouts in
-anatomy.json can actually produce — a slot the location roll can land on with no effect table
-behind it is the one failure that surfaces as "nothing happened" at the table rather than as a
-load-time complaint.
+**63 tables × 12 rows = 756 rows**, plus 21 mortal entries. `gridCells()` in `schema.mjs` is the
+definition of that grid and `slotsFor()` is one cell's shape; `ANATOMY_LOCATIONS` remains the
+definition of the 13 localized pairs alone. `validateAnatomy` cross-checks those against what the
+location layouts in anatomy.json can actually produce — a slot the location roll can land on with
+no effect table behind it is the one failure that surfaces as "nothing happened" at the table
+rather than as a load-time complaint.
+
+`force` is in the roster and behaves as an energy type in every respect. PF1's registry has it, and
+"describes how damage is dealt rather than what it does to a body" — the reason `untyped`,
+`precision` and `nonlethal` stay out — is not true of it.
+
+**Localization is a rules fact, kept in one place.** `LOCALIZED_DAMAGE_TYPES` names the three, and
+`slotFor(damageType, location)` is the single normalization point: a non-localized type answers
+`general` whatever location it is handed. That is what lets every caller pass the location it
+happens to have without first asking whether it means anything — and what keeps "this type has no
+arm table" and "this type has no arms" from being the same statement.
+
+Note that `general` is deliberately absent from `SLOTS`: no location table can produce it, and
+nothing in `resolve/location.mjs` knows it exists. It is a table key, not a body part.
 
 > Note the two dice do not have to agree, and since phase 9 they don't: **location** is a d20, and
 > the twelve rows here are indexed by the **Critical Power** roll. The 12 in this table is the
@@ -216,10 +247,23 @@ Notes tied to the rules concept:
 - **Every table has exactly 12 rows**, enforced as an *error* by the validator. Rows may repeat —
   a location with ten distinct outcomes covers twelve faces by repeating two — but a table may
   never be short, because the whole engine is built on "row N exists".
-- **`mortal` is additive, not a fourteenth row.** It reads *on top of* row 12 at the 13+ clamp,
-  and is authored once per anatomy × location because past row 12 the wound has stopped being
-  characterised by what made it. Optional: absent, the 13+ result is row 12 plus the Fort save,
-  which is the rule as the concept doc states it.
+- **`mortal` is additive, not a fourteenth row.** It reads *on top of* row 12 at the 13+ clamp.
+  Optional: absent, the 13+ result is row 12 plus the Fort save, which is the rule as the concept
+  doc states it.
+- **`mortal`'s two halves are keyed by different axes, and that asymmetry is the design.** Each
+  side keeps the axis that actually distinguishes a death and drops the one that doesn't:
+
+  | | Keyed by | Agnostic to | Count |
+  |---|---|---|---|
+  | `byPart` — the weapon types | anatomy × location | damage type | 13 |
+  | `byDamageType` — everything else | damage type | anatomy | 8 |
+
+  Past row 12 a weapon wound has stopped being characterised by what made it — a torn-off arm is a
+  torn-off arm whether a sword or a mace did it — so the body part is what is left to name. Energy
+  has no body part to name, and burned to ash and blasted apart are plainly not one result, so the
+  damage type carries it instead; anatomy drops out because a mortal fire result is the same story
+  for a humanoid and a beast. `mortalCells()` enumerates both halves so no consumer has to
+  reconstruct the rule.
 - **Unwritten rows are real placeholder entries, not holes.** Callers never handle a gap; `lint()`
   reports the placeholder count per table as a **progress metric**, which is what keeps the
   content track honest.
@@ -244,16 +288,20 @@ Notes tied to the rules concept:
 hand-edited; `tools/pool-to-tables.mjs` regenerates it. Runtime is untouched by this — the engine
 still looks a row up by index in a stored 12-row table, and nothing queries the pool at the table.
 
-The reason is arithmetic. The grid is 1,560 rows and authoring it directly is not a real plan; but
+The reason is arithmetic. The grid is 756 rows and authoring it directly is not a real plan; but
 one effect tagged for four damage types and five body parts covers twenty of those rows, so
 saturating the grid needs a pool on the order of a **few hundred** effects. Tag once, land
 everywhere it fits.
 
 A pool entry carries `rank`, `slots` and `damageTypes` alongside the usual `journal` / `buff` /
-`note`. Slots are anatomy-qualified (`humanoid/arm`, or `*/torso` for anatomy-agnostic).
+`note`. Slots are anatomy-qualified (`humanoid/arm`, or `*/torso` for anatomy-agnostic), and
+`<anatomy>/general` is where a non-localized damage type's content goes. An effect meant for both
+halves of the grid needs a slot in each; tags that select nothing are reported by
+`pool-to-tables.mjs` without failing the build, because `damageTypes: ["*"]` beside body-part slots
+is a reasonable thing to write and costs only the energy half.
 
 **Rank is a severity score, not a row address**, and that distinction is the design. If rank were
-an address the pool would need an exact peg for all 1,560 holes — an effect written as a 6 for
+an address the pool would need an exact peg for all 756 holes — an effect written as a 6 for
 bludgeoning could not help a slashing table that already has a 6 and needs a 7, and every near-miss
 would demand a brand new effect. Instead each candidate is seated at the free row **nearest its
 rank, within ±1**, which is loose enough that one effect covers most of a three-row band.
@@ -273,9 +321,10 @@ tables that already have content (cheap wins) separated from untouched tables (f
 plus the untriaged entries that have no rank and therefore land nowhere. Full rules in
 [`content/README.md`](content/README.md).
 
-**Mortal is not pool-shaped** and stays a 13-row worksheet in `content/mortal.md`: it is authored
-once per anatomy × location and is damage-type agnostic, so there is nothing to tag and nothing to
-select. The generator reads it alongside the pool.
+**Mortal is not pool-shaped** and stays a worksheet in `content/mortal.md` — two tables, 21 rows,
+one per cell of the mortal grid above. Every cell is written exactly once, so there is nothing to
+tag and nothing to select. The generator reads it alongside the pool and classifies each row by its
+first cell, so the two tables need no markers.
 
 **Severity is authoring structure, not a runtime layer** — see §5.2. The four bands are how the
 twelve rows are *grouped while being written* (three at a time, mildest band first), and
@@ -452,6 +501,11 @@ in `flow/explosion.mjs`.
 > tables stopped being written down: they are **generated** from the creature's own limb layout.
 > The three enumerated d12 tables with their fallback chains are gone. What follows is the current
 > design; §5.3's history is in the CHANGELOG.
+
+> **Scoped in phase 11.** None of this runs for a **non-localized damage type** (§3). Fire, cold,
+> electricity, acid, sonic, positive and negative energy roll no location at all, so the layer below
+> is simply not entered: no d20, no called shot, no limb layout. The layout still describes the
+> creature and is still edited on the actor — it just has nothing to divide for those eight.
 
 **The band layout.** One shape for every anatomy, in `anatomy.json`:
 
@@ -689,6 +743,23 @@ two paths mutually exclusive by definition rather than by luck.
 
 Only the trigger branches. Everything after it is conditional on an effect having been chosen, so
 "damage" is not a stage that does nothing — it is the absence of the remaining three.
+
+#### The Location stage narrows rather than disappearing
+
+A non-localized damage type (§3) has no hit location to settle, but the stage that would have
+settled one is also the only place the **creature type** and the **damage type** are chosen — and
+the effect tables are keyed by both. So it stays, and presents itself as **Target**: the two selects
+remain, the limb layout and the location chart go, and the two location buttons become one
+**Continue**. `stages.mjs` carries `label`/`hint` as functions of state for exactly this.
+
+Dropping the stage instead would have meant moving the damage-type select somewhere else, and there
+is nowhere else: Trigger is skipped entirely by the standalone resolver (§7.5), which deliberately
+does not ask for a damage type of its own.
+
+Two smaller consequences: with **no damage type picked yet** neither path is offered — an unset type
+must not silently take the non-localized one — and the readout gained a **Damage** line, because for
+those eight the damage type is the only thing that says which table a result came from once the
+Location line is gone.
 
 Roll-request cards carry `resultTable` + `showTable`, which gives the player-visible table with
 their row highlighted for free — concept §10's "player visible summary showing a table of the

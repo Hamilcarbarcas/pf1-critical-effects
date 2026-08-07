@@ -1,13 +1,13 @@
 # Content
 
 Effect content is a **tagged pool**, not a set of hand-written tables. You write effects; the
-generator works out which of the 130 roll tables each one lands in, and where.
+generator works out which of the 63 roll tables each one lands in, and where.
 
 There are **three** content tracks, and they are shaped differently because they *are* different.
 
 ```
 data/pool.json          ← critical effects. Tagged: rank + slots + damageTypes.
-content/mortal.md       ← the 13+ addendum. 13 rows, one per body part.
+content/mortal.md       ← the 13+ addendum. 21 rows: 13 by body part, 8 by damage type.
         ↓  node tools/pool-to-tables.mjs --write
 data/effects.json       ← GENERATED. Do not hand-edit.
 
@@ -29,7 +29,7 @@ content/COVERAGE.md     ← GENERATED. The work queue for all three.
 
 | Track | Grid | Tags | Ordered? |
 |---|---|---|---|
-| **Effects** | 10 damage × 13 body parts × d12 = 1,560 | `rank`, `slots`, `damageTypes` | Severity ladder |
+| **Effects** | (3 weapon damage × 13 body parts + 8 other damage × 3 anatomies) × d12 = 756 | `rank`, `slots`, `damageTypes` | Severity ladder |
 | **Fumbles** | 6 attack types × d20 = 120 | `attackTypes` | No — unordered peers |
 | **Lethal** | none — a flat list | `damageTypes` | No |
 
@@ -40,12 +40,29 @@ content/COVERAGE.md     ← GENERATED. The work queue for all three.
 
 ## Why a pool
 
-The grid is 10 damage types × 13 anatomy/location pairs × 12 rows = **1,560 rows**. Authoring that
-directly is not a real plan. But one effect tagged for four damage types and five body parts covers
-twenty of those rows, so the pool needed to saturate the grid is on the order of a **few hundred
-effects**, not 1,560.
+The grid is **756 rows**: 3 weapon damage types × 13 anatomy/location pairs, plus 8 damage types
+that roll no location and keep one table per anatomy, all × 12 rows. Authoring that directly is not
+a real plan. But one effect tagged for four damage types and five body parts covers twenty of those
+rows, so the pool needed to saturate the grid is on the order of a **few hundred effects**.
 
 That is the whole bet: tag once, land everywhere it fits.
+
+## Two halves of the grid
+
+Only **bludgeoning, piercing and slashing** roll a hit location. Fire, cold, electricity, acid,
+sonic, force, positive and negative energy arrive as a wash rather than as a blow: there is no body
+part to roll for and no called shot to make. They keep the *anatomy* axis — a fire critical does
+something different to a humanoid than to an ooze — and drop the location one, so each has **one
+table per anatomy**, tagged with the pseudo-slot `general`.
+
+|  | Damage types | Slots | Tables |
+|---|---|---|---|
+| **Localized** | bludgeoning, piercing, slashing | the 13 anatomy/location pairs | 39 |
+| **Non-localized** | fire, cold, electricity, acid, sonic, force, positive, negative | `humanoid/general`, `beast/general`, `aberrant/general` | 24 |
+
+An effect that should cover both halves needs a slot in both — `["humanoid/arm", "*/general"]`.
+Tagging a fire effect with only body-part slots (or a slashing one with only `general`) means those
+damage tags select nothing, and `pool-to-tables` says so without failing the build.
 
 ## A pool entry
 
@@ -55,7 +72,7 @@ That is the whole bet: tag once, land everywhere it fits.
   "name": "Broken Arm",
   "rank": 6,                           // 1-12 severity score, or null = untriaged
   "slots": ["humanoid/arm"],           // anatomy/location pairs; "*/torso" = every anatomy
-  "damageTypes": ["bludgeoning", "slashing"],   // or ["*"] for all ten
+  "damageTypes": ["bludgeoning", "slashing"],   // or ["*"] for all eleven
   "journal": "Compendium.pf1-critical-effects.critical-effects.JournalEntry.…",
   "buff": null,                        // the mechanics; the part that's actually locked in
   "note": "Broken Arm condition: -6 on attacks and skills using that arm…",
@@ -70,8 +87,8 @@ weapon, `beast/arm` is a foreleg that buckles. `*/torso` means every anatomy tha
 it when the effect genuinely doesn't care, since it keeps applying if an anatomy is ever added,
 where three literal pairs would silently not.
 
-The 13 valid pairs are `ANATOMY_LOCATIONS` in `src/catalog/schema.mjs`. A slot outside them is a
-hard error.
+The 13 body-part pairs are `ANATOMY_LOCATIONS` in `src/catalog/schema.mjs`, plus `<anatomy>/general`
+for the damage types that roll no location. A slot outside those is a hard error.
 
 ### `rank` — a score, not an address
 
@@ -79,7 +96,7 @@ Rank is **how bad this wound is**, on the same 1-12 scale the tables are indexed
 statement about which row the effect occupies.
 
 That distinction is the point. If rank were an address, the pool would need an exact peg for all
-1,560 holes: an effect written as a 6 for bludgeoning couldn't help a slashing table that already
+756 holes: an effect written as a 6 for bludgeoning couldn't help a slashing table that already
 has a 6 and needs a 7, and you'd be writing a new effect for every near-miss forever.
 
 Instead the generator seats each candidate at the **free row nearest its rank, within ±1**. A
@@ -129,9 +146,19 @@ id — so a regenerate with no pool change is a no-op. Pin anything that must no
 
 ## What the effect pool doesn't hold
 
-**Mortal.** The 13+ addendum is authored once per anatomy × location and is damage-type agnostic,
-so there is nothing to tag and nothing to select. It stays a 13-row table in
-[mortal.md](mortal.md), and the generator reads it alongside the pool.
+**Mortal.** The 13+ addendum is written once per cell, so there is nothing to tag and nothing to
+select. It stays in [mortal.md](mortal.md) as **two tables, 21 rows**, keyed by different axes —
+and that split is the thing to get right when you write one:
+
+| Table | One row per | Ignores |
+|---|---|---|
+| **By body part** | anatomy × location, for bludgeoning/piercing/slashing | which of the three did it |
+| **By damage type** | fire, cold, electricity, acid, sonic, force, positive, negative | which anatomy took it |
+
+Each side keeps the axis that actually distinguishes a death. A torn-off arm is a torn-off arm
+whether a sword or a mace did it; burned to ash and blasted apart are plainly not one result. The
+generator reads both alongside the pool and tells the two apart by the row's first cell, so they
+can sit anywhere in the file.
 
 ---
 
