@@ -3,6 +3,38 @@
 ## Unreleased
 
 ### Added
+- **Dedicated Healing section on the buff sheet's Advanced tab** — a collapsible menu for the
+  healing required, the Heal check DC, and (once configured) the progress so far with a reset
+  control. Replaces typing the numbers into the PF1 dictionary-flag table by hand. Buffs only:
+  clearing a condition deactivates the item, which is a buff-only field.
+- **Provider API for dedicated healing.** Anything that can absorb dedicated healing is now a
+  *participant* — a name, a threshold, a running total, and an `allocate` callback — and buffs are
+  simply the built-in provider. `registerProvider(id, enumerate)` lets another module put
+  something that isn't an item into the same allocation dialog; pf1-bleed-effects' Deep Bleed rule
+  is the reference consumer. Enumerators must be synchronous, because the heal is suppressed from
+  a sync hook.
+  - Published on `game.modules.get("pf1-critical-effects").api.dedicatedHealing` at **init**, not
+    only on `game.criticalEffects` at ready — ready hooks run in module load order, and
+    pf1-bleed-effects sorts ahead of this module.
+- **pf1-bleed-effects added as a recommended module.** A great deal of the critical and fumble
+  content inflicts ongoing bleed ("2d6 bleed", "a Heal check cannot stop it"), which that module
+  turns into automated per-round damage rather than prose to track by hand.
+
+### Changed
+- **`requestBoneSetting` is now `requestHealCheck`.** The old name dated from when this only
+  applied to broken bones. No alias — the sole caller is the *Dedicated Healing Use* compendium
+  macro, which buffs invoke by compendium reference, so updating it there fixes actor-held copies
+  too.
+- **Dedicated healing config moved off the PF1 dictionary flags** onto this module's own flag
+  (`flags.pf1-critical-effects.dedicatedHealing`). Built-in PF1 flags suited a feature whose only
+  interface was the Advanced tab's flag table; now that it has a UI of its own, they're free again.
+  The `useFortSave` flag on the injury buffs is unrelated and stays.
+
+### Migration
+- **`dhDC` / `dhRequired` / `dhReceived` / `dhCheckSuccess` are no longer read.** The compendium
+  buffs ship migrated, but a buff **already on an actor** carrying only the old flags is inert:
+  re-apply it from the *Critical Effect Buffs* pack, or fill in the new Advanced-tab section by
+  hand. Any healing already banked against an old-flag injury is not carried over.
 - **Fumble quick action** in pf1-roll-requests, a second way into the fumble flow for a fumble with
   no attack card behind it — a house rule, a hazard, an attack rolled before the module was
   watching. It asks the same table question and posts the same player-rolled `1d20` draw the

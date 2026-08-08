@@ -9,13 +9,13 @@
       </tr>
     </thead>
     <tbody>
-      {{#each buffs}}
+      {{#each participants}}
       <tr>
         <td class="dh-name">{{name}}</td>
         <td class="dh-progress">{{received}} / {{required}} HP</td>
         <td>
-          <input type="number" class="dh-bone-input"
-                 data-item-id="{{id}}"
+          <input type="number" class="dh-alloc-input"
+                 data-participant-id="{{id}}"
                  min="0" max="{{remaining}}"
                  value="0">
         </td>

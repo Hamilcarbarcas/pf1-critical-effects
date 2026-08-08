@@ -957,7 +957,8 @@ are crit-effect buffs — but it is not a file move:
   exists by this phase, and it is the reason the socket is specified as astora-independent
   rather than a thin proxy onto `gmProxy`.
 - `requestBoneSetting` is invoked from buff script calls (`Compendium.astora-mod.macros.…`), so
-  the buff migration in §6 and this migration have to land in the same change.
+  the buff migration in §6 and this migration have to land in the same change. (Since renamed to
+  `requestHealCheck` — the feature was never bone-specific, and now has non-injury participants.)
 
 This migration is what moves dedicated healing from the "content-coupled" column of §0 into the
 module proper — after it, a broken-bone effect works with astora-mod absent. Do it as its own

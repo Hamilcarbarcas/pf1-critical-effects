@@ -30,7 +30,15 @@ import * as stages from "./flow/stages.mjs";
 import { registerLethal, registerLethalQuickAction, promptLethalDraw, postLethalDraw, offerLethalButton, couldBeLethal } from "./flow/lethal.mjs";
 import { registerResolverQuickAction, openResolver } from "./flow/resolver-app.mjs";
 import { registerEffectBuff, offerBuffButton, buffDelivery } from "./flow/effect-buff.mjs";
-import { registerDedicatedHealing, requestBoneSetting } from "./integrations/dedicated-healing.mjs";
+import {
+  registerDedicatedHealing,
+  requestHealCheck,
+  registerProvider,
+  unregisterProvider,
+  getConfig as getDedicatedHealingConfig,
+  setConfig as setDedicatedHealingConfig,
+} from "./integrations/dedicated-healing.mjs";
+import { registerDedicatedHealingConfig } from "./apps/dedicated-healing-config.mjs";
 import { registerPipeline, registerPipelineSettings, suppressionEnabled, rollDeferredCritDamage } from "./integrations/pf1-pipeline.mjs";
 import { registerCritTrigger } from "./flow/crit-trigger.mjs";
 
@@ -49,8 +57,23 @@ Hooks.once("init", () => {
   registerLethal();
   registerEffectBuff();
   registerDedicatedHealing();
+  registerDedicatedHealingConfig();
   registerCritTrigger();
   registerExplosion();
+
+  // Integration surface, published at init rather than with the rest of the API at ready.
+  // `game.criticalEffects` does not exist until ready, and ready hooks run in module load
+  // order — pf1-bleed-effects sorts ahead of this module and would find nothing to register
+  // its Deep Bleed provider against. Same functions, earlier.
+  const mod = game.modules.get(MODULE_ID);
+  mod.api ??= {};
+  mod.api.dedicatedHealing = {
+    requestHealCheck,
+    registerProvider,
+    unregisterProvider,
+    getConfig: getDedicatedHealingConfig,
+    setConfig: setDedicatedHealingConfig,
+  };
 });
 
 Hooks.once("ready", async () => {
@@ -96,9 +119,10 @@ Hooks.once("ready", async () => {
     // PF1 pipeline (§9) — deferring critical damage until it is chosen
     pipeline: { suppressionEnabled, rollDeferredCritDamage },
 
-    // dedicated healing (§8), migrated from astora-mod. The bone buffs' `use` script call
-    // invokes requestBoneSetting through this.
-    dedicatedHealing: { requestBoneSetting },
+    // dedicated healing (§8), migrated from astora-mod. The injury buffs' `use` script call
+    // invokes requestHealCheck through this. Same object as `module.api.dedicatedHealing`,
+    // which integrators should prefer — it exists from init.
+    dedicatedHealing: game.modules.get(MODULE_ID).api.dedicatedHealing,
 
     // standalone manual resolver (§7.5) — the same resolve path, driven by hand
     openResolver,

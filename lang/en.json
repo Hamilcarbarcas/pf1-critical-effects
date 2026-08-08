@@ -17,6 +17,24 @@
         "unarmed": "Unarmed",
         "natural": "Natural"
       }
+    },
+    "DedicatedHealing": {
+      "Section": {
+        "Title": "Dedicated Healing",
+        "Hint": "A condition that cannot simply be healed away. Once treated, it absorbs healing that would otherwise have gone to hit points, and clears when it has taken enough."
+      },
+      "Field": {
+        "Required": "Healing Required",
+        "RequiredHint": "Hit points of dedicated healing needed to clear this condition. 0 disables the feature for this buff.",
+        "DC": "Heal Check DC",
+        "DCHint": "DC of the Heal check that makes the condition ready to absorb healing. 0 waives the check — using the buff marks it treated outright.",
+        "Status": "Progress",
+        "Treated": "Treated",
+        "Progress": "Received",
+        "AwaitingCheck": "Awaiting Heal check",
+        "AwaitingUse": "Awaiting treatment",
+        "ResetTooltip": "Reset progress — clears the treated mark and the healing received so far."
+      }
     }
   }
 }

@@ -49,6 +49,12 @@ flags:
       rollOverride: ''
       rollmodeOverride: ''
       skipDialog: 0
+  pf1-critical-effects:
+    dedicatedHealing:
+      dc: 10
+      received: 0
+      required: 15
+      treated: false
   scene-packer:
     hash: 79af6de8f8ea5b9763a1b343c77e87ce4834a04b
     sourceId: Scene.FQ5mCt4L7UKYb3rs.Token.m4rvzr5RDEP5sZNz.Actor.aiYrAq6pSoQd8m4O.Item.y5e0S2cUC0067S0o
@@ -128,9 +134,6 @@ system:
   flags:
     boolean: {}
     dictionary:
-      dhDC: '10'
-      dhReceived: '0'
-      dhRequired: '15'
       useFortSave: '10'
   hideFromToken: false
   level: 0

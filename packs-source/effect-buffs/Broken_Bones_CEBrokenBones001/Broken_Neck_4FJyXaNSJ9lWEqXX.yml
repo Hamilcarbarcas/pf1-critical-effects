@@ -64,6 +64,12 @@ flags:
           meleeOnly: true
         message: true
         onStruckFunction: none
+  pf1-critical-effects:
+    dedicatedHealing:
+      dc: 20
+      received: 0
+      required: 40
+      treated: false
   scene-packer:
     hash: a288d010c434161d0bfca81b5a1208b1be427041
     sourceId: Scene.FQ5mCt4L7UKYb3rs.Token.m4rvzr5RDEP5sZNz.Actor.aiYrAq6pSoQd8m4O.Item.pF0VjrsD03opcN5H
@@ -121,10 +127,7 @@ system:
   effectNotes: []
   flags:
     boolean: {}
-    dictionary:
-      dhDC: '20'
-      dhReceived: '0'
-      dhRequired: '40'
+    dictionary: {}
   hideFromToken: false
   level: 0
   links:

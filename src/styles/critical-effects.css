@@ -613,7 +613,7 @@
   text-align: center;
 }
 
-.dedicated-healing-form .dh-bone-input {
+.dedicated-healing-form .dh-alloc-input {
   width: 70px;
   text-align: center;
 }
@@ -623,6 +623,82 @@
   padding-top: 0.5em;
   border-top: 1px solid #888;
   font-size: 0.95em;
+}
+
+/* --- collapsible injected sheet sections ----------------------------------
+ *
+ * Ported alongside sheet-section-collapse.mjs. Class-scoped only; each section's own rules
+ * still own its layout.
+ */
+
+.ce-collapsible .ce-collapse-header {
+  cursor: pointer;
+  user-select: none;
+}
+
+/* Collapsed: the topical icon + label dim, which is the only state cue. */
+.ce-collapsible .ce-collapse-header,
+.ce-collapsible .ce-collapse-header i {
+  transition: opacity 120ms ease;
+}
+
+.ce-collapsible.ce-collapsed .ce-collapse-header {
+  opacity: 0.55;
+}
+
+.ce-collapsible .ce-collapse-header:hover {
+  opacity: 1;
+}
+
+/* Progress badge, pinned to the header's right edge. */
+.ce-collapsible .ce-collapse-badge {
+  flex: 0 0 auto;
+  margin-left: auto;
+  min-width: 1.6em;
+  padding: 0 5px;
+  border-radius: 3px;
+  background: var(--color-underline-header, #782e22);
+  color: #fff;
+  font-size: var(--font-size-11, 11px);
+  font-weight: normal;
+  text-align: center;
+}
+
+/* --- Dedicated Healing config section (buff sheet → Advanced tab) --------- */
+
+.ce-dh-section .ce-dh-status-fields {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ce-dh-section .ce-dh-treated-label {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  white-space: nowrap;
+}
+
+.ce-dh-section .ce-dh-progress {
+  flex: 1 1 auto;
+  font-size: var(--font-size-12, 12px);
+  color: var(--color-text-dark-secondary, #4b4a44);
+  white-space: nowrap;
+}
+
+.ce-dh-section .ce-dh-progress.ce-dh-untreated {
+  font-style: italic;
+  opacity: 0.75;
+}
+
+.ce-dh-section .ce-dh-reset {
+  flex: 0 0 auto;
+  opacity: 0.6;
+}
+
+.ce-dh-section .ce-dh-reset:hover {
+  opacity: 1;
 }
 
 /* --- standalone result cards ----------------------------------------------

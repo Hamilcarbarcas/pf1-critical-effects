@@ -4,19 +4,24 @@
  * first be *treated* (a Heal check), after which they absorb a threshold of healing before
  * clearing — healing that would otherwise have gone to hit points.
  *
- * It lives here because its only consumers are critical-effect buffs. After this migration a
- * broken-bone effect works with astora-mod absent, which is what moves it out of §0's
- * "content-coupled" column and into the module proper.
+ * ── Participants, not buffs ──────────────────────────────────────────────────
+ * Anything that can absorb dedicated healing is a **participant**: a plain descriptor with a
+ * name, a threshold, a running total, and an `allocate` callback. Participants come from
+ * registered *providers*, and this module ships one — the item provider, which yields every buff
+ * on the actor configured through the sheet's Dedicated Healing section.
  *
- * ── What the migration actually changed ─────────────────────────────────────
- *   - the socket channel (`module.astora-mod` -> `module.pf1-critical-effects`), which had to
- *     move together with its listener;
- *   - the GM proxy for the Heal-check roll request, now this module's own socket;
- *   - the API surface (`game.criticalEffects.dedicatedHealing`), which the bone buffs' script
- *     calls invoke — so the buff migration and this one land in the same change;
- *   - `renderTemplate`, which is namespaced in v13.
+ * Other modules register their own. pf1-bleed-effects' Deep Bleed does exactly that, so a bleed
+ * that lives in an actor flag rather than an item can sit in the same allocation dialog as a
+ * broken arm without either module knowing anything about the other's storage.
  *
- * The mechanics are otherwise untouched.
+ * ⚠ Providers must be **synchronous**. `onApplyDamage` runs on a sync hook and has to zero
+ * `options.value` in the same tick to suppress the heal; there is no opportunity to await.
+ *
+ * ── Configuration ────────────────────────────────────────────────────────────
+ * Item config lives in this module's own flag (`flags.pf1-critical-effects.dedicatedHealing`),
+ * written by the Dedicated Healing section on the buff sheet's Advanced tab. The PF1 dictionary
+ * flags this used to read (`dhDC` / `dhRequired` / `dhReceived` / `dhCheckSuccess`) are gone —
+ * a buff carrying only those is inert, and needs re-applying from the compendium.
  */
 
 import { MODULE_ID } from "../const.mjs";
@@ -25,11 +30,16 @@ import { gmRequest } from "./socket.mjs";
 const TEMPLATE = `modules/${MODULE_ID}/src/chat/dedicated-healing-dialog.hbs`;
 const CHANNEL = `module.${MODULE_ID}`;
 
-// Item flag key names (item.system.flags.dictionary / .boolean)
-const F_DC       = "dhDC";           // dict: heal check DC (0 = no check needed)
-const F_REQUIRED = "dhRequired";     // dict: HP needed to cure
-const F_RECEIVED = "dhReceived";     // dict: HP accumulated (runtime)
-const F_SUCCESS  = "dhCheckSuccess"; // bool: check passed, ready for healing
+/** Item flag key holding the whole config object. */
+export const FLAG_KEY = "dedicatedHealing";
+
+/** Shape of a freshly-configured item, and the defaults every read falls back to. */
+const DEFAULTS = Object.freeze({
+  dc: 0,        // Heal check DC to treat the condition; 0 = no check needed
+  required: 0,  // HP of dedicated healing to clear it; 0 = feature off for this item
+  received: 0,  // HP accumulated so far (runtime)
+  treated: false, // Heal check passed (or waived) — only then does it absorb healing
+});
 
 /* Whoever should be shown the allocation dialog, when the heal is applied by someone else — a GM
  * resolving a short rest on a player's behalf, for instance. astora-mod's rest manager sets this
@@ -43,24 +53,159 @@ const LEGACY_DELEGATE_KEY = "astoraHealDelegate";
 let _bypassHealingIntercept = false; // Prevents recursion when re-applying HP
 let _dialogOpen = false;             // Prevents stacking dialogs from rapid heals
 
+/** @type {Map<string, (actor: Actor) => DHParticipant[]>} provider id → enumerator */
+const _providers = new Map();
+
+/**
+ * @typedef {object} DHParticipant
+ * @property {string} id        Unique among all participants on this actor.
+ * @property {string} name      Shown in the allocation dialog.
+ * @property {number} required  HP of dedicated healing needed in total.
+ * @property {number} received  HP accumulated so far.
+ * @property {(amount: number) => Promise<boolean>} allocate  Applies `amount`; resolves true
+ *                                                            when that cleared the condition.
+ */
+
+// ─── Item configuration ───────────────────────────────────────────────────────
+
+/**
+ * Read an item's dedicated-healing config, filled out with defaults.
+ *
+ * @param {Item} item
+ * @returns {typeof DEFAULTS}
+ */
+export function getConfig(item) {
+  const raw = item?.getFlag(MODULE_ID, FLAG_KEY) ?? {};
+  return {
+    dc: Number(raw.dc) || 0,
+    required: Number(raw.required) || 0,
+    received: Number(raw.received) || 0,
+    treated: !!raw.treated,
+  };
+}
+
+/**
+ * Patch an item's dedicated-healing config.
+ *
+ * @param {Item} item
+ * @param {Partial<typeof DEFAULTS>} patch
+ */
+export async function setConfig(item, patch) {
+  return item.setFlag(MODULE_ID, FLAG_KEY, { ...getConfig(item), ...patch });
+}
+
+/**
+ * Whether an item is configured to use dedicated healing at all.
+ *
+ * @param {Item} item
+ * @returns {boolean}
+ */
+export function isConfigured(item) {
+  return getConfig(item).required > 0;
+}
+
+// ─── Provider registry ────────────────────────────────────────────────────────
+
+/**
+ * Register a source of dedicated-healing participants.
+ *
+ * The enumerator is called every time healing lands on an actor, and **must be synchronous**
+ * (see the note at the top of this file). Return an empty array when the actor has nothing to
+ * contribute; throwing is contained but logged.
+ *
+ * @param {string} id - Unique provider id; re-registering the same id replaces it.
+ * @param {(actor: Actor) => DHParticipant[]} enumerate
+ */
+export function registerProvider(id, enumerate) {
+  if (typeof enumerate !== "function") throw new Error(`${MODULE_ID} | provider "${id}" is not a function`);
+  _providers.set(id, enumerate);
+}
+
+/**
+ * Drop a previously-registered provider.
+ *
+ * @param {string} id
+ * @returns {boolean} Whether one was removed.
+ */
+export function unregisterProvider(id) {
+  return _providers.delete(id);
+}
+
+/**
+ * Every participant on an actor with healing still outstanding.
+ *
+ * @param {Actor} actor
+ * @returns {DHParticipant[]}
+ */
+function _getParticipants(actor) {
+  const out = [];
+  for (const [id, enumerate] of _providers) {
+    let batch;
+    try {
+      batch = enumerate(actor) ?? [];
+    } catch (err) {
+      console.error(`${MODULE_ID} | dedicated healing: provider "${id}" failed`, err);
+      continue;
+    }
+    for (const p of batch) {
+      if (!p?.id || !(p.required > 0) || p.received >= p.required) continue;
+      out.push(p);
+    }
+  }
+  return out;
+}
+
+/**
+ * The built-in provider: buffs on the actor that have been treated and still owe healing.
+ *
+ * @param {Actor} actor
+ * @returns {DHParticipant[]}
+ */
+function _itemParticipants(actor) {
+  const out = [];
+  for (const item of actor.items) {
+    const cfg = getConfig(item);
+    if (!cfg.required || !cfg.treated) continue;
+    out.push({
+      id: item.id,
+      name: item.name,
+      required: cfg.required,
+      received: cfg.received,
+      allocate: async (amount) => {
+        // Re-read: the dialog may have been open a while.
+        const now = getConfig(item);
+        const received = Math.min(now.received + amount, now.required);
+        await setConfig(item, { received });
+        const cured = received >= now.required;
+        if (cured) await item.update({ "system.active": false });
+        return cured;
+      },
+    });
+  }
+  return out;
+}
+
 // ─── Phase 1: Condition Treatment (use script entry point) ───────────────────
 
-export async function requestBoneSetting(actor, item) {
-  const required = item.getItemDictionaryFlag(F_REQUIRED) ?? 0;
-  if (!required) return;
+/**
+ * Run the Heal check that makes a condition ready to absorb dedicated healing.
+ *
+ * Called from the buff's `use` script call. A DC of 0 waives the check.
+ *
+ * @param {Actor} actor
+ * @param {Item} item
+ */
+export async function requestHealCheck(actor, item) {
+  const cfg = getConfig(item);
+  if (!cfg.required) return;
 
-  if (item.hasItemBooleanFlag(F_SUCCESS)) {
+  if (cfg.treated) {
     ui.notifications.warn(`${item.name}: Condition already treated — awaiting dedicated healing.`);
     return;
   }
 
-  const dc = item.getItemDictionaryFlag(F_DC) ?? 0;
-
-  if (!dc) {
-    await item.addItemBooleanFlag(F_SUCCESS);
-    if (item.getItemDictionaryFlag(F_RECEIVED) === undefined) {
-      await item.setItemDictionaryFlag(F_RECEIVED, 0);
-    }
+  if (!cfg.dc) {
+    await setConfig(item, { treated: true });
     ui.notifications.info(`${item.name} is ready to receive dedicated healing.`);
     return;
   }
@@ -73,11 +218,11 @@ export async function requestBoneSetting(actor, item) {
   const requestOptions = {
     type: "skill",
     key: "hea",
-    dc,
+    dc: cfg.dc,
     mode: "single",
     awaitResult: true,
     includeAid: true,
-    flavor: `Heal check to treat ${item.name} on ${actor.name} (DC ${dc})`,
+    flavor: `Heal check to treat ${item.name} on ${actor.name} (DC ${cfg.dc})`,
     showDC: true,
     showResults: false,
   };
@@ -88,12 +233,8 @@ export async function requestBoneSetting(actor, item) {
   // null = card deleted before roll; undefined = createRequest failed internally
   if (!result || !result.passed) return;
 
-  if (item.hasItemBooleanFlag(F_SUCCESS)) return;
-
-  await item.addItemBooleanFlag(F_SUCCESS);
-  if (item.getItemDictionaryFlag(F_RECEIVED) === undefined) {
-    await item.setItemDictionaryFlag(F_RECEIVED, 0);
-  }
+  if (getConfig(item).treated) return;
+  await setConfig(item, { treated: true });
 
   ChatMessage.create({
     content: `<p><strong>${item.name}</strong> on <strong>${actor.name}</strong> has been treated and is ready to receive dedicated healing.</p>`,
@@ -112,8 +253,8 @@ function onApplyDamage(actor, options) {
   if (!actor.isOwner) return;
 
   const rawHealing = -options.value;
-  const eligibleBuffs = _getEligibleBuffs(actor);
-  if (!eligibleBuffs.length) return;
+  const participants = _getParticipants(actor);
+  if (!participants.length) return;
 
   // Explicit delegation (e.g. short rest applied by the GM): hand the allocation
   // dialog to the submitting player. Suppress here and let their client apply.
@@ -124,7 +265,7 @@ function onApplyDamage(actor, options) {
   options.value = 0; // Suppress — applyDamage continues with no effect
   _dialogOpen = true;
 
-  _showAllocationDialog(actor, rawHealing, eligibleBuffs, maxHpHealable)
+  _showAllocationDialog(actor, rawHealing, participants, maxHpHealable)
     .finally(() => { _dialogOpen = false; });
 }
 
@@ -146,8 +287,8 @@ function onPreUpdateActor(actor, update, options) {
   const healingOffered = offeredNewHp - currentHp;
   if (healingOffered <= 0) return;
 
-  const eligibleBuffs = _getEligibleBuffs(actor);
-  if (!eligibleBuffs.length) return;
+  const participants = _getParticipants(actor);
+  if (!participants.length) return;
 
   // Suppress HP change by reverting offset to current value in-place
   hpData.offset = actor.system.attributes.hp.offset;
@@ -155,7 +296,7 @@ function onPreUpdateActor(actor, update, options) {
   const maxHpHealable = Math.max(0, actor.system.attributes.hp.max - currentHp);
   _dialogOpen = true;
 
-  _showAllocationDialog(actor, healingOffered, eligibleBuffs, maxHpHealable)
+  _showAllocationDialog(actor, healingOffered, participants, maxHpHealable)
     .finally(() => { _dialogOpen = false; });
 }
 
@@ -179,15 +320,6 @@ function _delegateHealing(actor, rawHealing, options) {
   return true;
 }
 
-function _getEligibleBuffs(actor) {
-  const sources = actor.itemFlags.boolean[F_SUCCESS]?.sources ?? [];
-  return sources.filter((item) => {
-    const required = item.getItemDictionaryFlag(F_REQUIRED) ?? 0;
-    const received = item.getItemDictionaryFlag(F_RECEIVED) ?? 0;
-    return required > 0 && received < required;
-  });
-}
-
 async function _applyHp(actor, amount) {
   if (amount <= 0) return;
   _bypassHealingIntercept = true;
@@ -200,15 +332,17 @@ async function _applyHp(actor, amount) {
 
 // ─── Phase 2: Allocation Dialog ───────────────────────────────────────────────
 
-async function _showAllocationDialog(actor, totalHealing, eligibleBuffs, maxHpHealable) {
-  const buffData = eligibleBuffs.map((item) => {
-    const required = item.getItemDictionaryFlag(F_REQUIRED) ?? 0;
-    const received = item.getItemDictionaryFlag(F_RECEIVED) ?? 0;
-    return { id: item.id, name: item.name, required, received, remaining: required - received };
-  });
+async function _showAllocationDialog(actor, totalHealing, participants, maxHpHealable) {
+  const rows = participants.map((p) => ({
+    id: p.id,
+    name: p.name,
+    required: p.required,
+    received: p.received,
+    remaining: p.required - p.received,
+  }));
 
   const content = await foundry.applications.handlebars.renderTemplate(TEMPLATE, {
-    totalHealing, maxHpHealable, buffs: buffData,
+    totalHealing, maxHpHealable, participants: rows,
   });
 
   const allocations = await foundry.applications.api.DialogV2.wait({
@@ -224,9 +358,9 @@ async function _showAllocationDialog(actor, totalHealing, eligibleBuffs, maxHpHe
         callback: (event, button, dialog) => {
           const form = dialog.element.querySelector("form");
           const result = {};
-          for (const input of form.querySelectorAll(".dh-bone-input")) {
+          for (const input of form.querySelectorAll(".dh-alloc-input")) {
             const val = Math.max(0, Math.min(parseInt(input.value) || 0, parseInt(input.max) || 0));
-            result[input.dataset.itemId] = val;
+            result[input.dataset.participantId] = val;
           }
           return result;
         },
@@ -243,21 +377,22 @@ async function _showAllocationDialog(actor, totalHealing, eligibleBuffs, maxHpHe
   let remaining = totalHealing;
   const conditionLines = [];
 
-  for (const item of eligibleBuffs) {
-    const requested = Math.max(0, allocations[item.id] ?? 0);
+  for (const p of participants) {
+    const requested = Math.max(0, allocations[p.id] ?? 0);
     const allocated = Math.min(requested, remaining);
     remaining -= allocated;
     if (allocated <= 0) continue;
 
-    const received = item.getItemDictionaryFlag(F_RECEIVED) ?? 0;
-    const required = item.getItemDictionaryFlag(F_REQUIRED) ?? 0;
-    const newReceived = Math.min(received + allocated, required);
-    await item.setItemDictionaryFlag(F_RECEIVED, newReceived);
+    let cured = false;
+    try {
+      cured = await p.allocate(allocated);
+    } catch (err) {
+      console.error(`${MODULE_ID} | dedicated healing: allocation to "${p.name}" failed`, err);
+      remaining += allocated; // Give it back rather than losing it silently.
+      continue;
+    }
 
-    const fullyHealed = newReceived >= required;
-    if (fullyHealed) await item.update({ "system.active": false });
-
-    conditionLines.push(`<li>${item.name}: ${allocated} HP${fullyHealed ? " — <em>condition resolved</em>" : ""}</li>`);
+    conditionLines.push(`<li>${p.name}: ${allocated} HP${cured ? " — <em>condition resolved</em>" : ""}</li>`);
   }
 
   const hpApplied = Math.min(remaining, maxHpHealable);
@@ -279,11 +414,13 @@ async function _showAllocationDialog(actor, totalHealing, eligibleBuffs, maxHpHe
 // ─── Registration ─────────────────────────────────────────────────────────────
 
 export function registerDedicatedHealing() {
+  registerProvider("items", _itemParticipants);
+
   Hooks.on("pf1ApplyDamage", onApplyDamage);
   Hooks.on("preUpdateActor", onPreUpdateActor);
 
   // Receive a heal delegated from another client (e.g. GM resolving a short rest).
-  // We recompute buffs/HP locally so the dialog reflects this client's current state.
+  // We recompute participants/HP locally so the dialog reflects this client's current state.
   // Shares the module channel with the GM socket; the two are told apart by `type`.
   game.socket.on(CHANNEL, async (data) => {
     if (data?.type !== "dhDelegate" || data.userId !== game.user.id) return;
@@ -292,16 +429,16 @@ export function registerDedicatedHealing() {
     const actor = await fromUuid(data.actorUuid);
     if (!actor?.isOwner) return;
 
-    const eligibleBuffs = _getEligibleBuffs(actor);
-    if (!eligibleBuffs.length) {
-      // Buffs changed since the heal was tagged — just apply the HP.
+    const participants = _getParticipants(actor);
+    if (!participants.length) {
+      // State changed since the heal was tagged — just apply the HP.
       await _applyHp(actor, data.rawHealing);
       return;
     }
 
     const maxHpHealable = Math.max(0, actor.system.attributes.hp.max - actor.system.attributes.hp.value);
     _dialogOpen = true;
-    _showAllocationDialog(actor, data.rawHealing, eligibleBuffs, maxHpHealable)
+    _showAllocationDialog(actor, data.rawHealing, participants, maxHpHealable)
       .finally(() => { _dialogOpen = false; });
   });
 }

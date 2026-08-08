@@ -13,7 +13,7 @@ _stats:
 author: mLW1zeZBsSCEsXlw
 command: |-
   if (action.name === "Set Bone") {
-    game.criticalEffects.dedicatedHealing.requestBoneSetting(actor, item);
+    game.criticalEffects.dedicatedHealing.requestHealCheck(actor, item);
     shared.hideChat = false;
   } else if (action.name.startsWith("Use ")) {
     const dc = item.getItemDictionaryFlag("useFortSave");

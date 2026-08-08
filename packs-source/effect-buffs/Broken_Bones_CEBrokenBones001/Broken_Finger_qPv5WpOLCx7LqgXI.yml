@@ -20,6 +20,12 @@ flags:
       rollOverride: ''
       rollmodeOverride: ''
       skipDialog: 0
+  pf1-critical-effects:
+    dedicatedHealing:
+      dc: 10
+      received: 0
+      required: 5
+      treated: false
   scene-packer:
     hash: ddbfc12ef7a75343c7e11518ab501098aa4822be
 folder: CEBrokenBones001
@@ -77,10 +83,7 @@ system:
   effectNotes: []
   flags:
     boolean: {}
-    dictionary:
-      dhDC: '10'
-      dhReceived: '0'
-      dhRequired: '5'
+    dictionary: {}
   hideFromToken: false
   level: 0
   links:

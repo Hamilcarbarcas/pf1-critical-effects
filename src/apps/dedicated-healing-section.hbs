@@ -1,0 +1,56 @@
+{{!-- Critical Effects: Dedicated Healing config (buff sheet → Advanced tab) --}}
+<div class="ce-dh-section">
+  <h3 class="form-header ce-dh-header">
+    <i class="fa-solid fa-kit-medical"></i>
+    {{localize "CRITICAL_EFFECTS.DedicatedHealing.Section.Title"}}
+  </h3>
+
+  {{!-- Everything below the header collapses as one block; the header's own icon is the
+        toggle (see the collapse wiring in dedicated-healing-config.mjs). --}}
+  <div class="ce-dh-body">
+    <p class="notes">{{localize "CRITICAL_EFFECTS.DedicatedHealing.Section.Hint"}}</p>
+
+    <div class="form-group">
+      <label>{{localize "CRITICAL_EFFECTS.DedicatedHealing.Field.Required"}}</label>
+      <div class="form-fields">
+        <input type="number" class="ce-dh-input" data-field="required" min="0" step="1" value="{{required}}" />
+      </div>
+      <p class="hint">{{localize "CRITICAL_EFFECTS.DedicatedHealing.Field.RequiredHint"}}</p>
+    </div>
+
+    <div class="form-group">
+      <label>{{localize "CRITICAL_EFFECTS.DedicatedHealing.Field.DC"}}</label>
+      <div class="form-fields">
+        <input type="number" class="ce-dh-input" data-field="dc" min="0" step="1" value="{{dc}}" />
+      </div>
+      <p class="hint">{{localize "CRITICAL_EFFECTS.DedicatedHealing.Field.DCHint"}}</p>
+    </div>
+
+    {{#if configured}}
+    <div class="form-group ce-dh-status">
+      <label>{{localize "CRITICAL_EFFECTS.DedicatedHealing.Field.Status"}}</label>
+      <div class="form-fields ce-dh-status-fields">
+        <label class="checkbox ce-dh-treated-label">
+          <input type="checkbox" class="ce-dh-input" data-field="treated" {{checked treated}} />
+          {{localize "CRITICAL_EFFECTS.DedicatedHealing.Field.Treated"}}
+        </label>
+        <span class="ce-dh-progress {{#unless treated}}ce-dh-untreated{{/unless}}">
+          {{#if treated}}
+            {{localize "CRITICAL_EFFECTS.DedicatedHealing.Field.Progress"}}
+            <strong>{{received}} / {{required}}</strong>
+          {{else}}
+            {{#if dc}}
+              {{localize "CRITICAL_EFFECTS.DedicatedHealing.Field.AwaitingCheck"}}
+            {{else}}
+              {{localize "CRITICAL_EFFECTS.DedicatedHealing.Field.AwaitingUse"}}
+            {{/if}}
+          {{/if}}
+        </span>
+        <a class="ce-dh-reset" data-tooltip="{{localize 'CRITICAL_EFFECTS.DedicatedHealing.Field.ResetTooltip'}}">
+          <i class="fa-solid fa-rotate-left"></i>
+        </a>
+      </div>
+    </div>
+    {{/if}}
+  </div>
+</div>

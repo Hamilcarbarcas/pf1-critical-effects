@@ -38,6 +38,11 @@
     ],
     "recommends": [
       {
+        "id": "pf1-bleed-effects",
+        "type": "module",
+        "reason": "Optional integration: a great many critical and fumble effects inflict ongoing bleed, which this module turns into automated per-round damage instead of prose to track by hand. Its optional Deep Bleed rule also routes that bleed through dedicated healing."
+      },
+      {
         "id": "astora-mod",
         "type": "module",
         "reason": "Optional integration: individual effects may use its buff automation to offer an apply-buff button. The engine is fully functional without it."

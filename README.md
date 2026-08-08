@@ -17,6 +17,7 @@ resolution — you always get a named, journal-linked result.
 | **System** | `pf1` (v11.10+) | — |
 | **Required** | `lib-wrapper` | The module does not function. |
 | **Required** | `pf1-roll-requests` | Resolutions cannot post their dice. |
+| **Recommended** | `pf1-bleed-effects` | Everything runs; the bleed an effect describes ("2d6 bleed") stays prose and has to be tracked and rolled by hand. |
 | **Recommended** | `astora-mod` | Everything runs; effects that use its buff automation can't offer their apply-buff button. |
 
 ## What works today
@@ -328,15 +329,38 @@ player can split it between hit points and their conditions. When healing is app
 behalf — a GM resolving a short rest — the dialog opens for the player who submitted it rather
 than the GM.
 
-Conditions carry four item flags: `dhDC` (Heal check DC, 0 = no check needed), `dhRequired` (HP to
-cure), `dhReceived` (accumulated, runtime), and the boolean `dhCheckSuccess`.
+Configure it on the buff sheet's **Advanced** tab, in the collapsible **Dedicated Healing**
+section: the healing required to clear the condition, the Heal check DC that makes it ready to
+absorb healing (0 waives the check), and — once it's configured — a read-out of the progress so
+far with a reset control.
 
 ```js
-game.criticalEffects.dedicatedHealing.requestBoneSetting(actor, item);
+game.criticalEffects.dedicatedHealing.requestHealCheck(actor, item);
 ```
 
 This lived in astora-mod until its only consumers ended up here. A broken-bone effect now works
 with astora-mod absent entirely.
+
+#### Participants: what else can absorb healing
+
+Anything that can soak dedicated healing is a **participant** — a name, a threshold, a running
+total, and a callback that spends an allocation. Buffs configured through the section above come
+from this module's own built-in provider. Other modules register their own:
+
+```js
+game.modules.get("pf1-critical-effects").api.dedicatedHealing.registerProvider(
+  "my-module.wounds",
+  (actor) => [{ id, name, required, received, allocate: async (amount) => cured }],
+);
+```
+
+The enumerator **must be synchronous** — it's called from a hook that has to suppress the
+incoming heal in the same tick. Register from `ready`; the API is published at `init`, so it's
+there regardless of module load order.
+
+pf1-bleed-effects' **Deep Bleed** rule is the reference consumer: a bleed lives in an actor flag
+rather than an item, and lands in the same allocation dialog as a broken arm without either
+module knowing anything about the other's storage.
 
 ## Compendia
 
