@@ -10,13 +10,14 @@
 import { MODULE_ID } from "../const.mjs";
 import { gmRequest } from "../integrations/socket.mjs";
 import { criticalTotal } from "../integrations/pf1-pipeline.mjs";
+import { describeConditions } from "../resolve/conditions.mjs";
 
 const RESULT_FLAG = "fumbleResult";
 
 /**
  * Record a fumble result on the attack card.
  * @param {ChatMessage} message
- * @param {object} result  { tableKey, total, entryId, name, journal }
+ * @param {object} result  { tableKey, total, entryId, name, text, note, conditions }
  */
 export async function setFumbleResult(message, result) {
   const key = `flags.${MODULE_ID}.${RESULT_FLAG}`;
@@ -65,7 +66,7 @@ const CRIT_RESULT_FLAG = "critResult";
  *
  * @param {ChatMessage} message
  * @param {object} result  { choice, location, grade, row, total, deadly, save, entryId, name,
- *                           journal }
+ *                           text, note, conditions }
  */
 export async function setCritResult(message, result) {
   const key = `flags.${MODULE_ID}.${CRIT_RESULT_FLAG}`;
@@ -150,19 +151,58 @@ export const getExplosions = (message) => message?.getFlag(MODULE_ID, EXPLOSION_
 export const explosionCount = (message, attackIndex = 0) =>
   Number(getExplosions(message)?.[attackIndex] ?? 0) || 0;
 
-/** A clickable journal link, built as a real content link so Foundry's delegated handler opens it. */
-function journalLink(uuid, label) {
-  const a = document.createElement("a");
-  a.className = "content-link";
-  a.draggable = true;
-  a.dataset.link = "";
-  a.dataset.uuid = uuid;
-  a.dataset.type = "JournalEntry";
+/**
+ * An entry's prose, enriched.
+ *
+ * Since v5 the catalog owns its own text, so this is the whole of what used to be a journal link —
+ * the prose is on the card rather than one click away in a compendium. It goes through PF1's
+ * enricher, which is what makes `@Bleed[2d6;deep=20]`, `@Condition[stunned]` and `@Damage[…]`
+ * render as the clickable buttons those modules already provide.
+ *
+ * `enrichHTML` is async and render hooks are not, so the block is appended when it resolves. That
+ * is a frame later than the rest of the card and it does not matter: nothing is laid out relative
+ * to it, and the alternative is blocking every chat render on an enrich.
+ *
+ * @param {HTMLElement} block  the result block to append to
+ * @param {string} text
+ */
+function appendProse(block, text) {
+  if (!text) return;
+
+  const prose = document.createElement("div");
+  prose.className = "ce-effect-text";
+  block.append(prose);
+
+  const editor = foundry.applications.ux?.TextEditor?.implementation ?? globalThis.TextEditor;
+  Promise.resolve(editor.enrichHTML(text, { rollData: {} }))
+    .then((html) => { prose.innerHTML = html; })
+    .catch((err) => {
+      console.error(`${MODULE_ID} | could not enrich effect prose:`, err);
+      prose.textContent = text;
+    });
+}
+
+/**
+ * The conditions a result inflicted, as a line on the card.
+ *
+ * Shown whether or not anyone pressed the apply button, because "stunned 1 round" is part of what
+ * happened even when the GM sets it by hand. Durations are the AUTHORED values — `1d4 minutes`,
+ * not the number the button rolled — since this line is a statement of the entry, and the applied
+ * roll lives on the condition itself where a GM can read and change it.
+ *
+ * @param {HTMLElement} block
+ * @param {object[]} conditions
+ */
+function appendConditions(block, conditions) {
+  if (!conditions?.length) return;
+
+  const line = document.createElement("div");
+  line.className = "ce-effect-conditions";
 
   const icon = document.createElement("i");
-  icon.className = "fa-solid fa-book-open";
-  a.append(icon, document.createTextNode(label));
-  return a;
+  icon.className = "fa-solid fa-triangle-exclamation";
+  line.append(icon, document.createTextNode(` ${describeConditions(conditions)}`));
+  block.append(line);
 }
 
 /* --- deferred critical damage, in PF1's own critical column ------------------
@@ -467,8 +507,7 @@ export function registerCardMutation() {
     if (result.name) {
       const name = document.createElement("div");
       name.className = "ce-fumble-name";
-      if (result.journal) name.append(journalLink(result.journal, result.name));
-      else name.textContent = result.name;
+      name.textContent = result.name;
       block.append(name);
     }
 
@@ -479,9 +518,12 @@ export function registerCardMutation() {
       block.append(save);
     }
 
-    /* An entry's note, when it has one — prose for the GM to adjudicate rather than anything
-     * automated. `textContent`, so an author's apostrophe or angle bracket is text and not
-     * markup; the journal is where formatting belongs. */
+    appendConditions(block, result.conditions);
+    appendProse(block, result.text);
+
+    /* An entry's note, when it has one — a line for the GM to adjudicate rather than anything
+     * automated. `textContent`, so an author's apostrophe or angle bracket is text and not markup.
+     * `text` above is the field that is allowed to carry formatting; this one is not. */
     if (result.note) {
       const note = document.createElement("div");
       note.className = "ce-effect-note";
@@ -514,10 +556,18 @@ export function registerCardMutation() {
 
     const name = document.createElement("div");
     name.className = "ce-fumble-name";
-    if (result.journal) name.append(journalLink(result.journal, result.name));
-    else name.textContent = result.name;
+    name.textContent = result.name;
 
     block.append(header, name);
+    appendConditions(block, result.conditions);
+    appendProse(block, result.text);
+
+    if (result.note) {
+      const note = document.createElement("div");
+      note.className = "ce-effect-note";
+      note.textContent = result.note;
+      block.append(note);
+    }
 
     const container = root.querySelector(".chat-card") ?? root.querySelector(".message-content") ?? root;
     container.appendChild(block);

@@ -1,96 +1,86 @@
 {
-  "version": 1,
-  "_generated": "transcribed from the '… - Lethal' journal folders by tools/tables-to-json.mjs",
+  "version": 2,
+  "_source": "Hand-authored. Lethal flavour for a death that has already happened (DESIGN.md §7.4) — no rank, no location. `text` is prose; `conditions` may carry `dead`, which is the one place that condition is the right answer.",
   "entries": [
     {
       "id": "heart-pierced",
       "name": "Heart Pierced",
-      "journal": "Compendium.pf1-critical-effects.critical-effects.JournalEntry.ij3o6K473tbiQHt6",
       "damageTypes": [
         "piercing"
       ],
-      "source": "Arrow - Lethal"
+      "text": null
     },
     {
       "id": "silenced",
       "name": "Silenced",
-      "journal": "Compendium.pf1-critical-effects.critical-effects.JournalEntry.f6Be2rU97lpJZ84r",
       "damageTypes": [
         "piercing"
       ],
-      "source": "Piercing - Lethal"
+      "text": null
     },
     {
       "id": "unicorned",
       "name": "Unicorned",
-      "journal": "Compendium.pf1-critical-effects.critical-effects.JournalEntry.HxCC7LzyIvplJMKg",
       "damageTypes": [
         "piercing"
       ],
-      "source": "Piercing - Lethal"
+      "text": null
     },
     {
       "id": "beheaded",
       "name": "Beheaded",
-      "journal": "Compendium.pf1-critical-effects.critical-effects.JournalEntry.By24SfvIZyhUINop",
       "damageTypes": [
         "slashing"
       ],
-      "source": "Slashing - Lethal"
+      "text": null
     },
     {
       "id": "bifurcated",
       "name": "Bifurcated",
-      "journal": "Compendium.pf1-critical-effects.critical-effects.JournalEntry.y4snw9914bF59cJL",
       "damageTypes": [
         "slashing"
       ],
-      "source": "Slashing - Lethal"
+      "text": null
     },
     {
       "id": "defaced",
       "name": "Defaced",
-      "journal": "Compendium.pf1-critical-effects.critical-effects.JournalEntry.FmEPg5w0BXNKTDMn",
       "damageTypes": [
         "slashing"
       ],
-      "source": "Slashing - Lethal"
+      "text": null
     },
     {
       "id": "halved",
       "name": "Halved",
-      "journal": "Compendium.pf1-critical-effects.critical-effects.JournalEntry.uS8zCWArVjlQlrME",
       "damageTypes": [
         "slashing"
       ],
-      "source": "Slashing - Lethal"
+      "text": null
     },
     {
       "id": "heart-severed",
       "name": "Heart Severed",
-      "journal": "Compendium.pf1-critical-effects.critical-effects.JournalEntry.VhrEXseEgNIf04Ky",
       "damageTypes": [
         "slashing"
       ],
-      "source": "Slashing - Lethal"
+      "text": null
     },
     {
       "id": "open-minded",
       "name": "Open Minded",
-      "journal": "Compendium.pf1-critical-effects.critical-effects.JournalEntry.gYtgut4r8ER1vmqN",
       "damageTypes": [
         "slashing"
       ],
-      "source": "Slashing - Lethal"
+      "text": null
     },
     {
       "id": "severed-spine",
       "name": "Severed Spine",
-      "journal": "Compendium.pf1-critical-effects.critical-effects.JournalEntry.wUAaBQ7voMCDmhfk",
       "damageTypes": [
         "slashing"
       ],
-      "source": "Slashing - Lethal"
+      "text": null
     }
   ]
 }

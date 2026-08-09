@@ -1,44 +1,37 @@
 [
   {
     "key": "bludgeoning/humanoid/arm",
-    "candidates": 12,
-    "filled": 12,
-    "distinct": 12,
+    "candidates": 0,
+    "filled": 0,
+    "distinct": 0,
     "drift": [],
     "repeats": [],
     "surplus": []
   },
   {
     "key": "bludgeoning/humanoid/leg",
-    "candidates": 12,
-    "filled": 12,
-    "distinct": 12,
+    "candidates": 0,
+    "filled": 0,
+    "distinct": 0,
     "drift": [],
     "repeats": [],
     "surplus": []
   },
   {
     "key": "bludgeoning/humanoid/torso",
-    "candidates": 12,
-    "filled": 12,
-    "distinct": 12,
+    "candidates": 0,
+    "filled": 0,
+    "distinct": 0,
     "drift": [],
     "repeats": [],
     "surplus": []
   },
   {
     "key": "bludgeoning/humanoid/head",
-    "candidates": 12,
-    "filled": 12,
-    "distinct": 12,
-    "drift": [
-      {
-        "row": 1,
-        "id": "lost-teeth",
-        "rank": 2,
-        "cost": 1
-      }
-    ],
+    "candidates": 0,
+    "filled": 0,
+    "distinct": 0,
+    "drift": [],
     "repeats": [],
     "surplus": []
   },
@@ -125,145 +118,38 @@
   },
   {
     "key": "piercing/humanoid/arm",
-    "candidates": 7,
-    "filled": 12,
-    "distinct": 7,
+    "candidates": 0,
+    "filled": 0,
+    "distinct": 0,
     "drift": [],
-    "repeats": [
-      {
-        "row": 1,
-        "id": "dropped-item",
-        "rank": 2,
-        "cost": 1
-      },
-      {
-        "row": 6,
-        "id": "broken-hand",
-        "rank": 5,
-        "cost": 1
-      },
-      {
-        "row": 9,
-        "id": "compound-arm-fracture",
-        "rank": 8,
-        "cost": 1
-      },
-      {
-        "row": 10,
-        "id": "broken-shoulder",
-        "rank": 11,
-        "cost": 1
-      },
-      {
-        "row": 12,
-        "id": "broken-shoulder",
-        "rank": 11,
-        "cost": 1
-      }
-    ],
+    "repeats": [],
     "surplus": []
   },
   {
     "key": "piercing/humanoid/leg",
-    "candidates": 5,
-    "filled": 9,
-    "distinct": 5,
+    "candidates": 0,
+    "filled": 0,
+    "distinct": 0,
     "drift": [],
-    "repeats": [
-      {
-        "row": 3,
-        "id": "knocked-down",
-        "rank": 2,
-        "cost": 1
-      },
-      {
-        "row": 6,
-        "id": "broken-ankle",
-        "rank": 5,
-        "cost": 1
-      },
-      {
-        "row": 8,
-        "id": "compound-leg-fracture",
-        "rank": 9,
-        "cost": 1
-      },
-      {
-        "row": 10,
-        "id": "compound-leg-fracture",
-        "rank": 9,
-        "cost": 1
-      }
-    ],
+    "repeats": [],
     "surplus": []
   },
   {
     "key": "piercing/humanoid/torso",
-    "candidates": 7,
-    "filled": 11,
-    "distinct": 7,
+    "candidates": 0,
+    "filled": 0,
+    "distinct": 0,
     "drift": [],
-    "repeats": [
-      {
-        "row": 3,
-        "id": "knocked-down",
-        "rank": 2,
-        "cost": 1
-      },
-      {
-        "row": 5,
-        "id": "nethers",
-        "rank": 4,
-        "cost": 1
-      },
-      {
-        "row": 7,
-        "id": "slipped-vertebrae",
-        "rank": 8,
-        "cost": 1
-      },
-      {
-        "row": 12,
-        "id": "broken-back",
-        "rank": 11,
-        "cost": 1
-      }
-    ],
+    "repeats": [],
     "surplus": []
   },
   {
     "key": "piercing/humanoid/head",
-    "candidates": 5,
-    "filled": 8,
-    "distinct": 5,
-    "drift": [
-      {
-        "row": 1,
-        "id": "lost-teeth",
-        "rank": 2,
-        "cost": 1
-      }
-    ],
-    "repeats": [
-      {
-        "row": 3,
-        "id": "knocked-down",
-        "rank": 2,
-        "cost": 1
-      },
-      {
-        "row": 5,
-        "id": "dazing-blow",
-        "rank": 4,
-        "cost": 1
-      },
-      {
-        "row": 8,
-        "id": "knocked-out",
-        "rank": 7,
-        "cost": 1
-      }
-    ],
+    "candidates": 0,
+    "filled": 0,
+    "distinct": 0,
+    "drift": [],
+    "repeats": [],
     "surplus": []
   },
   {
@@ -349,157 +235,38 @@
   },
   {
     "key": "slashing/humanoid/arm",
-    "candidates": 5,
-    "filled": 9,
-    "distinct": 5,
+    "candidates": 0,
+    "filled": 0,
+    "distinct": 0,
     "drift": [],
-    "repeats": [
-      {
-        "row": 1,
-        "id": "dropped-item",
-        "rank": 2,
-        "cost": 1
-      },
-      {
-        "row": 3,
-        "id": "dropped-item",
-        "rank": 2,
-        "cost": 1
-      },
-      {
-        "row": 5,
-        "id": "broken-finger",
-        "rank": 4,
-        "cost": 1
-      },
-      {
-        "row": 9,
-        "id": "compound-arm-fracture",
-        "rank": 8,
-        "cost": 1
-      }
-    ],
+    "repeats": [],
     "surplus": []
   },
   {
     "key": "slashing/humanoid/leg",
-    "candidates": 6,
-    "filled": 12,
-    "distinct": 6,
+    "candidates": 0,
+    "filled": 0,
+    "distinct": 0,
     "drift": [],
-    "repeats": [
-      {
-        "row": 1,
-        "id": "knocked-down",
-        "rank": 2,
-        "cost": 1
-      },
-      {
-        "row": 3,
-        "id": "knocked-down",
-        "rank": 2,
-        "cost": 1
-      },
-      {
-        "row": 6,
-        "id": "broken-ankle",
-        "rank": 5,
-        "cost": 1
-      },
-      {
-        "row": 8,
-        "id": "broken-leg",
-        "rank": 7,
-        "cost": 1
-      },
-      {
-        "row": 10,
-        "id": "compound-leg-fracture",
-        "rank": 9,
-        "cost": 1
-      },
-      {
-        "row": 12,
-        "id": "broken-knee",
-        "rank": 11,
-        "cost": 1
-      }
-    ],
+    "repeats": [],
     "surplus": []
   },
   {
     "key": "slashing/humanoid/torso",
-    "candidates": 6,
-    "filled": 11,
-    "distinct": 6,
+    "candidates": 0,
+    "filled": 0,
+    "distinct": 0,
     "drift": [],
-    "repeats": [
-      {
-        "row": 1,
-        "id": "knocked-down",
-        "rank": 2,
-        "cost": 1
-      },
-      {
-        "row": 3,
-        "id": "knocked-down",
-        "rank": 2,
-        "cost": 1
-      },
-      {
-        "row": 5,
-        "id": "nethers",
-        "rank": 4,
-        "cost": 1
-      },
-      {
-        "row": 7,
-        "id": "slipped-vertebrae",
-        "rank": 8,
-        "cost": 1
-      },
-      {
-        "row": 12,
-        "id": "broken-back",
-        "rank": 11,
-        "cost": 1
-      }
-    ],
+    "repeats": [],
     "surplus": []
   },
   {
     "key": "slashing/humanoid/head",
-    "candidates": 5,
-    "filled": 8,
-    "distinct": 5,
-    "drift": [
-      {
-        "row": 1,
-        "id": "lost-teeth",
-        "rank": 2,
-        "cost": 1
-      }
-    ],
-    "repeats": [
-      {
-        "row": 3,
-        "id": "knocked-down",
-        "rank": 2,
-        "cost": 1
-      },
-      {
-        "row": 5,
-        "id": "dazing-blow",
-        "rank": 4,
-        "cost": 1
-      },
-      {
-        "row": 8,
-        "id": "knocked-out",
-        "rank": 7,
-        "cost": 1
-      }
-    ],
+    "candidates": 0,
+    "filled": 0,
+    "distinct": 0,
+    "drift": [],
+    "repeats": [],
     "surplus": []
   },
   {

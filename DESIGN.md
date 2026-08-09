@@ -15,10 +15,10 @@ Everything below is about the framework that content plugs into.
 | Question | Decision |
 |---|---|
 | Where the code lives | Grow the existing `pf1-critical-effects` module from content-only into code + content. |
-| Effect storage | Versioned **JSON catalog** in the module — a flat entry list plus one 12-row table per damage type × anatomy × body part (§3); journals stay the human-readable prose; a new **buff compendium** carries mechanics. |
+| Effect storage | Versioned **JSON catalog** in the module — a flat entry list plus one 12-row table per damage type × anatomy × body part (§3). Self-contained as of v5: prose lives in the entry, not in a journal. A **buff compendium** carries the mechanics that need an Item. |
 | Content authoring | A **tagged pool** (`data/pool.json`) that generates the tables (§3). One effect tagged for several damage types and body parts covers many rows, so the grid is saturated by a few hundred effects rather than one per row. |
-| Mechanical effects | A **typed-outcome framework** (damage / condition / buff / …) with a handler registry — not free-form scripts. |
-| Content strategy | **Journal-first.** Entries ship with prose and *no* mechanics; those get attached incrementally over time. |
+| Mechanical effects | Two named fields, not a registry (§6): `conditions` for PF1 statuses with native durations, `buff` for anything needing an Item. A typed-outcome framework was built here and removed. |
+| Content strategy | **Prose-first.** An entry with `id` and `name` is complete; `text`, `note`, `conditions` and `buff` are additive and get attached incrementally over time. |
 | Player interaction | GM-run **dialog** + player-rolled roll-requests; the player's only decisions are the dice and a called shot. *(Revised twice during phase 7 — the resolution was originally a persistent chat card, and luck-point spending was built and then removed; see §7.2 and §7.3.)* |
 | First shippable slice | **Fumble path end-to-end.** |
 
@@ -61,13 +61,14 @@ pf1-critical-effects/
   CHANGELOG.md                    ← release notes source of truth (tag-triggered release.yml)
   README.md
   lang/en.json
-  packs/                          ← existing: critical-effects (Journal), critical-tables (RollTable)
-                                     new:      effect-buffs (Item), macros (Macro)
+  packs/                          ← effect-buffs (Item), macros (Macro)
   packs-source/
   data/
     pool.json                     ← THE content source: tagged effect pool (§3)
     effects.json                  ← GENERATED from pool.json — the catalog (§3)
-    fumbles.json                  ← fumble catalog (§4)
+    fumble-pool.json              ← THE fumble content source (§4)
+    fumbles.json                  ← GENERATED from fumble-pool.json — the fumble catalog (§4)
+    lethal.json                   ← lethal-blow flavour (§7.4)
     anatomy.json                  ← creature-type → anatomy defaults (§5.3)
   content/
     README.md                     ← pool format, tagging rules, how to fill it
@@ -76,7 +77,8 @@ pf1-critical-effects/
   tools/
     pool-to-tables.mjs            ← pool.json + mortal.md → effects.json
     pool-report.mjs               ← pool.json → content/COVERAGE.md
-    tables-to-json.mjs            ← fumble RollTables → fumbles.json
+    fumbles-to-tables.mjs         ← fumble-pool.json → fumbles.json
+    worksheets.mjs                ← shared parser for content/*.md worksheets
   src/
     critical-effects.mjs          ← entry: init/ready wiring, API surface
     catalog/
@@ -86,9 +88,7 @@ pf1-critical-effects/
       power.mjs                   ← Critical Power grade, size shift, modifiers, grade override
       location.mjs                ← anatomy, generated location tables, called-shot override
       context.mjs                 ← gathers the §7 attacker/target data into one frozen object
-    outcomes/
-      registry.mjs                ← registerOutcome / applyOutcomes
-      handlers/                   ← one file per built-in type (§6)
+      conditions.mjs              ← applies an entry's PF1 conditions, with durations (§6)
     flow/
       crit-dialog.mjs             ← GM-side orchestrator for the crit path (ApplicationV2)
       crit-trigger.mjs            ← attack-card threat button
@@ -163,16 +163,35 @@ manual resolver and the automated flow share one code path.
 > change: it now has two halves keyed by different axes, because the axis that distinguishes a
 > mortal result is not the same one on both sides of the grid.
 
+> **Revised again in phase 12.** `version: 5` **removes `journal` and adds `text` and
+> `conditions`.** The catalog is now self-contained: an entry's prose lives in the entry, and the
+> two shipped packs (`critical-effects` journals, `critical-tables` roll tables) are deleted.
+> `conditions` is the section this schema was missing — the PF1 statuses a wound imposes, with
+> their own durations, which were previously expressible only as prose for a GM to read and apply
+> by hand. The pool is emptied in the same change: every shipped journal and effect was a
+> placeholder, so there was nothing to migrate and the content track restarts against the new shape.
+
+**Why the journals went.** They cost a compendium, a drift-lint, an import tool and a UUID in every
+entry, and bought a click-through. The prose is a paragraph — it belongs on the card, next to the
+result, where it is read. Owning it also means it goes through PF1's enricher, so `@Bleed[2d6;deep=20]`,
+`@Condition[stunned]` and `@Damage[1d6]` render as the buttons those modules already provide. That
+is a *manual* path deliberately kept alongside the automated one: the enricher is for the half of an
+effect a GM adjudicates, `conditions` is for the half that should just happen.
+
 ```jsonc
 {
-  "version": 4,
+  "version": 5,
   "entries": [
     {
-      "id": "broken-knee",                    // stable slug; the join key for everything
-      "name": "Broken Knee",
-      "journal": "Compendium.pf1-critical-effects.critical-effects.JournalEntry.sgCaXmveumaWntYk",
-      "buff": null,                           // §6 — OPTIONAL; the apply-buff back end
-      "note": null                            // §6 — OPTIONAL; plain text shown with the result
+      "id": "concussed-ear",                  // stable slug; the join key for everything
+      "name": "Concussed Ear",
+      "text": "<p>The blow catches the side of the head…</p>",  // OPTIONAL; prose, enriched
+      "note": null,                           // OPTIONAL; one terse line the GM adjudicates
+      "buff": null,                           // §6 — OPTIONAL; buff name, delivered by astora-mod
+      "conditions": [                         // §6 — OPTIONAL; PF1 statuses, applied natively
+        { "id": "dazed", "duration": { "value": 1, "units": "round" } },
+        { "id": "deaf", "duration": { "value": "1d4", "units": "minute" } }
+      ]
     }
   ],
   "tables": {
@@ -267,11 +286,12 @@ Notes tied to the rules concept:
 - **Unwritten rows are real placeholder entries, not holes.** Callers never handle a gap; `lint()`
   reports the placeholder count per table as a **progress metric**, which is what keeps the
   content track honest.
-- **`journal` is display only.** Nothing in the engine parses journal prose.
-- **`buff` and `note` are optional and start absent.** The content strategy is journal-first: an
-  entry with `id`, `name` and `journal` is *complete* and fully usable — the flow resolves it,
-  names it, links the journal, and stops. Mechanics are additive, attached entry by entry over
-  time, and no part of the engine may assume they exist.
+- **`text` is display only.** Nothing in the engine parses an entry's prose. It is stored as HTML
+  and enriched at render; that is the whole of its contract.
+- **`text`, `note`, `buff` and `conditions` are all optional and start absent.** An entry with
+  `id` and `name` alone is *complete* and fully usable — the flow resolves it, names it, and stops.
+  Everything else is additive, attached entry by entry over time, and no part of the engine may
+  assume any of it exists. This is the §0 rule: absence degrades an entry, never the engine.
 - The catalog is loaded once at `ready` and exposed read-only.
 
 ### Authoring: the tagged pool
@@ -293,8 +313,8 @@ one effect tagged for four damage types and five body parts covers twenty of tho
 saturating the grid needs a pool on the order of a **few hundred** effects. Tag once, land
 everywhere it fits.
 
-A pool entry carries `rank`, `slots` and `damageTypes` alongside the usual `journal` / `buff` /
-`note`. Slots are anatomy-qualified (`humanoid/arm`, or `*/torso` for anatomy-agnostic), and
+A pool entry carries `rank`, `slots` and `damageTypes` alongside the content fields `text` /
+`note` / `buff` / `conditions`. Slots are anatomy-qualified (`humanoid/arm`, or `*/torso` for anatomy-agnostic), and
 `<anatomy>/general` is where a non-localized damage type's content goes. An effect meant for both
 halves of the grid needs a slot in each; tags that select nothing are reported by
 `pool-to-tables.mjs` without failing the build, because `damageTypes: ["*"]` beside body-part slots
@@ -331,12 +351,25 @@ twelve rows are *grouped while being written* (three at a time, mildest band fir
 `SEVERITY_BANDS` lives in `schema.mjs` so the worksheets, the tool and any grouped dropdown agree.
 Nothing in the resolution path reads it.
 
-### Journals ↔ catalog drift
+### Condition drift
 
-The catalog references journals by UUID and the two are edited separately, so they will drift.
-Mitigation: a dev-only `game.criticalEffects.lint()` that reports catalog entries with dead
-journal UUIDs, journals no catalog entry points at, and how many of each table's twelve rows are
-still placeholders. Cheap to write, and it's the thing that keeps the content track honest.
+The journal-drift problem is gone with the journals — there is no second document to fall out of
+step with — but v5 introduces the same class of problem one layer down. `CONDITION_IDS` in
+`schema.mjs` is a **written-out copy of PF1's condition registry**, and it has to be, because the
+Node build tools import that module and have no `pf1` global to read.
+
+`game.criticalEffects.lint()` therefore checks both directions: a condition the catalog uses that
+PF1 does not know (a rename or removal), and a condition PF1 has that `CONDITION_IDS` lacks (an
+addition, which would otherwise be invisible until an author wrote a perfectly good id and the
+validator rejected it). `MOVEMENT_CONDITIONS` exempts `burrow`/`fly`/`hover`/`swim` from the second
+check — they are movement modes in a condition's clothes and are deliberately not inflictable —
+because four permanent false positives is the fastest way to teach someone to ignore a report.
+
+The lint also counts **which** conditions the content uses, reports the table and mortal coverage
+that is the content track's real progress metric, and names any entry configuring bleed damage
+while pf1-bleed-effects is absent. That last one is not a defect — an inert marker is exactly what
+PF1 alone provides and the entry is written to degrade to it — but "the bleed did nothing" is
+otherwise a puzzle with no visible cause.
 
 ---
 
@@ -352,7 +385,7 @@ Deliberately simpler than the effect catalog — no location, no damage type, no
   "entries": [
     { "id": "dropped-weapon", "name": "Dropped Weapon",
       "attackTypes": ["melee", "thrown", "bows", "crossbows"],   // the only tag
-      "journal": "Compendium.…", "buff": null, "note": null }
+      "text": null, "buff": null, "note": null }
   ]
 }
 
@@ -394,10 +427,11 @@ made. A placeholder says "this table wants six more fumbles", which is the truth
 do allow repeats within the drift cap, because there a repeat is a deliberate "this row is the same
 wound as its neighbour" and the ladder still holds.)
 
-**Why the JSON and not the RollTables:** the RollTables stay as GM-facing browsable content, but the
-flow draws from JSON so it can attach outcomes and run without a compendium round-trip. Same
-relationship as catalog↔journals. `tools/tables-to-json.mjs` did the original transcription from
-`packs-source/`; the pool has since taken over as the source.
+**Why the JSON and not the RollTables:** the flow draws from JSON so it can attach mechanics and
+run without a compendium round-trip. `tools/tables-to-json.mjs` did the original transcription out
+of the shipped RollTables; `data/fumble-pool.json` took over as the source, and in phase 12 both the
+tool and the `critical-tables` pack were deleted — a browsable copy that nothing reads is a second
+place for the content to be wrong.
 
 ---
 
@@ -562,57 +596,153 @@ no total to look anything up with.
 
 ---
 
-## 6. The outcome framework
+## 6. The mechanical half of an effect
 
-Catalog entries eventually need to *do* things, not just print prose — but they don't need to
-on day one. The framework exists so mechanics can be **bolted onto entries that already ship**,
-one at a time, without touching the flow, the card, or the catalog schema.
+> **Rewritten in phase 12.** This section described a **typed-outcome registry**: an entry carried
+> an array of descriptors — `buff`, `condition`, `damage`, `bleed`, `delegate`, `note`, `macro` —
+> each resolved through a registry keyed by `type`, each optionally returning an `undo` thunk. It
+> was built and then removed, because in practice one type carried all of the mechanics and the
+> rest were a registry, four handlers and a reversible-descriptor protocol standing in for "create
+> this buff". What replaced it is two named fields.
 
-The design constraint that follows: **an entry with no outcomes must be a first-class citizen,
-not a degraded one.** The card renders the same, the journal link works the same, the only
-difference is that the Apply button doesn't appear. Every layer treats `outcomes` as absent by
-default and additive when present.
+Catalog entries eventually need to *do* things, not just print prose — but they don't need to on
+day one. The design constraint that follows: **an entry with no mechanics must be a first-class
+citizen, not a degraded one.** The card renders the same, the prose reads the same, the only
+difference is that the Apply button doesn't appear.
 
-**Typed descriptors, not scripts** — the same shape as astora-mod's action-buttons: each
-outcome is plain data stored in the catalog and resolved through a registry keyed by `type`.
-Nothing ever evaluates a stored string. This means outcomes survive serialization onto a chat
-card, render identically for every client, and can be previewed before they're applied.
+An entry has **two independent mechanical channels**, and the split is about what each is good for:
+
+| | Field | What it is | Dependency |
+|---|---|---|---|
+| **Conditions** | `conditions` | PF1 statuses, with durations | none — bare PF1 |
+| **Buff** | `buff` | an Item with changes, context notes, a healing lifecycle | astora-mod |
+
+Neither is required, both may be present, and either may be missing without touching the other.
+
+### Conditions — native, and why that matters
+
+The obvious way to give a condition a duration is to synthesize a buff that supplies it (a PF1 buff
+can list `system.conditions`) and let the buff's duration carry the clock. That is what
+pf1-bleed-effects does for buff-supplied bleed, and it is the wrong tool here: **PF1 has native
+condition durations and has had them all along.**
 
 ```js
-// registry.mjs
-registerOutcome(type, handler);   // handler(descriptor, ctx) -> { summary, undo? }
-applyOutcomes(descriptors, ctx);  // sequential, collects summaries, GM-side
+await actor.setCondition("stunned", {
+  duration: { seconds: 6, startTime: game.time.worldTime },
+  system: { end: "turnEnd" },
+});
 ```
 
-`ctx` = `{ actor, token, sourceActor, sourceItem, row, location, damageType, message }`.
+`ActorPF#setCondition(id, data)` merges its second argument into the Active Effect it creates, and
+`setConditions` stamps `flags.pf1.autoDelete` on every condition AE — so an expired one is
+**deleted**, not left disabled, and the condition genuinely goes away. `expireActiveEffects` reads
+`duration.seconds` against world time and honours `system.end`, which PF1's base AE data model
+declares (`turnStart` — its default — `turnEnd`, `initiative`). A GM can then right-click the
+condition on the character sheet and see or change the rounds remaining, in the system's own dialog.
 
-### Built-in handler types
+So a condition here is a condition, not a buff wearing one. That is worth stating plainly because
+the buff route is the one you reach for first and it is strictly worse: it puts an item on the
+sheet, it cannot be adjusted from the condition UI, and clicking the condition off doesn't take.
 
-| `type` | Payload | Notes |
-|---|---|---|
-| `buff` | `uuid`, `overrides?` | Pull from the `effect-buffs` pack, create on the target. The main workhorse. |
-| `condition` | `id` | `actor.setCondition(id)` / `toggleCondition` — PF1 status ids. |
-| `damage` | `formula`, `damageType?` | Immediate HP damage; rolled, shown, applied. |
-| `abilityDamage` | `ability`, `formula`, `drain?` | Honours "drain beats damage" stacking. |
-| `bleed` | `formula` or `fixed` | Routes to the existing Bleeding buffs; same-damage-type bleeds don't stack, worse wins. |
-| `delegate` | `entry` | Apply another catalog entry's outcomes — the downgrade primitive. |
-| `note` | `text` | **No automation.** Prints a GM adjudication line. |
-| `macro` | `uuid` | Last-resort escape hatch for the genuinely bespoke. Discouraged in content. |
+The authored shape is `{ id, duration?, bleed? }`:
 
-Handlers are registered lazily and independently — the registry only needs the types the
-catalog actually uses. `buff`, `condition`, and `note` cover the near-term need (the bone buffs
-are all `buff`); the rest land as content demands them. An outcome of an unregistered type is a
-lint warning and a no-op at runtime, never a thrown error, so a half-migrated catalog still runs.
+- **`duration` absent** means until something takes it off. Present, it is `{ value, units, end? }`.
+  `value` is a number or a **dice formula rolled when the condition lands** — `1d4` is the common
+  case and the reason this isn't just a number. `units` is turn/round/minute/hour/day, converted to
+  seconds at apply time. *"Until the end of your next turn"* is `{ value: 1, units: "turn", end:
+  "turnEnd" }`, which is the same six seconds as `{ value: 1, units: "round" }` and not the same
+  effect — that distinction is why both units exist.
+- **Conditions are an array**, because the content is full of pairs: *dazed 1 round and deafened
+  1d4 minutes*, *stunned 1 round and fatigued*. A singular field would have forced the second one
+  into prose. Two of the *same* condition on one entry is a content error the validator reports —
+  PF1 keeps one AE per condition, so the second application is silently dropped along with its
+  duration.
+- They are applied **sequentially**, not in parallel: two `setCondition` calls racing on one actor
+  both read `actor.statuses` before either writes, and PF1's condition-track handling can then drop
+  one. One or two per entry, so ordering them costs nothing.
 
-Dropping an item and changing speed were cut from this list: both are expressible as a `buff`
-(a Dropped Weapon buff, a speed `change`) or a `note` where GM judgment is needed anyway, and
-neither earns a bespoke handler.
+### Bleed — the one condition with a payload
 
-**This is also where the astora-mod coupling is allowed to live.** A `buff` outcome may pull a
-buff whose script calls reach into astora macros, or whose healing lifecycle needs dedicated
-healing. `applyOutcomes` therefore isolates each descriptor: one failing handler logs, reports
-in the card summary, and lets the rest of the array apply. An effect whose back end is missing
-degrades to what a journal-only entry would have given you — never a broken resolution.
+PF1's own bleed is an inert marker: the system tracks that you are bleeding and never asks how much.
+pf1-bleed-effects supplies the per-round damage, and a condition's optional `bleed` block is its
+configuration:
+
+```jsonc
+{ "id": "bleed", "bleed": { "formula": "2d6", "ability": null, "mode": "damage", "deep": 20 } }
+```
+
+`formula` is per-round damage; `ability` (str/dex/con/int/wis/cha) makes it ability bleed instead of
+hit points, with `mode` damage or drain; `deep` is hit points of dedicated healing needed to close
+the wound, which requires **Astora Homebrew rules on in both modules** and routes through §8's
+allocation dialog.
+
+**Both halves degrade independently, and that is the point.** No block means the vanilla marker. No
+pf1-bleed-effects means the vanilla marker. Neither is an error and neither is reported at the
+table — a world without that module gets exactly what PF1 alone would have given it.
+
+The condition is set **before** the bleed API is called, deliberately: pf1-bleed-effects creates its
+own actor-level marker only when it cannot find one, so setting ours first means one bleed condition
+on the sheet rather than two — and it is ours that carries the duration. A timed bleed then works
+end to end: the AE expires, PF1 deletes it, `pf1ToggleActorCondition` fires, and the module clears
+its stored effects.
+
+There is no `persists` / "bleed lasts" flag. That distinction exists in pf1-bleed-effects because a
+*buff* supplying bleed has to say whether the wound outlives it; a condition applied directly has no
+such ambiguity — a duration means timed, its absence means until cleared.
+
+### One button, not two
+
+Both channels are offered by a **single** `Apply` button on the card (`flow/effect-apply.mjs`). The
+GM's decision is "did this land", not "did the buff half of this land"; a card with `Apply Broken
+Arm` and `Apply Conditions` side by side invites applying half a critical, which no entry is
+written to mean.
+
+Conditions are applied first, before buff delivery opens its Refresh/Overwrite prompt — so if the
+GM cancels that prompt, the conditions the critical inflicted are still on the target rather than
+lost with it. The button is GM-only, and not by preference: creating an item or an active effect on
+an actor the clicker does not own requires a GM, and the target of a critical usually is not theirs.
+Proxying it over this module's socket is forbidden by §0, which carries generic primitives only.
+
+The conditions travel **on the button descriptor**, not as an entry id, so a button on an old card
+still applies what that card actually resolved even after the catalog has been re-authored.
+
+The fumble flow offers the same button, for the same reason: a snapped bowstring is prose, but a
+fumbled swing that leaves you prone is a condition. There the fumbler is both target and source —
+nobody did it to them.
+
+### Why the button and not the dialog
+
+The resolution dialog is GM-only and closes on Confirm. Anything applied from it leaves no trace
+anyone else can see, and no way to apply it a moment later once the GM has decided the save landed.
+On the card it is where the effect already is, for as long as the card exists.
+
+### Why astora-mod does the buff work
+
+`buffDelivery.applyBuffTo` is not just "copy an item onto an actor". It finds the buff on the actor
+first and prompts Refresh / Overwrite / Ignore when it is already there; it preserves
+`system.links`, which a plain `toObject()` copy silently strips; and it stamps source info the
+buff's own script calls can read. Re-implementing that would be re-implementing astora's buff
+system.
+
+The coupling is contained: `effect-apply.mjs` is the only file that knows astora exists, the buff
+half is skipped when it isn't installed, and an entry whose buff cannot be delivered still resolves,
+names itself, shows its prose and **applies its conditions**. Buffs are addressed by **name** rather
+than uuid, because that is what `applyBuffTo` takes and because a name survives a pack recompile,
+finds a copy already on the actor, and lets a GM keep their buffs in a pack of their own.
+
+### What is deliberately not here
+
+- **Immediate damage, ability damage, delegate-to-another-entry, macro.** All were in the removed
+  registry. `@Damage[…]` in an entry's `text` covers the first two as a GM-clicked button, which is
+  the right amount of automation for a number someone has to agree to. The other two had no content
+  asking for them.
+- **Undo.** Applying is now one button that creates conditions and at most one buff, all of them
+  visible on the sheet and removable there. A bespoke undo protocol was machinery for a
+  multi-document write that no longer happens.
+- **`blockedBy` on a deep bleed** (a wound that can't be tended while the arrow is still in it).
+  It needs an Item to point at, and the buff that would be it is delivered by a separate prompt
+  whose timing relative to the bleed isn't guaranteed. Deferred rather than rejected.
+
 
 ### Buff compendium (`packs/effect-buffs`, Item)
 
@@ -623,8 +753,8 @@ plus the **dedicated-healing dictionary flags** the existing bone buffs already 
 The pack **grows with the content track** — it is not filled up front. Seed it by migrating the
 ~20 Broken/Shattered buffs currently in
 `astora-mod/packs-source/buffs/Conditions_.../Broken_Bones_...`, which already correspond to
-existing effect journals (Broken Knee, Broken Arm, Compound Fracture, …) and can be attached to
-their catalog entries as a `buff` outcome the moment those entries are written. Everything else
+the injuries the content track will re-author (Broken Knee, Broken Arm, Compound Fracture, …) and
+can be named in an entry's `buff` field the moment those entries are written. Everything else
 gets a buff when someone writes one. **Migration catch:** those
 buffs carry `scriptCalls` pointing at `Compendium.astora-mod.macros.Macro.*` (use / toggle /
 preActivate). Those macro UUIDs must be retargeted, or the buffs break the moment astora-mod is
@@ -633,20 +763,15 @@ disabled.
 ### Macro compendium (`packs/macros`, Macro)
 
 The retarget destination, and the general escape hatch. Some effect behaviour genuinely wants to
-live as a script call on a buff rather than as an outcome descriptor — the bone buffs' existing
+live as a script call on a buff rather than as catalog data — the bone buffs' existing
 use/toggle/preActivate calls are the immediate example, and there will be more. Having our own
 pack from day one means content authoring never has to reach into astora-mod's macro pack to
 find a home for a script.
 
-Preference order when something needs to *happen*: **a typed outcome** → **a buff with changes**
-→ **a macro in this pack** → **`note` and let the GM adjudicate**. The macro pack is third, not
-first, but it needs to exist or the fourth option absorbs work it shouldn't.
-
-### Undo
-
-Applying a crit effect is a multi-document write (buff + condition + HP). Handlers optionally
-return an `undo` thunk, and the flow records the applied set on the message so a GM can revert
-a misfire in one click. Worth building in from the start — retrofitting undo is painful.
+Preference order when something needs to *happen*: **a `conditions` entry** → **a buff with
+changes** → **an enricher in the entry's `text` for the GM to click** → **a macro in this pack** →
+**`note` and let the GM adjudicate**. The macro pack is fourth, not first, but it needs to exist or
+the last option absorbs work it shouldn't.
 
 ---
 
@@ -1075,18 +1200,19 @@ data on the way past. ckl-roll-bonuses registers a WRAPPER on the same method
 | Phase | Deliverable | Depends on |
 |---|---|---|
 | **0** | Module scaffold: `module.json` esmodules/styles/lang/relationships, entry file, API stub, CSS, CHANGELOG/README. Own GM socket (generic primitives). Catalog loader + schema validator + `lint()`, all tolerant of outcome-less entries. | — |
-| **1** | **Fumble path end-to-end.** `fumbles.json` (transcribed from the existing tables + a new `natural` table), `fumble-flow.mjs`, card button + card mutation, roll-request draw. Journal-only results — no outcomes yet. | 0 |
+| **1** | **Fumble path end-to-end.** `fumbles.json` (transcribed from the existing tables + a new `natural` table), `fumble-flow.mjs`, card button + card mutation, roll-request draw. Name-and-prose results — no mechanics yet. | 0 |
 | **2** | **Resolve layer.** `context`/`power`/`location` + `anatomy.json`, all pure and console-testable. No UI. | 0 |
 | **3** | **Resolution dialog.** `crit-dialog.hbs` + a data-driven stage list. *(Originally "prompt card + luck spending"; the card became a dialog and the luck half was built and then removed — §7.2, §7.3.)* | 1, 2 |
-| **4** | **Standalone resolver** (§7.5). Quick action + ApplicationV2 manual input driving 2+3. First usable crit tooling end to end, on journal-only content, with zero pipeline risk. **Lethal draws** (§7.4) ride along — same quick-action plumbing, no resolve layer needed. | 3 |
-| **5** | **Outcome framework.** Registry + `buff`/`condition`/`note` handlers, `effect-buffs` pack seeded from the migrated bone buffs, undo. Apply button lights up on entries that have outcomes. | 4 |
+| **4** | **Standalone resolver** (§7.5). Quick action + ApplicationV2 manual input driving 2+3. First usable crit tooling end to end, on prose-only content, with zero pipeline risk. **Lethal draws** (§7.4) ride along — same quick-action plumbing, no resolve layer needed. | 3 |
+| **5** | **Mechanics.** Apply button on the card, `effect-buffs` pack seeded from the migrated bone buffs. *(Built as a typed-outcome registry with undo, then cut back to `buff` + `conditions` — see §6.)* | 4 |
 | **6** | **Dedicated healing migration** out of astora-mod, incl. socket-channel rename + buff script-call retargeting. Removes the last content-level astora coupling. | 5 |
 | **7** | **Automated crit flow.** Attack-card trigger, roll-request sequence wired to the dialog, crit-damage suppression + reinjection (§9), card mutation, lethal card button. | 4 |
-| **∞** | **Content track.** Journals → catalog entries (id, name, journal UUID), then the twelve rows of each damage-type × location table put in severity order. Runs from phase 1 onward, independent of everything else. Buffs and notes get attached opportunistically, entry by entry, after phase 5. | 0 |
+| **12** | **Self-contained catalog** (§3 v5, §6). Journals and their two packs deleted, `text` and `conditions` added, pool emptied, apply button covers both channels. | 5 |
+| **∞** | **Content track.** Pool entries (id, name, rank, slots, damage types, `text`), then the twelve rows of each damage-type × location table put in severity order. Runs from phase 1 onward, independent of everything else. `conditions`, `note` and `buff` get attached opportunistically, entry by entry. | 0 |
 
 The reordering versus a mechanics-first build is deliberate: **phase 4 is the goal post.** After
-it, you have a working crit-effect resolver producing real, named, journal-linked results at the
-table — on content that is nothing but prose and tags. Everything from 5 on is deepening, not
+it, you have a working crit-effect resolver producing real, named results at the table — on
+content that is nothing but prose and tags. Everything from 5 on is deepening, not
 unblocking, and the content track never waits on it.
 
 Phase 2 is independent of 1 above the catalog layer, so the two can run in parallel.

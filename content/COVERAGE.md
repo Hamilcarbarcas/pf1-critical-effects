@@ -2,11 +2,11 @@
 
 **Generated** by `node tools/pool-report.mjs --write`. Do not edit.
 
-Pool: **79 effects**, 45 ranked, 34 untriaged.
+Pool: **0 effects**, 0 ranked, 0 untriaged.
 Grid: **63 tables**, 756 rows — 3 weapon damage types ×
 13 anatomy/location pairs, plus 8 damage types that roll no
 location and keep one `general` table per anatomy.
-**4 of 63 tables are saturated** (every band has its 3 candidates); 51 have no candidates at all.
+**0 of 63 tables are saturated** (every band has its 3 candidates); 63 have no candidates at all.
 
 A table is always twelve rows — the generator backfills gaps by reusing the nearest-ranked
 candidate. This report is what tells you whether those twelve rows are twelve *effects* or one
@@ -16,67 +16,34 @@ effect stretched over twelve. Target is **3 candidates per band**, because a ban
 
 ## Work queue — tables in progress
 
-32 band-gaps sit in tables that already have candidates. **Closest to done
+0 band-gaps sit in tables that already have candidates. **Closest to done
 first** — each line is a writing prompt: a damage type, a body part, and how bad the wound
 should be. These are the cheapest wins; a table with two of three grave wounds needs one effect.
 
-| Damage type | Body part      | Band     | Have | Need |
-|-------------|----------------|----------|-----:|-----:|
-| Piercing    | humanoid arm   | Minor    |    2 |    3 |
-| Piercing    | humanoid arm   | Moderate |    2 |    3 |
-| Piercing    | humanoid arm   | Severe   |    2 |    3 |
-| Piercing    | humanoid head  | Minor    |    2 |    3 |
-| Piercing    | humanoid head  | Moderate |    2 |    3 |
-| Piercing    | humanoid leg   | Minor    |    2 |    3 |
-| Piercing    | humanoid leg   | Moderate |    2 |    3 |
-| Piercing    | humanoid torso | Minor    |    2 |    3 |
-| Piercing    | humanoid torso | Severe   |    2 |    3 |
-| Piercing    | humanoid torso | Grave    |    2 |    3 |
-| Slashing    | humanoid arm   | Moderate |    2 |    3 |
-| Slashing    | humanoid arm   | Severe   |    2 |    3 |
-| Slashing    | humanoid head  | Minor    |    2 |    3 |
-| Slashing    | humanoid head  | Moderate |    2 |    3 |
-| Slashing    | humanoid leg   | Moderate |    2 |    3 |
-| Slashing    | humanoid leg   | Severe   |    2 |    3 |
-| Slashing    | humanoid torso | Severe   |    2 |    3 |
-| Slashing    | humanoid torso | Grave    |    2 |    3 |
-| Piercing    | humanoid arm   | Grave    |    1 |    3 |
-| Piercing    | humanoid head  | Severe   |    1 |    3 |
-| Piercing    | humanoid leg   | Severe   |    1 |    3 |
-| Piercing    | humanoid torso | Moderate |    1 |    3 |
-| Slashing    | humanoid arm   | Minor    |    1 |    3 |
-| Slashing    | humanoid head  | Severe   |    1 |    3 |
-| Slashing    | humanoid leg   | Minor    |    1 |    3 |
-| Slashing    | humanoid leg   | Grave    |    1 |    3 |
-| Slashing    | humanoid torso | Minor    |    1 |    3 |
-| Slashing    | humanoid torso | Moderate |    1 |    3 |
-| Piercing    | humanoid head  | Grave    |    0 |    3 |
-| Piercing    | humanoid leg   | Grave    |    0 |    3 |
-| Slashing    | humanoid arm   | Grave    |    0 |    3 |
-| Slashing    | humanoid head  | Grave    |    0 |    3 |
+_None — every table with any content is saturated._
 
 ---
 
 ## Untouched tables
 
-51 of 63 tables have **no candidates at all**. These are
+63 of 63 tables have **no candidates at all**. These are
 from-scratch jobs rather than gap-filling, so they are listed by damage type rather than
 line by line. Remember one effect can be tagged for several body parts and damage types at once —
 these do not cost 12 effects each.
 
-| Damage type     | Empty | Body parts                                                                                                               |
-|-----------------|------:|--------------------------------------------------------------------------------------------------------------------------|
-| Bludgeoning     |  9/13 | beast arm, beast leg, beast torso, beast head, beast tail, beast wing, aberrant appendage, aberrant torso, aberrant head |
-| Piercing        |  9/13 | beast arm, beast leg, beast torso, beast head, beast tail, beast wing, aberrant appendage, aberrant torso, aberrant head |
-| Slashing        |  9/13 | beast arm, beast leg, beast torso, beast head, beast tail, beast wing, aberrant appendage, aberrant torso, aberrant head |
-| Fire            |   3/3 | **all**                                                                                                                  |
-| Cold            |   3/3 | **all**                                                                                                                  |
-| Electricity     |   3/3 | **all**                                                                                                                  |
-| Acid            |   3/3 | **all**                                                                                                                  |
-| Sonic           |   3/3 | **all**                                                                                                                  |
-| Force           |   3/3 | **all**                                                                                                                  |
-| Positive Energy |   3/3 | **all**                                                                                                                  |
-| Negative Energy |   3/3 | **all**                                                                                                                  |
+| Damage type     | Empty | Body parts |
+|-----------------|------:|------------|
+| Bludgeoning     | 13/13 | **all**    |
+| Piercing        | 13/13 | **all**    |
+| Slashing        | 13/13 | **all**    |
+| Fire            |   3/3 | **all**    |
+| Cold            |   3/3 | **all**    |
+| Electricity     |   3/3 | **all**    |
+| Acid            |   3/3 | **all**    |
+| Sonic           |   3/3 | **all**    |
+| Force           |   3/3 | **all**    |
+| Positive Energy |   3/3 | **all**    |
+| Negative Energy |   3/3 | **all**    |
 
 ---
 
@@ -88,10 +55,10 @@ Candidates per band, per table. `3` is saturated; `.` is empty.
 
 | Body part          | Minor | Moderate | Severe | Grave | Total |
 |--------------------|------:|---------:|-------:|------:|------:|
-| humanoid arm       |     3 |        3 |      3 |     3 |    12 |
-| humanoid leg       |     3 |        3 |      3 |     3 |    12 |
-| humanoid torso     |     3 |        3 |      3 |     3 |    12 |
-| humanoid head      |     3 |        3 |      3 |     3 |    12 |
+| humanoid arm       |     . |        . |      . |     . |     0 |
+| humanoid leg       |     . |        . |      . |     . |     0 |
+| humanoid torso     |     . |        . |      . |     . |     0 |
+| humanoid head      |     . |        . |      . |     . |     0 |
 | beast arm          |     . |        . |      . |     . |     0 |
 | beast leg          |     . |        . |      . |     . |     0 |
 | beast torso        |     . |        . |      . |     . |     0 |
@@ -106,10 +73,10 @@ Candidates per band, per table. `3` is saturated; `.` is empty.
 
 | Body part          | Minor | Moderate | Severe | Grave | Total |
 |--------------------|------:|---------:|-------:|------:|------:|
-| humanoid arm       |     2 |        2 |      2 |     1 |     7 |
-| humanoid leg       |     2 |        2 |      1 |     . |     5 |
-| humanoid torso     |     2 |        1 |      2 |     2 |     7 |
-| humanoid head      |     2 |        2 |      1 |     . |     5 |
+| humanoid arm       |     . |        . |      . |     . |     0 |
+| humanoid leg       |     . |        . |      . |     . |     0 |
+| humanoid torso     |     . |        . |      . |     . |     0 |
+| humanoid head      |     . |        . |      . |     . |     0 |
 | beast arm          |     . |        . |      . |     . |     0 |
 | beast leg          |     . |        . |      . |     . |     0 |
 | beast torso        |     . |        . |      . |     . |     0 |
@@ -124,10 +91,10 @@ Candidates per band, per table. `3` is saturated; `.` is empty.
 
 | Body part          | Minor | Moderate | Severe | Grave | Total |
 |--------------------|------:|---------:|-------:|------:|------:|
-| humanoid arm       |     1 |        2 |      2 |     . |     5 |
-| humanoid leg       |     1 |        2 |      2 |     1 |     6 |
-| humanoid torso     |     1 |        1 |      2 |     2 |     6 |
-| humanoid head      |     2 |        2 |      1 |     . |     5 |
+| humanoid arm       |     . |        . |      . |     . |     0 |
+| humanoid leg       |     . |        . |      . |     . |     0 |
+| humanoid torso     |     . |        . |      . |     . |     0 |
+| humanoid head      |     . |        . |      . |     . |     0 |
 | beast arm          |     . |        . |      . |     . |     0 |
 | beast leg          |     . |        . |      . |     . |     0 |
 | beast torso        |     . |        . |      . |     . |     0 |
@@ -201,50 +168,6 @@ Candidates per band, per table. `3` is saturated; `.` is empty.
 | humanoid general |     . |        . |      . |     . |     0 |
 | beast general    |     . |        . |      . |     . |     0 |
 | aberrant general |     . |        . |      . |     . |     0 |
-
----
-
-## Untriaged
-
-34 pool effects have no `rank` and are therefore placed in **no table at all** —
-they are inventory, not content. Give each one a 1-12 severity score to bring it into play.
-
-| Effect               | Slots          | Damage types       |
-|----------------------|----------------|--------------------|
-| Achilles Tendon      | humanoid/leg   | piercing, slashing |
-| Back Stabbed         | humanoid/torso | piercing, slashing |
-| Beheaded             | humanoid/head  | slashing           |
-| Broken Heart         | humanoid/torso | piercing, slashing |
-| Broken Heel          | humanoid/leg   | piercing           |
-| Caved Cranium        | humanoid/head  | bludgeoning        |
-| Cleaved Forehead     | humanoid/head  | slashing           |
-| Disemboweled         | humanoid/torso | piercing, slashing |
-| Eye Plucked          | humanoid/head  | piercing, slashing |
-| Femoral Artery       | humanoid/leg   | piercing, slashing |
-| Finger Tipped        | humanoid/arm   | piercing, slashing |
-| Horrific Facial Scar | humanoid/head  | piercing, slashing |
-| Impaled Stomach      | humanoid/torso | piercing, slashing |
-| Lost Fingers         | humanoid/arm   | piercing, slashing |
-| Lost Toes            | humanoid/leg   | piercing, slashing |
-| Pierced Backside     | humanoid/torso | piercing, slashing |
-| Pierced Brain        | humanoid/head  | piercing           |
-| Pierced Eardrum      | humanoid/head  | piercing           |
-| Pierced Foot         | humanoid/leg   | piercing, slashing |
-| Pierced Hand         | humanoid/arm   | piercing, slashing |
-| Pierced Knee         | humanoid/leg   | piercing           |
-| Pierced Lung         | humanoid/torso | piercing, slashing |
-| Pierced Mouth        | humanoid/head  | piercing           |
-| Pierced Throat       | humanoid/head  | piercing           |
-| Scalped              | humanoid/head  | slashing           |
-| Severed Arm          | humanoid/arm   | slashing           |
-| Severed Ear          | humanoid/head  | slashing           |
-| Severed Foot         | humanoid/leg   | slashing           |
-| Severed Hand         | humanoid/arm   | slashing           |
-| Severed Leg          | humanoid/leg   | slashing           |
-| Severed Nose         | humanoid/head  | piercing, slashing |
-| Slit Wrists          | humanoid/arm   | piercing, slashing |
-| Split Hand           | humanoid/arm   | slashing           |
-| Throat Slashed       | humanoid/head  | slashing           |
 
 ---
 

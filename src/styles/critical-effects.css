@@ -64,6 +64,54 @@
   font-size: var(--font-size-14, 14px);
 }
 
+/* --- an effect's own content on the card ---------------------------------
+ *
+ * Since v5 the entry carries its prose rather than pointing at a journal, so these three blocks
+ * are the whole of what used to be one book-icon link. Order on the card is conditions, prose,
+ * note: what mechanically happened, then what it reads like, then what the GM has to rule on.
+ */
+
+.ce-effect-conditions {
+  margin-top: 3px;
+  font-size: var(--font-size-12, 12px);
+  font-weight: bold;
+}
+
+.ce-effect-conditions i {
+  opacity: 0.7;
+}
+
+/* Authored HTML, so it may contain paragraphs and enricher buttons. The margin reset keeps a
+   single-paragraph entry — which is most of them — from sitting in a block of dead space. */
+.ce-effect-text {
+  margin-top: 4px;
+  font-size: var(--font-size-13, 13px);
+}
+
+.ce-effect-text > :first-child { margin-top: 0; }
+.ce-effect-text > :last-child { margin-bottom: 0; }
+
+.ce-effect-note {
+  margin-top: 4px;
+  font-size: var(--font-size-12, 12px);
+  font-style: italic;
+  opacity: 0.85;
+}
+
+/* The dialog's preview of the same two, inside the dark result panel. */
+.ce-window .ce-result-conditions {
+  margin-top: 3px;
+  font-size: 12px;
+  color: var(--ce-accent);
+}
+
+.ce-window .ce-result-note {
+  margin-top: 3px;
+  font-size: 12px;
+  font-style: italic;
+  color: var(--ce-dim);
+}
+
 /* --- dialog --------------------------------------------------------------- */
 
 .ce-dialog p {
@@ -616,6 +664,25 @@
 .dedicated-healing-form .dh-alloc-input {
   width: 70px;
   text-align: center;
+}
+
+/* A wound that is present but can't absorb healing yet — listed for context, greyed, with the
+   reason where its input would be. Present so it doesn't silently vanish from the dialog. */
+.dedicated-healing-form .dh-blocked {
+  opacity: 0.55;
+}
+
+.dedicated-healing-form .dh-blocked .dh-name {
+  font-style: italic;
+}
+
+.dedicated-healing-form .dh-blocked-reason {
+  display: block;
+  font-size: 0.8em;
+  font-style: italic;
+  line-height: 1.15;
+  text-align: center;
+  white-space: normal;
 }
 
 .dedicated-healing-form .dh-footer {

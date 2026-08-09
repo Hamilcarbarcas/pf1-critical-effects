@@ -1,7 +1,8 @@
 {
-  "version": 1,
+  "version": 2,
   "_source": "THE source for fumble content. data/fumbles.json is generated from this file by tools/fumbles-to-tables.mjs and must not be hand-edited.",
   "_tags": "`attackTypes` selects which of the six fumble tables an entry can appear in. There is no rank: the twenty rows of a fumble table are unordered peers, so the die picks flavour rather than severity.",
+  "_content": "An entry is COMPLETE with `id` and `name`. `text` is its prose (HTML, enriched on the card, PF1 enrichers work in it), `note` the terse GM line, `buff` a buff name, `conditions` an array of PF1 conditions — same shape as data/pool.json, see its `_conditions` note. There is no `journal`.",
   "entries": [
     {
       "id": "broken-arrow",
@@ -10,9 +11,9 @@
         "bows",
         "crossbows"
       ],
-      "journal": "Compendium.pf1-critical-effects.critical-effects.JournalEntry.1NpFUxV9qeFIc51T",
-      "buff": null,
-      "note": null
+      "text": null,
+      "note": null,
+      "buff": null
     },
     {
       "id": "broken-string",
@@ -21,9 +22,9 @@
         "bows",
         "crossbows"
       ],
-      "journal": "Compendium.pf1-critical-effects.critical-effects.JournalEntry.QW0upC5AImqltdJK",
-      "buff": null,
-      "note": null
+      "text": null,
+      "note": null,
+      "buff": null
     },
     {
       "id": "broken-weapon",
@@ -31,9 +32,9 @@
       "attackTypes": [
         "thrown"
       ],
-      "journal": "Compendium.pf1-critical-effects.critical-effects.JournalEntry.WxoRUheGhavqQZwq",
-      "buff": null,
-      "note": null
+      "text": null,
+      "note": null,
+      "buff": null
     },
     {
       "id": "dislocated-elbow",
@@ -45,9 +46,9 @@
         "natural",
         "thrown"
       ],
-      "journal": "Compendium.pf1-critical-effects.critical-effects.JournalEntry.qfIRnk10XvHn05MT",
-      "buff": null,
-      "note": null
+      "text": null,
+      "note": null,
+      "buff": null
     },
     {
       "id": "dislocated-shoulder",
@@ -58,9 +59,9 @@
         "natural",
         "thrown"
       ],
-      "journal": "Compendium.pf1-critical-effects.critical-effects.JournalEntry.SnESOs7oVjfR23C6",
-      "buff": null,
-      "note": null
+      "text": null,
+      "note": null,
+      "buff": null
     },
     {
       "id": "dropped-arrow",
@@ -69,9 +70,9 @@
         "bows",
         "crossbows"
       ],
-      "journal": "Compendium.pf1-critical-effects.critical-effects.JournalEntry.AksyYKSQXHpeQkDr",
-      "buff": null,
-      "note": null
+      "text": null,
+      "note": null,
+      "buff": null
     },
     {
       "id": "dropped-bow",
@@ -80,9 +81,9 @@
         "bows",
         "crossbows"
       ],
-      "journal": "Compendium.pf1-critical-effects.critical-effects.JournalEntry.UDN3rCe3D6xQQpBe",
-      "buff": null,
-      "note": null
+      "text": null,
+      "note": null,
+      "buff": null
     },
     {
       "id": "dropped-weapon",
@@ -91,9 +92,9 @@
         "melee",
         "thrown"
       ],
-      "journal": "Compendium.pf1-critical-effects.critical-effects.JournalEntry.DkQDSoaapXkYV9iY",
-      "buff": null,
-      "note": null
+      "text": null,
+      "note": null,
+      "buff": null
     },
     {
       "id": "fall-down",
@@ -102,9 +103,9 @@
         "bows",
         "crossbows"
       ],
-      "journal": "Compendium.pf1-critical-effects.critical-effects.JournalEntry.IjUYwxF4kQRtfLvu",
-      "buff": null,
-      "note": null
+      "text": null,
+      "note": null,
+      "buff": null
     },
     {
       "id": "fell-down",
@@ -114,9 +115,9 @@
         "natural",
         "thrown"
       ],
-      "journal": "Compendium.pf1-critical-effects.critical-effects.JournalEntry.RmyPFJ882jp4lcq4",
-      "buff": null,
-      "note": null
+      "text": null,
+      "note": null,
+      "buff": null
     },
     {
       "id": "flung-weapon",
@@ -125,9 +126,9 @@
         "melee",
         "thrown"
       ],
-      "journal": "Compendium.pf1-critical-effects.critical-effects.JournalEntry.1RNKuvxB8Et77i7u",
-      "buff": null,
-      "note": null
+      "text": null,
+      "note": null,
+      "buff": null
     },
     {
       "id": "horrific-facial-scar",
@@ -136,9 +137,9 @@
         "melee",
         "natural"
       ],
-      "journal": "Compendium.pf1-critical-effects.critical-effects.JournalEntry.mD3jUxZfPXFESOYx",
-      "buff": null,
-      "note": null
+      "text": null,
+      "note": null,
+      "buff": null
     },
     {
       "id": "juggled-weapon",
@@ -147,9 +148,9 @@
         "melee",
         "thrown"
       ],
-      "journal": "Compendium.pf1-critical-effects.critical-effects.JournalEntry.FL96GikENrj0KvNm",
-      "buff": null,
-      "note": null
+      "text": null,
+      "note": null,
+      "buff": null
     },
     {
       "id": "slipped-vertebrae",
@@ -161,9 +162,9 @@
         "natural",
         "thrown"
       ],
-      "journal": "Compendium.pf1-critical-effects.critical-effects.JournalEntry.EwcIVTS7vmNFQS7B",
-      "buff": null,
-      "note": null
+      "text": null,
+      "note": null,
+      "buff": null
     },
     {
       "id": "sprained-ankle",
@@ -172,9 +173,9 @@
         "melee",
         "natural"
       ],
-      "journal": "Compendium.pf1-critical-effects.critical-effects.JournalEntry.vyS7PHcNDqEsV5RL",
-      "buff": null,
-      "note": null
+      "text": null,
+      "note": null,
+      "buff": null
     },
     {
       "id": "sprained-wrist",
@@ -186,9 +187,9 @@
         "natural",
         "thrown"
       ],
-      "journal": "Compendium.pf1-critical-effects.critical-effects.JournalEntry.EjqnsX0UXdtrOyBT",
-      "buff": null,
-      "note": null
+      "text": null,
+      "note": null,
+      "buff": null
     },
     {
       "id": "stumble",
@@ -200,9 +201,9 @@
         "natural",
         "thrown"
       ],
-      "journal": "Compendium.pf1-critical-effects.critical-effects.JournalEntry.BwcfrmpL99MqtxCr",
-      "buff": null,
-      "note": null
+      "text": null,
+      "note": null,
+      "buff": null
     },
     {
       "id": "twisted-knee",
@@ -211,9 +212,9 @@
         "melee",
         "natural"
       ],
-      "journal": "Compendium.pf1-critical-effects.critical-effects.JournalEntry.H3p2gxoc5kvEFncu",
-      "buff": null,
-      "note": null
+      "text": null,
+      "note": null,
+      "buff": null
     },
     {
       "id": "wrong-target",
@@ -225,9 +226,9 @@
         "natural",
         "thrown"
       ],
-      "journal": "Compendium.pf1-critical-effects.critical-effects.JournalEntry.Qr1LUgaUs4URNZjO",
-      "buff": null,
-      "note": null
+      "text": null,
+      "note": null,
+      "buff": null
     }
   ]
 }

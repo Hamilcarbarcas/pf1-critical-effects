@@ -7,7 +7,7 @@
  *   4. draw              — a targeted 1d20 roll request carrying the table, which the PLAYER
  *                          clicks to roll. Posting it ends the GM's turn in the flow.
  *   5. result            — picked up from the rollComplete hook whenever that roll lands, then
- *                          appended to the original attack card, journal linked.
+ *                          appended to the original attack card, with its prose and conditions.
  *
  * Steps 4 and 5 are deliberately disconnected: the wait for a player's click is open-ended, so
  * the link between the two lives in a flag on the request card rather than in memory.
@@ -24,6 +24,7 @@ import * as catalog from "../catalog/catalog.mjs";
 import { registerButtonType, addButtons, removeButton } from "../chat/card-buttons.mjs";
 import { setFumbleResult, createFumbleResultCard } from "../chat/card-mutate.mjs";
 import { postFumbleDraw, totalFromResult, DRAW_FLAG } from "../integrations/roll-requests.mjs";
+import { offerApplyButton } from "./effect-apply.mjs";
 import { displayName } from "../integrations/token-randomizer.mjs";
 
 const BUTTON_TYPE = "resolve-fumble";
@@ -325,7 +326,18 @@ async function completeDraw({ messageId, result }) {
     total,
     entryId: entry.id,
     name: entry.name,
-    journal: entry.journal ?? null,
+    text: entry.text ?? null,
+    note: entry.note ?? null,
+    conditions: entry.conditions ?? null,
+  });
+
+  /* A fumble can inflict conditions and carry a buff the same way a critical can — a snapped
+   * bowstring is prose, but a fumbled swing that leaves you prone is a condition (§6). The
+   * fumbler is both target and source here: nobody did this to them. */
+  await offerApplyButton(source, {
+    entry,
+    target: { actorId: draw.actorId ?? null, tokenId: draw.tokenId ?? null },
+    sourceActorId: draw.actorId ?? null,
   });
 
   // Resolved — don't act on a re-roll of the same card.

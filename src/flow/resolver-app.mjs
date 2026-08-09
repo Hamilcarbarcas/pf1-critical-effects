@@ -5,8 +5,8 @@
  *
  * The important property is that it runs the SAME `resolve/` path as the automated flow and
  * hands off to the SAME prompt card. It is a different way in, not a second implementation —
- * which is what makes it usable as the primary tool today, on journal-only content, with none
- * of phase 7's pipeline risk.
+ * which is what makes it usable as the primary tool today, on text-only content, with none of
+ * phase 7's pipeline risk.
  */
 
 import { MODULE_ID } from "../const.mjs";

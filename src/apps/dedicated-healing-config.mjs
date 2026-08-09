@@ -12,6 +12,7 @@
 
 import { MODULE_ID } from "../const.mjs";
 import { getConfig, setConfig } from "../integrations/dedicated-healing.mjs";
+import { homebrewEnabled } from "../settings.mjs";
 import { makeCollapsible } from "./sheet-section-collapse.mjs";
 
 const TEMPLATE = `modules/${MODULE_ID}/src/apps/dedicated-healing-section.hbs`;
@@ -48,6 +49,12 @@ async function injectSection(app, html) {
 
   const cfg = getConfig(item);
   const configured = cfg.required > 0;
+
+  // With the house rule off, this is where new obligations would be created, so it goes away.
+  // An item that is *already* configured keeps its section, because the numbers on it are still
+  // live — the allocation dialog goes on honouring them — and a GM turning the rule off mid-
+  // campaign needs to see, and be able to reset, what is still outstanding.
+  if (!homebrewEnabled() && !configured) return;
 
   const rendered = await foundry.applications.handlebars.renderTemplate(TEMPLATE, {
     ...cfg,

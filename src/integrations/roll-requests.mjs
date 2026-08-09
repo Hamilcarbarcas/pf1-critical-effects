@@ -81,8 +81,17 @@ export async function postFumbleDraw({
   // that somehow did would simply find no flag and be ignored.
   //
   // The fumbler's name and speaker are stored rather than re-derived when the roll lands: a draw
-  // waits on a human, and by then the token may have been deleted or the scene changed.
-  await message.setFlag(MODULE_ID, DRAW_FLAG, { sourceMessageId, tableKey, fumblerName, speaker });
+  // waits on a human, and by then the token may have been deleted or the scene changed. The ids
+  // ride along for the same reason — a fumble that inflicts a condition needs something to apply
+  // it to, and the token is the only thing here that knows who fumbled.
+  await message.setFlag(MODULE_ID, DRAW_FLAG, {
+    sourceMessageId,
+    tableKey,
+    fumblerName,
+    speaker,
+    tokenId: token.id ?? null,
+    actorId: token.actor?.id ?? null,
+  });
 
   return message;
 }

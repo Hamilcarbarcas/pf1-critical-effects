@@ -10,14 +10,18 @@
     </thead>
     <tbody>
       {{#each participants}}
-      <tr>
+      <tr class="{{#if blocked}}dh-blocked{{/if}}">
         <td class="dh-name">{{name}}</td>
         <td class="dh-progress">{{received}} / {{required}} HP</td>
         <td>
+          {{#if blocked}}
+          <span class="dh-blocked-reason">{{blockedReason}}</span>
+          {{else}}
           <input type="number" class="dh-alloc-input"
                  data-participant-id="{{id}}"
                  min="0" max="{{remaining}}"
                  value="0">
+          {{/if}}
         </td>
       </tr>
       {{/each}}

@@ -236,14 +236,18 @@
     <div class="ce-result">
       {{#if entry}}
         <div class="ce-result-name">
-          {{#if entry.journal}}
-            <a class="content-link" draggable="true" data-link data-uuid="{{entry.journal}}" data-type="JournalEntry"><i class="fa-solid fa-book-open"></i>{{entry.name}}</a>
-          {{else}}
-            {{entry.name}}
-          {{/if}}
+          {{entry.name}}
           <span class="ce-row-badge">row {{outcome.row}}</span>
           {{#if overridden}}<span class="ce-row-badge ce-override">adjusted</span>{{/if}}
         </div>
+        {{!-- The conditions this row inflicts, named before the GM confirms rather than after —
+              they are half of what "is this the right row" means. --}}
+        {{#if conditionSummary}}
+          <div class="ce-result-conditions"><i class="fa-solid fa-triangle-exclamation"></i> {{conditionSummary}}</div>
+        {{/if}}
+        {{#if entry.note}}
+          <div class="ce-result-note">{{entry.note}}</div>
+        {{/if}}
         {{#if entry.tags.length}}
           <div class="ce-result-tags">{{#each entry.tags}}<span class="ce-tag">{{this}}</span>{{/each}}</div>
         {{/if}}

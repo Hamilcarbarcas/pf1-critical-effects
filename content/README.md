@@ -68,14 +68,17 @@ damage tags select nothing, and `pool-to-tables` says so without failing the bui
 
 ```jsonc
 {
-  "id": "broken-arm",                  // slug of the name; the join key for journal + buff
+  "id": "broken-arm",                  // slug of the name; the join key for everything
   "name": "Broken Arm",
   "rank": 6,                           // 1-12 severity score, or null = untriaged
   "slots": ["humanoid/arm"],           // anatomy/location pairs; "*/torso" = every anatomy
   "damageTypes": ["bludgeoning", "slashing"],   // or ["*"] for all eleven
-  "journal": "Compendium.pf1-critical-effects.critical-effects.JournalEntry.…",
-  "buff": null,                        // the mechanics; the part that's actually locked in
-  "note": "Broken Arm condition: -6 on attacks and skills using that arm…",
+  "text": "<p>The bone goes with a sound you feel more than hear.</p>",
+  "note": "DC 10 Heal, 10 HP dedicated.",       // one terse line for the GM to adjudicate
+  "buff": "Broken Arm",                // buff NAME, delivered by astora-mod
+  "conditions": [                      // PF1 statuses, applied natively — see below
+    { "id": "staggered", "duration": { "value": "1d4", "units": "round" } }
+  ],
   "pins": { "slashing/humanoid/head": 12 }      // OPTIONAL, and rare — see below
 }
 ```
@@ -170,7 +173,7 @@ tag is `attackTypes`:
 ```jsonc
 { "id": "dropped-weapon", "name": "Dropped Weapon",
   "attackTypes": ["melee", "thrown", "bows", "crossbows"],
-  "journal": null, "buff": null, "note": null }
+  "text": null, "note": null, "buff": null, "conditions": [] }
 ```
 
 **No rank, no bands.** The twenty rows are *unordered peers*: the die picks which fumble, not how
@@ -194,7 +197,7 @@ axis. The one tag is `damageTypes`, and one entry is drawn at random from whatev
 ```jsonc
 { "id": "heart-pierced", "name": "Heart Pierced",
   "damageTypes": ["piercing"],
-  "journal": "Compendium.…" }
+  "text": "<p>The point finds the heart and it stops mid-beat.</p>" }
 ```
 
 There's no target count, so an empty damage type isn't a gap in the sense the tables use — it just
@@ -204,11 +207,92 @@ visible.
 Do **not** confuse this with mortal. Mortal is the 13+ clamp on a critical effect and is part of
 the resolution; lethal is post-hoc narration for a death that has already happened.
 
-## Journals and buffs
+## The content fields
 
-`journal` is display only — nothing in the engine parses prose, and the current journals are
-placeholders. `buff` is the real payload and is the part that is locked in; the content strategy
-(DESIGN.md §3) is unchanged in that an entry with just a name is complete and usable.
+An entry with `id` and `name` alone is **complete and usable** — the flow resolves it, names it and
+stops. Everything below is optional and additive, and no part of the engine assumes any of it
+exists. Fill them in whatever order the entry wants.
 
-Both are keyed to the entry `id`, which is the slug of the `name` — so **renaming an effect severs
-both**. Rename the `id` and the `name` together, deliberately.
+### `text` — the prose
+
+HTML, stored in the entry and enriched when the card renders. This is what replaced the journals in
+v5: the paragraph belongs next to the result, not one click away in a compendium.
+
+Because it goes through PF1's enricher, the text buttons work in it:
+
+| You write | You get |
+|---|---|
+| `@Bleed[2d6;deep=20]` | a clickable 2d6 deep-bleed button (pf1-bleed-effects) |
+| `@Condition[stunned]` | a clickable condition button |
+| `@Damage[1d6]` | a clickable damage button |
+
+That is the **manual** path, and it is deliberately kept alongside the automated one. Use an
+enricher for the half of an effect a GM should decide about; use `conditions` below for the half
+that should just happen. Writing the same effect in both means it lands twice.
+
+### `note` — the adjudication line
+
+One terse line, shown as-is with no formatting. Heal DCs, dedicated-healing thresholds, "GM's
+choice of arm". If it needs a paragraph, it belongs in `text`.
+
+### `conditions` — PF1 statuses
+
+An array, because the content is full of pairs — *dazed 1 round and deafened 1d4 minutes*. Each is
+`{ id, duration?, bleed? }`, and `id` is a PF1 registry id (`CONDITION_IDS` in
+`src/catalog/schema.mjs` is the full list).
+
+```jsonc
+{ "id": "dazed" }                                              // until removed by hand
+{ "id": "stunned", "duration": { "value": 1, "units": "round" } }
+{ "id": "deaf",    "duration": { "value": "1d4", "units": "minute" } }   // formula rolled on apply
+{ "id": "flatFooted", "duration": { "value": 1, "units": "turn", "end": "turnEnd" } }
+```
+
+- **`duration` absent** = until something takes it off.
+- **`value`** is a number or a dice formula, rolled when the condition lands.
+- **`units`** is `turn`, `round`, `minute`, `hour` or `day`.
+- **`end`** is `turnStart` (PF1's default), `turnEnd`, or `initiative`. *"Until the end of your next
+  turn"* is `{ value: 1, units: "turn", end: "turnEnd" }` — same six seconds as one round, not the
+  same effect.
+
+This is native PF1: the duration goes onto the condition's Active Effect, PF1 expires it against
+world time and **deletes** it, and a GM can right-click the condition on the sheet to read or change
+the rounds remaining. Don't reach for a buff to time a condition.
+
+**Don't list the same condition twice** on one entry. PF1 keeps one Active Effect per condition, so
+the second one is silently dropped along with its duration; the validator reports it.
+
+### `conditions[].bleed` — the one payload
+
+Valid only on the `bleed` condition. PF1's own bleed is an inert marker — it tracks that you're
+bleeding and never asks how much — so this is pf1-bleed-effects' configuration:
+
+```jsonc
+{ "id": "bleed", "bleed": { "formula": "2d6", "deep": 20 } }
+{ "id": "bleed", "bleed": { "formula": "1", "ability": "con", "mode": "drain" } }
+{ "id": "bleed" }                                    // inert marker — the vanilla condition
+```
+
+- **`formula`** — damage per round. Required if the block is present at all.
+- **`ability`** — `str`/`dex`/`con`/`int`/`wis`/`cha` for ability bleed instead of hit points.
+- **`mode`** — `damage` or `drain`. Only meaningful with `ability`.
+- **`deep`** — hit points of dedicated healing needed to close the wound. Needs **Astora Homebrew
+  rules on in both modules**; ignored otherwise.
+
+**Omitting the block is a real answer**, not an unfinished one — it's the vanilla marker, which is
+also exactly what you get in a world without pf1-bleed-effects installed.
+
+### `buff` — the buff NAME
+
+Not a uuid: a name, which is what astora-mod's `applyBuffTo` takes. A name survives a pack
+recompile, finds a copy already on the actor (which is what makes Refresh work), and lets a GM keep
+their buffs in a pack of their own.
+
+Reach for a buff when the effect needs `changes`, context notes, or a dedicated-healing lifecycle.
+Reach for `conditions` when it's a status. An entry may have both.
+
+### Renaming
+
+Every field is keyed to the entry `id`, which is the slug of the `name` — so **renaming an effect
+severs its placement, its pins and its buff link**. Rename the `id` and the `name` together,
+deliberately.

@@ -2,7 +2,76 @@
 
 ## Unreleased
 
+### Changed
+- **The effect catalog is now self-contained — the journal packs are gone.** An entry carries its
+  own prose in a `text` field rather than a UUID pointing at a compendium journal, and the two
+  shipped packs (**Critical Effects** journals, **Critical Tables** roll tables) have been removed
+  from the module. The prose is a paragraph and it belongs on the chat card next to the result,
+  where it is actually read — a compendium round-trip, a drift-lint, an import tool and a UUID in
+  every entry bought a click-through and a second place for the content to be wrong.
+  - Effect prose now goes through PF1's **enricher**, so `@Bleed[2d6;deep=20]`, `@Condition[stunned]`
+    and `@Damage[1d6]` written into an entry render as the clickable buttons those modules already
+    provide. That is the manual path, kept deliberately alongside the automated one below.
+  - The chat card shows the effect's name, its conditions, its description and its GM note in that
+    order — what mechanically happened, then what it reads like, then what has to be ruled on.
+  - `tools/tables-to-json.mjs`, which transcribed the shipped RollTables into JSON, is deleted; the
+    pools have been the source of truth since phase 9.
+- **The effect pool is empty.** Every shipped journal and effect was a placeholder, so there was
+  nothing worth migrating to the new shape and the content track restarts against it. The mortal
+  worksheet (`content/mortal.md`, the 13+ addendum) is unaffected and its 21 rows remain. Fumble
+  and lethal entries keep their names and tags; only their journal links are gone.
+- **One Apply button instead of the apply-buff button.** It now covers both of an entry's
+  mechanical channels — conditions and buff — because the GM's decision is "did this land", not
+  "did the buff half of this land". Conditions are applied *before* buff delivery opens its
+  Refresh/Overwrite prompt, so cancelling that prompt no longer costs you the conditions the
+  critical inflicted. The fumble flow offers the same button, which it previously had no way to.
+- `game.criticalEffects.lint()` reports **condition drift** in place of journal drift: conditions
+  the content uses that PF1 doesn't know, conditions PF1 has that the module's static list lacks, a
+  usage count per condition, and any entry configuring bleed damage while pf1-bleed-effects is
+  absent.
+
 ### Added
+- **`conditions` on an effect, fumble or lethal entry** — the PF1 statuses a wound imposes, applied
+  natively and with real durations. Previously these existed only as prose for a GM to read and
+  apply by hand.
+  - An **array**, because the content is full of pairs: *dazed 1 round and deafened 1d4 minutes*,
+    *stunned 1 round and fatigued*.
+  - A duration is `{ value, units, end? }`. `value` may be a **dice formula**, rolled when the
+    condition lands. `units` is turn/round/minute/hour/day. `end` is `turnStart` (PF1's default),
+    `turnEnd` or `initiative` — so *"until the end of your next turn"* is expressible, and is
+    distinct from one round despite being the same six seconds.
+  - This is PF1's own mechanism, not a buff standing in for one: the duration goes onto the
+    condition's Active Effect, PF1 expires it against world time and **deletes** it, and a GM can
+    right-click the condition on the character sheet to read or change the rounds remaining in the
+    system's own dialog. No item on the sheet, nothing to track by hand.
+  - Omitting the duration means the condition stays until something takes it off.
+- **Bleed configuration on a `bleed` condition** — `{ formula, ability?, mode?, deep? }`, driving
+  [pf1-bleed-effects](https://github.com/Hamilcarbarcas/pf1-bleed-effects). Hit point bleed, ability
+  damage or drain, and optionally a *deep* wound that closes only after a threshold of dedicated
+  healing (needs **Astora Homebrew rules** on in both modules).
+  - **Omitting the block is a real answer**, not an unfinished one: it is the inert vanilla marker,
+    which is also exactly what a world without pf1-bleed-effects gets. Neither is reported as an
+    error at the table.
+  - The condition is set before the bleed API is called, so the sheet shows one bleed condition
+    rather than two — and it is the one carrying the duration. A timed bleed therefore ends
+    properly: the effect expires, PF1 deletes it, and the module clears its stored bleeds.
+- **"Astora Homebrew rules" setting** (world scope, off by default) — one switch for everything in
+  this module that changes how other rules work. Currently that means dedicated healing; anything
+  non-RAW added later joins it there. pf1-bleed-effects carries the identically-named setting for
+  its own house rules, and the two are read together: its Deep Bleed rule is built on this
+  module's dedicated healing, so a deep bleed is only inflicted when both switches are on, and
+  turning on only one warns the GM instead of silently downgrading every deep bleed.
+  - Deliberately **not** a master switch over the module. Nearly all of this is an interpretation
+    of critical hits rather than a rule out of the book; the switch covers the parts a table
+    running closer to RAW would want gone. **Defer critical damage** stays an independent setting
+    — it rewires PF1's attack pipeline and needs a reload, which deserves to be found and reasoned
+    about on its own rather than buried under something broader.
+  - **Off stops new obligations, not existing ones.** The Dedicated Healing section is hidden on
+    unconfigured buffs so no new threshold can be set, but a buff that already carries one keeps
+    its section and its allocation dialog. Switching a house rule off must not strand a character
+    mid-recovery with a wound the rules can no longer close.
+  - `api.dedicatedHealing.enabled()` reports the switch, so other modules can check before
+    creating a new obligation. Registration and allocation stay available regardless.
 - **Dedicated Healing section on the buff sheet's Advanced tab** — a collapsible menu for the
   healing required, the Heal check DC, and (once configured) the progress so far with a reset
   control. Replaces typing the numbers into the PF1 dictionary-flag table by hand. Buffs only:
@@ -16,6 +85,14 @@
   - Published on `game.modules.get("pf1-critical-effects").api.dedicatedHealing` at **init**, not
     only on `game.criticalEffects` at ready — ready hooks run in module load order, and
     pf1-bleed-effects sorts ahead of this module.
+  - **Blocked participants.** A participant may report `blocked: true` with a short
+    `blockedReason`, for a wound that exists but cannot absorb healing *yet* — an arrow still in
+    it. It is listed in the allocation dialog, greyed and sorted last, with the reason where its
+    input would be, rather than being quietly omitted: healing that vanishes with no explanation
+    reads as a bug. Blocked participants are never allocated to, and an actor whose wounds are
+    *all* blocked heals normally with no dialog at all. Additive and backwards-compatible —
+    providers that don't set the field behave exactly as before. pf1-bleed-effects' healing-blocked
+    deep bleeds are the first consumer.
 - **pf1-bleed-effects added as a recommended module.** A great deal of the critical and fumble
   content inflicts ongoing bleed ("2d6 bleed", "a Heal check cannot stop it"), which that module
   turns into automated per-round damage rather than prose to track by hand.

@@ -64,6 +64,11 @@ const _providers = new Map();
  * @property {number} received  HP accumulated so far.
  * @property {(amount: number) => Promise<boolean>} allocate  Applies `amount`; resolves true
  *                                                            when that cleared the condition.
+ * @property {boolean} [blocked] Something is stopping this wound from absorbing healing *yet* —
+ *                               an arrow still in it, a parasite still burrowing. It is listed in
+ *                               the dialog but cannot be allocated to. Omit for the normal case.
+ * @property {string} [blockedReason] Why, in a few words ("Impaled"). Shown in place of the input,
+ *                               so the healer isn't left wondering where the wound went.
  */
 
 // ─── Item configuration ───────────────────────────────────────────────────────
@@ -132,7 +137,7 @@ export function unregisterProvider(id) {
 }
 
 /**
- * Every participant on an actor with healing still outstanding.
+ * Every participant on an actor with healing still outstanding, blocked ones included.
  *
  * @param {Actor} actor
  * @returns {DHParticipant[]}
@@ -153,6 +158,20 @@ function _getParticipants(actor) {
     }
   }
   return out;
+}
+
+/**
+ * Whether any of these participants can actually take healing right now.
+ *
+ * A wound that is present but blocked absorbs nothing, so an actor carrying only blocked wounds
+ * must heal exactly as if it had none — intercepting to show a dialog with nothing to allocate
+ * would be worse than not intercepting at all.
+ *
+ * @param {DHParticipant[]} participants
+ * @returns {boolean}
+ */
+function _anyAllocatable(participants) {
+  return participants.some((p) => !p.blocked);
 }
 
 /**
@@ -254,7 +273,7 @@ function onApplyDamage(actor, options) {
 
   const rawHealing = -options.value;
   const participants = _getParticipants(actor);
-  if (!participants.length) return;
+  if (!_anyAllocatable(participants)) return;
 
   // Explicit delegation (e.g. short rest applied by the GM): hand the allocation
   // dialog to the submitting player. Suppress here and let their client apply.
@@ -288,7 +307,7 @@ function onPreUpdateActor(actor, update, options) {
   if (healingOffered <= 0) return;
 
   const participants = _getParticipants(actor);
-  if (!participants.length) return;
+  if (!_anyAllocatable(participants)) return;
 
   // Suppress HP change by reverting offset to current value in-place
   hpData.offset = actor.system.attributes.hp.offset;
@@ -333,13 +352,19 @@ async function _applyHp(actor, amount) {
 // ─── Phase 2: Allocation Dialog ───────────────────────────────────────────────
 
 async function _showAllocationDialog(actor, totalHealing, participants, maxHpHealable) {
-  const rows = participants.map((p) => ({
-    id: p.id,
-    name: p.name,
-    required: p.required,
-    received: p.received,
-    remaining: p.required - p.received,
-  }));
+  // Blocked wounds are listed but not allocatable — sorted last so the actionable rows stay at
+  // the top where the healer is typing.
+  const rows = participants
+    .map((p) => ({
+      id: p.id,
+      name: p.name,
+      required: p.required,
+      received: p.received,
+      remaining: p.required - p.received,
+      blocked: !!p.blocked,
+      blockedReason: p.blockedReason || "blocked",
+    }))
+    .sort((a, b) => a.blocked - b.blocked);
 
   const content = await foundry.applications.handlebars.renderTemplate(TEMPLATE, {
     totalHealing, maxHpHealable, participants: rows,
@@ -378,6 +403,7 @@ async function _showAllocationDialog(actor, totalHealing, participants, maxHpHea
   const conditionLines = [];
 
   for (const p of participants) {
+    if (p.blocked) continue; // no input was rendered for it; belt and braces
     const requested = Math.max(0, allocations[p.id] ?? 0);
     const allocated = Math.min(requested, remaining);
     remaining -= allocated;
@@ -430,8 +456,8 @@ export function registerDedicatedHealing() {
     if (!actor?.isOwner) return;
 
     const participants = _getParticipants(actor);
-    if (!participants.length) {
-      // State changed since the heal was tagged — just apply the HP.
+    if (!_anyAllocatable(participants)) {
+      // State changed since the heal was tagged, or everything left is blocked — apply the HP.
       await _applyHp(actor, data.rawHealing);
       return;
     }

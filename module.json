@@ -1,7 +1,7 @@
 {
   "id": "pf1-critical-effects",
   "title": "PF1 Critical Effects",
-  "description": "<p>A critical hit and fumble effect system for Pathfinder 1e: journal-linked effect content, a fumble resolution flow, and a framework for attaching mechanical outcomes to effects over time.</p>",
+  "description": "<p>A critical hit and fumble effect system for Pathfinder 1e: a self-contained effect catalog, a fumble resolution flow, and PF1 conditions and buffs attached to effects as mechanical outcomes.</p>",
   "authors": [
     {
       "name": "Hamilcarbarcas",
@@ -67,30 +67,6 @@
     "canUpload": true
   },
   "packs": [
-    {
-      "name": "critical-effects",
-      "label": "Critical Effects",
-      "path": "packs/critical-effects",
-      "type": "JournalEntry",
-      "ownership": {
-        "PLAYER": "OBSERVER",
-        "ASSISTANT": "OWNER"
-      },
-      "system": "pf1",
-      "flags": {}
-    },
-    {
-      "name": "critical-tables",
-      "label": "Critical Tables",
-      "path": "packs/critical-tables",
-      "type": "RollTable",
-      "ownership": {
-        "PLAYER": "OBSERVER",
-        "ASSISTANT": "OWNER"
-      },
-      "system": "pf1",
-      "flags": {}
-    },
     {
       "name": "effect-buffs",
       "label": "Critical Effect Buffs",

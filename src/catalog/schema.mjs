@@ -3,12 +3,17 @@
  * Two jobs, deliberately kept apart:
  *
  *   validate*()  — structural. Refuses data the engine cannot use at all. Pure and synchronous.
- *   lint()       — see catalog.mjs. Content-quality reporting: dead journal links, thin buckets,
- *                  outcome coverage. Everything it reports is a warning; none of it stops a load.
+ *   lint()       — see catalog.mjs. Content-quality reporting: unknown condition ids, table
+ *                  coverage, mortal coverage. Everything it reports is a warning; none of it
+ *                  stops a load.
  *
- * The content strategy is journal-first (§3): an entry with id / name / journal / locations /
- * damageTypes / severity is COMPLETE. `outcomes` is optional, starts absent, and its absence is
- * never an error — the lint reports coverage as a progress metric.
+ * The content strategy is **self-contained** (v5): an entry with `id` and `name` is COMPLETE, and
+ * `text`, `note`, `buff` and `conditions` are all optional and additive. Nothing in the engine may
+ * assume any of them exist. There is no `journal` — prose is ours, stored here, rendered by us.
+ *
+ * This module is imported by the Node build tools as well as by the running module, so it must
+ * stay free of every Foundry and PF1 global. That is why CONDITION_IDS is a written-out list
+ * rather than a read of `pf1.registry.conditions`; catalog.mjs cross-checks the two at runtime.
  */
 
 /**
@@ -224,8 +229,177 @@ export const ANATOMIES = ["humanoid", "beast", "aberrant"];
  */
 export const SLOTS = ["head", "torso", "arm", "leg", "wing", "tail", "appendage"];
 
+// --- conditions (§3, §6) ----------------------------------------------------
+
+/**
+ * The PF1 condition ids an entry may inflict — `pf1.registry.conditions` keys, written out.
+ *
+ * Written out rather than read from the registry because this module is imported by the Node
+ * build tools, which have no `pf1` global. `lint()` cross-checks this list against the live
+ * registry, so a system update that renames a condition is reported rather than discovered when
+ * a critical silently fails to apply.
+ *
+ * PF1's registry also carries the movement modes below. Those wear a condition's clothes —
+ * nothing inflicts them on a victim — so they are deliberately out. `dead` is in: the mortal rows
+ * genuinely reach it.
+ */
+export const CONDITION_IDS = [
+  "bleed", "blind", "confused", "cowering", "dazed", "dazzled", "dead", "deaf", "disabled",
+  "dying", "entangled", "exhausted", "fatigued", "flatFooted", "frightened", "grappled",
+  "helpless", "incorporeal", "invisible", "nauseated", "panicked", "paralyzed", "petrified",
+  "pinned", "prone", "shaken", "sickened", "sleep", "squeezing", "stable", "staggered",
+  "stunned", "unconscious",
+];
+
+/**
+ * Registry entries that are movement modes rather than conditions, listed so `lint()` can tell
+ * "PF1 added a condition we don't know about" from "PF1 has always had these and we don't want
+ * them". Without this the reverse check would report four permanent false positives, which is the
+ * fastest way to teach someone to ignore a report.
+ */
+export const MOVEMENT_CONDITIONS = ["burrow", "fly", "hover", "swim"];
+
+/**
+ * How long a condition lasts, in seconds per unit.
+ *
+ * PF1 stores a condition's life as `duration.seconds` on its Active Effect and expires it against
+ * world time (`ActorPF#expireActiveEffects`), so every unit an author writes is converted to
+ * seconds at apply time. `turn` and `round` are both 6 seconds and are NOT redundant: which one is
+ * written decides the natural `end` timing, and "until the end of your next turn" is a turn, not a
+ * round.
+ */
+export const CONDITION_DURATION_UNITS = {
+  turn: 6,
+  round: 6,
+  minute: 60,
+  hour: 3600,
+  day: 86400,
+};
+
+/**
+ * When exactly a duration that has run out actually ends — PF1's `durationEndEvents`, declared on
+ * its base Active Effect data model as `system.end`.
+ *
+ * Optional, and `turnStart` is what PF1 assumes when it is absent. `turnEnd` is the one worth
+ * writing: it is the difference between "stunned 1 round" and "flat-footed until the end of your
+ * next turn", which are the same six seconds and not the same effect.
+ */
+export const CONDITION_END_EVENTS = ["turnStart", "initiative", "turnEnd"];
+
+/** The one condition that carries a payload beyond its own name. See `validateBleed`. */
+export const BLEED_CONDITION = "bleed";
+
+/**
+ * Ability scores a bleed may drain or damage instead of hit points. pf1-bleed-effects' `kind` is
+ * `"hp"` or `"<ability>.<damage|drain>"`; we validate the halves rather than the joined string so
+ * the error names which half is wrong.
+ */
+export const BLEED_ABILITIES = ["str", "dex", "con", "int", "wis", "cha"];
+export const BLEED_MODES = ["damage", "drain"];
+
+/** The `kind` string pf1-bleed-effects' API takes, built from a validated bleed block. */
+export const bleedKind = ({ ability = null, mode = "damage" } = {}) =>
+  ability ? `${ability}.${mode}` : "hp";
+
 const isPlainObject = (v) => v != null && typeof v === "object" && !Array.isArray(v);
 const isNonEmptyString = (v) => typeof v === "string" && v.trim().length > 0;
+
+/**
+ * A duration `value` is a number of units or a dice formula rolled when the condition lands.
+ *
+ * Deliberately permissive about the formula: this module cannot evaluate one (no Foundry `Roll`
+ * here), so it checks the shape and leaves "is that a legal expression" to the roll itself. A
+ * malformed formula degrades to the fallback in `resolve/conditions.mjs`, never to a thrown error
+ * in the middle of applying a critical.
+ */
+const isDurationValue = (v) =>
+  (typeof v === "number" && Number.isFinite(v) && v > 0) || /^[\d\s+\-*/dD()]+$/.test(String(v ?? "").trim());
+
+/**
+ * Structural check of one condition descriptor. Shared by every catalog that can carry one —
+ * effects, fumbles and lethal all inflict conditions and there is no reason for three dialects.
+ *
+ * @param {object} condition
+ * @param {string} where  message prefix naming the entry
+ * @returns {string[]} problems; empty means usable
+ */
+export function validateCondition(condition, where) {
+  const problems = [];
+
+  if (!isPlainObject(condition)) return [`${where}: condition must be an object`];
+  if (!isNonEmptyString(condition.id)) return [`${where}: condition is missing \`id\``];
+  if (!CONDITION_IDS.includes(condition.id)) problems.push(`${where}: unknown condition "${condition.id}"`);
+
+  const { duration } = condition;
+  if (duration != null) {
+    if (!isPlainObject(duration)) {
+      problems.push(`${where}: \`duration\` must be an object when present`);
+    } else {
+      if (!isDurationValue(duration.value)) {
+        problems.push(`${where}: \`duration.value\` must be a positive number or a dice formula`);
+      }
+      if (!(duration.units in CONDITION_DURATION_UNITS)) {
+        problems.push(
+          `${where}: \`duration.units\` must be one of ${Object.keys(CONDITION_DURATION_UNITS).join(", ")}`
+        );
+      }
+      if (duration.end != null && !CONDITION_END_EVENTS.includes(duration.end)) {
+        problems.push(`${where}: \`duration.end\` must be one of ${CONDITION_END_EVENTS.join(", ")}`);
+      }
+    }
+  }
+
+  /* The bleed payload is pf1-bleed-effects' configuration, and it is OPTIONAL on purpose: a bleed
+   * condition with no block is the vanilla PF1 marker — a status icon and no damage — which is
+   * exactly what a world without that module gets anyway. Absence is the documented default, not
+   * an omission to warn about. */
+  if (condition.bleed != null) {
+    if (condition.id !== BLEED_CONDITION) {
+      problems.push(`${where}: \`bleed\` means nothing on the "${condition.id}" condition`);
+    }
+    if (!isPlainObject(condition.bleed)) {
+      problems.push(`${where}: \`bleed\` must be an object when present`);
+    } else {
+      const { formula, ability, mode, deep } = condition.bleed;
+      if (!isNonEmptyString(formula)) problems.push(`${where}: \`bleed.formula\` is required`);
+      if (ability != null && !BLEED_ABILITIES.includes(ability)) {
+        problems.push(`${where}: \`bleed.ability\` must be one of ${BLEED_ABILITIES.join(", ")}`);
+      }
+      if (mode != null && !BLEED_MODES.includes(mode)) {
+        problems.push(`${where}: \`bleed.mode\` must be one of ${BLEED_MODES.join(", ")}`);
+      }
+      if (mode != null && ability == null) {
+        problems.push(`${where}: \`bleed.mode\` means nothing without \`bleed.ability\` — hit point bleed has no mode`);
+      }
+      if (deep != null && (!Number.isInteger(deep) || deep <= 0)) {
+        problems.push(`${where}: \`bleed.deep\` must be a positive integer of hit points`);
+      }
+    }
+  }
+
+  return problems;
+}
+
+/** Structural check of an entry's whole `conditions` array. Absent and empty are both fine. */
+export function validateConditions(conditions, where) {
+  if (conditions == null) return [];
+  if (!Array.isArray(conditions)) return [`${where}: \`conditions\` must be an array when present`];
+
+  const problems = [];
+  const seen = new Set();
+  for (const [i, condition] of conditions.entries()) {
+    problems.push(...validateCondition(condition, `${where} condition #${i}`));
+    /* Two of the same condition on one entry cannot both take: PF1 keeps ONE Active Effect per
+     * condition, so the second application is dropped and its duration lost. That is a content
+     * bug — "stunned 1 round and stunned 1d4 rounds" means one of them, and the author has to say
+     * which. */
+    if (condition?.id) {
+      if (seen.has(condition.id)) problems.push(`${where}: applies "${condition.id}" twice; only the first would take`);
+      seen.add(condition.id);
+    }
+  }
+  return problems;
+}
 
 /**
  * Structural validation of data/effects.json.
@@ -265,6 +439,11 @@ export const TABLE_ROWS = 12;
  * absent entry leaves the 13+ result as "row 12 plus the Fort save", which is what the rules said
  * before any of them were written.
  *
+ * **v5 removes `journal` and adds `text` and `conditions`.** Prose is stored here rather than in a
+ * compendium journal, and the mechanical half of an entry is now two optional channels rather than
+ * one: `buff` for anything that needs changes and a lifecycle, `conditions` for the PF1 statuses a
+ * wound imposes directly.
+ *
  * @returns {{ errors: string[], warnings: string[], entries: object[], tables: object,
  *             mortal: object }}
  */
@@ -278,7 +457,7 @@ export function validateEffects(data) {
   const bail = (message) => ({ errors: [...errors, message], warnings, entries, tables, mortal });
 
   if (!isPlainObject(data)) return bail("effects.json: root is not an object");
-  if (data.version !== 4) warnings.push(`effects.json: version is ${data.version}, expected 4`);
+  if (data.version !== 5) warnings.push(`effects.json: version is ${data.version}, expected 5`);
   if (!Array.isArray(data.entries)) return bail("effects.json: `entries` is not an array");
 
   const seen = new Set();
@@ -291,18 +470,35 @@ export function validateEffects(data) {
     else if (seen.has(entry.id)) problems.push(`duplicate id "${entry.id}"`);
     if (!isNonEmptyString(entry?.name)) problems.push("missing `name`");
 
-    if (entry?.journal != null && !isNonEmptyString(entry.journal)) problems.push("`journal` must be a uuid string when present");
-    if (entry?.buff != null && !isNonEmptyString(entry.buff)) problems.push("`buff` must be a uuid string when present");
+    if (entry?.text != null && typeof entry.text !== "string") problems.push("`text` must be a string when present");
+    if (entry?.buff != null && !isNonEmptyString(entry.buff)) problems.push("`buff` must be a buff name when present");
     if (entry?.note != null && typeof entry.note !== "string") problems.push("`note` must be a string when present");
     if (entry?.tags !== undefined && !Array.isArray(entry.tags)) problems.push("`tags` must be an array when present");
+    if (entry?.journal != null) problems.push("`journal` was removed in v5 — prose belongs in `text`");
 
     if (problems.length) {
       errors.push(`${where}: ${problems.join("; ")}`);
       continue;
     }
 
+    /* Conditions are reported as WARNINGS and the bad ones dropped, rather than taking the entry
+     * down with them. An entry's name and prose are the part the flow cannot do without; a
+     * condition it cannot apply degrades it to what a text-only entry would have given you, which
+     * is the §0 rule — absence degrades an entry, never the engine. */
+    const conditionProblems = validateConditions(entry.conditions, where);
+    if (conditionProblems.length) {
+      warnings.push(...conditionProblems);
+      // A non-array `conditions` has nothing salvageable in it; anything else keeps the rows that
+      // passed and drops the rows that didn't.
+      const kept = Array.isArray(entry.conditions)
+        ? entry.conditions.filter((c) => !validateCondition(c, where).length)
+        : [];
+      entries.push({ ...entry, conditions: kept });
+    } else {
+      entries.push(entry);
+    }
+
     seen.add(entry.id);
-    entries.push(entry);
   }
 
   if (!isPlainObject(data.tables)) return bail("effects.json: `tables` is not an object");
@@ -428,19 +624,34 @@ export function validateFumbles(data) {
   const tables = {};
 
   if (!isPlainObject(data)) return { errors: ["fumbles.json: root is not an object"], warnings, tables, entries };
-  if (data.version !== 2) warnings.push(`fumbles.json: version is ${data.version}, expected 2`);
+  if (data.version !== 3) warnings.push(`fumbles.json: version is ${data.version}, expected 3`);
   if (!Array.isArray(data.entries)) return { errors: ["fumbles.json: `entries` is not an array"], warnings, tables, entries };
   if (!isPlainObject(data.tables)) return { errors: ["fumbles.json: `tables` is not an object"], warnings, tables, entries };
 
   const byId = new Map();
   for (const [i, entry] of data.entries.entries()) {
+    const where = `fumbles.json entry #${i}${entry?.id ? ` (${entry.id})` : ""}`;
     if (!isNonEmptyString(entry?.id) || !isNonEmptyString(entry?.name)) {
-      errors.push(`fumbles.json entry #${i}: requires \`id\` and \`name\``);
+      errors.push(`${where}: requires \`id\` and \`name\``);
       continue;
     }
     if (byId.has(entry.id)) { errors.push(`fumbles.json: duplicate entry id "${entry.id}"`); continue; }
-    byId.set(entry.id, entry);
-    entries.push(entry);
+    if (entry.journal != null) warnings.push(`${where}: \`journal\` was removed in v3 — prose belongs in \`text\``);
+
+    // Same treatment as effects: a bad condition is a warning and is dropped, never a reason to
+    // lose the row the d20 has to land on.
+    let usable = entry;
+    const conditionProblems = validateConditions(entry.conditions, where);
+    if (conditionProblems.length) {
+      warnings.push(...conditionProblems);
+      const kept = Array.isArray(entry.conditions)
+        ? entry.conditions.filter((c) => !validateCondition(c, where).length)
+        : [];
+      usable = { ...entry, conditions: kept };
+    }
+
+    byId.set(usable.id, usable);
+    entries.push(usable);
   }
 
   for (const [key, rows] of Object.entries(data.tables)) {
@@ -486,9 +697,12 @@ export function validateFumbles(data) {
 /**
  * Structural check of data/lethal.json (§7.4).
  *
- * Lethal entries are flavour only — no severity, no location, no outcomes — so there is very
- * little to be wrong. An empty damage type is reported but is not a defect: the content track
- * fills these unevenly.
+ * Lethal entries are flavour for a death that has already happened — no rank, no location — so
+ * there is very little to be wrong. An empty damage type is reported but is not a defect: the
+ * content track fills these unevenly.
+ *
+ * They may still carry `conditions`, which is not as odd as it sounds: `dead` is a PF1 condition,
+ * and a lethal draw is exactly the moment to set it.
  *
  * @returns {{ problems: string[], entries: object[] }}
  */
@@ -497,7 +711,7 @@ export function validateLethal(data) {
   const entries = [];
 
   if (!isPlainObject(data)) return { problems: ["lethal.json: root is not an object"], entries };
-  if (data.version !== 1) problems.push(`lethal.json: version is ${data.version}, expected 1`);
+  if (data.version !== 2) problems.push(`lethal.json: version is ${data.version}, expected 2`);
   if (!Array.isArray(data.entries)) return { problems: [...problems, "lethal.json: `entries` is not an array"], entries };
 
   const seen = new Set();
@@ -516,6 +730,8 @@ export function validateLethal(data) {
     for (const dt of entry.damageTypes) {
       if (!DAMAGE_TYPES.includes(dt)) problems.push(`${where}: unknown damage type "${dt}"`);
     }
+    if (entry.journal != null) problems.push(`${where}: \`journal\` was removed in v2 — prose belongs in \`text\``);
+    problems.push(...validateConditions(entry.conditions, where));
 
     seen.add(entry.id);
     entries.push(entry);

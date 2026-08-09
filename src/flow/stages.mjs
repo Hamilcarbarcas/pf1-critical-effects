@@ -49,10 +49,10 @@ export const STAGES = [
     key: "location",
     label: (state) => (isLocalized(state?.damageType) ? "Location" : "Target"),
     hint: (state) => {
-      if (!state?.damageType) return "Check the creature type and pick the damage type — the effect tables are keyed by both.";
+      if (!state?.damageType) return "Check the creature type and pick the damage type.";
       return isLocalized(state.damageType)
-        ? "Check the creature type, then have the player roll the hit location or pick one."
-        : "Check the creature type and the damage type. This damage doesn't land in one place, so there is no location to roll.";
+        ? "Roll the hit location, or pick one."
+        : "This damage has no hit location to roll.";
     },
     // Damage alone never reaches here: it ends at the trigger.
     applies: (state) => state?.choice === "effect" || state?.choice === "both",

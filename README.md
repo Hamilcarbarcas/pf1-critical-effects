@@ -2,13 +2,13 @@
 
 A critical hit and fumble effect system for Pathfinder 1e on Foundry VTT.
 
-The module ships a large body of **effect journals** describing what happens when a blow lands
-badly — broken bones, severed fingers, dropped weapons — and the machinery to draw from them at
-the table, link the result onto the chat card, and (over time) apply the mechanics automatically.
+The module describes what happens when a blow lands badly — broken bones, severed fingers,
+dropped weapons — and supplies the machinery to draw the right result at the table, write it onto
+the chat card, and apply its mechanics to the target.
 
-Content is **journal-first**: an effect that has nothing but prose and tags is fully usable.
-Mechanical automation is attached to entries one at a time, and its absence never degrades a
-resolution — you always get a named, journal-linked result.
+Content is **prose-first**: an effect that has nothing but a name and a paragraph is fully usable.
+Mechanics are attached to entries one at a time, and their absence never degrades a resolution —
+you always get a named result with its description on the card.
 
 ## Requirements
 
@@ -19,6 +19,27 @@ resolution — you always get a named, journal-linked result.
 | **Required** | `pf1-roll-requests` | Resolutions cannot post their dice. |
 | **Recommended** | `pf1-bleed-effects` | Everything runs; the bleed an effect describes ("2d6 bleed") stays prose and has to be tracked and rolled by hand. |
 | **Recommended** | `astora-mod` | Everything runs; effects that use its buff automation can't offer their apply-buff button. |
+
+## Astora Homebrew rules
+
+One setting, **off by default**, enables everything in this module that changes how other rules
+work. Right now that means [dedicated healing](#dedicated-healing); anything non-RAW added later
+sits behind the same switch. [pf1-bleed-effects](https://github.com/Hamilcarbarcas/pf1-bleed-effects)
+carries an identically-named setting for its own house rules, and the two are meant to be set
+together — its Deep Bleed rule is built on this module's dedicated healing and needs both switched
+on. Turn on only one and you'll get a warning at startup rather than a rule that silently doesn't fire.
+
+Almost everything else here is an interpretation of critical hits rather than a rule out of the
+book, so this switch is deliberately *not* a master switch over the module. It covers the parts a
+table running closer to RAW would want gone. **Defer critical damage** is likewise its own
+independent setting — it rewires PF1's attack pipeline and needs a reload, which is worth finding
+and reasoning about on its own rather than buried under something broader.
+
+**Turning it off stops new obligations, not existing ones.** No new condition can be given a
+healing threshold and no new deep bleed is inflicted, but anything already part-way through
+recovery keeps its allocation dialog and can still be paid off. Switching off a house rule should
+never strand a character with a wound the rules can no longer close. A GM who wants those gone too
+removes the buff, or forces the bleed with `pf1BleedEffects.clear(token, { force: true })`.
 
 ## What works today
 
@@ -36,9 +57,9 @@ resolution — you always get a named, journal-linked result.
    card shows the flavor line and the button only, not the table, so the eleven fumbles that
    didn't happen stay unspoiled. The result still arrives as the entry's name rather than a
    number.
-5. Whenever that roll comes in, the result is written back onto the original attack card as a
-   link to its journal entry. The GM doesn't have to be waiting on it, and a reload in between
-   doesn't lose it.
+5. Whenever that roll comes in, the result is written back onto the original attack card — its
+   name, the conditions it inflicts, and its description. The GM doesn't have to be waiting on it,
+   and a reload in between doesn't lose it.
 
 The button offers, it never decides. Every natural 1 gets one, and ignoring it is a normal
 outcome rather than a missed step.
@@ -55,8 +76,8 @@ type from here, so the list opens on its first entry — and posts the same `1d2
 button does, for the same person to click.
 
 Because there is no attack card to write the result onto, the draw **posts a card of its own**
-when it lands, carrying the fumbler's name and then the usual result block and journal link. It is
-the same block an attack card gets, rendered by the same code.
+when it lands, carrying the fumbler's name and then the usual result block. It is the same block an
+attack card gets, rendered by the same code.
 
 The fumbler comes from the canvas selection rather than roll-requests' actor prompt on purpose:
 that prompt lists assigned player characters and player-owned NPCs, so the creature that most
@@ -137,9 +158,9 @@ inferred rather than making you cancel and start over:
 - **Result** — a dropdown of the same fourteen rows the player rolled against, so a result can be
   changed to any of them before it is committed.
 
-Pressing **Confirm Result** is what commits: the effect is written onto the attack card as a
-journal link, any deferred critical damage is rolled then and not before, the roll-request cards
-come down, and the dialog closes.
+Pressing **Confirm Result** is what commits: the effect is written onto the attack card with its
+name, conditions and description, any deferred critical damage is rolled then and not before, the
+roll-request cards come down, and the dialog closes.
 
 The request cards stay in chat for the whole resolution rather than vanishing as soon as their
 number arrives, so the table can still see what was rolled and against what while you're working.
@@ -272,53 +293,59 @@ empty damage type says so rather than failing.
 
 ### Mechanics on an effect
 
-An effect entry can carry **outcomes** — typed descriptors that do something rather than merely
-printing prose. Nothing evaluates a stored script; each descriptor names a type handled by a
-registered handler.
+An effect can carry mechanics through **two independent channels**, and either may be absent:
 
-> **Not yet wired to the dialog.** The registry and its handlers work and are callable from
-> `game.criticalEffects.outcomes`, but the resolution dialog no longer has an Apply button: the
-> next piece of work replaces it with an apply-buff button on the attack card itself, where the
-> people affected can see it. Until then a resolution names its effect and links the journal.
-
-| `type` | Payload | Notes |
+| | What it is | Needs |
 |---|---|---|
-| `buff` | `uuid`, `overrides?`, `active?` | Pull an item from a pack and create it on the target. The workhorse. |
-| `condition` | `id` | A PF1 status id. Undo won't cure a condition the target already had. |
-| `note` | `text` | **No automation** — prints a line for the GM to adjudicate. |
-| `delegate` | `entry` | Apply another entry's outcomes. The downgrade primitive. |
+| **Conditions** | PF1 statuses — stunned, prone, bleeding — with their own durations | nothing |
+| **Buff** | an Item with changes, context notes, a healing lifecycle | astora-mod |
 
-```jsonc
-"outcomes": [
-  { "type": "buff", "uuid": "Compendium.pf1-critical-effects.effect-buffs.Item.…" },
-  { "type": "condition", "id": "prone" },
-  { "type": "note", "text": "Movement is halved until the bone is set." }
-]
-```
+Both are offered by a single **Apply** button on the chat card, GM-only because creating an effect
+on somebody else's actor requires a GM. It appears on critical *and* fumble results.
 
-Entries **without** outcomes are first-class: the resolution runs identically and simply has no
-mechanics to offer. That's the point of the framework — mechanics get bolted onto entries that
-already ship, one at a time.
+Conditions are applied the way PF1 applies them, including the duration:
 
-Failures are isolated. If one outcome can't apply — a missing buff, a back end that isn't
-installed — the others still do, and the card says what didn't work. An unrecognised type is a
-reported no-op rather than an error, so a half-migrated catalog still runs.
+- A duration may be a number or a die — *deafened 1d4 minutes* rolls when the condition lands.
+- PF1 expires it against world time and **removes** it. Nothing to track by hand.
+- Right-click the condition on the character sheet and you get the system's own dialog showing the
+  rounds remaining, which you can change.
+- *"Until the end of your next turn"* is a real duration, distinct from one round.
 
-**Undo** is recorded as data rather than a closure, so a misfire can be reverted even after a
-reload. Reversal runs newest-first.
+**Bleed** is the one condition that carries more than its name, because PF1's bleed is an inert
+marker — it records that you're bleeding and never asks how much. With
+**[pf1-bleed-effects](https://github.com/Hamilcarbarcas/pf1-bleed-effects)** installed, an effect's
+bleed becomes real per-round damage: hit points or ability damage/drain, and optionally a *deep*
+wound that only closes once enough dedicated healing has been poured into it. Without that module
+you get the vanilla marker, which is exactly what an effect with no bleed configuration gives you
+anyway — neither is an error.
 
-Other modules can add their own types:
+Entries with **no** mechanics are first-class: the resolution runs identically and simply has no
+Apply button. That is the point — mechanics get bolted onto entries that already ship, one at a
+time.
+
+Failures are isolated. Conditions land before the buff's Refresh/Overwrite prompt opens, so
+cancelling that prompt doesn't cost you the conditions; a buff that can't be delivered leaves the
+conditions in place; and either half missing leaves the result named and described on the card.
+
+There is no undo. Everything the button applies is a condition or a buff, visible on the target's
+sheet and removable there.
+
+From a macro:
 
 ```js
-game.criticalEffects.outcomes.registerOutcome(
-  "myType",
-  async (descriptor, ctx) => ({ summary: "did a thing", undo: { what: "thing" } }),
-  { undo: async (data, ctx) => { /* reverse it */ } },
-);
-game.criticalEffects.outcomes.registeredTypes();   // what's available
+// Offer the apply button for an entry on a given card
+await game.criticalEffects.effects.offerApplyButton(message, {
+  entry: game.criticalEffects.catalog.getEntry("concussed-ear"),
+  target: { actorId, tokenId },
+});
+
+// Is astora-mod there to deliver a buff?
+game.criticalEffects.effects.buffDelivery();   // its API, or null
 ```
 
 ### Dedicated healing
+
+**Requires the [Astora Homebrew rules](#astora-homebrew-rules) setting.**
 
 Some conditions — broken bones, mostly — can't simply be healed away. They must first be
 **treated** (a Heal check), after which they absorb a threshold of healing before clearing:
@@ -332,7 +359,9 @@ than the GM.
 Configure it on the buff sheet's **Advanced** tab, in the collapsible **Dedicated Healing**
 section: the healing required to clear the condition, the Heal check DC that makes it ready to
 absorb healing (0 waives the check), and — once it's configured — a read-out of the progress so
-far with a reset control.
+far with a reset control. With homebrew off the section is hidden on unconfigured buffs, so no new
+condition can be given a threshold; a buff that already has one keeps its section, since those
+numbers are still live and a GM needs to see and be able to reset what's outstanding.
 
 ```js
 game.criticalEffects.dedicatedHealing.requestHealCheck(actor, item);
@@ -358,30 +387,39 @@ The enumerator **must be synchronous** — it's called from a hook that has to s
 incoming heal in the same tick. Register from `ready`; the API is published at `init`, so it's
 there regardless of module load order.
 
+A participant may additionally report `blocked: true` with a short `blockedReason` — a wound that
+exists but can't absorb healing *yet*, because something is still in it. Blocked participants are
+listed in the allocation dialog, greyed and sorted last, with the reason where their input would
+be; they're never allocated to. An actor whose wounds are all blocked heals normally, with no
+dialog. The alternative — omitting them — makes healing disappear with nothing on screen to
+explain it.
+
 pf1-bleed-effects' **Deep Bleed** rule is the reference consumer: a bleed lives in an actor flag
 rather than an item, and lands in the same allocation dialog as a broken arm without either
-module knowing anything about the other's storage.
+module knowing anything about the other's storage. Its healing-blocked wounds — an arrow still in
+the body, gated on the buff representing it — are the reference consumer for `blocked`.
 
 ## Compendia
 
 | Pack | Contents |
 |---|---|
-| **Critical Effects** (Journal) | The effect descriptions. The prose players and GMs actually read. |
-| **Critical Tables** (RollTable) | The original browsable tables, kept for reference. |
 | **Critical Effect Buffs** (Item) | Buffs carrying the mechanics of an effect — currently the 19 Broken/Shattered bone conditions. Grows with the content track. |
-| **Critical Effect Macros** (Macro) | Script calls for effects whose behaviour doesn't fit a typed outcome. |
+| **Critical Effect Macros** (Macro) | Script calls for effects whose behaviour doesn't fit a condition or a buff. |
 
-The fumble flow draws from `data/fumbles.json` rather than the RollTables, so it can attach
-mechanics to a result and reason about it without a compendium round-trip. The RollTables remain
-the browsable, GM-facing copy.
+Effect and fumble **content** is not in a compendium at all. It lives in versioned JSON under
+`data/`, which is what lets the module attach mechanics to a result and reason about it without a
+compendium round-trip. Earlier versions also shipped a Journal pack for the prose and a RollTable
+pack for the browsable tables; both were removed in favour of the JSON, because a second copy that
+nothing reads is a second place for the content to be wrong.
 
 ## For GMs and developers
 
 `game.criticalEffects` is available after `ready`:
 
 ```js
-// Content health report — dead journal links, unreferenced journals, and how many of each
-// table's twelve rows are still placeholders. Everything it reports is a warning.
+// Content health report — conditions that have drifted from PF1's registry, which conditions the
+// content uses, and how many of each table's twelve rows are still placeholders. Everything it
+// reports is a warning.
 await game.criticalEffects.lint();
 
 // Fumble tables
@@ -477,19 +515,21 @@ State lives on the instance, so a reload loses it. That is the trade for keeping
 surface out of chat — and the resolution is a handful of clicks, with nothing written anywhere
 until **Confirm Result**.
 
-### Regenerating the fumble tables
+### Regenerating the tables
 
-`tools/tables-to-json.mjs` transcribes the shipped Fumble RollTables into `data/fumbles.json`.
-It de-duplicates: the three tables each carry their own copy of every journal, so "Dislocated
-Elbow" exists three times with identical prose, and these collapse into one entry that all three
-tables reference.
+Both catalogs are **generated**, and the pools are the source of truth. Never hand-edit
+`data/effects.json` or `data/fumbles.json`.
 
 ```bash
-node tools/tables-to-json.mjs           # dry run, prints to stdout
-node tools/tables-to-json.mjs --write   # save
+node tools/pool-to-tables.mjs           # dry run: coverage summary only
+node tools/pool-to-tables.mjs --write   # data/pool.json + content/mortal.md -> data/effects.json
+
+node tools/fumbles-to-tables.mjs --write   # data/fumble-pool.json -> data/fumbles.json
+
+node tools/pool-report.mjs --write         # data/pool.json -> content/COVERAGE.md (the work queue)
 ```
 
-The hand-authored `natural` table and any hand-added entry fields survive a re-run.
+See [`content/README.md`](content/README.md) for the pool format and the tagging rules.
 
 ## Design
 

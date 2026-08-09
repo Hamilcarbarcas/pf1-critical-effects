@@ -29,7 +29,7 @@ import { registerExplosion } from "./flow/explosion.mjs";
 import * as stages from "./flow/stages.mjs";
 import { registerLethal, registerLethalQuickAction, promptLethalDraw, postLethalDraw, offerLethalButton, couldBeLethal } from "./flow/lethal.mjs";
 import { registerResolverQuickAction, openResolver } from "./flow/resolver-app.mjs";
-import { registerEffectBuff, offerBuffButton, buffDelivery } from "./flow/effect-buff.mjs";
+import { registerEffectApply, offerApplyButton, buffDelivery } from "./flow/effect-apply.mjs";
 import {
   registerDedicatedHealing,
   requestHealCheck,
@@ -40,12 +40,14 @@ import {
 } from "./integrations/dedicated-healing.mjs";
 import { registerDedicatedHealingConfig } from "./apps/dedicated-healing-config.mjs";
 import { registerPipeline, registerPipelineSettings, suppressionEnabled, rollDeferredCritDamage } from "./integrations/pf1-pipeline.mjs";
+import { registerHomebrewSetting, homebrewEnabled } from "./settings.mjs";
 import { registerCritTrigger } from "./flow/crit-trigger.mjs";
 
 export { MODULE_ID };
 
 Hooks.once("init", () => {
   // Settings and the libWrapper registration must both exist before any action is used.
+  registerHomebrewSetting();
   registerPipelineSettings();
   registerPipeline();
 
@@ -55,7 +57,7 @@ Hooks.once("init", () => {
   registerCardMutation();
   registerFumbleFlow();
   registerLethal();
-  registerEffectBuff();
+  registerEffectApply();
   registerDedicatedHealing();
   registerDedicatedHealingConfig();
   registerCritTrigger();
@@ -73,6 +75,10 @@ Hooks.once("init", () => {
     unregisterProvider,
     getConfig: getDedicatedHealingConfig,
     setConfig: setDedicatedHealingConfig,
+    // Whether the house rule is switched on for this world. Consumers must check this before
+    // creating a *new* obligation — pf1-bleed-effects gates Deep Bleed on it. Registration and
+    // allocation stay available regardless, so anything already in progress can still be paid off.
+    enabled: homebrewEnabled,
   };
 });
 
@@ -112,9 +118,10 @@ Hooks.once("ready", async () => {
       stages,
     },
 
-    // the mechanical half of an effect (§6) — an apply-buff button on the card, delivered
-    // through astora-mod. Offered only when that module is there to deliver it.
-    effects: { offerBuffButton, buffDelivery },
+    // the mechanical half of an effect (§6) — one apply button on the card covering both
+    // channels: the PF1 conditions an entry inflicts (native, no dependency) and its buff,
+    // delivered through astora-mod when that module is there to deliver it.
+    effects: { offerApplyButton, buffDelivery },
 
     // PF1 pipeline (§9) — deferring critical damage until it is chosen
     pipeline: { suppressionEnabled, rollDeferredCritDamage },

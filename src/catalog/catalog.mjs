@@ -23,8 +23,10 @@ import {
   validateAnatomy,
   validateLethal,
   ANATOMIES,
+  CONDITION_IDS,
   DAMAGE_TYPES,
   GENERAL_SLOT,
+  MOVEMENT_CONDITIONS,
   gridCells,
   isLocalized,
   LOCALIZED_DAMAGE_TYPES,
@@ -315,35 +317,52 @@ export function fumbleResultTable(tableKey) {
 // --- lint ------------------------------------------------------------------
 
 /**
- * Dev-only content report (§3, "Journals <-> catalog drift"). The catalog references journals by
- * uuid and the two are edited separately, so they will drift; this is what keeps the content
- * track honest. Everything reported is a warning — nothing here stops the module working.
+ * Dev-only content report (§3). Everything reported is a warning — nothing here stops the module
+ * working.
  *
- * @param {object} [opts]
- * @param {string[]} [opts.knownOutcomeTypes]  registered handler types; unregistered types in
- *   the catalog are reported. Defaults to the live registry once one exists (phase 5).
- * @param {number} [opts.thinBucket]  bucket size at or below which a bucket is called thin.
+ * The journal-drift checks this used to lead with are gone with the journals (v5): prose lives in
+ * the catalog now, so there is no second document to fall out of step with. What replaced them is
+ * **condition drift**, which is the same class of problem one layer down — `CONDITION_IDS` in
+ * schema.mjs is a written-out copy of PF1's registry, kept static because the Node build tools
+ * import that module and have no `pf1` global. A system update that renames or drops a condition
+ * is reported here rather than discovered when a critical silently fails to apply.
  */
 export async function lint() {
   const report = {
-    deadJournals: [],
-    unreferencedJournals: [],
+    conditions: { unknownToPf1: [], used: {}, bleedWithoutModule: [] },
     tables: { written: 0, placeholder: 0, percent: 0, missing: [], byTable: {} },
     mortal: { written: 0, of: 0, missing: [] },
-    fumbles: { deadJournals: [], unreferencedEntries: [] },
-    lethal: { byDamageType: {}, emptyDamageTypes: [], deadJournals: [] },
+    fumbles: { unreferencedEntries: [] },
+    lethal: { byDamageType: {}, emptyDamageTypes: [] },
   };
 
-  const referenced = new Set();
+  /* Every condition any catalog inflicts, checked against the live registry and counted. The count
+   * is the useful half day to day: it is how you notice that six entries impose `staggered` and
+   * none impose `sickened`. */
+  const bleedLive = !!game.modules.get("pf1-bleed-effects")?.active;
+  for (const entry of [...effects.entries, ...fumbles.entries, ...lethal.entries]) {
+    for (const condition of entry.conditions ?? []) {
+      report.conditions.used[condition.id] = (report.conditions.used[condition.id] ?? 0) + 1;
 
-  const checkJournal = async (uuid) => {
-    if (!uuid) return true;
-    referenced.add(uuid);
-    return !!(await fromUuid(uuid));
-  };
+      if (!pf1.registry.conditions.get(condition.id)) {
+        report.conditions.unknownToPf1.push({ id: entry.id, condition: condition.id });
+      }
+      /* Not a defect — an inert bleed marker is exactly what PF1 alone provides, and the entry is
+       * written to degrade to it. Reported because "the bleed did nothing" is otherwise a puzzle
+       * with no visible cause. */
+      if (condition.id === "bleed" && condition.bleed && !bleedLive) {
+        report.conditions.bleedWithoutModule.push(entry.id);
+      }
+    }
+  }
 
-  for (const entry of effects.entries) {
-    if (!(await checkJournal(entry.journal))) report.deadJournals.push({ id: entry.id, uuid: entry.journal });
+  /* The other direction: conditions PF1 knows about that our static list does not. Catches a
+   * system update that ADDS one, which is otherwise invisible until an author tries to use it and
+   * the validator rejects a perfectly good id. */
+  for (const condition of pf1.registry.conditions) {
+    if (!CONDITION_IDS.includes(condition.id) && !MOVEMENT_CONDITIONS.includes(condition.id)) {
+      report.conditions.unknownToPf1.push({ id: "(schema.mjs)", condition: `${condition.id} — in PF1, missing from CONDITION_IDS` });
+    }
   }
 
   /* Table coverage is the content track's progress metric: every table is 12 rows by construction,
@@ -385,12 +404,6 @@ export async function lint() {
     else report.mortal.missing.push(cell.key);
   }
 
-  for (const entry of fumbles.entries) {
-    if (!(await checkJournal(entry.journal))) report.fumbles.deadJournals.push({ id: entry.id, uuid: entry.journal });
-    // Duplicate journals collapsed by tools/tables-to-json.mjs are expected to be unreferenced.
-    for (const dup of entry.duplicateJournals ?? []) referenced.add(dup);
-  }
-
   const usedByTable = new Set(Object.values(fumbles.tables).flat().map((r) => r.id));
   for (const entry of fumbles.entries) {
     if (!usedByTable.has(entry.id)) report.fumbles.unreferencedEntries.push(entry.id);
@@ -402,19 +415,6 @@ export async function lint() {
     const count = lethalFor(type).length;
     report.lethal.byDamageType[type] = count;
     if (count === 0) report.lethal.emptyDamageTypes.push(type);
-  }
-  for (const entry of lethal.entries) {
-    if (!(await checkJournal(entry.journal))) report.lethal.deadJournals.push({ id: entry.id, uuid: entry.journal });
-  }
-
-  // Journals in the pack that no catalog entry points at.
-  const pack = game.packs.get(`${MODULE_ID}.critical-effects`);
-  if (pack) {
-    const index = pack.index ?? (await pack.getIndex());
-    for (const journal of index) {
-      const uuid = `Compendium.${MODULE_ID}.critical-effects.JournalEntry.${journal._id}`;
-      if (!referenced.has(uuid)) report.unreferencedJournals.push({ name: journal.name, uuid });
-    }
   }
 
   console.error(`${MODULE_ID} | lint:`, report);

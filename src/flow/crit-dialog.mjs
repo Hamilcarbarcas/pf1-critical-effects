@@ -38,7 +38,8 @@ import * as power from "../resolve/power.mjs";
 import * as location from "../resolve/location.mjs";
 import { stagesFor, nextStage } from "./stages.mjs";
 import { setCritResult, explosionCount, createCritResultCard } from "../chat/card-mutate.mjs";
-import { offerBuffButton } from "./effect-buff.mjs";
+import { offerApplyButton } from "./effect-apply.mjs";
+import { describeConditions } from "../resolve/conditions.mjs";
 import { rollDeferredCritDamage, suppressionEnabled } from "../integrations/pf1-pipeline.mjs";
 import { postTableRoll, postTableSelect, closeRequest } from "../integrations/roll-requests.mjs";
 import { displayName } from "../integrations/token-randomizer.mjs";
@@ -266,6 +267,10 @@ export class CritResolution extends HandlebarsApplicationMixin(ApplicationV2) {
       hasEffectTable: options.length > 0,
       outcome,
       entry: outcome?.entry ?? null,
+      // Formulas are shown unrolled here (see describeConditions): this is a preview of a row the
+      // GM has not confirmed, and rolling `1d4 minutes` to display it would either mislead or
+      // commit.
+      conditionSummary: describeConditions(outcome?.entry?.conditions),
       overridden: Number.isInteger(state.rowOverride) && state.rowOverride !== catalog.optionIndexFor(state.powerRoll?.total),
 
       pending: this.pending,
@@ -780,15 +785,20 @@ export class CritResolution extends HandlebarsApplicationMixin(ApplicationV2) {
       save: outcome.save,
       entryId: outcome.entry?.id ?? null,
       name: outcome.entry?.name ?? null,
-      journal: outcome.entry?.journal ?? null,
-      // Prose the GM adjudicates, carried on the card rather than left in the journal, because a
-      // note is the whole mechanical content of the entries that have one.
+      // Prose and the GM's adjudication line, both carried on the card. Since v5 the catalog owns
+      // its own text, so there is no journal to send anyone off to — what the card shows IS the
+      // entry.
+      text: outcome.entry?.text ?? null,
       note: outcome.entry?.note ?? null,
+      // Named on the card whether or not anyone presses the button, because "stunned 1 round" is
+      // part of the result even when the GM applies it by hand.
+      conditions: outcome.entry?.conditions ?? null,
     });
 
-    // The mechanical half, if this entry has one (§6). Separate from the record because it is a
-    // button rather than a fact: the record is what happened, this is what can still be done.
-    await offerBuffButton(source, {
+    // The mechanical half, if this entry has one (§6) — conditions and/or a buff. Separate from
+    // the record because it is a button rather than a fact: the record is what happened, this is
+    // what can still be done.
+    await offerApplyButton(source, {
       entry: outcome.entry,
       target: { actorId: state.display?.targetActorId, tokenId: state.display?.targetTokenId },
       sourceActorId: state.display?.attackerActorId ?? null,

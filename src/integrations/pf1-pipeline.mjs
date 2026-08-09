@@ -47,9 +47,8 @@ export function registerPipelineSettings() {
   game.settings.register(MODULE_ID, SETTING, {
     name: "Defer critical damage",
     hint:
-      "Don't roll critical damage with the attack. The confirmation still rolls and shows; " +
-      "critical damage is rolled later, only if it is chosen over a critical effect. " +
-      "Turn off to restore PF1's normal behaviour.",
+      "Roll critical damage later, only if it's chosen over a critical effect. " +
+      "The confirmation still rolls normally.",
     scope: "world",
     config: true,
     type: Boolean,

@@ -48,11 +48,8 @@ export async function postLethalDraw({ damageType, targetName = null } = {}) {
         <span class="ce-lethal-title">Lethal Blow</span>
         <span class="ce-lethal-type">${label}${who}</span>
       </header>
-      <div class="ce-lethal-name">
-        ${entry.journal
-          ? `<a class="content-link" draggable="true" data-link data-uuid="${entry.journal}" data-type="JournalEntry"><i class="fa-solid fa-book-open"></i>${foundry.utils.escapeHTML(entry.name)}</a>`
-          : foundry.utils.escapeHTML(entry.name)}
-      </div>
+      <div class="ce-lethal-name">${foundry.utils.escapeHTML(entry.name)}</div>
+      ${entry.text ? `<div class="ce-effect-text">${entry.text}</div>` : ""}
     </div>`;
 
   return ChatMessage.create({ content });
