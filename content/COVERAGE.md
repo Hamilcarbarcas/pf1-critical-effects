@@ -2,11 +2,11 @@
 
 **Generated** by `node tools/pool-report.mjs --write`. Do not edit.
 
-Pool: **0 effects**, 0 ranked, 0 untriaged.
+Pool: **196 effects**, 196 ranked, 0 untriaged.
 Grid: **63 tables**, 756 rows — 3 weapon damage types ×
 13 anatomy/location pairs, plus 8 damage types that roll no
 location and keep one `general` table per anatomy.
-**0 of 63 tables are saturated** (every band has its 3 candidates); 63 have no candidates at all.
+**30 of 63 tables are saturated** (every band has its 3 candidates); 0 have no candidates at all.
 
 A table is always twelve rows — the generator backfills gaps by reusing the nearest-ranked
 candidate. This report is what tells you whether those twelve rows are twelve *effects* or one
@@ -16,34 +16,86 @@ effect stretched over twelve. Target is **3 candidates per band**, because a ban
 
 ## Work queue — tables in progress
 
-0 band-gaps sit in tables that already have candidates. **Closest to done
+132 band-gaps sit in tables that already have candidates. **Closest to done
 first** — each line is a writing prompt: a damage type, a body part, and how bad the wound
 should be. These are the cheapest wins; a table with two of three grave wounds needs one effect.
 
-_None — every table with any content is saturated._
+| Damage type | Body part          | Band     | Have | Need |
+|-------------|--------------------|----------|-----:|-----:|
+| Acid        | aberrant general   | Minor    |    1 |    3 |
+| Acid        | aberrant general   | Moderate |    1 |    3 |
+| Acid        | aberrant general   | Severe   |    1 |    3 |
+| Acid        | aberrant general   | Grave    |    1 |    3 |
+| Acid        | beast general      | Minor    |    1 |    3 |
+| Acid        | beast general      | Moderate |    1 |    3 |
+| Acid        | beast general      | Severe   |    1 |    3 |
+| Acid        | beast general      | Grave    |    1 |    3 |
+| Acid        | humanoid general   | Minor    |    1 |    3 |
+| Acid        | humanoid general   | Moderate |    1 |    3 |
+| Acid        | humanoid general   | Severe   |    1 |    3 |
+| Acid        | humanoid general   | Grave    |    1 |    3 |
+| Bludgeoning | aberrant appendage | Minor    |    1 |    3 |
+| Bludgeoning | aberrant appendage | Moderate |    1 |    3 |
+| Bludgeoning | aberrant appendage | Severe   |    1 |    3 |
+| Bludgeoning | aberrant appendage | Grave    |    1 |    3 |
+| Bludgeoning | beast tail         | Minor    |    1 |    3 |
+| Bludgeoning | beast tail         | Moderate |    1 |    3 |
+| Bludgeoning | beast tail         | Severe   |    1 |    3 |
+| Bludgeoning | beast tail         | Grave    |    1 |    3 |
+| Bludgeoning | beast wing         | Minor    |    1 |    3 |
+| Bludgeoning | beast wing         | Moderate |    1 |    3 |
+| Bludgeoning | beast wing         | Severe   |    1 |    3 |
+| Bludgeoning | beast wing         | Grave    |    1 |    3 |
+| Cold        | aberrant general   | Minor    |    1 |    3 |
+| Cold        | aberrant general   | Moderate |    1 |    3 |
+| Cold        | aberrant general   | Severe   |    1 |    3 |
+| Cold        | aberrant general   | Grave    |    1 |    3 |
+| Cold        | beast general      | Minor    |    1 |    3 |
+| Cold        | beast general      | Moderate |    1 |    3 |
+| Cold        | beast general      | Severe   |    1 |    3 |
+| Cold        | beast general      | Grave    |    1 |    3 |
+| Cold        | humanoid general   | Minor    |    1 |    3 |
+| Cold        | humanoid general   | Moderate |    1 |    3 |
+| Cold        | humanoid general   | Severe   |    1 |    3 |
+| Cold        | humanoid general   | Grave    |    1 |    3 |
+| Electricity | aberrant general   | Minor    |    1 |    3 |
+| Electricity | aberrant general   | Moderate |    1 |    3 |
+| Electricity | aberrant general   | Severe   |    1 |    3 |
+| Electricity | aberrant general   | Grave    |    1 |    3 |
+| Electricity | beast general      | Minor    |    1 |    3 |
+| Electricity | beast general      | Moderate |    1 |    3 |
+| Electricity | beast general      | Severe   |    1 |    3 |
+| Electricity | beast general      | Grave    |    1 |    3 |
+| Electricity | humanoid general   | Minor    |    1 |    3 |
+| Electricity | humanoid general   | Moderate |    1 |    3 |
+| Electricity | humanoid general   | Severe   |    1 |    3 |
+| Electricity | humanoid general   | Grave    |    1 |    3 |
+| Fire        | aberrant general   | Minor    |    1 |    3 |
+| Fire        | aberrant general   | Moderate |    1 |    3 |
+| Fire        | aberrant general   | Severe   |    1 |    3 |
+| Fire        | aberrant general   | Grave    |    1 |    3 |
+| Fire        | beast general      | Minor    |    1 |    3 |
+| Fire        | beast general      | Moderate |    1 |    3 |
+| Fire        | beast general      | Severe   |    1 |    3 |
+| Fire        | beast general      | Grave    |    1 |    3 |
+| Fire        | humanoid general   | Minor    |    1 |    3 |
+| Fire        | humanoid general   | Moderate |    1 |    3 |
+| Fire        | humanoid general   | Severe   |    1 |    3 |
+| Fire        | humanoid general   | Grave    |    1 |    3 |
+
+_…and 72 more._
 
 ---
 
 ## Untouched tables
 
-63 of 63 tables have **no candidates at all**. These are
+0 of 63 tables have **no candidates at all**. These are
 from-scratch jobs rather than gap-filling, so they are listed by damage type rather than
 line by line. Remember one effect can be tagged for several body parts and damage types at once —
 these do not cost 12 effects each.
 
-| Damage type     | Empty | Body parts |
-|-----------------|------:|------------|
-| Bludgeoning     | 13/13 | **all**    |
-| Piercing        | 13/13 | **all**    |
-| Slashing        | 13/13 | **all**    |
-| Fire            |   3/3 | **all**    |
-| Cold            |   3/3 | **all**    |
-| Electricity     |   3/3 | **all**    |
-| Acid            |   3/3 | **all**    |
-| Sonic           |   3/3 | **all**    |
-| Force           |   3/3 | **all**    |
-| Positive Energy |   3/3 | **all**    |
-| Negative Energy |   3/3 | **all**    |
+| Damage type | Empty | Body parts |
+|-------------|------:|------------|
 
 ---
 
@@ -55,119 +107,119 @@ Candidates per band, per table. `3` is saturated; `.` is empty.
 
 | Body part          | Minor | Moderate | Severe | Grave | Total |
 |--------------------|------:|---------:|-------:|------:|------:|
-| humanoid arm       |     . |        . |      . |     . |     0 |
-| humanoid leg       |     . |        . |      . |     . |     0 |
-| humanoid torso     |     . |        . |      . |     . |     0 |
-| humanoid head      |     . |        . |      . |     . |     0 |
-| beast arm          |     . |        . |      . |     . |     0 |
-| beast leg          |     . |        . |      . |     . |     0 |
-| beast torso        |     . |        . |      . |     . |     0 |
-| beast head         |     . |        . |      . |     . |     0 |
-| beast tail         |     . |        . |      . |     . |     0 |
-| beast wing         |     . |        . |      . |     . |     0 |
-| aberrant appendage |     . |        . |      . |     . |     0 |
-| aberrant torso     |     . |        . |      . |     . |     0 |
-| aberrant head      |     . |        . |      . |     . |     0 |
+| humanoid arm       |     3 |        3 |      3 |     3 |    12 |
+| humanoid leg       |     3 |        3 |      3 |     3 |    12 |
+| humanoid torso     |     3 |        3 |      3 |     3 |    12 |
+| humanoid head      |     3 |        3 |      3 |     3 |    12 |
+| beast arm          |     3 |        3 |      3 |     3 |    12 |
+| beast leg          |     3 |        3 |      3 |     3 |    12 |
+| beast torso        |     3 |        3 |      3 |     3 |    12 |
+| beast head         |     3 |        3 |      3 |     3 |    12 |
+| beast tail         |     1 |        1 |      1 |     1 |     4 |
+| beast wing         |     1 |        1 |      1 |     1 |     4 |
+| aberrant appendage |     1 |        1 |      1 |     1 |     4 |
+| aberrant torso     |     3 |        3 |      3 |     3 |    12 |
+| aberrant head      |     3 |        3 |      3 |     3 |    12 |
 
 ### Piercing
 
 | Body part          | Minor | Moderate | Severe | Grave | Total |
 |--------------------|------:|---------:|-------:|------:|------:|
-| humanoid arm       |     . |        . |      . |     . |     0 |
-| humanoid leg       |     . |        . |      . |     . |     0 |
-| humanoid torso     |     . |        . |      . |     . |     0 |
-| humanoid head      |     . |        . |      . |     . |     0 |
-| beast arm          |     . |        . |      . |     . |     0 |
-| beast leg          |     . |        . |      . |     . |     0 |
-| beast torso        |     . |        . |      . |     . |     0 |
-| beast head         |     . |        . |      . |     . |     0 |
-| beast tail         |     . |        . |      . |     . |     0 |
-| beast wing         |     . |        . |      . |     . |     0 |
-| aberrant appendage |     . |        . |      . |     . |     0 |
-| aberrant torso     |     . |        . |      . |     . |     0 |
-| aberrant head      |     . |        . |      . |     . |     0 |
+| humanoid arm       |     3 |        3 |      3 |     3 |    12 |
+| humanoid leg       |     3 |        3 |      3 |     3 |    12 |
+| humanoid torso     |     3 |        3 |      3 |     3 |    12 |
+| humanoid head      |     3 |        3 |      3 |     3 |    12 |
+| beast arm          |     3 |        3 |      3 |     3 |    12 |
+| beast leg          |     3 |        3 |      3 |     3 |    12 |
+| beast torso        |     3 |        3 |      3 |     3 |    12 |
+| beast head         |     3 |        3 |      3 |     3 |    12 |
+| beast tail         |     1 |        1 |      1 |     1 |     4 |
+| beast wing         |     1 |        1 |      1 |     1 |     4 |
+| aberrant appendage |     1 |        1 |      1 |     1 |     4 |
+| aberrant torso     |     3 |        3 |      3 |     3 |    12 |
+| aberrant head      |     3 |        3 |      3 |     3 |    12 |
 
 ### Slashing
 
 | Body part          | Minor | Moderate | Severe | Grave | Total |
 |--------------------|------:|---------:|-------:|------:|------:|
-| humanoid arm       |     . |        . |      . |     . |     0 |
-| humanoid leg       |     . |        . |      . |     . |     0 |
-| humanoid torso     |     . |        . |      . |     . |     0 |
-| humanoid head      |     . |        . |      . |     . |     0 |
-| beast arm          |     . |        . |      . |     . |     0 |
-| beast leg          |     . |        . |      . |     . |     0 |
-| beast torso        |     . |        . |      . |     . |     0 |
-| beast head         |     . |        . |      . |     . |     0 |
-| beast tail         |     . |        . |      . |     . |     0 |
-| beast wing         |     . |        . |      . |     . |     0 |
-| aberrant appendage |     . |        . |      . |     . |     0 |
-| aberrant torso     |     . |        . |      . |     . |     0 |
-| aberrant head      |     . |        . |      . |     . |     0 |
+| humanoid arm       |     3 |        3 |      3 |     3 |    12 |
+| humanoid leg       |     3 |        3 |      3 |     3 |    12 |
+| humanoid torso     |     3 |        3 |      3 |     3 |    12 |
+| humanoid head      |     3 |        3 |      3 |     3 |    12 |
+| beast arm          |     3 |        3 |      3 |     3 |    12 |
+| beast leg          |     3 |        3 |      3 |     3 |    12 |
+| beast torso        |     3 |        3 |      3 |     3 |    12 |
+| beast head         |     3 |        3 |      3 |     3 |    12 |
+| beast tail         |     1 |        1 |      1 |     1 |     4 |
+| beast wing         |     1 |        1 |      1 |     1 |     4 |
+| aberrant appendage |     1 |        1 |      1 |     1 |     4 |
+| aberrant torso     |     3 |        3 |      3 |     3 |    12 |
+| aberrant head      |     3 |        3 |      3 |     3 |    12 |
 
 ### Fire
 
 | Body part        | Minor | Moderate | Severe | Grave | Total |
 |------------------|------:|---------:|-------:|------:|------:|
-| humanoid general |     . |        . |      . |     . |     0 |
-| beast general    |     . |        . |      . |     . |     0 |
-| aberrant general |     . |        . |      . |     . |     0 |
+| humanoid general |     1 |        1 |      1 |     1 |     4 |
+| beast general    |     1 |        1 |      1 |     1 |     4 |
+| aberrant general |     1 |        1 |      1 |     1 |     4 |
 
 ### Cold
 
 | Body part        | Minor | Moderate | Severe | Grave | Total |
 |------------------|------:|---------:|-------:|------:|------:|
-| humanoid general |     . |        . |      . |     . |     0 |
-| beast general    |     . |        . |      . |     . |     0 |
-| aberrant general |     . |        . |      . |     . |     0 |
+| humanoid general |     1 |        1 |      1 |     1 |     4 |
+| beast general    |     1 |        1 |      1 |     1 |     4 |
+| aberrant general |     1 |        1 |      1 |     1 |     4 |
 
 ### Electricity
 
 | Body part        | Minor | Moderate | Severe | Grave | Total |
 |------------------|------:|---------:|-------:|------:|------:|
-| humanoid general |     . |        . |      . |     . |     0 |
-| beast general    |     . |        . |      . |     . |     0 |
-| aberrant general |     . |        . |      . |     . |     0 |
+| humanoid general |     1 |        1 |      1 |     1 |     4 |
+| beast general    |     1 |        1 |      1 |     1 |     4 |
+| aberrant general |     1 |        1 |      1 |     1 |     4 |
 
 ### Acid
 
 | Body part        | Minor | Moderate | Severe | Grave | Total |
 |------------------|------:|---------:|-------:|------:|------:|
-| humanoid general |     . |        . |      . |     . |     0 |
-| beast general    |     . |        . |      . |     . |     0 |
-| aberrant general |     . |        . |      . |     . |     0 |
+| humanoid general |     1 |        1 |      1 |     1 |     4 |
+| beast general    |     1 |        1 |      1 |     1 |     4 |
+| aberrant general |     1 |        1 |      1 |     1 |     4 |
 
 ### Sonic
 
 | Body part        | Minor | Moderate | Severe | Grave | Total |
 |------------------|------:|---------:|-------:|------:|------:|
-| humanoid general |     . |        . |      . |     . |     0 |
-| beast general    |     . |        . |      . |     . |     0 |
-| aberrant general |     . |        . |      . |     . |     0 |
+| humanoid general |     1 |        1 |      1 |     1 |     4 |
+| beast general    |     1 |        1 |      1 |     1 |     4 |
+| aberrant general |     1 |        1 |      1 |     1 |     4 |
 
 ### Force
 
 | Body part        | Minor | Moderate | Severe | Grave | Total |
 |------------------|------:|---------:|-------:|------:|------:|
-| humanoid general |     . |        . |      . |     . |     0 |
-| beast general    |     . |        . |      . |     . |     0 |
-| aberrant general |     . |        . |      . |     . |     0 |
+| humanoid general |     1 |        1 |      1 |     1 |     4 |
+| beast general    |     1 |        1 |      1 |     1 |     4 |
+| aberrant general |     1 |        1 |      1 |     1 |     4 |
 
 ### Positive Energy
 
 | Body part        | Minor | Moderate | Severe | Grave | Total |
 |------------------|------:|---------:|-------:|------:|------:|
-| humanoid general |     . |        . |      . |     . |     0 |
-| beast general    |     . |        . |      . |     . |     0 |
-| aberrant general |     . |        . |      . |     . |     0 |
+| humanoid general |     1 |        1 |      1 |     1 |     4 |
+| beast general    |     1 |        1 |      1 |     1 |     4 |
+| aberrant general |     1 |        1 |      1 |     1 |     4 |
 
 ### Negative Energy
 
 | Body part        | Minor | Moderate | Severe | Grave | Total |
 |------------------|------:|---------:|-------:|------:|------:|
-| humanoid general |     . |        . |      . |     . |     0 |
-| beast general    |     . |        . |      . |     . |     0 |
-| aberrant general |     . |        . |      . |     . |     0 |
+| humanoid general |     1 |        1 |      1 |     1 |     4 |
+| beast general    |     1 |        1 |      1 |     1 |     4 |
+| aberrant general |     1 |        1 |      1 |     1 |     4 |
 
 ---
 

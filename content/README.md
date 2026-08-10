@@ -207,6 +207,29 @@ visible.
 Do **not** confuse this with mortal. Mortal is the 13+ clamp on a critical effect and is part of
 the resolution; lethal is post-hoc narration for a death that has already happened.
 
+## Mortal (`content/mortal.md`)
+
+The **13+** addendum, read *on top of* row 12. Not pool-shaped and not ranked — every cell is
+written exactly once, so there is nothing to tag and nothing to select. `pool-to-tables` reads the
+worksheet alongside the pool and folds both into `effects.json`.
+
+Two tables, keyed by different axes:
+
+| Table | One row per | Cells |
+|---|---|---|
+| **By body part** | damage type × anatomy × location | 39 |
+| **By damage type** | damage type (anatomy agnostic) | 8 |
+
+A body-part row's first cell names all three: `Bludgeoning · Humanoid · Head`. Punctuation isn't
+load-bearing — the cell is split on non-letters and each word matched by what it is.
+
+The weapon half keeps its damage-type axis because the content needs it: a mace, a spear and an axe
+end a head as *Caved Cranium*, *Pierced Brain* and *Decapitated*. The energy half drops **anatomy**
+instead, because burned to ash is burned to ash whether it's a humanoid or an ooze.
+
+A cell may be left blank. That isn't a hole — the 13+ result then falls back to row 12 plus the
+Fort save, which is the rule as written.
+
 ## The content fields
 
 An entry with `id` and `name` alone is **complete and usable** — the flow resolves it, names it and

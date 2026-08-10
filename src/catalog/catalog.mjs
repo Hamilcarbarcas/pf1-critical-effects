@@ -29,7 +29,6 @@ import {
   MOVEMENT_CONDITIONS,
   gridCells,
   isLocalized,
-  LOCALIZED_DAMAGE_TYPES,
   mortalCells,
   slotFor,
 } from "./schema.mjs";
@@ -166,11 +165,10 @@ export function effectTable(damageType, anatomy, location) {
  * The mortal addendum — the 13+ clamp's extra text. Reads ON TOP of row 12, never instead of it,
  * which is why it is a separate lookup rather than a fourteenth row.
  *
- * **Which axis it is keyed by depends on the damage type**, and the asymmetry is deliberate
- * (see `mortalCells` in schema.mjs):
+ * **Which axes it is keyed by depends on the damage type** (see `mortalCells` in schema.mjs):
  *
- *   weapon damage    by anatomy × location, damage-type agnostic — past row 12 a torn-off arm is a
- *                    torn-off arm whether a sword or a mace did it
+ *   weapon damage    by damage type × anatomy × location — a mace, a spear and an axe end a head
+ *                    three different ways, and the 13+ result exists to say which
  *   everything else  by damage type, anatomy agnostic — there is no body part to name, and burned
  *                    to ash and blasted apart are not one result
  *
@@ -178,7 +176,7 @@ export function effectTable(damageType, anatomy, location) {
  */
 export function mortalFor(damageType, anatomy, location) {
   const id = isLocalized(damageType)
-    ? effects.mortal?.byPart?.[anatomy]?.[location]
+    ? effects.mortal?.byPart?.[damageType]?.[anatomy]?.[location]
     : effects.mortal?.byDamageType?.[damageType];
   return id ? getEntry(id) : null;
 }
@@ -392,13 +390,13 @@ export async function lint() {
   report.tables.percent = totalRows ? Math.round((report.tables.written / totalRows) * 100) : 0;
 
   /* Mortal's two halves are keyed by different axes, so the walk asks each cell its own question:
-   * a body-part cell is looked up through any localized damage type, a damage-type cell through
-   * any anatomy. `mortalCells` is what keeps that asymmetry in one place. */
+   * a body-part cell carries its own damage type, a damage-type cell is looked up through any
+   * anatomy. `mortalCells` is what keeps that asymmetry in one place. */
   for (const cell of mortalCells()) {
     report.mortal.of += 1;
     const written =
       cell.kind === "part"
-        ? mortalFor(LOCALIZED_DAMAGE_TYPES[0], cell.anatomy, cell.location)
+        ? mortalFor(cell.damageType, cell.anatomy, cell.location)
         : mortalFor(cell.damageType, ANATOMIES[0], GENERAL_SLOT);
     if (written) report.mortal.written += 1;
     else report.mortal.missing.push(cell.key);

@@ -210,14 +210,14 @@ effect a GM adjudicates, `conditions` is for the half that should just happen.
     }
   },
   "mortal": {
-    // the weapon types: by body part, damage-type agnostic
+    // the weapon types: by damage type, then body part
     "byPart": {
-      "humanoid": { "arm": "arm-torn-away", "leg": …, "torso": …, "head": … },
-      "beast":    { … },
-      "aberrant": { … }
+      "bludgeoning": { "humanoid": { "head": "caved-cranium", … }, "beast": { … }, "aberrant": { … } },
+      "piercing":    { "humanoid": { "head": "pierced-brain",  … }, … },
+      "slashing":    { "humanoid": { "head": "decapitated",    … }, … }
     },
     // everything else: by damage type, anatomy agnostic
-    "byDamageType": { "fire": "burned-to-ash", "force": "blasted-apart", … }
+    "byDamageType": { "fire": "carbonized", "force": "obliterated", … }
   }
 }
 ```
@@ -229,7 +229,7 @@ effect a GM adjudicates, `conditions` is for the half that should just happen.
 | **Localized** — bludgeoning, piercing, slashing | the 13 anatomy × location pairs | 39 |
 | **Non-localized** — fire, cold, electric, acid, sonic, force, positive, negative | `general` | 24 |
 
-**63 tables × 12 rows = 756 rows**, plus 21 mortal entries. `gridCells()` in `schema.mjs` is the
+**63 tables × 12 rows = 756 rows**, plus 47 mortal cells. `gridCells()` in `schema.mjs` is the
 definition of that grid and `slotsFor()` is one cell's shape; `ANATOMY_LOCATIONS` remains the
 definition of the 13 localized pairs alone. `validateAnatomy` cross-checks those against what the
 location layouts in anatomy.json can actually produce — a slot the location roll can land on with
@@ -270,19 +270,24 @@ Notes tied to the rules concept:
   Optional: absent, the 13+ result is row 12 plus the Fort save, which is the rule as the concept
   doc states it.
 - **`mortal`'s two halves are keyed by different axes, and that asymmetry is the design.** Each
-  side keeps the axis that actually distinguishes a death and drops the one that doesn't:
+  side keeps the axes that actually distinguish a death and drops the one that doesn't:
 
   | | Keyed by | Agnostic to | Count |
   |---|---|---|---|
-  | `byPart` — the weapon types | anatomy × location | damage type | 13 |
+  | `byPart` — the weapon types | damage type × anatomy × location | — | 39 |
   | `byDamageType` — everything else | damage type | anatomy | 8 |
 
-  Past row 12 a weapon wound has stopped being characterised by what made it — a torn-off arm is a
-  torn-off arm whether a sword or a mace did it — so the body part is what is left to name. Energy
-  has no body part to name, and burned to ash and blasted apart are plainly not one result, so the
-  damage type carries it instead; anatomy drops out because a mortal fire result is the same story
-  for a humanoid and a beast. `mortalCells()` enumerates both halves so no consumer has to
-  reconstruct the rule.
+  > **Revised in phase 12.** `byPart` was 13 cells, damage-type agnostic, on the reasoning that
+  > *"past row 12 a torn-off arm is a torn-off arm whether a sword or a mace did it"*. Writing the
+  > content disproved it: a mace, a spear and an axe end a head as **Caved Cranium**, **Pierced
+  > Brain** and **Decapitated**, and collapsing those into one row throws away the distinction the
+  > 13+ result exists to make. Every byPart cell in the draft had three claimants. The weapon half
+  > therefore keeps its damage-type axis.
+
+  What survives is the *other* asymmetry: **anatomy** drops out of the non-localized half. Burned
+  to ash is burned to ash for a humanoid and a beast alike, while burned to ash and blasted apart
+  are plainly not one result — so the damage type is the whole of what distinguishes that side.
+  `mortalCells()` enumerates both halves so no consumer has to reconstruct the rule.
 - **Unwritten rows are real placeholder entries, not holes.** Callers never handle a gap; `lint()`
   reports the placeholder count per table as a **progress metric**, which is what keeps the
   content track honest.
@@ -341,7 +346,7 @@ tables that already have content (cheap wins) separated from untouched tables (f
 plus the untriaged entries that have no rank and therefore land nowhere. Full rules in
 [`content/README.md`](content/README.md).
 
-**Mortal is not pool-shaped** and stays a worksheet in `content/mortal.md` — two tables, 21 rows,
+**Mortal is not pool-shaped** and stays a worksheet in `content/mortal.md` — two tables, 47 rows,
 one per cell of the mortal grid above. Every cell is written exactly once, so there is nothing to
 tag and nothing to select. The generator reads it alongside the pool and classifies each row by its
 first cell, so the two tables need no markers.

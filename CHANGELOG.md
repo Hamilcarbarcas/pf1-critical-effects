@@ -2,7 +2,30 @@
 
 ## Unreleased
 
+### Fixed
+- **The Dedicated Healing section's hint text is legible again.** The *Healing Required* and *Heal
+  Check DC* hints (and the section's intro note) inherited a near-white colour on the buff sheet's
+  beige Advanced tab. PF1's V1 item sheets style neither `.hint` nor `.notes`, and core's rule for
+  them sits in a cascade layer that any unlayered module rule outranks, so the module now sets the
+  colour explicitly — the same token the section's progress line already used.
+
 ### Changed
+- **The effect pool is populated — 196 entries filling all 756 rows of the grid, and all 47 mortal
+  cells.** Names, ranks, damage types and slots are settled; prose, conditions and buffs are
+  placeholders to be refined entry by entry. Every one of the 63 tables has an effect on every row
+  and no table falls back to a placeholder. 492 of the 756 rows are an exact rank match; the rest
+  are the drift-fill the generator is built for, concentrated in the tables that are written one
+  effect per severity band rather than three — beast **tail** and **wing**, aberrant
+  **appendage**, and all 24 energy `general` tables.
+- **The mortal (13+) grid is keyed by damage type.** `mortal.byPart` was 13 cells keyed anatomy ×
+  location and damage-type agnostic, on the reasoning that "past row 12 a torn-off arm is a
+  torn-off arm whether a sword or a mace did it". Writing the content disproved it: a mace, a spear
+  and an axe end an arm as **Critical Internal Bleeding**, **Kebabed** and **Vorpal Cut**, and every
+  single cell of the draft had three claimants. `byPart` is now `[damageType][anatomy][location]` —
+  39 cells instead of 13, all 47 of the grid written. The `byDamageType` half is unchanged and
+  still drops anatomy, because burned to ash is burned to ash whichever creature it was.
+  - `content/mortal.md`'s body-part table gains a damage type in its first cell —
+    `Bludgeoning · Humanoid · Head`. The parser takes it in any punctuation.
 - **The effect catalog is now self-contained — the journal packs are gone.** An entry carries its
   own prose in a `text` field rather than a UUID pointing at a compendium journal, and the two
   shipped packs (**Critical Effects** journals, **Critical Tables** roll tables) have been removed

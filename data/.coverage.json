@@ -1,569 +1,2186 @@
 [
   {
     "key": "bludgeoning/humanoid/arm",
-    "candidates": 0,
-    "filled": 0,
-    "distinct": 0,
+    "candidates": 12,
+    "filled": 12,
+    "distinct": 12,
     "drift": [],
     "repeats": [],
     "surplus": []
   },
   {
     "key": "bludgeoning/humanoid/leg",
-    "candidates": 0,
-    "filled": 0,
-    "distinct": 0,
+    "candidates": 12,
+    "filled": 12,
+    "distinct": 12,
     "drift": [],
     "repeats": [],
     "surplus": []
   },
   {
     "key": "bludgeoning/humanoid/torso",
-    "candidates": 0,
-    "filled": 0,
-    "distinct": 0,
+    "candidates": 12,
+    "filled": 12,
+    "distinct": 12,
     "drift": [],
     "repeats": [],
     "surplus": []
   },
   {
     "key": "bludgeoning/humanoid/head",
-    "candidates": 0,
-    "filled": 0,
-    "distinct": 0,
+    "candidates": 12,
+    "filled": 12,
+    "distinct": 12,
     "drift": [],
     "repeats": [],
     "surplus": []
   },
   {
     "key": "bludgeoning/beast/arm",
-    "candidates": 0,
-    "filled": 0,
-    "distinct": 0,
+    "candidates": 12,
+    "filled": 12,
+    "distinct": 12,
     "drift": [],
     "repeats": [],
     "surplus": []
   },
   {
     "key": "bludgeoning/beast/leg",
-    "candidates": 0,
-    "filled": 0,
-    "distinct": 0,
+    "candidates": 12,
+    "filled": 12,
+    "distinct": 12,
     "drift": [],
     "repeats": [],
     "surplus": []
   },
   {
     "key": "bludgeoning/beast/torso",
-    "candidates": 0,
-    "filled": 0,
-    "distinct": 0,
+    "candidates": 12,
+    "filled": 12,
+    "distinct": 12,
     "drift": [],
     "repeats": [],
     "surplus": []
   },
   {
     "key": "bludgeoning/beast/head",
-    "candidates": 0,
-    "filled": 0,
-    "distinct": 0,
+    "candidates": 12,
+    "filled": 12,
+    "distinct": 12,
     "drift": [],
     "repeats": [],
     "surplus": []
   },
   {
     "key": "bludgeoning/beast/tail",
-    "candidates": 0,
-    "filled": 0,
-    "distinct": 0,
+    "candidates": 4,
+    "filled": 12,
+    "distinct": 4,
     "drift": [],
-    "repeats": [],
+    "repeats": [
+      {
+        "row": 1,
+        "id": "numbed-tail",
+        "rank": 2,
+        "cost": 1
+      },
+      {
+        "row": 3,
+        "id": "numbed-tail",
+        "rank": 2,
+        "cost": 1
+      },
+      {
+        "row": 4,
+        "id": "bruised-tail",
+        "rank": 5,
+        "cost": 1
+      },
+      {
+        "row": 6,
+        "id": "bruised-tail",
+        "rank": 5,
+        "cost": 1
+      },
+      {
+        "row": 7,
+        "id": "fractured-tail",
+        "rank": 8,
+        "cost": 1
+      },
+      {
+        "row": 9,
+        "id": "fractured-tail",
+        "rank": 8,
+        "cost": 1
+      },
+      {
+        "row": 10,
+        "id": "shattered-vertebrae",
+        "rank": 11,
+        "cost": 1
+      },
+      {
+        "row": 12,
+        "id": "shattered-vertebrae",
+        "rank": 11,
+        "cost": 1
+      }
+    ],
     "surplus": []
   },
   {
     "key": "bludgeoning/beast/wing",
-    "candidates": 0,
-    "filled": 0,
-    "distinct": 0,
+    "candidates": 4,
+    "filled": 12,
+    "distinct": 4,
     "drift": [],
-    "repeats": [],
+    "repeats": [
+      {
+        "row": 1,
+        "id": "wing-bruised",
+        "rank": 2,
+        "cost": 1
+      },
+      {
+        "row": 3,
+        "id": "wing-bruised",
+        "rank": 2,
+        "cost": 1
+      },
+      {
+        "row": 4,
+        "id": "wing-broken",
+        "rank": 5,
+        "cost": 1
+      },
+      {
+        "row": 6,
+        "id": "wing-broken",
+        "rank": 5,
+        "cost": 1
+      },
+      {
+        "row": 7,
+        "id": "wing-compound-fractured",
+        "rank": 8,
+        "cost": 1
+      },
+      {
+        "row": 9,
+        "id": "wing-compound-fractured",
+        "rank": 8,
+        "cost": 1
+      },
+      {
+        "row": 10,
+        "id": "wing-crushed",
+        "rank": 11,
+        "cost": 1
+      },
+      {
+        "row": 12,
+        "id": "wing-crushed",
+        "rank": 11,
+        "cost": 1
+      }
+    ],
     "surplus": []
   },
   {
     "key": "bludgeoning/aberrant/appendage",
-    "candidates": 0,
-    "filled": 0,
-    "distinct": 0,
+    "candidates": 4,
+    "filled": 12,
+    "distinct": 4,
     "drift": [],
-    "repeats": [],
+    "repeats": [
+      {
+        "row": 1,
+        "id": "jarring-blow",
+        "rank": 2,
+        "cost": 1
+      },
+      {
+        "row": 3,
+        "id": "jarring-blow",
+        "rank": 2,
+        "cost": 1
+      },
+      {
+        "row": 4,
+        "id": "bruising-blow",
+        "rank": 5,
+        "cost": 1
+      },
+      {
+        "row": 6,
+        "id": "bruising-blow",
+        "rank": 5,
+        "cost": 1
+      },
+      {
+        "row": 7,
+        "id": "crushing-blow",
+        "rank": 8,
+        "cost": 1
+      },
+      {
+        "row": 9,
+        "id": "crushing-blow",
+        "rank": 8,
+        "cost": 1
+      },
+      {
+        "row": 10,
+        "id": "crushed-appendage",
+        "rank": 11,
+        "cost": 1
+      },
+      {
+        "row": 12,
+        "id": "crushed-appendage",
+        "rank": 11,
+        "cost": 1
+      }
+    ],
     "surplus": []
   },
   {
     "key": "bludgeoning/aberrant/torso",
-    "candidates": 0,
-    "filled": 0,
-    "distinct": 0,
+    "candidates": 12,
+    "filled": 12,
+    "distinct": 12,
     "drift": [],
     "repeats": [],
     "surplus": []
   },
   {
     "key": "bludgeoning/aberrant/head",
-    "candidates": 0,
-    "filled": 0,
-    "distinct": 0,
+    "candidates": 12,
+    "filled": 12,
+    "distinct": 12,
     "drift": [],
     "repeats": [],
     "surplus": []
   },
   {
     "key": "piercing/humanoid/arm",
-    "candidates": 0,
-    "filled": 0,
-    "distinct": 0,
+    "candidates": 12,
+    "filled": 12,
+    "distinct": 12,
     "drift": [],
     "repeats": [],
     "surplus": []
   },
   {
     "key": "piercing/humanoid/leg",
-    "candidates": 0,
-    "filled": 0,
-    "distinct": 0,
+    "candidates": 12,
+    "filled": 12,
+    "distinct": 12,
     "drift": [],
     "repeats": [],
     "surplus": []
   },
   {
     "key": "piercing/humanoid/torso",
-    "candidates": 0,
-    "filled": 0,
-    "distinct": 0,
+    "candidates": 12,
+    "filled": 12,
+    "distinct": 12,
     "drift": [],
     "repeats": [],
     "surplus": []
   },
   {
     "key": "piercing/humanoid/head",
-    "candidates": 0,
-    "filled": 0,
-    "distinct": 0,
+    "candidates": 12,
+    "filled": 12,
+    "distinct": 12,
     "drift": [],
     "repeats": [],
     "surplus": []
   },
   {
     "key": "piercing/beast/arm",
-    "candidates": 0,
-    "filled": 0,
-    "distinct": 0,
+    "candidates": 12,
+    "filled": 12,
+    "distinct": 12,
     "drift": [],
     "repeats": [],
     "surplus": []
   },
   {
     "key": "piercing/beast/leg",
-    "candidates": 0,
-    "filled": 0,
-    "distinct": 0,
+    "candidates": 12,
+    "filled": 12,
+    "distinct": 12,
     "drift": [],
     "repeats": [],
     "surplus": []
   },
   {
     "key": "piercing/beast/torso",
-    "candidates": 0,
-    "filled": 0,
-    "distinct": 0,
+    "candidates": 12,
+    "filled": 12,
+    "distinct": 12,
     "drift": [],
     "repeats": [],
     "surplus": []
   },
   {
     "key": "piercing/beast/head",
-    "candidates": 0,
-    "filled": 0,
-    "distinct": 0,
+    "candidates": 12,
+    "filled": 12,
+    "distinct": 12,
     "drift": [],
     "repeats": [],
     "surplus": []
   },
   {
     "key": "piercing/beast/tail",
-    "candidates": 0,
-    "filled": 0,
-    "distinct": 0,
+    "candidates": 4,
+    "filled": 12,
+    "distinct": 4,
     "drift": [],
-    "repeats": [],
+    "repeats": [
+      {
+        "row": 1,
+        "id": "piercing-blow",
+        "rank": 2,
+        "cost": 1
+      },
+      {
+        "row": 3,
+        "id": "piercing-blow",
+        "rank": 2,
+        "cost": 1
+      },
+      {
+        "row": 4,
+        "id": "tail-punctured",
+        "rank": 5,
+        "cost": 1
+      },
+      {
+        "row": 6,
+        "id": "tail-punctured",
+        "rank": 5,
+        "cost": 1
+      },
+      {
+        "row": 7,
+        "id": "tail-pinned",
+        "rank": 8,
+        "cost": 1
+      },
+      {
+        "row": 9,
+        "id": "tail-pinned",
+        "rank": 8,
+        "cost": 1
+      },
+      {
+        "row": 10,
+        "id": "tail-skewered",
+        "rank": 11,
+        "cost": 1
+      },
+      {
+        "row": 12,
+        "id": "tail-skewered",
+        "rank": 11,
+        "cost": 1
+      }
+    ],
     "surplus": []
   },
   {
     "key": "piercing/beast/wing",
-    "candidates": 0,
-    "filled": 0,
-    "distinct": 0,
+    "candidates": 4,
+    "filled": 12,
+    "distinct": 4,
     "drift": [],
-    "repeats": [],
+    "repeats": [
+      {
+        "row": 1,
+        "id": "piercing-blow",
+        "rank": 2,
+        "cost": 1
+      },
+      {
+        "row": 3,
+        "id": "piercing-blow",
+        "rank": 2,
+        "cost": 1
+      },
+      {
+        "row": 4,
+        "id": "wing-punctured",
+        "rank": 5,
+        "cost": 1
+      },
+      {
+        "row": 6,
+        "id": "wing-punctured",
+        "rank": 5,
+        "cost": 1
+      },
+      {
+        "row": 7,
+        "id": "wing-base-pierced",
+        "rank": 8,
+        "cost": 1
+      },
+      {
+        "row": 9,
+        "id": "wing-base-pierced",
+        "rank": 8,
+        "cost": 1
+      },
+      {
+        "row": 10,
+        "id": "wing-skewered",
+        "rank": 11,
+        "cost": 1
+      },
+      {
+        "row": 12,
+        "id": "wing-skewered",
+        "rank": 11,
+        "cost": 1
+      }
+    ],
     "surplus": []
   },
   {
     "key": "piercing/aberrant/appendage",
-    "candidates": 0,
-    "filled": 0,
-    "distinct": 0,
+    "candidates": 4,
+    "filled": 12,
+    "distinct": 4,
     "drift": [],
-    "repeats": [],
+    "repeats": [
+      {
+        "row": 1,
+        "id": "piercing-blow",
+        "rank": 2,
+        "cost": 1
+      },
+      {
+        "row": 3,
+        "id": "piercing-blow",
+        "rank": 2,
+        "cost": 1
+      },
+      {
+        "row": 4,
+        "id": "puncturing-blow",
+        "rank": 5,
+        "cost": 1
+      },
+      {
+        "row": 6,
+        "id": "puncturing-blow",
+        "rank": 5,
+        "cost": 1
+      },
+      {
+        "row": 7,
+        "id": "lodging-blow",
+        "rank": 8,
+        "cost": 1
+      },
+      {
+        "row": 9,
+        "id": "lodging-blow",
+        "rank": 8,
+        "cost": 1
+      },
+      {
+        "row": 10,
+        "id": "skewering-blow",
+        "rank": 11,
+        "cost": 1
+      },
+      {
+        "row": 12,
+        "id": "skewering-blow",
+        "rank": 11,
+        "cost": 1
+      }
+    ],
     "surplus": []
   },
   {
     "key": "piercing/aberrant/torso",
-    "candidates": 0,
-    "filled": 0,
-    "distinct": 0,
+    "candidates": 12,
+    "filled": 12,
+    "distinct": 12,
     "drift": [],
     "repeats": [],
     "surplus": []
   },
   {
     "key": "piercing/aberrant/head",
-    "candidates": 0,
-    "filled": 0,
-    "distinct": 0,
+    "candidates": 12,
+    "filled": 12,
+    "distinct": 12,
     "drift": [],
     "repeats": [],
     "surplus": []
   },
   {
     "key": "slashing/humanoid/arm",
-    "candidates": 0,
-    "filled": 0,
-    "distinct": 0,
+    "candidates": 12,
+    "filled": 12,
+    "distinct": 12,
     "drift": [],
     "repeats": [],
     "surplus": []
   },
   {
     "key": "slashing/humanoid/leg",
-    "candidates": 0,
-    "filled": 0,
-    "distinct": 0,
+    "candidates": 12,
+    "filled": 12,
+    "distinct": 12,
     "drift": [],
     "repeats": [],
     "surplus": []
   },
   {
     "key": "slashing/humanoid/torso",
-    "candidates": 0,
-    "filled": 0,
-    "distinct": 0,
+    "candidates": 12,
+    "filled": 12,
+    "distinct": 12,
     "drift": [],
     "repeats": [],
     "surplus": []
   },
   {
     "key": "slashing/humanoid/head",
-    "candidates": 0,
-    "filled": 0,
-    "distinct": 0,
+    "candidates": 12,
+    "filled": 12,
+    "distinct": 12,
     "drift": [],
     "repeats": [],
     "surplus": []
   },
   {
     "key": "slashing/beast/arm",
-    "candidates": 0,
-    "filled": 0,
-    "distinct": 0,
+    "candidates": 12,
+    "filled": 12,
+    "distinct": 12,
     "drift": [],
     "repeats": [],
     "surplus": []
   },
   {
     "key": "slashing/beast/leg",
-    "candidates": 0,
-    "filled": 0,
-    "distinct": 0,
+    "candidates": 12,
+    "filled": 12,
+    "distinct": 12,
     "drift": [],
     "repeats": [],
     "surplus": []
   },
   {
     "key": "slashing/beast/torso",
-    "candidates": 0,
-    "filled": 0,
-    "distinct": 0,
+    "candidates": 12,
+    "filled": 12,
+    "distinct": 12,
     "drift": [],
     "repeats": [],
     "surplus": []
   },
   {
     "key": "slashing/beast/head",
-    "candidates": 0,
-    "filled": 0,
-    "distinct": 0,
+    "candidates": 12,
+    "filled": 12,
+    "distinct": 12,
     "drift": [],
     "repeats": [],
     "surplus": []
   },
   {
     "key": "slashing/beast/tail",
-    "candidates": 0,
-    "filled": 0,
-    "distinct": 0,
+    "candidates": 4,
+    "filled": 12,
+    "distinct": 4,
     "drift": [],
-    "repeats": [],
+    "repeats": [
+      {
+        "row": 1,
+        "id": "slashing-blow",
+        "rank": 2,
+        "cost": 1
+      },
+      {
+        "row": 3,
+        "id": "slashing-blow",
+        "rank": 2,
+        "cost": 1
+      },
+      {
+        "row": 4,
+        "id": "slashed-tail",
+        "rank": 5,
+        "cost": 1
+      },
+      {
+        "row": 6,
+        "id": "slashed-tail",
+        "rank": 5,
+        "cost": 1
+      },
+      {
+        "row": 7,
+        "id": "cleaved-tail",
+        "rank": 8,
+        "cost": 1
+      },
+      {
+        "row": 9,
+        "id": "cleaved-tail",
+        "rank": 8,
+        "cost": 1
+      },
+      {
+        "row": 10,
+        "id": "tail-severed",
+        "rank": 11,
+        "cost": 1
+      },
+      {
+        "row": 12,
+        "id": "tail-severed",
+        "rank": 11,
+        "cost": 1
+      }
+    ],
     "surplus": []
   },
   {
     "key": "slashing/beast/wing",
-    "candidates": 0,
-    "filled": 0,
-    "distinct": 0,
+    "candidates": 4,
+    "filled": 12,
+    "distinct": 4,
     "drift": [],
-    "repeats": [],
+    "repeats": [
+      {
+        "row": 1,
+        "id": "slashing-blow",
+        "rank": 2,
+        "cost": 1
+      },
+      {
+        "row": 3,
+        "id": "slashing-blow",
+        "rank": 2,
+        "cost": 1
+      },
+      {
+        "row": 4,
+        "id": "wing-sliced",
+        "rank": 5,
+        "cost": 1
+      },
+      {
+        "row": 6,
+        "id": "wing-sliced",
+        "rank": 5,
+        "cost": 1
+      },
+      {
+        "row": 7,
+        "id": "cleaved-wing",
+        "rank": 8,
+        "cost": 1
+      },
+      {
+        "row": 9,
+        "id": "cleaved-wing",
+        "rank": 8,
+        "cost": 1
+      },
+      {
+        "row": 10,
+        "id": "wing-severed",
+        "rank": 11,
+        "cost": 1
+      },
+      {
+        "row": 12,
+        "id": "wing-severed",
+        "rank": 11,
+        "cost": 1
+      }
+    ],
     "surplus": []
   },
   {
     "key": "slashing/aberrant/appendage",
-    "candidates": 0,
-    "filled": 0,
-    "distinct": 0,
+    "candidates": 4,
+    "filled": 12,
+    "distinct": 4,
     "drift": [],
-    "repeats": [],
+    "repeats": [
+      {
+        "row": 1,
+        "id": "slashing-blow",
+        "rank": 2,
+        "cost": 1
+      },
+      {
+        "row": 3,
+        "id": "slashing-blow",
+        "rank": 2,
+        "cost": 1
+      },
+      {
+        "row": 4,
+        "id": "deep-slice",
+        "rank": 5,
+        "cost": 1
+      },
+      {
+        "row": 6,
+        "id": "deep-slice",
+        "rank": 5,
+        "cost": 1
+      },
+      {
+        "row": 7,
+        "id": "cleaved-appendage",
+        "rank": 8,
+        "cost": 1
+      },
+      {
+        "row": 9,
+        "id": "cleaved-appendage",
+        "rank": 8,
+        "cost": 1
+      },
+      {
+        "row": 10,
+        "id": "severed-appendage",
+        "rank": 11,
+        "cost": 1
+      },
+      {
+        "row": 12,
+        "id": "severed-appendage",
+        "rank": 11,
+        "cost": 1
+      }
+    ],
     "surplus": []
   },
   {
     "key": "slashing/aberrant/torso",
-    "candidates": 0,
-    "filled": 0,
-    "distinct": 0,
+    "candidates": 12,
+    "filled": 12,
+    "distinct": 12,
     "drift": [],
     "repeats": [],
     "surplus": []
   },
   {
     "key": "slashing/aberrant/head",
-    "candidates": 0,
-    "filled": 0,
-    "distinct": 0,
+    "candidates": 12,
+    "filled": 12,
+    "distinct": 12,
     "drift": [],
     "repeats": [],
     "surplus": []
   },
   {
     "key": "fire/humanoid/general",
-    "candidates": 0,
-    "filled": 0,
-    "distinct": 0,
+    "candidates": 4,
+    "filled": 12,
+    "distinct": 4,
     "drift": [],
-    "repeats": [],
+    "repeats": [
+      {
+        "row": 1,
+        "id": "catch-fire",
+        "rank": 2,
+        "cost": 1
+      },
+      {
+        "row": 3,
+        "id": "catch-fire",
+        "rank": 2,
+        "cost": 1
+      },
+      {
+        "row": 4,
+        "id": "seared-flesh",
+        "rank": 5,
+        "cost": 1
+      },
+      {
+        "row": 6,
+        "id": "seared-flesh",
+        "rank": 5,
+        "cost": 1
+      },
+      {
+        "row": 7,
+        "id": "burned-feverish",
+        "rank": 8,
+        "cost": 1
+      },
+      {
+        "row": 9,
+        "id": "burned-feverish",
+        "rank": 8,
+        "cost": 1
+      },
+      {
+        "row": 10,
+        "id": "set-ablaze",
+        "rank": 11,
+        "cost": 1
+      },
+      {
+        "row": 12,
+        "id": "set-ablaze",
+        "rank": 11,
+        "cost": 1
+      }
+    ],
     "surplus": []
   },
   {
     "key": "fire/beast/general",
-    "candidates": 0,
-    "filled": 0,
-    "distinct": 0,
+    "candidates": 4,
+    "filled": 12,
+    "distinct": 4,
     "drift": [],
-    "repeats": [],
+    "repeats": [
+      {
+        "row": 1,
+        "id": "catch-fire",
+        "rank": 2,
+        "cost": 1
+      },
+      {
+        "row": 3,
+        "id": "catch-fire",
+        "rank": 2,
+        "cost": 1
+      },
+      {
+        "row": 4,
+        "id": "seared-flesh",
+        "rank": 5,
+        "cost": 1
+      },
+      {
+        "row": 6,
+        "id": "seared-flesh",
+        "rank": 5,
+        "cost": 1
+      },
+      {
+        "row": 7,
+        "id": "burned-feverish",
+        "rank": 8,
+        "cost": 1
+      },
+      {
+        "row": 9,
+        "id": "burned-feverish",
+        "rank": 8,
+        "cost": 1
+      },
+      {
+        "row": 10,
+        "id": "set-alight",
+        "rank": 11,
+        "cost": 1
+      },
+      {
+        "row": 12,
+        "id": "set-alight",
+        "rank": 11,
+        "cost": 1
+      }
+    ],
     "surplus": []
   },
   {
     "key": "fire/aberrant/general",
-    "candidates": 0,
-    "filled": 0,
-    "distinct": 0,
+    "candidates": 4,
+    "filled": 12,
+    "distinct": 4,
     "drift": [],
-    "repeats": [],
+    "repeats": [
+      {
+        "row": 1,
+        "id": "catch-fire",
+        "rank": 2,
+        "cost": 1
+      },
+      {
+        "row": 3,
+        "id": "catch-fire",
+        "rank": 2,
+        "cost": 1
+      },
+      {
+        "row": 4,
+        "id": "seared-flesh",
+        "rank": 5,
+        "cost": 1
+      },
+      {
+        "row": 6,
+        "id": "seared-flesh",
+        "rank": 5,
+        "cost": 1
+      },
+      {
+        "row": 7,
+        "id": "burned-feverish",
+        "rank": 8,
+        "cost": 1
+      },
+      {
+        "row": 9,
+        "id": "burned-feverish",
+        "rank": 8,
+        "cost": 1
+      },
+      {
+        "row": 10,
+        "id": "set-alight",
+        "rank": 11,
+        "cost": 1
+      },
+      {
+        "row": 12,
+        "id": "set-alight",
+        "rank": 11,
+        "cost": 1
+      }
+    ],
     "surplus": []
   },
   {
     "key": "cold/humanoid/general",
-    "candidates": 0,
-    "filled": 0,
-    "distinct": 0,
+    "candidates": 4,
+    "filled": 12,
+    "distinct": 4,
     "drift": [],
-    "repeats": [],
+    "repeats": [
+      {
+        "row": 1,
+        "id": "frostbite",
+        "rank": 2,
+        "cost": 1
+      },
+      {
+        "row": 3,
+        "id": "frostbite",
+        "rank": 2,
+        "cost": 1
+      },
+      {
+        "row": 4,
+        "id": "brittle-flesh",
+        "rank": 5,
+        "cost": 1
+      },
+      {
+        "row": 6,
+        "id": "brittle-flesh",
+        "rank": 5,
+        "cost": 1
+      },
+      {
+        "row": 7,
+        "id": "frostburn",
+        "rank": 8,
+        "cost": 1
+      },
+      {
+        "row": 9,
+        "id": "frostburn",
+        "rank": 8,
+        "cost": 1
+      },
+      {
+        "row": 10,
+        "id": "flash-frozen",
+        "rank": 11,
+        "cost": 1
+      },
+      {
+        "row": 12,
+        "id": "flash-frozen",
+        "rank": 11,
+        "cost": 1
+      }
+    ],
     "surplus": []
   },
   {
     "key": "cold/beast/general",
-    "candidates": 0,
-    "filled": 0,
-    "distinct": 0,
+    "candidates": 4,
+    "filled": 12,
+    "distinct": 4,
     "drift": [],
-    "repeats": [],
+    "repeats": [
+      {
+        "row": 1,
+        "id": "frostbite",
+        "rank": 2,
+        "cost": 1
+      },
+      {
+        "row": 3,
+        "id": "frostbite",
+        "rank": 2,
+        "cost": 1
+      },
+      {
+        "row": 4,
+        "id": "brittle-flesh",
+        "rank": 5,
+        "cost": 1
+      },
+      {
+        "row": 6,
+        "id": "brittle-flesh",
+        "rank": 5,
+        "cost": 1
+      },
+      {
+        "row": 7,
+        "id": "frostburn",
+        "rank": 8,
+        "cost": 1
+      },
+      {
+        "row": 9,
+        "id": "frostburn",
+        "rank": 8,
+        "cost": 1
+      },
+      {
+        "row": 10,
+        "id": "flash-frozen",
+        "rank": 11,
+        "cost": 1
+      },
+      {
+        "row": 12,
+        "id": "flash-frozen",
+        "rank": 11,
+        "cost": 1
+      }
+    ],
     "surplus": []
   },
   {
     "key": "cold/aberrant/general",
-    "candidates": 0,
-    "filled": 0,
-    "distinct": 0,
+    "candidates": 4,
+    "filled": 12,
+    "distinct": 4,
     "drift": [],
-    "repeats": [],
+    "repeats": [
+      {
+        "row": 1,
+        "id": "frostbite",
+        "rank": 2,
+        "cost": 1
+      },
+      {
+        "row": 3,
+        "id": "frostbite",
+        "rank": 2,
+        "cost": 1
+      },
+      {
+        "row": 4,
+        "id": "brittle-flesh",
+        "rank": 5,
+        "cost": 1
+      },
+      {
+        "row": 6,
+        "id": "brittle-flesh",
+        "rank": 5,
+        "cost": 1
+      },
+      {
+        "row": 7,
+        "id": "frostburn",
+        "rank": 8,
+        "cost": 1
+      },
+      {
+        "row": 9,
+        "id": "frostburn",
+        "rank": 8,
+        "cost": 1
+      },
+      {
+        "row": 10,
+        "id": "flash-frozen",
+        "rank": 11,
+        "cost": 1
+      },
+      {
+        "row": 12,
+        "id": "flash-frozen",
+        "rank": 11,
+        "cost": 1
+      }
+    ],
     "surplus": []
   },
   {
     "key": "electric/humanoid/general",
-    "candidates": 0,
-    "filled": 0,
-    "distinct": 0,
+    "candidates": 4,
+    "filled": 12,
+    "distinct": 4,
     "drift": [],
-    "repeats": [],
+    "repeats": [
+      {
+        "row": 1,
+        "id": "jolted",
+        "rank": 2,
+        "cost": 1
+      },
+      {
+        "row": 3,
+        "id": "jolted",
+        "rank": 2,
+        "cost": 1
+      },
+      {
+        "row": 4,
+        "id": "muscle-lock",
+        "rank": 5,
+        "cost": 1
+      },
+      {
+        "row": 6,
+        "id": "muscle-lock",
+        "rank": 5,
+        "cost": 1
+      },
+      {
+        "row": 7,
+        "id": "neural-overload",
+        "rank": 8,
+        "cost": 1
+      },
+      {
+        "row": 9,
+        "id": "neural-overload",
+        "rank": 8,
+        "cost": 1
+      },
+      {
+        "row": 10,
+        "id": "system-shock",
+        "rank": 11,
+        "cost": 1
+      },
+      {
+        "row": 12,
+        "id": "system-shock",
+        "rank": 11,
+        "cost": 1
+      }
+    ],
     "surplus": []
   },
   {
     "key": "electric/beast/general",
-    "candidates": 0,
-    "filled": 0,
-    "distinct": 0,
+    "candidates": 4,
+    "filled": 12,
+    "distinct": 4,
     "drift": [],
-    "repeats": [],
+    "repeats": [
+      {
+        "row": 1,
+        "id": "jolted",
+        "rank": 2,
+        "cost": 1
+      },
+      {
+        "row": 3,
+        "id": "jolted",
+        "rank": 2,
+        "cost": 1
+      },
+      {
+        "row": 4,
+        "id": "muscle-lock",
+        "rank": 5,
+        "cost": 1
+      },
+      {
+        "row": 6,
+        "id": "muscle-lock",
+        "rank": 5,
+        "cost": 1
+      },
+      {
+        "row": 7,
+        "id": "neural-overload",
+        "rank": 8,
+        "cost": 1
+      },
+      {
+        "row": 9,
+        "id": "neural-overload",
+        "rank": 8,
+        "cost": 1
+      },
+      {
+        "row": 10,
+        "id": "system-shock",
+        "rank": 11,
+        "cost": 1
+      },
+      {
+        "row": 12,
+        "id": "system-shock",
+        "rank": 11,
+        "cost": 1
+      }
+    ],
     "surplus": []
   },
   {
     "key": "electric/aberrant/general",
-    "candidates": 0,
-    "filled": 0,
-    "distinct": 0,
+    "candidates": 4,
+    "filled": 12,
+    "distinct": 4,
     "drift": [],
-    "repeats": [],
+    "repeats": [
+      {
+        "row": 1,
+        "id": "jolted",
+        "rank": 2,
+        "cost": 1
+      },
+      {
+        "row": 3,
+        "id": "jolted",
+        "rank": 2,
+        "cost": 1
+      },
+      {
+        "row": 4,
+        "id": "muscle-lock",
+        "rank": 5,
+        "cost": 1
+      },
+      {
+        "row": 6,
+        "id": "muscle-lock",
+        "rank": 5,
+        "cost": 1
+      },
+      {
+        "row": 7,
+        "id": "neural-overload",
+        "rank": 8,
+        "cost": 1
+      },
+      {
+        "row": 9,
+        "id": "neural-overload",
+        "rank": 8,
+        "cost": 1
+      },
+      {
+        "row": 10,
+        "id": "system-shock",
+        "rank": 11,
+        "cost": 1
+      },
+      {
+        "row": 12,
+        "id": "system-shock",
+        "rank": 11,
+        "cost": 1
+      }
+    ],
     "surplus": []
   },
   {
     "key": "acid/humanoid/general",
-    "candidates": 0,
-    "filled": 0,
-    "distinct": 0,
+    "candidates": 4,
+    "filled": 12,
+    "distinct": 4,
     "drift": [],
-    "repeats": [],
+    "repeats": [
+      {
+        "row": 1,
+        "id": "corrosive-wound",
+        "rank": 2,
+        "cost": 1
+      },
+      {
+        "row": 3,
+        "id": "corrosive-wound",
+        "rank": 2,
+        "cost": 1
+      },
+      {
+        "row": 4,
+        "id": "deep-corrosion",
+        "rank": 5,
+        "cost": 1
+      },
+      {
+        "row": 6,
+        "id": "deep-corrosion",
+        "rank": 5,
+        "cost": 1
+      },
+      {
+        "row": 7,
+        "id": "persistent-acid",
+        "rank": 8,
+        "cost": 1
+      },
+      {
+        "row": 9,
+        "id": "persistent-acid",
+        "rank": 8,
+        "cost": 1
+      },
+      {
+        "row": 10,
+        "id": "tissue-liquefaction",
+        "rank": 11,
+        "cost": 1
+      },
+      {
+        "row": 12,
+        "id": "tissue-liquefaction",
+        "rank": 11,
+        "cost": 1
+      }
+    ],
     "surplus": []
   },
   {
     "key": "acid/beast/general",
-    "candidates": 0,
-    "filled": 0,
-    "distinct": 0,
+    "candidates": 4,
+    "filled": 12,
+    "distinct": 4,
     "drift": [],
-    "repeats": [],
+    "repeats": [
+      {
+        "row": 1,
+        "id": "corrosive-wound",
+        "rank": 2,
+        "cost": 1
+      },
+      {
+        "row": 3,
+        "id": "corrosive-wound",
+        "rank": 2,
+        "cost": 1
+      },
+      {
+        "row": 4,
+        "id": "deep-corrosion",
+        "rank": 5,
+        "cost": 1
+      },
+      {
+        "row": 6,
+        "id": "deep-corrosion",
+        "rank": 5,
+        "cost": 1
+      },
+      {
+        "row": 7,
+        "id": "persistent-acid",
+        "rank": 8,
+        "cost": 1
+      },
+      {
+        "row": 9,
+        "id": "persistent-acid",
+        "rank": 8,
+        "cost": 1
+      },
+      {
+        "row": 10,
+        "id": "tissue-liquefaction",
+        "rank": 11,
+        "cost": 1
+      },
+      {
+        "row": 12,
+        "id": "tissue-liquefaction",
+        "rank": 11,
+        "cost": 1
+      }
+    ],
     "surplus": []
   },
   {
     "key": "acid/aberrant/general",
-    "candidates": 0,
-    "filled": 0,
-    "distinct": 0,
+    "candidates": 4,
+    "filled": 12,
+    "distinct": 4,
     "drift": [],
-    "repeats": [],
+    "repeats": [
+      {
+        "row": 1,
+        "id": "corrosive-wound",
+        "rank": 2,
+        "cost": 1
+      },
+      {
+        "row": 3,
+        "id": "corrosive-wound",
+        "rank": 2,
+        "cost": 1
+      },
+      {
+        "row": 4,
+        "id": "deep-corrosion",
+        "rank": 5,
+        "cost": 1
+      },
+      {
+        "row": 6,
+        "id": "deep-corrosion",
+        "rank": 5,
+        "cost": 1
+      },
+      {
+        "row": 7,
+        "id": "persistent-acid",
+        "rank": 8,
+        "cost": 1
+      },
+      {
+        "row": 9,
+        "id": "persistent-acid",
+        "rank": 8,
+        "cost": 1
+      },
+      {
+        "row": 10,
+        "id": "tissue-liquefaction",
+        "rank": 11,
+        "cost": 1
+      },
+      {
+        "row": 12,
+        "id": "tissue-liquefaction",
+        "rank": 11,
+        "cost": 1
+      }
+    ],
     "surplus": []
   },
   {
     "key": "sonic/humanoid/general",
-    "candidates": 0,
-    "filled": 0,
-    "distinct": 0,
+    "candidates": 4,
+    "filled": 12,
+    "distinct": 4,
     "drift": [],
-    "repeats": [],
+    "repeats": [
+      {
+        "row": 1,
+        "id": "ringing-ears",
+        "rank": 2,
+        "cost": 1
+      },
+      {
+        "row": 3,
+        "id": "ringing-ears",
+        "rank": 2,
+        "cost": 1
+      },
+      {
+        "row": 4,
+        "id": "disoriented",
+        "rank": 5,
+        "cost": 1
+      },
+      {
+        "row": 6,
+        "id": "disoriented",
+        "rank": 5,
+        "cost": 1
+      },
+      {
+        "row": 7,
+        "id": "ruptured-eardrums",
+        "rank": 8,
+        "cost": 1
+      },
+      {
+        "row": 9,
+        "id": "ruptured-eardrums",
+        "rank": 8,
+        "cost": 1
+      },
+      {
+        "row": 10,
+        "id": "destructive-resonance",
+        "rank": 11,
+        "cost": 1
+      },
+      {
+        "row": 12,
+        "id": "destructive-resonance",
+        "rank": 11,
+        "cost": 1
+      }
+    ],
     "surplus": []
   },
   {
     "key": "sonic/beast/general",
-    "candidates": 0,
-    "filled": 0,
-    "distinct": 0,
+    "candidates": 4,
+    "filled": 12,
+    "distinct": 4,
     "drift": [],
-    "repeats": [],
+    "repeats": [
+      {
+        "row": 1,
+        "id": "ringing-ears",
+        "rank": 2,
+        "cost": 1
+      },
+      {
+        "row": 3,
+        "id": "ringing-ears",
+        "rank": 2,
+        "cost": 1
+      },
+      {
+        "row": 4,
+        "id": "disoriented",
+        "rank": 5,
+        "cost": 1
+      },
+      {
+        "row": 6,
+        "id": "disoriented",
+        "rank": 5,
+        "cost": 1
+      },
+      {
+        "row": 7,
+        "id": "ruptured-eardrums",
+        "rank": 8,
+        "cost": 1
+      },
+      {
+        "row": 9,
+        "id": "ruptured-eardrums",
+        "rank": 8,
+        "cost": 1
+      },
+      {
+        "row": 10,
+        "id": "destructive-resonance",
+        "rank": 11,
+        "cost": 1
+      },
+      {
+        "row": 12,
+        "id": "destructive-resonance",
+        "rank": 11,
+        "cost": 1
+      }
+    ],
     "surplus": []
   },
   {
     "key": "sonic/aberrant/general",
-    "candidates": 0,
-    "filled": 0,
-    "distinct": 0,
+    "candidates": 4,
+    "filled": 12,
+    "distinct": 4,
     "drift": [],
-    "repeats": [],
+    "repeats": [
+      {
+        "row": 1,
+        "id": "ringing-ears",
+        "rank": 2,
+        "cost": 1
+      },
+      {
+        "row": 3,
+        "id": "ringing-ears",
+        "rank": 2,
+        "cost": 1
+      },
+      {
+        "row": 4,
+        "id": "disoriented",
+        "rank": 5,
+        "cost": 1
+      },
+      {
+        "row": 6,
+        "id": "disoriented",
+        "rank": 5,
+        "cost": 1
+      },
+      {
+        "row": 7,
+        "id": "ruptured-eardrums",
+        "rank": 8,
+        "cost": 1
+      },
+      {
+        "row": 9,
+        "id": "ruptured-eardrums",
+        "rank": 8,
+        "cost": 1
+      },
+      {
+        "row": 10,
+        "id": "destructive-resonance",
+        "rank": 11,
+        "cost": 1
+      },
+      {
+        "row": 12,
+        "id": "destructive-resonance",
+        "rank": 11,
+        "cost": 1
+      }
+    ],
     "surplus": []
   },
   {
     "key": "force/humanoid/general",
-    "candidates": 0,
-    "filled": 0,
-    "distinct": 0,
+    "candidates": 4,
+    "filled": 12,
+    "distinct": 4,
     "drift": [],
-    "repeats": [],
+    "repeats": [
+      {
+        "row": 1,
+        "id": "winded",
+        "rank": 2,
+        "cost": 1
+      },
+      {
+        "row": 3,
+        "id": "winded",
+        "rank": 2,
+        "cost": 1
+      },
+      {
+        "row": 4,
+        "id": "battered",
+        "rank": 5,
+        "cost": 1
+      },
+      {
+        "row": 6,
+        "id": "battered",
+        "rank": 5,
+        "cost": 1
+      },
+      {
+        "row": 7,
+        "id": "crushing-blast",
+        "rank": 8,
+        "cost": 1
+      },
+      {
+        "row": 9,
+        "id": "crushing-blast",
+        "rank": 8,
+        "cost": 1
+      },
+      {
+        "row": 10,
+        "id": "shattered",
+        "rank": 11,
+        "cost": 1
+      },
+      {
+        "row": 12,
+        "id": "shattered",
+        "rank": 11,
+        "cost": 1
+      }
+    ],
     "surplus": []
   },
   {
     "key": "force/beast/general",
-    "candidates": 0,
-    "filled": 0,
-    "distinct": 0,
+    "candidates": 4,
+    "filled": 12,
+    "distinct": 4,
     "drift": [],
-    "repeats": [],
+    "repeats": [
+      {
+        "row": 1,
+        "id": "winded",
+        "rank": 2,
+        "cost": 1
+      },
+      {
+        "row": 3,
+        "id": "winded",
+        "rank": 2,
+        "cost": 1
+      },
+      {
+        "row": 4,
+        "id": "battered",
+        "rank": 5,
+        "cost": 1
+      },
+      {
+        "row": 6,
+        "id": "battered",
+        "rank": 5,
+        "cost": 1
+      },
+      {
+        "row": 7,
+        "id": "crushing-blast",
+        "rank": 8,
+        "cost": 1
+      },
+      {
+        "row": 9,
+        "id": "crushing-blast",
+        "rank": 8,
+        "cost": 1
+      },
+      {
+        "row": 10,
+        "id": "shattered",
+        "rank": 11,
+        "cost": 1
+      },
+      {
+        "row": 12,
+        "id": "shattered",
+        "rank": 11,
+        "cost": 1
+      }
+    ],
     "surplus": []
   },
   {
     "key": "force/aberrant/general",
-    "candidates": 0,
-    "filled": 0,
-    "distinct": 0,
+    "candidates": 4,
+    "filled": 12,
+    "distinct": 4,
     "drift": [],
-    "repeats": [],
+    "repeats": [
+      {
+        "row": 1,
+        "id": "winded",
+        "rank": 2,
+        "cost": 1
+      },
+      {
+        "row": 3,
+        "id": "winded",
+        "rank": 2,
+        "cost": 1
+      },
+      {
+        "row": 4,
+        "id": "battered",
+        "rank": 5,
+        "cost": 1
+      },
+      {
+        "row": 6,
+        "id": "battered",
+        "rank": 5,
+        "cost": 1
+      },
+      {
+        "row": 7,
+        "id": "crushing-blast",
+        "rank": 8,
+        "cost": 1
+      },
+      {
+        "row": 9,
+        "id": "crushing-blast",
+        "rank": 8,
+        "cost": 1
+      },
+      {
+        "row": 10,
+        "id": "shattered",
+        "rank": 11,
+        "cost": 1
+      },
+      {
+        "row": 12,
+        "id": "shattered",
+        "rank": 11,
+        "cost": 1
+      }
+    ],
     "surplus": []
   },
   {
     "key": "positive/humanoid/general",
-    "candidates": 0,
-    "filled": 0,
-    "distinct": 0,
+    "candidates": 4,
+    "filled": 12,
+    "distinct": 4,
     "drift": [],
-    "repeats": [],
+    "repeats": [
+      {
+        "row": 1,
+        "id": "searing-light",
+        "rank": 2,
+        "cost": 1
+      },
+      {
+        "row": 3,
+        "id": "searing-light",
+        "rank": 2,
+        "cost": 1
+      },
+      {
+        "row": 4,
+        "id": "consuming-brilliance",
+        "rank": 5,
+        "cost": 1
+      },
+      {
+        "row": 6,
+        "id": "consuming-brilliance",
+        "rank": 5,
+        "cost": 1
+      },
+      {
+        "row": 7,
+        "id": "burning-radiance",
+        "rank": 8,
+        "cost": 1
+      },
+      {
+        "row": 9,
+        "id": "burning-radiance",
+        "rank": 8,
+        "cost": 1
+      },
+      {
+        "row": 10,
+        "id": "radiant-annihilation",
+        "rank": 11,
+        "cost": 1
+      },
+      {
+        "row": 12,
+        "id": "radiant-annihilation",
+        "rank": 11,
+        "cost": 1
+      }
+    ],
     "surplus": []
   },
   {
     "key": "positive/beast/general",
-    "candidates": 0,
-    "filled": 0,
-    "distinct": 0,
+    "candidates": 4,
+    "filled": 12,
+    "distinct": 4,
     "drift": [],
-    "repeats": [],
+    "repeats": [
+      {
+        "row": 1,
+        "id": "searing-light",
+        "rank": 2,
+        "cost": 1
+      },
+      {
+        "row": 3,
+        "id": "searing-light",
+        "rank": 2,
+        "cost": 1
+      },
+      {
+        "row": 4,
+        "id": "consuming-brilliance",
+        "rank": 5,
+        "cost": 1
+      },
+      {
+        "row": 6,
+        "id": "consuming-brilliance",
+        "rank": 5,
+        "cost": 1
+      },
+      {
+        "row": 7,
+        "id": "burning-radiance",
+        "rank": 8,
+        "cost": 1
+      },
+      {
+        "row": 9,
+        "id": "burning-radiance",
+        "rank": 8,
+        "cost": 1
+      },
+      {
+        "row": 10,
+        "id": "radiant-annihilation",
+        "rank": 11,
+        "cost": 1
+      },
+      {
+        "row": 12,
+        "id": "radiant-annihilation",
+        "rank": 11,
+        "cost": 1
+      }
+    ],
     "surplus": []
   },
   {
     "key": "positive/aberrant/general",
-    "candidates": 0,
-    "filled": 0,
-    "distinct": 0,
+    "candidates": 4,
+    "filled": 12,
+    "distinct": 4,
     "drift": [],
-    "repeats": [],
+    "repeats": [
+      {
+        "row": 1,
+        "id": "searing-light",
+        "rank": 2,
+        "cost": 1
+      },
+      {
+        "row": 3,
+        "id": "searing-light",
+        "rank": 2,
+        "cost": 1
+      },
+      {
+        "row": 4,
+        "id": "consuming-brilliance",
+        "rank": 5,
+        "cost": 1
+      },
+      {
+        "row": 6,
+        "id": "consuming-brilliance",
+        "rank": 5,
+        "cost": 1
+      },
+      {
+        "row": 7,
+        "id": "burning-radiance",
+        "rank": 8,
+        "cost": 1
+      },
+      {
+        "row": 9,
+        "id": "burning-radiance",
+        "rank": 8,
+        "cost": 1
+      },
+      {
+        "row": 10,
+        "id": "radiant-annihilation",
+        "rank": 11,
+        "cost": 1
+      },
+      {
+        "row": 12,
+        "id": "radiant-annihilation",
+        "rank": 11,
+        "cost": 1
+      }
+    ],
     "surplus": []
   },
   {
     "key": "negative/humanoid/general",
-    "candidates": 0,
-    "filled": 0,
-    "distinct": 0,
+    "candidates": 4,
+    "filled": 12,
+    "distinct": 4,
     "drift": [],
-    "repeats": [],
+    "repeats": [
+      {
+        "row": 1,
+        "id": "sapped",
+        "rank": 2,
+        "cost": 1
+      },
+      {
+        "row": 3,
+        "id": "sapped",
+        "rank": 2,
+        "cost": 1
+      },
+      {
+        "row": 4,
+        "id": "waning-vitality",
+        "rank": 5,
+        "cost": 1
+      },
+      {
+        "row": 6,
+        "id": "waning-vitality",
+        "rank": 5,
+        "cost": 1
+      },
+      {
+        "row": 7,
+        "id": "life-drained",
+        "rank": 8,
+        "cost": 1
+      },
+      {
+        "row": 9,
+        "id": "life-drained",
+        "rank": 8,
+        "cost": 1
+      },
+      {
+        "row": 10,
+        "id": "consuming-void",
+        "rank": 11,
+        "cost": 1
+      },
+      {
+        "row": 12,
+        "id": "consuming-void",
+        "rank": 11,
+        "cost": 1
+      }
+    ],
     "surplus": []
   },
   {
     "key": "negative/beast/general",
-    "candidates": 0,
-    "filled": 0,
-    "distinct": 0,
+    "candidates": 4,
+    "filled": 12,
+    "distinct": 4,
     "drift": [],
-    "repeats": [],
+    "repeats": [
+      {
+        "row": 1,
+        "id": "sapped",
+        "rank": 2,
+        "cost": 1
+      },
+      {
+        "row": 3,
+        "id": "sapped",
+        "rank": 2,
+        "cost": 1
+      },
+      {
+        "row": 4,
+        "id": "waning-vitality",
+        "rank": 5,
+        "cost": 1
+      },
+      {
+        "row": 6,
+        "id": "waning-vitality",
+        "rank": 5,
+        "cost": 1
+      },
+      {
+        "row": 7,
+        "id": "life-drained",
+        "rank": 8,
+        "cost": 1
+      },
+      {
+        "row": 9,
+        "id": "life-drained",
+        "rank": 8,
+        "cost": 1
+      },
+      {
+        "row": 10,
+        "id": "consuming-void",
+        "rank": 11,
+        "cost": 1
+      },
+      {
+        "row": 12,
+        "id": "consuming-void",
+        "rank": 11,
+        "cost": 1
+      }
+    ],
     "surplus": []
   },
   {
     "key": "negative/aberrant/general",
-    "candidates": 0,
-    "filled": 0,
-    "distinct": 0,
+    "candidates": 4,
+    "filled": 12,
+    "distinct": 4,
     "drift": [],
-    "repeats": [],
+    "repeats": [
+      {
+        "row": 1,
+        "id": "sapped",
+        "rank": 2,
+        "cost": 1
+      },
+      {
+        "row": 3,
+        "id": "sapped",
+        "rank": 2,
+        "cost": 1
+      },
+      {
+        "row": 4,
+        "id": "waning-vitality",
+        "rank": 5,
+        "cost": 1
+      },
+      {
+        "row": 6,
+        "id": "waning-vitality",
+        "rank": 5,
+        "cost": 1
+      },
+      {
+        "row": 7,
+        "id": "life-drained",
+        "rank": 8,
+        "cost": 1
+      },
+      {
+        "row": 9,
+        "id": "life-drained",
+        "rank": 8,
+        "cost": 1
+      },
+      {
+        "row": 10,
+        "id": "consuming-void",
+        "rank": 11,
+        "cost": 1
+      },
+      {
+        "row": 12,
+        "id": "consuming-void",
+        "rank": 11,
+        "cost": 1
+      }
+    ],
     "surplus": []
   }
 ]

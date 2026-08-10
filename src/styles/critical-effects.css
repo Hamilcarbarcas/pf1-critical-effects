@@ -733,6 +733,26 @@
 
 /* --- Dedicated Healing config section (buff sheet → Advanced tab) --------- */
 
+/* Explicit colour, not inherited. PF1's V1 item sheets style neither `.hint` nor `.notes`, so
+   these land on whatever generic rule happens to win — and core's is inside a cascade layer,
+   which any unlayered module rule outranks no matter the specificity. Left alone they came out
+   near-white on the sheet's beige. Same token (and literal fallback) as `.ce-dh-progress` below
+   and as pf1-bleed-effects' section on this very tab. No `opacity`: the muted look is the
+   colour's job, and dimming a correct colour only washes it out again. */
+.ce-dh-section .notes,
+.ce-dh-section .hint {
+  color: var(--color-text-dark-secondary, #4b4a44);
+}
+
+/* Field hints wrap under their input rather than widening the form-fields row. */
+.ce-dh-section .form-group .hint {
+  flex: 0 0 100%;
+  margin: 0.15em 0 0;
+  font-size: 0.85em;
+  line-height: 1.25;
+  white-space: normal;
+}
+
 .ce-dh-section .ce-dh-status-fields {
   display: flex;
   align-items: center;

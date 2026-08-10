@@ -10,26 +10,2815 @@
     "id": "concussed-ear",
     "name": "Concussed Ear",
     "rank": 3,
-    "slots": ["*/head"],
-    "damageTypes": ["bludgeoning"],
+    "slots": [
+      "*/head"
+    ],
+    "damageTypes": [
+      "bludgeoning"
+    ],
     "text": "<p>The blow catches the side of the head and the world goes to a high ringing whine.</p>",
     "note": null,
     "buff": null,
     "conditions": [
-      { "id": "dazed", "duration": { "value": 1, "units": "round" } },
-      { "id": "deaf", "duration": { "value": "1d4", "units": "minute" } }
+      {
+        "id": "dazed",
+        "duration": {
+          "value": 1,
+          "units": "round"
+        }
+      },
+      {
+        "id": "deaf",
+        "duration": {
+          "value": "1d4",
+          "units": "minute"
+        }
+      }
     ]
   },
   "_exampleBleed": {
     "id": "opened-artery",
     "name": "Opened Artery",
     "rank": 9,
-    "slots": ["humanoid/leg", "humanoid/arm"],
-    "damageTypes": ["piercing", "slashing"],
+    "slots": [
+      "humanoid/leg",
+      "humanoid/arm"
+    ],
+    "damageTypes": [
+      "piercing",
+      "slashing"
+    ],
     "text": "<p>The cut goes deep and does not stop.</p>",
     "conditions": [
-      { "id": "bleed", "bleed": { "formula": "2d6", "deep": 20 } }
+      {
+        "id": "bleed",
+        "bleed": {
+          "formula": "2d6",
+          "deep": 20
+        }
+      }
     ]
   },
-  "entries": []
+  "entries": [
+    {
+      "id": "arm-skewered",
+      "name": "Arm skewered",
+      "rank": 12,
+      "slots": [
+        "*/arm"
+      ],
+      "damageTypes": [
+        "piercing"
+      ],
+      "text": "<p>4d6 deep bleed, 2d4 con bleed, arm useless until healed</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "battered",
+      "name": "Battered",
+      "rank": 5,
+      "slots": [
+        "*/general"
+      ],
+      "damageTypes": [
+        "force"
+      ],
+      "text": "<p>prone, dazed 1 round</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "bisected",
+      "name": "Bisected",
+      "rank": 12,
+      "slots": [
+        "*/torso"
+      ],
+      "damageTypes": [
+        "slashing"
+      ],
+      "text": "<p>Fort save or die, otherwise 6d6 bleed, reduced to -1, 2d6 strength damage, 2d6 dex damage</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "bleeding-cut",
+      "name": "Bleeding Cut",
+      "rank": 1,
+      "slots": [
+        "*/arm",
+        "*/leg",
+        "*/torso"
+      ],
+      "damageTypes": [
+        "piercing",
+        "slashing"
+      ],
+      "text": "<p>1d6 bleed</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "bloody-mess",
+      "name": "Bloody Mess",
+      "rank": 3,
+      "slots": [
+        "*/torso"
+      ],
+      "damageTypes": [
+        "slashing"
+      ],
+      "text": "<p>2d6 bleed, shaken 1d4 rounds</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "brittle-flesh",
+      "name": "Brittle Flesh",
+      "rank": 5,
+      "slots": [
+        "*/general"
+      ],
+      "damageTypes": [
+        "cold"
+      ],
+      "text": "<p>Vulnerability to bludgeoning, piercing, slashing (heal 20 or 10 fire damage)</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "broken-arm",
+      "name": "Broken Arm",
+      "rank": 7,
+      "slots": [
+        "*/arm"
+      ],
+      "damageTypes": [
+        "bludgeoning"
+      ],
+      "text": "<p>As buff</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "broken-back",
+      "name": "Broken Back",
+      "rank": 7,
+      "slots": [
+        "*/torso"
+      ],
+      "damageTypes": [
+        "bludgeoning"
+      ],
+      "text": "<p>Broken Back</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "broken-finger",
+      "name": "Broken Finger",
+      "rank": 3,
+      "slots": [
+        "*/arm"
+      ],
+      "damageTypes": [
+        "bludgeoning"
+      ],
+      "text": "<p>as buff</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "broken-foot",
+      "name": "Broken Foot",
+      "rank": 5,
+      "slots": [
+        "*/leg"
+      ],
+      "damageTypes": [
+        "bludgeoning"
+      ],
+      "text": "<p>As buff</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "broken-hand",
+      "name": "Broken Hand",
+      "rank": 5,
+      "slots": [
+        "*/arm"
+      ],
+      "damageTypes": [
+        "bludgeoning"
+      ],
+      "text": "<p>As buff</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "broken-jaw",
+      "name": "Broken Jaw",
+      "rank": 4,
+      "slots": [
+        "*/head"
+      ],
+      "damageTypes": [
+        "bludgeoning"
+      ],
+      "text": "<p>Skills involving speech at disadvantage, spells w/verbal components - concentration DC 15 + 2xlevel or fail</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "broken-leg",
+      "name": "Broken Leg",
+      "rank": 7,
+      "slots": [
+        "*/leg"
+      ],
+      "damageTypes": [
+        "bludgeoning"
+      ],
+      "text": "<p>As buff</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "broken-neck",
+      "name": "Broken Neck",
+      "rank": 9,
+      "slots": [
+        "*/head"
+      ],
+      "damageTypes": [
+        "bludgeoning"
+      ],
+      "text": "<p>Fort save or die, otherwise broken neck</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "broken-rib",
+      "name": "Broken Rib",
+      "rank": 3,
+      "slots": [
+        "*/torso"
+      ],
+      "damageTypes": [
+        "bludgeoning"
+      ],
+      "text": "<p>As buff</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "broken-skull",
+      "name": "Broken Skull",
+      "rank": 7,
+      "slots": [
+        "*/head"
+      ],
+      "damageTypes": [
+        "bludgeoning"
+      ],
+      "text": "<p>As buff</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "broken-toes",
+      "name": "Broken Toes",
+      "rank": 3,
+      "slots": [
+        "*/leg"
+      ],
+      "damageTypes": [
+        "bludgeoning"
+      ],
+      "text": "<p>disadvantage on all climb and acrobatics checks until healed (DC 10, 5 heal)</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "bruised-tail",
+      "name": "Bruised Tail",
+      "rank": 5,
+      "slots": [
+        "*/tail"
+      ],
+      "damageTypes": [
+        "bludgeoning"
+      ],
+      "text": "<p>-4 to attacks/checks using tail until healed (heal 10)</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "bruising-blow",
+      "name": "Bruising Blow",
+      "rank": 5,
+      "slots": [
+        "*/appendage"
+      ],
+      "damageTypes": [
+        "bludgeoning"
+      ],
+      "text": "<p>-4 to attacks/checks using appendage until healed (heal 10)</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "burned-feverish",
+      "name": "Burned Feverish",
+      "rank": 8,
+      "slots": [
+        "*/general"
+      ],
+      "damageTypes": [
+        "fire"
+      ],
+      "text": "<p>burning, vulnerability to fire, staggered (heal 20)</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "burning-radiance",
+      "name": "Burning Radiance",
+      "rank": 8,
+      "slots": [
+        "*/general"
+      ],
+      "damageTypes": [
+        "positive"
+      ],
+      "text": "<p>engulfed in holy fire - 2d6 positive energy damage per round. Will save each round to extinguish</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "catch-fire",
+      "name": "Catch Fire",
+      "rank": 2,
+      "slots": [
+        "*/general"
+      ],
+      "damageTypes": [
+        "fire"
+      ],
+      "text": "<p>gain burning condition</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "caved-cranium",
+      "name": "Caved Cranium",
+      "rank": 12,
+      "slots": [
+        "*/head"
+      ],
+      "damageTypes": [
+        "bludgeoning"
+      ],
+      "text": "<p>Fort save or die, otherwise shattered skull + 2d4 deep con bleed</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "chopped-neck",
+      "name": "Chopped Neck",
+      "rank": 11,
+      "slots": [
+        "*/head"
+      ],
+      "damageTypes": [
+        "slashing"
+      ],
+      "text": "<p>Fort save or die, otherwise 7d6 bleed, broken neck</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "cleaved-appendage",
+      "name": "Cleaved Appendage",
+      "rank": 8,
+      "slots": [
+        "*/appendage"
+      ],
+      "damageTypes": [
+        "slashing"
+      ],
+      "text": "<p>4d6 bleed, fort save or appendage severed, otherwise -2 to attacks or checks using appendage until healed (heal 20)</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "cleaved-finger",
+      "name": "Cleaved finger",
+      "rank": 6,
+      "slots": [
+        "*/arm"
+      ],
+      "damageTypes": [
+        "slashing"
+      ],
+      "text": "<p>4d6 bleed, fort save or finger severed, otherwise -2 to attacks/checks using arm until healed (heal 10)</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "cleaved-foot",
+      "name": "Cleaved Foot",
+      "rank": 8,
+      "slots": [
+        "*/leg"
+      ],
+      "damageTypes": [
+        "slashing"
+      ],
+      "text": "<p>5d6 bleed, fort save or foot severed otherwise 1/2 move, -4 to attacks/skills using leg until healed (heal 20)</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "cleaved-forehead",
+      "name": "Cleaved Forehead",
+      "rank": 10,
+      "slots": [
+        "*/head"
+      ],
+      "damageTypes": [
+        "slashing"
+      ],
+      "text": "<p>Fort save or die, otherwise 7d6 bleed, weapon stuck, dazed until removed</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "cleaved-hand",
+      "name": "Cleaved hand",
+      "rank": 8,
+      "slots": [
+        "*/arm"
+      ],
+      "damageTypes": [
+        "slashing"
+      ],
+      "text": "<p>5d6 bleed, fort save or hand severed, otherwise -4 to attacks/checks using arm until healed (heal 20)</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "cleaved-muscle",
+      "name": "Cleaved Muscle",
+      "rank": 7,
+      "slots": [
+        "*/torso"
+      ],
+      "damageTypes": [
+        "slashing"
+      ],
+      "text": "<p>4d6 bleed, 1d6 strength damage, 1d6 dex damage</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "cleaved-neck",
+      "name": "Cleaved Neck",
+      "rank": 12,
+      "slots": [
+        "*/head"
+      ],
+      "damageTypes": [
+        "slashing"
+      ],
+      "text": "<p>Fort save or die, otherwise 8d6 bleed, shattered neck</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "cleaved-tail",
+      "name": "Cleaved Tail",
+      "rank": 8,
+      "slots": [
+        "*/tail"
+      ],
+      "damageTypes": [
+        "slashing"
+      ],
+      "text": "<p>4d6 bleed, fort save or tail severed, otherwise -2 to attacks or checks using tail until healed (heal 20)</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "cleaved-wing",
+      "name": "Cleaved Wing",
+      "rank": 8,
+      "slots": [
+        "*/wing"
+      ],
+      "damageTypes": [
+        "slashing"
+      ],
+      "text": "<p>4d6 bleed, fort save or wing severed, 1/2 fly speed, -2 to attacks/skills using wing until healed (heal 10)</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "collapsed-chest",
+      "name": "Collapsed Chest",
+      "rank": 6,
+      "slots": [
+        "*/torso"
+      ],
+      "damageTypes": [
+        "bludgeoning"
+      ],
+      "text": "<p>Shattered rib + 1d6 bleed</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "compound-fracture-back",
+      "name": "Compound Fracture: Back",
+      "rank": 8,
+      "slots": [
+        "*/torso"
+      ],
+      "damageTypes": [
+        "bludgeoning"
+      ],
+      "text": "<p>Broken Back + 1d6 bleed</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "compound-fracture-finger",
+      "name": "Compound Fracture: Finger",
+      "rank": 4,
+      "slots": [
+        "*/arm"
+      ],
+      "damageTypes": [
+        "bludgeoning"
+      ],
+      "text": "<p>As buff + 1d6 bleed</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "compound-fracture-foot",
+      "name": "Compound Fracture: Foot",
+      "rank": 6,
+      "slots": [
+        "*/leg"
+      ],
+      "damageTypes": [
+        "bludgeoning"
+      ],
+      "text": "<p>As buff + 1d6 bleed</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "compound-fracture-hand",
+      "name": "Compound Fracture: Hand",
+      "rank": 6,
+      "slots": [
+        "*/arm"
+      ],
+      "damageTypes": [
+        "bludgeoning"
+      ],
+      "text": "<p>As buff + 1d6 bleed</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "compound-fracture-rib",
+      "name": "Compound Fracture: Rib",
+      "rank": 4,
+      "slots": [
+        "*/torso"
+      ],
+      "damageTypes": [
+        "bludgeoning"
+      ],
+      "text": "<p>As buff + 1d6 bleed</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "consuming-brilliance",
+      "name": "Consuming Brilliance",
+      "rank": 5,
+      "slots": [
+        "*/general"
+      ],
+      "damageTypes": [
+        "positive"
+      ],
+      "text": "<p>Staggered and lose DR for 1d6 rounds</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "consuming-void",
+      "name": "Consuming Void",
+      "rank": 11,
+      "slots": [
+        "*/general"
+      ],
+      "damageTypes": [
+        "negative"
+      ],
+      "text": "<p>Will save or die. Otherwise level drain equal to current level -1</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "corrosive-wound",
+      "name": "Corrosive Wound",
+      "rank": 2,
+      "slots": [
+        "*/general"
+      ],
+      "damageTypes": [
+        "acid"
+      ],
+      "text": "<p>1d6 acid damage per round for 3 rounds</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "crushed-appendage",
+      "name": "Crushed Appendage",
+      "rank": 11,
+      "slots": [
+        "*/appendage"
+      ],
+      "damageTypes": [
+        "bludgeoning"
+      ],
+      "text": "<p>Appendage permanently useless, 1d4 deep con bleed</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "crushed-larynx",
+      "name": "Crushed Larynx",
+      "rank": 5,
+      "slots": [
+        "*/head"
+      ],
+      "damageTypes": [
+        "bludgeoning"
+      ],
+      "text": "<p>Staggered 1d4 rounds - Fatigued, muted until healed (heal 20)</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "crushed-leg",
+      "name": "Crushed Leg",
+      "rank": 10,
+      "slots": [
+        "*/leg"
+      ],
+      "damageTypes": [
+        "bludgeoning"
+      ],
+      "text": "<p>Permanent loss of use of leg</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "crushed-shoulder",
+      "name": "Crushed Shoulder",
+      "rank": 10,
+      "slots": [
+        "*/arm"
+      ],
+      "damageTypes": [
+        "bludgeoning"
+      ],
+      "text": "<p>Permanent loss of use of arm (regenerate or the like to repair)</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "crushed-torso",
+      "name": "Crushed Torso",
+      "rank": 9,
+      "slots": [
+        "*/torso"
+      ],
+      "damageTypes": [
+        "bludgeoning"
+      ],
+      "text": "<p>Fort save or die, otherwise Shattered Rib + 1d4 deep con bleed</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "crushing-blast",
+      "name": "Crushing Blast",
+      "rank": 8,
+      "slots": [
+        "*/general"
+      ],
+      "damageTypes": [
+        "force"
+      ],
+      "text": "<p>Shattered Rib</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "crushing-blow",
+      "name": "Crushing Blow",
+      "rank": 8,
+      "slots": [
+        "*/appendage"
+      ],
+      "damageTypes": [
+        "bludgeoning"
+      ],
+      "text": "<p>Appendage useless until healed (heal 20)</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "cut-brachial",
+      "name": "Cut brachial",
+      "rank": 11,
+      "slots": [
+        "*/arm"
+      ],
+      "damageTypes": [
+        "piercing"
+      ],
+      "text": "<p>4d6 deep bleed, 1d4 con bleed, arm useless until healed</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "cut-deltoids",
+      "name": "Cut Deltoids",
+      "rank": 10,
+      "slots": [
+        "*/arm"
+      ],
+      "damageTypes": [
+        "piercing"
+      ],
+      "text": "<p>4d6 deep bleed, arm useless until healed</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "dazing-blow",
+      "name": "Dazing Blow",
+      "rank": 1,
+      "slots": [
+        "*/head"
+      ],
+      "damageTypes": [
+        "bludgeoning"
+      ],
+      "text": "<p>Dazed 1 round</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "dead-leg",
+      "name": "Dead Leg",
+      "rank": 2,
+      "slots": [
+        "*/leg"
+      ],
+      "damageTypes": [
+        "bludgeoning"
+      ],
+      "text": "<p>Leg useless 1d4 rounds</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "declawed",
+      "name": "Declawed",
+      "rank": 9,
+      "slots": [
+        "*/leg"
+      ],
+      "damageTypes": [
+        "slashing"
+      ],
+      "text": "<p>5d6 bleed, toes severed</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "deep-corrosion",
+      "name": "Deep Corrosion",
+      "rank": 5,
+      "slots": [
+        "*/general"
+      ],
+      "damageTypes": [
+        "acid"
+      ],
+      "text": "<p>1d4 Strength bleed</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "deep-slice",
+      "name": "Deep Slice",
+      "rank": 5,
+      "slots": [
+        "*/appendage"
+      ],
+      "damageTypes": [
+        "slashing"
+      ],
+      "text": "<p>3d6 bleed, -2 to attacks or checks using appendage until healed (heal 10)</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "destroyed-organs",
+      "name": "Destroyed Organs",
+      "rank": 12,
+      "slots": [
+        "*/torso"
+      ],
+      "damageTypes": [
+        "bludgeoning"
+      ],
+      "text": "<p>Fort save or die, otherwise nonlethal damage equal to max HP, shattered back, 1d4 con damage + 2d4 deep con bleed</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "destructive-resonance",
+      "name": "Destructive Resonance",
+      "rank": 11,
+      "slots": [
+        "*/general"
+      ],
+      "damageTypes": [
+        "sonic"
+      ],
+      "text": "<p>2d4 deep con bleed</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "disemboweled",
+      "name": "Disemboweled",
+      "rank": 10,
+      "slots": [
+        "*/torso"
+      ],
+      "damageTypes": [
+        "slashing"
+      ],
+      "text": "<p>6d6 bleed, disemboweled condition: 1d4 con damage each round a standard/move action is taken until healed. Full-round action (DC 15 fort to do it yourself) to put it back in. Move action each round to hold it in until healed (heal 20).</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "dislocated-knee",
+      "name": "Dislocated Knee",
+      "rank": 4,
+      "slots": [
+        "*/leg"
+      ],
+      "damageTypes": [
+        "bludgeoning"
+      ],
+      "text": "<p>half move, no 5 foot step, -2 AC until healed (DC 10, 10 heal)</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "disoriented",
+      "name": "Disoriented",
+      "rank": 5,
+      "slots": [
+        "*/general"
+      ],
+      "damageTypes": [
+        "sonic"
+      ],
+      "text": "<p>staggered 1 round, deafened (heal 10)</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "ear-severed",
+      "name": "Ear Severed",
+      "rank": 6,
+      "slots": [
+        "*/head"
+      ],
+      "damageTypes": [
+        "slashing"
+      ],
+      "text": "<p>5d6 bleed, ear severed (disadvantage on all checks involving hearing)</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "eviscerated",
+      "name": "Eviscerated",
+      "rank": 11,
+      "slots": [
+        "*/torso"
+      ],
+      "damageTypes": [
+        "slashing"
+      ],
+      "text": "<p>6d6 bleed, 2d6 strength damage, 2d6 dex damage</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "eye-plucked",
+      "name": "Eye Plucked",
+      "rank": 7,
+      "slots": [
+        "*/head"
+      ],
+      "damageTypes": [
+        "piercing"
+      ],
+      "text": "<p>3d6 deep bleed, permanently blinded in one eye</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "eye-slashed",
+      "name": "Eye Slashed",
+      "rank": 7,
+      "slots": [
+        "*/head"
+      ],
+      "damageTypes": [
+        "slashing"
+      ],
+      "text": "<p>5d6 bleed, permanently blinded in 1 eye</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "eyes-slashed",
+      "name": "Eyes Slashed",
+      "rank": 8,
+      "slots": [
+        "*/head"
+      ],
+      "damageTypes": [
+        "slashing"
+      ],
+      "text": "<p>6d6 bleed, permanently blinded</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "flash-frozen",
+      "name": "Flash Frozen",
+      "rank": 11,
+      "slots": [
+        "*/general"
+      ],
+      "damageTypes": [
+        "cold"
+      ],
+      "text": "<p>Paralyzed (20 fire damage or 20 bludgeoning damage), Vulnerability to bludgeoning until freed</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "foot-clipped",
+      "name": "Foot clipped",
+      "rank": 6,
+      "slots": [
+        "*/leg"
+      ],
+      "damageTypes": [
+        "slashing"
+      ],
+      "text": "<p>4d6 bleed, fort save or toes severed (disadvantage on acrobatics & climb), otherwise 3/4 move, -2 to attacks/skills using leg until healed (heal 10)</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "fractured-tail",
+      "name": "Fractured Tail",
+      "rank": 8,
+      "slots": [
+        "*/tail"
+      ],
+      "damageTypes": [
+        "bludgeoning"
+      ],
+      "text": "<p>Tail useless until healed (heal 20)</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "frostbite",
+      "name": "Frostbite",
+      "rank": 2,
+      "slots": [
+        "*/general"
+      ],
+      "damageTypes": [
+        "cold"
+      ],
+      "text": "<p>-2 to all rolls from numbing (heal 10 or 5 fire damage)</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "frostburn",
+      "name": "Frostburn",
+      "rank": 8,
+      "slots": [
+        "*/general"
+      ],
+      "damageTypes": [
+        "cold"
+      ],
+      "text": "<p>2d4 con damage, Vulnerability to bludgeoning, piercing, slashing (heal 20 or 10 fire damage)</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "funny-bone",
+      "name": "Funny Bone",
+      "rank": 2,
+      "slots": [
+        "*/arm"
+      ],
+      "damageTypes": [
+        "bludgeoning"
+      ],
+      "text": "<p>Arm useless for 1d4 rounds</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "grazed-lung",
+      "name": "Grazed Lung",
+      "rank": 3,
+      "slots": [
+        "*/torso"
+      ],
+      "damageTypes": [
+        "piercing"
+      ],
+      "text": "<p>1d6 deep bleed, fatigued until healed</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "grazed-scalp",
+      "name": "Grazed Scalp",
+      "rank": 3,
+      "slots": [
+        "*/head"
+      ],
+      "damageTypes": [
+        "piercing"
+      ],
+      "text": "<p>1d6 deep bleed, dazed 1 round</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "gut-punch",
+      "name": "Gut Punch",
+      "rank": 1,
+      "slots": [
+        "*/torso"
+      ],
+      "damageTypes": [
+        "bludgeoning"
+      ],
+      "text": "<p>sickened 1d4 rounds</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "hamstring",
+      "name": "Hamstring",
+      "rank": 5,
+      "slots": [
+        "*/leg"
+      ],
+      "damageTypes": [
+        "slashing"
+      ],
+      "text": "<p>3d6 bleed, 3/4 move, -2 to attacks/skills using leg until healed (heal 10)</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "head-cracker",
+      "name": "Head Cracker",
+      "rank": 8,
+      "slots": [
+        "*/head"
+      ],
+      "damageTypes": [
+        "bludgeoning"
+      ],
+      "text": "<p>Fort save or die, otherwise Broken skull</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "horrific-scar",
+      "name": "Horrific Scar",
+      "rank": 1,
+      "slots": [
+        "*/head"
+      ],
+      "damageTypes": [
+        "piercing",
+        "slashing"
+      ],
+      "text": "<p>1d6 bleed, disadvantage on charisma checks other than intimidate, advantage on intimidate (lasts 1 month)</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "impaled-gut",
+      "name": "Impaled Gut",
+      "rank": 6,
+      "slots": [
+        "*/torso"
+      ],
+      "damageTypes": [
+        "piercing"
+      ],
+      "text": "<p>2d6 deep bleed, sickened until healed, weapon stuck</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "impaled-stomach",
+      "name": "Impaled Stomach",
+      "rank": 8,
+      "slots": [
+        "*/torso"
+      ],
+      "damageTypes": [
+        "piercing"
+      ],
+      "text": "<p>3d6 deep bleed, Staggered until healed, weapon stuck</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "jarring-blow",
+      "name": "Jarring Blow",
+      "rank": 2,
+      "slots": [
+        "*/appendage"
+      ],
+      "damageTypes": [
+        "bludgeoning"
+      ],
+      "text": "<p>Appendage useless 1d4 rounds</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "jaw-dropped",
+      "name": "Jaw Dropped",
+      "rank": 9,
+      "slots": [
+        "*/head"
+      ],
+      "damageTypes": [
+        "slashing"
+      ],
+      "text": "<p>6d6 bleed, Jaw severed (can't speak)</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "jolted",
+      "name": "Jolted",
+      "rank": 2,
+      "slots": [
+        "*/general"
+      ],
+      "damageTypes": [
+        "electric"
+      ],
+      "text": "<p>Staggered, reflex or prone</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "knocked-down",
+      "name": "Knocked Down",
+      "rank": 1,
+      "slots": [
+        "*/leg"
+      ],
+      "damageTypes": [
+        "bludgeoning"
+      ],
+      "text": "<p>Knocked Prone</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "laid-to-the-bone",
+      "name": "Laid to the bone",
+      "rank": 9,
+      "slots": [
+        "*/torso"
+      ],
+      "damageTypes": [
+        "slashing"
+      ],
+      "text": "<p>5d6 bleed, 2d4 strength damage, 2d4 dex damage</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "life-drained",
+      "name": "Life Drained",
+      "rank": 8,
+      "slots": [
+        "*/general"
+      ],
+      "damageTypes": [
+        "negative"
+      ],
+      "text": "<p>1d4 level drain</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "lodged-weapon",
+      "name": "Lodged Weapon",
+      "rank": 8,
+      "slots": [
+        "*/arm"
+      ],
+      "damageTypes": [
+        "piercing"
+      ],
+      "text": "<p>3d6 deep bleed, -4 to attacks/skills using arm until healed, weapon stuck</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "lodging-blow",
+      "name": "Lodging Blow",
+      "rank": 8,
+      "slots": [
+        "*/appendage"
+      ],
+      "damageTypes": [
+        "piercing"
+      ],
+      "text": "<p>3d6 deep bleed, -4 to attacks/skills using appendage until healed, weapon stuck</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "muscle-lock",
+      "name": "Muscle Lock",
+      "rank": 5,
+      "slots": [
+        "*/general"
+      ],
+      "damageTypes": [
+        "electric"
+      ],
+      "text": "<p>Stunned 1 round, staggered (heal 10)</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "neural-overload",
+      "name": "Neural overload",
+      "rank": 8,
+      "slots": [
+        "*/general"
+      ],
+      "damageTypes": [
+        "electric"
+      ],
+      "text": "<p>Confused, no actions requiring patience/concentration, no cha/int/wis based skills (heal 20)</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "nicked-achilles",
+      "name": "Nicked Achilles",
+      "rank": 3,
+      "slots": [
+        "*/leg"
+      ],
+      "damageTypes": [
+        "piercing"
+      ],
+      "text": "<p>1d6 deep bleed, leg useless 1d4 rounds</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "nicked-carotid",
+      "name": "Nicked Carotid",
+      "rank": 8,
+      "slots": [
+        "*/head"
+      ],
+      "damageTypes": [
+        "piercing"
+      ],
+      "text": "<p>4d6 deep bleed, 1d4 con bleed</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "nicked-femoral",
+      "name": "Nicked Femoral",
+      "rank": 11,
+      "slots": [
+        "*/leg"
+      ],
+      "damageTypes": [
+        "piercing"
+      ],
+      "text": "<p>4d6 deep bleed, leg useless until healed (heal 30), 1d4 con bleed</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "nicked-tendon",
+      "name": "nicked tendon",
+      "rank": 3,
+      "slots": [
+        "*/arm"
+      ],
+      "damageTypes": [
+        "piercing"
+      ],
+      "text": "<p>1d6 deep bleed, drop item held, -4 to attacks/checks using arm for 1 round</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "nose-severed",
+      "name": "Nose Severed",
+      "rank": 5,
+      "slots": [
+        "*/head"
+      ],
+      "damageTypes": [
+        "slashing"
+      ],
+      "text": "<p>4d6 bleed, Nose severed (disadvantage on all checks involving smell, loses scent ability)</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "numbed-tail",
+      "name": "Numbed Tail",
+      "rank": 2,
+      "slots": [
+        "*/tail"
+      ],
+      "damageTypes": [
+        "bludgeoning"
+      ],
+      "text": "<p>Tail useless 1d4 rounds</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "overhead-slash",
+      "name": "Overhead Slash",
+      "rank": 4,
+      "slots": [
+        "*/head"
+      ],
+      "damageTypes": [
+        "slashing"
+      ],
+      "text": "<p>4d6 bleed, stunned 1 round</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "persistent-acid",
+      "name": "Persistent Acid",
+      "rank": 8,
+      "slots": [
+        "*/general"
+      ],
+      "damageTypes": [
+        "acid"
+      ],
+      "text": "<p>2d6 acid damage per round until neutralized or washed off</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "pierced-calf",
+      "name": "Pierced Calf",
+      "rank": 5,
+      "slots": [
+        "*/leg"
+      ],
+      "damageTypes": [
+        "piercing"
+      ],
+      "text": "<p>2d6 deep bleed, 3/4 move, -2 to attacks/skills using leg until healed (heal 10)</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "pierced-hip",
+      "name": "Pierced Hip",
+      "rank": 9,
+      "slots": [
+        "*/leg"
+      ],
+      "damageTypes": [
+        "piercing"
+      ],
+      "text": "<p>3d6 deep bleed, leg useless until healed (heal 30)</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "pierced-knee",
+      "name": "Pierced Knee",
+      "rank": 8,
+      "slots": [
+        "*/leg"
+      ],
+      "damageTypes": [
+        "piercing"
+      ],
+      "text": "<p>3d6 deep bleed, 1/2 move, -4 to attacks/skills using leg until healed (heal 20), weapon stuck</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "pierced-lung",
+      "name": "Pierced Lung",
+      "rank": 4,
+      "slots": [
+        "*/torso"
+      ],
+      "damageTypes": [
+        "piercing"
+      ],
+      "text": "<p>2d6 deep bleed, fatigued until healed</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "pierced-muscle",
+      "name": "Pierced muscle",
+      "rank": 5,
+      "slots": [
+        "*/arm"
+      ],
+      "damageTypes": [
+        "piercing"
+      ],
+      "text": "<p>2d6 deep bleed, -2 to attacks/skills using arm until healed</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "pierced-organs",
+      "name": "Pierced Organs",
+      "rank": 9,
+      "slots": [
+        "*/torso"
+      ],
+      "damageTypes": [
+        "piercing"
+      ],
+      "text": "<p>3d6 deep bleed, Nauseated until healed</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "pierced-skull",
+      "name": "Pierced Skull",
+      "rank": 12,
+      "slots": [
+        "*/head"
+      ],
+      "damageTypes": [
+        "piercing"
+      ],
+      "text": "<p>Fort save or die, otherwise 5d6 deep bleed, 3d4 con bleed, broken skull</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "pierced-stomach",
+      "name": "Pierced Stomach",
+      "rank": 7,
+      "slots": [
+        "*/torso"
+      ],
+      "damageTypes": [
+        "piercing"
+      ],
+      "text": "<p>3d6 deep bleed, Staggered until healed</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "pierced-throat",
+      "name": "Pierced Throat",
+      "rank": 10,
+      "slots": [
+        "*/head"
+      ],
+      "damageTypes": [
+        "piercing"
+      ],
+      "text": "<p>5d6 deep bleed, 2d4 con bleed, Suffocating until healed</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "piercing-blow",
+      "name": "Piercing Blow",
+      "rank": 2,
+      "slots": [
+        "*/appendage",
+        "*/arm",
+        "*/head",
+        "*/leg",
+        "*/tail",
+        "*/torso",
+        "*/wing"
+      ],
+      "damageTypes": [
+        "piercing"
+      ],
+      "text": "<p>1d6 deep bleed</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "pinned-arm",
+      "name": "Pinned Arm",
+      "rank": 6,
+      "slots": [
+        "*/arm"
+      ],
+      "damageTypes": [
+        "piercing"
+      ],
+      "text": "<p>2d6 deep bleed, -2 to attacks/skills using arm until healed, weapon stuck</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "pinned-leg",
+      "name": "Pinned Leg",
+      "rank": 6,
+      "slots": [
+        "*/leg"
+      ],
+      "damageTypes": [
+        "piercing"
+      ],
+      "text": "<p>2d6 deep bleed, 3/4 move, -2 to attacks/skills using leg until healed (heal 10), weapon stuck</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "pulped-leg",
+      "name": "Pulped Leg",
+      "rank": 12,
+      "slots": [
+        "*/leg"
+      ],
+      "damageTypes": [
+        "bludgeoning"
+      ],
+      "text": "<p>Permanent loss of use of leg + 2d4 deep con bleed</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "pulped-shoulder",
+      "name": "Pulped shoulder",
+      "rank": 12,
+      "slots": [
+        "*/arm"
+      ],
+      "damageTypes": [
+        "bludgeoning"
+      ],
+      "text": "<p>Permanent loss of use of arm (regenerate or the like to repair) + 2d4 deep con bleed</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "pulverized-leg",
+      "name": "Pulverized Leg",
+      "rank": 11,
+      "slots": [
+        "*/leg"
+      ],
+      "damageTypes": [
+        "bludgeoning"
+      ],
+      "text": "<p>Permanent loss of use of leg + 1d4 deep con bleed</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "pulverized-shoulder",
+      "name": "Pulverized Shoulder",
+      "rank": 11,
+      "slots": [
+        "*/arm"
+      ],
+      "damageTypes": [
+        "bludgeoning"
+      ],
+      "text": "<p>Permanent loss of use of arm (regenerate or the like to repair) + 1d4 deep con bleed</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "pulverized-spinal-column",
+      "name": "Pulverized Spinal Column",
+      "rank": 11,
+      "slots": [
+        "*/torso"
+      ],
+      "damageTypes": [
+        "bludgeoning"
+      ],
+      "text": "<p>Fort save or die, otherwise shattered back + 1d4 deep con bleed</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "punctured-aorta",
+      "name": "Punctured Aorta",
+      "rank": 11,
+      "slots": [
+        "*/torso"
+      ],
+      "damageTypes": [
+        "piercing"
+      ],
+      "text": "<p>Fort save or die, otherwise 4d6 deep bleed, 1d4 deep con bleed</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "punctured-brow",
+      "name": "Punctured Brow",
+      "rank": 6,
+      "slots": [
+        "*/head"
+      ],
+      "damageTypes": [
+        "piercing"
+      ],
+      "text": "<p>3d6 deep bleed, blinded until healed</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "punctured-carotid",
+      "name": "Punctured Carotid",
+      "rank": 9,
+      "slots": [
+        "*/head"
+      ],
+      "damageTypes": [
+        "piercing"
+      ],
+      "text": "<p>4d6 deep bleed, 2d4 con bleed</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "punctured-cheekbone",
+      "name": "Punctured Cheekbone",
+      "rank": 5,
+      "slots": [
+        "*/head"
+      ],
+      "damageTypes": [
+        "piercing"
+      ],
+      "text": "<p>2d6 deep bleed, weapon stuck</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "punctured-face",
+      "name": "Punctured Face",
+      "rank": 4,
+      "slots": [
+        "*/head"
+      ],
+      "damageTypes": [
+        "piercing"
+      ],
+      "text": "<p>2d6 deep bleed, stunned 1 round</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "punctured-heart",
+      "name": "Punctured Heart",
+      "rank": 12,
+      "slots": [
+        "*/torso"
+      ],
+      "damageTypes": [
+        "piercing"
+      ],
+      "text": "<p>Fort save or die, otherwise reduced to -1 hp, 4d6 deep bleed, 2d4 deep con bleed</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "punctured-hip",
+      "name": "Punctured Hip",
+      "rank": 10,
+      "slots": [
+        "*/leg"
+      ],
+      "damageTypes": [
+        "piercing"
+      ],
+      "text": "<p>4d6 deep bleed, leg useless until healed (heal 30)</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "punctured-knee",
+      "name": "Punctured Knee",
+      "rank": 4,
+      "slots": [
+        "*/leg"
+      ],
+      "damageTypes": [
+        "piercing"
+      ],
+      "text": "<p>2d6 deep bleed, leg useless 1d4 rounds</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "punctured-lung",
+      "name": "Punctured Lung",
+      "rank": 5,
+      "slots": [
+        "*/torso"
+      ],
+      "damageTypes": [
+        "piercing"
+      ],
+      "text": "<p>2d6 deep bleed, exhausted until healed</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "punctured-muscles",
+      "name": "Punctured muscles",
+      "rank": 7,
+      "slots": [
+        "*/arm"
+      ],
+      "damageTypes": [
+        "piercing"
+      ],
+      "text": "<p>3d6 deep bleed, -4 to attack/skills using arm until healed</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "punctured-neck",
+      "name": "Punctured Neck",
+      "rank": 11,
+      "slots": [
+        "*/head"
+      ],
+      "damageTypes": [
+        "piercing"
+      ],
+      "text": "<p>5d6 deep bleed, 3d4 con bleed, Suffocating until healed</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "puncturing-blow",
+      "name": "Puncturing Blow",
+      "rank": 5,
+      "slots": [
+        "*/appendage"
+      ],
+      "damageTypes": [
+        "piercing"
+      ],
+      "text": "<p>2d6 deep bleed, -2 to attacks/skills using appendage until healed</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "radiant-annihilation",
+      "name": "Radiant Annihilation",
+      "rank": 11,
+      "slots": [
+        "*/general"
+      ],
+      "damageTypes": [
+        "positive"
+      ],
+      "text": "<p>Will save or destroyed. Otherwise flee as though panicked 1 minute.</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "ribboned-torso",
+      "name": "Ribboned Torso",
+      "rank": 8,
+      "slots": [
+        "*/torso"
+      ],
+      "damageTypes": [
+        "slashing"
+      ],
+      "text": "<p>5d6 bleed, 1d6 strength damage, 1d6 dex damage</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "ringing-ears",
+      "name": "Ringing Ears",
+      "rank": 2,
+      "slots": [
+        "*/general"
+      ],
+      "damageTypes": [
+        "sonic"
+      ],
+      "text": "<p>Deafened 1d4 rounds</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "rung-bell",
+      "name": "Rung Bell",
+      "rank": 3,
+      "slots": [
+        "*/head"
+      ],
+      "damageTypes": [
+        "bludgeoning"
+      ],
+      "text": "<p>Unconscious - Fort at end of each round to come to</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "ruptured-eardrums",
+      "name": "Ruptured Eardrums",
+      "rank": 8,
+      "slots": [
+        "*/general"
+      ],
+      "damageTypes": [
+        "sonic"
+      ],
+      "text": "<p>Nauseated, flat footed, deafened (heal 20)</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "ruptured-organs",
+      "name": "Ruptured Organs",
+      "rank": 10,
+      "slots": [
+        "*/torso"
+      ],
+      "damageTypes": [
+        "piercing"
+      ],
+      "text": "<p>4d6 deep bleed, Nauseated until healed</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "sapped",
+      "name": "Sapped",
+      "rank": 2,
+      "slots": [
+        "*/general"
+      ],
+      "damageTypes": [
+        "negative"
+      ],
+      "text": "<p>1d4 con drain</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "scalped",
+      "name": "Scalped",
+      "rank": 2,
+      "slots": [
+        "*/head"
+      ],
+      "damageTypes": [
+        "slashing"
+      ],
+      "text": "<p>2d6 bleed, dazed 1 round</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "seared-flesh",
+      "name": "Seared Flesh",
+      "rank": 5,
+      "slots": [
+        "*/general"
+      ],
+      "damageTypes": [
+        "fire"
+      ],
+      "text": "<p>gain burning condition, vulnerability to fire, -2 to all rolls from pain (heal 10)</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "searing-light",
+      "name": "Searing Light",
+      "rank": 2,
+      "slots": [
+        "*/general"
+      ],
+      "damageTypes": [
+        "positive"
+      ],
+      "text": "<p>-2 to all rolls for 1d6 rounds</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "set-ablaze",
+      "name": "Set Ablaze",
+      "rank": 11,
+      "slots": [
+        "humanoid/general"
+      ],
+      "damageTypes": [
+        "fire"
+      ],
+      "text": "<p>burning, vulnerability to fire, staggered (heal 20), reflex save or all non-magical worn/carried flammable items destroyed</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "set-alight",
+      "name": "Set Alight",
+      "rank": 11,
+      "slots": [
+        "aberrant/general",
+        "beast/general"
+      ],
+      "damageTypes": [
+        "fire"
+      ],
+      "text": "<p>burning, vulnerability to fire, staggered (heal 20), 1d4 deep con bleed</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "severed-appendage",
+      "name": "Severed Appendage",
+      "rank": 11,
+      "slots": [
+        "*/appendage"
+      ],
+      "damageTypes": [
+        "slashing"
+      ],
+      "text": "<p>6d6 bleed and appendage severed</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "severed-arm",
+      "name": "Severed Arm",
+      "rank": 12,
+      "slots": [
+        "*/arm"
+      ],
+      "damageTypes": [
+        "slashing"
+      ],
+      "text": "<p>6d6 bleed, Arm severed</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "severed-biceps",
+      "name": "Severed biceps",
+      "rank": 9,
+      "slots": [
+        "*/arm"
+      ],
+      "damageTypes": [
+        "piercing"
+      ],
+      "text": "<p>3d6 deep bleed, arm useless until healed</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "severed-femoral",
+      "name": "Severed Femoral",
+      "rank": 12,
+      "slots": [
+        "*/leg"
+      ],
+      "damageTypes": [
+        "piercing"
+      ],
+      "text": "<p>4d6 deep bleed, leg useless until healed (heal 30), 2d4 con bleed</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "severed-fingers",
+      "name": "Severed Fingers",
+      "rank": 9,
+      "slots": [
+        "*/arm"
+      ],
+      "damageTypes": [
+        "slashing"
+      ],
+      "text": "<p>5d6 bleed, 1d4 fingers severed</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "severed-foot",
+      "name": "Severed Foot",
+      "rank": 11,
+      "slots": [
+        "*/leg"
+      ],
+      "damageTypes": [
+        "slashing"
+      ],
+      "text": "<p>6d6 bleed, foot severed</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "severed-hand",
+      "name": "Severed Hand",
+      "rank": 11,
+      "slots": [
+        "*/arm"
+      ],
+      "damageTypes": [
+        "slashing"
+      ],
+      "text": "<p>6d6 bleed, hand severed</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "severed-leg",
+      "name": "Severed Leg",
+      "rank": 12,
+      "slots": [
+        "*/leg"
+      ],
+      "damageTypes": [
+        "slashing"
+      ],
+      "text": "<p>6d6 bleed, leg severed</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "severed-muscles",
+      "name": "Severed muscles",
+      "rank": 10,
+      "slots": [
+        "*/arm"
+      ],
+      "damageTypes": [
+        "slashing"
+      ],
+      "text": "<p>6d6 bleed, arm useless until healed (heal 30)</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "severed-quads",
+      "name": "Severed Quads",
+      "rank": 10,
+      "slots": [
+        "*/leg"
+      ],
+      "damageTypes": [
+        "slashing"
+      ],
+      "text": "<p>6d6 bleed, leg useless until healed (heal 30)</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "severed-tendons",
+      "name": "Severed tendons",
+      "rank": 7,
+      "slots": [
+        "*/leg"
+      ],
+      "damageTypes": [
+        "piercing"
+      ],
+      "text": "<p>3d6 deep bleed, 1/2 move, -4 to attacks/skills using leg until healed (heal 20)</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "shattered",
+      "name": "Shattered",
+      "rank": 11,
+      "slots": [
+        "*/general"
+      ],
+      "damageTypes": [
+        "force"
+      ],
+      "text": "<p>Fort save or Strength damage + dex damage equal to strength/dex scores. Otherwise 2d6 str and 2d6 dex damage</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "shattered-arm",
+      "name": "Shattered Arm",
+      "rank": 9,
+      "slots": [
+        "*/arm"
+      ],
+      "damageTypes": [
+        "bludgeoning"
+      ],
+      "text": "<p>As buff</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "shattered-back",
+      "name": "Shattered Back",
+      "rank": 10,
+      "slots": [
+        "*/torso"
+      ],
+      "damageTypes": [
+        "bludgeoning"
+      ],
+      "text": "<p>Shattered Back</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "shattered-eye-socket",
+      "name": "Shattered Eye Socket",
+      "rank": 6,
+      "slots": [
+        "*/head"
+      ],
+      "damageTypes": [
+        "bludgeoning"
+      ],
+      "text": "<p>Save or permanently blinded in one eye - otherwise blinded in eye until healed (heal 30)</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "shattered-foot",
+      "name": "Shattered Foot",
+      "rank": 8,
+      "slots": [
+        "*/leg"
+      ],
+      "damageTypes": [
+        "bludgeoning"
+      ],
+      "text": "<p>As buff</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "shattered-hand",
+      "name": "Shattered Hand",
+      "rank": 8,
+      "slots": [
+        "*/arm"
+      ],
+      "damageTypes": [
+        "bludgeoning"
+      ],
+      "text": "<p>As buff</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "shattered-leg",
+      "name": "Shattered Leg",
+      "rank": 9,
+      "slots": [
+        "*/leg"
+      ],
+      "damageTypes": [
+        "bludgeoning"
+      ],
+      "text": "<p>As buff</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "shattered-neck",
+      "name": "Shattered Neck",
+      "rank": 10,
+      "slots": [
+        "*/head"
+      ],
+      "damageTypes": [
+        "bludgeoning"
+      ],
+      "text": "<p>Fort save or die, otherwise shattered neck</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "shattered-rib",
+      "name": "Shattered Rib",
+      "rank": 5,
+      "slots": [
+        "*/torso"
+      ],
+      "damageTypes": [
+        "bludgeoning"
+      ],
+      "text": "<p>As buff</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "shattered-skull",
+      "name": "Shattered Skull",
+      "rank": 11,
+      "slots": [
+        "*/head"
+      ],
+      "damageTypes": [
+        "bludgeoning"
+      ],
+      "text": "<p>Fort save or die, otherwise shattered skull + 1d4 deep con bleed</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "shattered-vertebrae",
+      "name": "Shattered Vertebrae",
+      "rank": 11,
+      "slots": [
+        "*/tail"
+      ],
+      "damageTypes": [
+        "bludgeoning"
+      ],
+      "text": "<p>Tail permanently useless, 1d4 deep con bleed</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "shredded-pectoral",
+      "name": "Shredded Pectoral",
+      "rank": 6,
+      "slots": [
+        "*/torso"
+      ],
+      "damageTypes": [
+        "slashing"
+      ],
+      "text": "<p>4d6 bleed, 1d6 strength damage</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "signature-slash",
+      "name": "Signature Slash",
+      "rank": 4,
+      "slots": [
+        "*/torso"
+      ],
+      "damageTypes": [
+        "slashing"
+      ],
+      "text": "<p>3d6 bleed, shaken 1d4 rounds - If no armor worn, slice your signature on their chest and make a free intimidate check</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "skewering-blow",
+      "name": "Skewering Blow",
+      "rank": 11,
+      "slots": [
+        "*/appendage"
+      ],
+      "damageTypes": [
+        "piercing"
+      ],
+      "text": "<p>Appendage permanently useless, 4d6 deep bleed, 1d4 con bleed</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "slashed-arm",
+      "name": "Slashed arm",
+      "rank": 3,
+      "slots": [
+        "*/arm"
+      ],
+      "damageTypes": [
+        "slashing"
+      ],
+      "text": "<p>2d6 bleed, drop item held, -4 to attacks/checks using arm for 1 round</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "slashed-brow",
+      "name": "Slashed Brow",
+      "rank": 3,
+      "slots": [
+        "*/head"
+      ],
+      "damageTypes": [
+        "slashing"
+      ],
+      "text": "<p>3d6 bleed, blinded until it stops</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "slashed-pectoral",
+      "name": "Slashed Pectoral",
+      "rank": 5,
+      "slots": [
+        "*/torso"
+      ],
+      "damageTypes": [
+        "slashing"
+      ],
+      "text": "<p>3d6 bleed, 1d6 strength damage</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "slashed-tail",
+      "name": "Slashed Tail",
+      "rank": 5,
+      "slots": [
+        "*/tail"
+      ],
+      "damageTypes": [
+        "slashing"
+      ],
+      "text": "<p>3d6 bleed, -2 to attacks until healed (heal 10)</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "slashing-blow",
+      "name": "Slashing Blow",
+      "rank": 2,
+      "slots": [
+        "*/appendage",
+        "*/arm",
+        "*/leg",
+        "*/tail",
+        "*/torso",
+        "*/wing"
+      ],
+      "damageTypes": [
+        "slashing"
+      ],
+      "text": "<p>2d6 bleed</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "slashing-sweep",
+      "name": "Slashing Sweep",
+      "rank": 3,
+      "slots": [
+        "*/leg"
+      ],
+      "damageTypes": [
+        "slashing"
+      ],
+      "text": "<p>2d6 bleed, knocked prone</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "sliced-calf",
+      "name": "Sliced Calf",
+      "rank": 7,
+      "slots": [
+        "*/leg"
+      ],
+      "damageTypes": [
+        "slashing"
+      ],
+      "text": "<p>4d6 bleed, 1/2 move, -4 to attacks/skills using leg until healed (heal 20)</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "sliced-muscle",
+      "name": "Sliced muscle",
+      "rank": 7,
+      "slots": [
+        "*/arm"
+      ],
+      "damageTypes": [
+        "slashing"
+      ],
+      "text": "<p>4d6 bleed, -4 to attacks/checks using arm until healed (heal 20)</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "sliced-tendons",
+      "name": "Sliced tendons",
+      "rank": 5,
+      "slots": [
+        "*/arm"
+      ],
+      "damageTypes": [
+        "slashing"
+      ],
+      "text": "<p>3d6 bleed, -2 to attacks/checks using arm until healed (heal 10)</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "sprained-wrist",
+      "name": "Sprained wrist",
+      "rank": 1,
+      "slots": [
+        "*/arm"
+      ],
+      "damageTypes": [
+        "bludgeoning"
+      ],
+      "text": "<p>Drop item held in hand, -4 to attacks/checks using arm for 1 round</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "staggering-blow",
+      "name": "Staggering blow",
+      "rank": 2,
+      "slots": [
+        "*/torso"
+      ],
+      "damageTypes": [
+        "bludgeoning"
+      ],
+      "text": "<p>staggered 1d4 rounds</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "stunning-blow",
+      "name": "Stunning Blow",
+      "rank": 2,
+      "slots": [
+        "*/head"
+      ],
+      "damageTypes": [
+        "bludgeoning"
+      ],
+      "text": "<p>Stunned 1 round</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "system-shock",
+      "name": "System Shock",
+      "rank": 11,
+      "slots": [
+        "*/general"
+      ],
+      "damageTypes": [
+        "electric"
+      ],
+      "text": "<p>Fort or die, otherwise non-lethal equal to total HP</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "tail-pinned",
+      "name": "Tail Pinned",
+      "rank": 8,
+      "slots": [
+        "*/tail"
+      ],
+      "damageTypes": [
+        "piercing"
+      ],
+      "text": "<p>3d6 deep bleed, -4 to attacks/skills using tail until healed, weapon stuck</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "tail-punctured",
+      "name": "Tail Punctured",
+      "rank": 5,
+      "slots": [
+        "*/tail"
+      ],
+      "damageTypes": [
+        "piercing"
+      ],
+      "text": "<p>2d6 deep bleed, -2 to attacks/skills using tail until healed</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "tail-severed",
+      "name": "Tail severed",
+      "rank": 11,
+      "slots": [
+        "*/tail"
+      ],
+      "damageTypes": [
+        "slashing"
+      ],
+      "text": "<p>6d6 bleed and tail severed</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "tail-skewered",
+      "name": "Tail Skewered",
+      "rank": 11,
+      "slots": [
+        "*/tail"
+      ],
+      "damageTypes": [
+        "piercing"
+      ],
+      "text": "<p>Tail permanently useless, 4d6 deep bleed, 1d4 con bleed</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "tendon-slash",
+      "name": "Tendon Slash",
+      "rank": 4,
+      "slots": [
+        "*/leg"
+      ],
+      "damageTypes": [
+        "slashing"
+      ],
+      "text": "<p>3d6 bleed, knocked prone</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "tissue-liquefaction",
+      "name": "Tissue Liquefaction",
+      "rank": 11,
+      "slots": [
+        "*/general"
+      ],
+      "damageTypes": [
+        "acid"
+      ],
+      "text": "<p>2d6 acid damage and 1d6 con damage per round until neutralized or washed off</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "waning-vitality",
+      "name": "Waning Vitality",
+      "rank": 5,
+      "slots": [
+        "*/general"
+      ],
+      "damageTypes": [
+        "negative"
+      ],
+      "text": "<p>1 level drain</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "winded",
+      "name": "Winded",
+      "rank": 2,
+      "slots": [
+        "*/general"
+      ],
+      "damageTypes": [
+        "force"
+      ],
+      "text": "<p>staggered 1 round</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "wing-base-pierced",
+      "name": "Wing base pierced",
+      "rank": 8,
+      "slots": [
+        "*/wing"
+      ],
+      "damageTypes": [
+        "piercing"
+      ],
+      "text": "<p>3d6 deep bleed, 1/2 fly speed, -4 to attacks/skills using wing until healed, weapon stuck</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "wing-broken",
+      "name": "Wing broken",
+      "rank": 5,
+      "slots": [
+        "*/wing"
+      ],
+      "damageTypes": [
+        "bludgeoning"
+      ],
+      "text": "<p>Half fly speed, -4 attacks/checks using wing until healed (heal 10)</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "wing-bruised",
+      "name": "Wing bruised",
+      "rank": 2,
+      "slots": [
+        "*/wing"
+      ],
+      "damageTypes": [
+        "bludgeoning"
+      ],
+      "text": "<p>Can't fly 1d4 rounds</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "wing-compound-fractured",
+      "name": "Wing compound fractured",
+      "rank": 8,
+      "slots": [
+        "*/wing"
+      ],
+      "damageTypes": [
+        "bludgeoning"
+      ],
+      "text": "<p>Can't fly until healed (heal 20)</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "wing-crushed",
+      "name": "Wing crushed",
+      "rank": 11,
+      "slots": [
+        "*/wing"
+      ],
+      "damageTypes": [
+        "bludgeoning"
+      ],
+      "text": "<p>Wing permanently useless, 1d4 deep con bleed</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "wing-punctured",
+      "name": "Wing punctured",
+      "rank": 5,
+      "slots": [
+        "*/wing"
+      ],
+      "damageTypes": [
+        "piercing"
+      ],
+      "text": "<p>2d6 deep bleed, 1/2 fly speed, -2 to attacks/skills using wing until healed</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "wing-severed",
+      "name": "Wing severed",
+      "rank": 11,
+      "slots": [
+        "*/wing"
+      ],
+      "damageTypes": [
+        "slashing"
+      ],
+      "text": "<p>6d6 bleed and wing severed</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "wing-skewered",
+      "name": "Wing Skewered",
+      "rank": 11,
+      "slots": [
+        "*/wing"
+      ],
+      "damageTypes": [
+        "piercing"
+      ],
+      "text": "<p>Wing permanently useless, 4d6 deep bleed, 1d4 con bleed</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "wing-sliced",
+      "name": "Wing Sliced",
+      "rank": 5,
+      "slots": [
+        "*/wing"
+      ],
+      "damageTypes": [
+        "slashing"
+      ],
+      "text": "<p>3d6 bleed, 1/2 fly speed, -2 to attacks/skills using wing until healed (heal 10)</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "wrist-puncture",
+      "name": "Wrist puncture",
+      "rank": 4,
+      "slots": [
+        "*/arm"
+      ],
+      "damageTypes": [
+        "piercing"
+      ],
+      "text": "<p>2d6 deep bleed, drop item held, -4 to attacks/checks using arm for 1d4 rounds</p>",
+      "note": null,
+      "buff": null
+    },
+    {
+      "id": "wrist-slit",
+      "name": "Wrist Slit",
+      "rank": 4,
+      "slots": [
+        "*/arm"
+      ],
+      "damageTypes": [
+        "slashing"
+      ],
+      "text": "<p>3d6 bleed, drop item held, -4 to attacks/checks using arm for 1d4 rounds</p>",
+      "note": null,
+      "buff": null
+    }
+  ]
 }

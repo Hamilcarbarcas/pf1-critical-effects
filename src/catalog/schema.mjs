@@ -26,8 +26,8 @@
  * dropdown groups by. Keeping it here means the ladder is defined once rather than in the
  * tool, the worksheet template, and the dialog separately.
  *
- * `mortal` is not one of these. It sits past row 12 (the 13+ clamp) and is authored once per
- * anatomy × location rather than per damage type.
+ * `mortal` is not one of these. It sits past row 12 (the 13+ clamp) and is authored once per cell
+ * of its own grid rather than as a row of any table.
  */
 export const SEVERITY_BANDS = [
   { key: "minor", label: "Minor", rows: [1, 3] },
@@ -168,31 +168,39 @@ export const gridCells = () =>
 export const generalDamageTypes = () => DAMAGE_TYPES.filter((dt) => !isLocalized(dt));
 
 /**
- * Every cell `mortal` covers, and the two are keyed by **different axes** — which is the whole of
- * what makes mortal awkward and is why it is enumerated here rather than derived at each use.
+ * Every cell `mortal` covers, and the two halves are keyed by **different axes** — which is the
+ * whole of what makes mortal awkward and is why it is enumerated here rather than derived at use.
  *
  * | | Keyed by | Agnostic to | Count |
  * |---|---|---|---|
- * | `part` | anatomy × location | damage type | 13 |
+ * | `part` | damage type × anatomy × location | — | 39 |
  * | `damageType` | damage type | anatomy | 8 |
  *
- * The asymmetry is a rules judgement, not an oversight. For a weapon wound, past row 12 the injury
- * has stopped being characterised by what made it — a torn-off arm is a torn-off arm whether a
- * sword or a mace did it — so the body part is what is left to name. For non-localized damage there
- * is no body part to name and the *damage type* is the whole of what distinguishes it: burned to
- * ash and blasted apart are not one result. Anatomy drops out on that side because a mortal fire
- * result is the same story for a humanoid and a beast.
+ * > **Revised in phase 12.** `part` was previously keyed by anatomy × location alone — 13 cells,
+ * > damage-type agnostic — on the reasoning that "past row 12 a torn-off arm is a torn-off arm
+ * > whether a sword or a mace did it". Writing the content disproved it. A mace, a spear and an
+ * > axe end a head three different ways (**caved cranium**, **pierced brain**, **decapitated**) and
+ * > collapsing those into one row throws away the distinction the 13+ result exists to make. So the
+ * > weapon half keeps the damage-type axis and every cell is written per damage type.
+ *
+ * The asymmetry that remains is real: **anatomy** is what drops out of the non-localized half. A
+ * mortal fire result is the same story for a humanoid and a beast — burned to ash is burned to ash
+ * — while burned to ash and blasted apart are plainly not one result, so the damage type is the
+ * whole of what distinguishes that side.
  *
  * @returns {{ kind: "part"|"damageType", key: string, anatomy?: string, location?: string,
  *             damageType?: string }[]}
  */
 export const mortalCells = () => [
-  ...anatomyLocationPairs().map(({ anatomy, location }) => ({
-    kind: "part",
-    key: `${anatomy}/${location}`,
-    anatomy,
-    location,
-  })),
+  ...LOCALIZED_DAMAGE_TYPES.flatMap((damageType) =>
+    anatomyLocationPairs().map(({ anatomy, location }) => ({
+      kind: "part",
+      key: `${damageType}/${anatomy}/${location}`,
+      damageType,
+      anatomy,
+      location,
+    }))
+  ),
   ...generalDamageTypes().map((damageType) => ({ kind: "damageType", key: damageType, damageType })),
 ];
 
@@ -434,10 +442,11 @@ export const TABLE_ROWS = 12;
  * keeps the invariant true while `lint()` reports how much is still to author.
  *
  * `mortal` is the 13+ addendum, read on top of row 12 rather than instead of it, and it has **two
- * halves keyed by different axes** (see `mortalCells`): `mortal.byPart[anatomy][location]` for the
- * weapon types, `mortal.byDamageType[damageType]` for everything else. Optional throughout: an
- * absent entry leaves the 13+ result as "row 12 plus the Fort save", which is what the rules said
- * before any of them were written.
+ * halves keyed by different axes** (see `mortalCells`):
+ * `mortal.byPart[damageType][anatomy][location]` for the weapon types,
+ * `mortal.byDamageType[damageType]` for everything else. Optional throughout: an absent entry
+ * leaves the 13+ result as "row 12 plus the Fort save", which is what the rules said before any of
+ * them were written.
  *
  * **v5 removes `journal` and adds `text` and `conditions`.** Prose is stored here rather than in a
  * compendium journal, and the mechanical half of an entry is now two optional channels rather than
@@ -571,24 +580,41 @@ export function validateEffects(data) {
     if (byPart != null && !isPlainObject(byPart)) {
       errors.push("effects.json: `mortal.byPart` is not an object");
     } else {
-      for (const [anatomy, locations] of Object.entries(byPart ?? {})) {
-        if (anatomy.startsWith("_")) continue;
-        if (!ANATOMIES.includes(anatomy)) warnings.push(`effects.json: mortal.byPart.${anatomy}: unknown anatomy`);
-        if (!isPlainObject(locations)) {
-          errors.push(`effects.json: mortal.byPart.${anatomy} is not an object`);
+      /* Three levels since v5: damage type, then anatomy, then location. The damage-type level is
+       * the one that was added — see mortalCells for why a mace and an axe do not share a head. */
+      for (const [damageType, anatomies] of Object.entries(byPart ?? {})) {
+        if (damageType.startsWith("_")) continue;
+        if (!DAMAGE_TYPES.includes(damageType)) {
+          warnings.push(`effects.json: mortal.byPart.${damageType}: unknown damage type`);
+        } else if (!isLocalized(damageType)) {
+          warnings.push(
+            `effects.json: mortal.byPart.${damageType}: ${damageType} rolls no location, so its mortal comes from mortal.byDamageType; this branch is unreachable`
+          );
+        }
+        if (!isPlainObject(anatomies)) {
+          errors.push(`effects.json: mortal.byPart.${damageType} is not an object`);
           continue;
         }
 
-        mortal.byPart[anatomy] = {};
-        for (const [location, id] of Object.entries(locations)) {
-          const where = `effects.json mortal.byPart.${anatomy}.${location}`;
-          /* The half that is keyed by body part is the LOCALIZED half. `general` here would be a
-           * mortal nothing can reach: the non-localized types read the other map entirely. */
-          if (location === GENERAL_SLOT) {
-            warnings.push(`${where}: non-localized damage reads mortal.byDamageType, so this entry is unreachable`);
+        mortal.byPart[damageType] = {};
+        for (const [anatomy, locations] of Object.entries(anatomies)) {
+          if (!ANATOMIES.includes(anatomy)) warnings.push(`effects.json: mortal.byPart.${damageType}.${anatomy}: unknown anatomy`);
+          if (!isPlainObject(locations)) {
+            errors.push(`effects.json: mortal.byPart.${damageType}.${anatomy} is not an object`);
+            continue;
           }
-          const entryId = readMortalId(id, where);
-          if (entryId) mortal.byPart[anatomy][location] = entryId;
+
+          mortal.byPart[damageType][anatomy] = {};
+          for (const [location, id] of Object.entries(locations)) {
+            const where = `effects.json mortal.byPart.${damageType}.${anatomy}.${location}`;
+            /* The half that is keyed by body part is the LOCALIZED half. `general` here would be a
+             * mortal nothing can reach: the non-localized types read the other map entirely. */
+            if (location === GENERAL_SLOT) {
+              warnings.push(`${where}: non-localized damage reads mortal.byDamageType, so this entry is unreachable`);
+            }
+            const entryId = readMortalId(id, where);
+            if (entryId) mortal.byPart[damageType][anatomy][location] = entryId;
+          }
         }
       }
     }

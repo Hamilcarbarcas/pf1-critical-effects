@@ -253,12 +253,13 @@ for (const { damageType, anatomy, location } of gridCells()) {
 
 // --- mortal -----------------------------------------------------------------
 
-/* Two halves keyed by different axes — body part for the weapon types, damage type for the rest.
+/* Two halves keyed by different axes — damage type x body part for the weapon types, damage type
+ * alone for the rest.
  * Both are pre-seeded to null from `mortalCells` so an unwritten cell is a visible hole in the
  * output rather than an absent key. */
 const mortal = { byPart: {}, byDamageType: {} };
 for (const cell of mortalCells()) {
-  if (cell.kind === "part") (mortal.byPart[cell.anatomy] ??= {})[cell.location] = null;
+  if (cell.kind === "part") ((mortal.byPart[cell.damageType] ??= {})[cell.anatomy] ??= {})[cell.location] = null;
   else mortal.byDamageType[cell.damageType] = null;
 }
 
@@ -277,7 +278,7 @@ if (fs.existsSync(MORTAL)) {
       note: row.mechanic || existing?.note || null,
       ...(existing?.conditions?.length ? { conditions: existing.conditions } : {}),
     });
-    if (row.kind === "part") mortal.byPart[row.anatomy][row.location] = id;
+    if (row.kind === "part") mortal.byPart[row.damageType][row.anatomy][row.location] = id;
     else mortal.byDamageType[row.damageType] = id;
   }
 }
@@ -297,7 +298,7 @@ const output = {
     "nothing better is tagged for that table. See content/COVERAGE.md for per-table drift.",
   _mortal:
     "The 13+ addendum — read ON TOP of row 12, not instead of it. Two halves keyed by different " +
-    "axes: mortal.byPart[anatomy][location] for the weapon damage types (damage-type agnostic), " +
+    "axes: mortal.byPart[damageType][anatomy][location] for the weapon damage types, " +
     "mortal.byDamageType[damageType] for the rest (anatomy agnostic). Authored in content/mortal.md.",
   entries: [...entries.values()].sort((a, b) => a.id.localeCompare(b.id)),
   tables,
