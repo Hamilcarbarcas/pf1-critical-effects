@@ -2,6 +2,49 @@
 
 ## Unreleased
 
+### Added
+- **Effects execute on the card.** A resolved critical (or fumble) now shows what it did and offers
+  to do it, rather than naming a buff in a button label: the buff as an expandable header in the
+  system's own buff colouring with a link to the compendium item, each condition with its icon and
+  authored duration, and the Apply button beneath them.
+- **Effects can deal damage of their own.** A new `damage` channel on a catalog entry — one or more
+  `{ formula, type }` parts, rolled on Confirm against the attacker's roll data, animated with the
+  rest of the resolution's dice. It renders as PF1's own damage table, headed *Effect Damage*, with
+  the dice breakdown and the full/half apply buttons. It is a separate instance from the weapon's
+  critical damage, usually of a different type, and never touches the card's Critical column.
+  Applying it goes through PF1's typed damage path, so damage reduction and energy resistance see
+  the real types — and Little Helper's untargeted-apply confirmation still fires.
+- **Effects can call for a Fortitude save.** `save` on an entry is a DC *multiplier* — 1 or 2 —
+  because the DC is always the same thing: the attack's pre-reduction, non-critical damage. A save
+  splits the effect into two branches (`onFail`, overriding the base channels one at a time), and
+  the card offers an embedded save request plus **both** apply buttons. Neither button is gated on
+  what the save rolled, so a luck point or a GM's call on an NPC still decides the outcome; the roll
+  is recorded above them. A resolution with no attack behind it prompts for the DC.
+- **Delivered buffs are stamped with that DC** as `saveDC`, reachable from the buff's own scripts
+  and formulas as `@sourceInfo.saveDC` / `@dFlags.<tag>.saveDC`, so an injury can DC its own
+  recovery check against the blow that caused it.
+
+### Changed
+- **Rolled condition durations now show their dice.** A condition authored as *deafened 1d4 minutes*
+  threw its die silently; it now animates like every other roll this module makes. All of one Apply
+  press's durations are rolled first and shown as a single throw, and the conditions land as the
+  dice settle — two conditions on one effect are one animation, not two with a condition applied
+  between them. A duration written as a plain number produces no roll and no animation.
+- **New setting: Look for effect buffs outside this module** (world, **off** by default). An
+  effect's buff header is drawn from this module's own *Critical Effect Buffs* pack, and a buff that
+  isn't in there is now reported to the GM rather than silently omitted. Turn the setting on to fall
+  back to searching every item compendium by name, which is what a GM keeping their own copies
+  elsewhere wants. Off by default because a same-named buff from an unrelated module is as likely as
+  a copy of yours, and a header describing the wrong buff is worse than a header that fails to
+  appear. Affects the card's header only — delivery still follows astora-mod's configured sources.
+- **Catalog schema v6** (`effects.json`), **fumbles v4**. Adds `damage`, `save` and `onFail`; every
+  v5 entry is a valid v6 entry and nothing needed migrating. A bad row in any of the three is
+  reported and dropped rather than costing the entry, as conditions always have been.
+- `game.criticalEffects.effects.offerApplyButton` is replaced by `resolveExecution` /
+  `attachExecution` / `hasMechanics`. The old call could not express two branches or roll damage.
+- The embedded save needs pf1-roll-requests' *embedded requests* API. An older copy is not an error:
+  the save renders as a printed DC and everything else on the card works unchanged.
+
 ### Fixed
 - **The Dedicated Healing section's hint text is legible again.** The *Healing Required* and *Heal
   Check DC* hints (and the section's intro note) inherited a near-white colour on the buff sheet's

@@ -56,3 +56,43 @@ export function registerHomebrewSetting() {
     default: false,
   });
 }
+
+/* --- where a buff named by the catalog may be found -------------------------
+ *
+ * The catalog names buffs by name, and the card snapshots one to draw its header (§7.6). Which
+ * compendia that lookup is allowed to search is a judgement about **this world**, not about the
+ * content, which is why it is a setting rather than a constant.
+ *
+ * Default OFF, and the default is the strict one on purpose. Searching every item compendium finds
+ * a buff of the right name wherever it lives, which is convenient right up until it silently finds
+ * the *wrong* one — a "Broken Arm" from an unrelated module, drawn on the card as though it were
+ * ours. A miss that says so is easier to fix than a hit that lied.
+ *
+ * Note this governs the **snapshot only**. Delivery is astora-mod's `applyBuffTo`, which searches
+ * the buff sources configured in *that* module and does not consult this setting — so a GM who
+ * keeps their buffs elsewhere turns this on to make the two agree, rather than to enable anything.
+ */
+export const SETTING_SEARCH_ALL_PACKS = "searchAllBuffPacks";
+
+/** Whether a buff lookup may fall back to compendia outside this module's own pack. */
+export function searchAllBuffPacks() {
+  try {
+    return game.settings.get(MODULE_ID, SETTING_SEARCH_ALL_PACKS) === true;
+  } catch {
+    return false;
+  }
+}
+
+export function registerBuffLookupSetting() {
+  game.settings.register(MODULE_ID, SETTING_SEARCH_ALL_PACKS, {
+    name: "Look for effect buffs outside this module",
+    hint:
+      "Off: an effect's buff must be in this module's Critical Effect Buffs pack, and a missing " +
+      "one is reported. On: every item compendium is searched by name — turn this on if you keep " +
+      "your own copies of these buffs elsewhere.",
+    scope: "world",
+    config: true,
+    type: Boolean,
+    default: false,
+  });
+}

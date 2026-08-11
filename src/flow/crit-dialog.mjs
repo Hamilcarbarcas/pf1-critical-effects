@@ -38,7 +38,8 @@ import * as power from "../resolve/power.mjs";
 import * as location from "../resolve/location.mjs";
 import { stagesFor, nextStage } from "./stages.mjs";
 import { setCritResult, explosionCount, createCritResultCard } from "../chat/card-mutate.mjs";
-import { offerApplyButton } from "./effect-apply.mjs";
+import { attachExecution, attackerRollData, resolveExecution } from "./execution.mjs";
+import { CRIT_RESULT_CLASS } from "../chat/card-mutate.mjs";
 import { describeConditions } from "../resolve/conditions.mjs";
 import { rollDeferredCritDamage, suppressionEnabled } from "../integrations/pf1-pipeline.mjs";
 import { postTableRoll, postTableSelect, closeRequest } from "../integrations/roll-requests.mjs";
@@ -775,6 +776,15 @@ export class CritResolution extends HandlebarsApplicationMixin(ApplicationV2) {
 
     if (!source) return;
 
+    /* The mechanical half, decided now (§6). This is where the effect's own damage is rolled and
+     * its buffs are looked up — on Confirm, with the dialog still open, so an abandoned resolution
+     * leaves no orphaned dice and the DSN animation is not racing the close. */
+    const execution = await resolveExecution(outcome.entry, {
+      sourceMessage: this.sourceMessage,
+      attackIndex: state.attackIndex,
+      rollData: attackerRollData(state.display?.attackerActorId),
+    });
+
     await setCritResult(source, {
       choice: state.choice,
       location: state.location ? location.locationLabel(state.location) : null,
@@ -791,15 +801,17 @@ export class CritResolution extends HandlebarsApplicationMixin(ApplicationV2) {
       text: outcome.entry?.text ?? null,
       note: outcome.entry?.note ?? null,
       // Named on the card whether or not anyone presses the button, because "stunned 1 round" is
-      // part of the result even when the GM applies it by hand.
+      // part of the result even when the GM applies it by hand. Kept alongside `execution` for
+      // cards drawn before there was one — the renderer prefers the block and falls back to this.
       conditions: outcome.entry?.conditions ?? null,
+      execution,
     });
 
-    // The mechanical half, if this entry has one (§6) — conditions and/or a buff. Separate from
-    // the record because it is a button rather than a fact: the record is what happened, this is
-    // what can still be done.
-    await offerApplyButton(source, {
-      entry: outcome.entry,
+    /* The save and the buttons, after the record: the buttons stamp the save DC onto the buffs they
+     * deliver, and the embedded save attaches to the message the record now lives on. Separate from
+     * the record because these are things that can still be done, not things that happened. */
+    await attachExecution(source, execution, {
+      scope: CRIT_RESULT_CLASS,
       target: { actorId: state.display?.targetActorId, tokenId: state.display?.targetTokenId },
       sourceActorId: state.display?.attackerActorId ?? null,
     });

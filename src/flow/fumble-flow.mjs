@@ -22,9 +22,9 @@
 import { MODULE_ID } from "../const.mjs";
 import * as catalog from "../catalog/catalog.mjs";
 import { registerButtonType, addButtons, removeButton } from "../chat/card-buttons.mjs";
-import { setFumbleResult, createFumbleResultCard } from "../chat/card-mutate.mjs";
+import { setFumbleResult, createFumbleResultCard, FUMBLE_RESULT_CLASS } from "../chat/card-mutate.mjs";
 import { postFumbleDraw, totalFromResult, DRAW_FLAG } from "../integrations/roll-requests.mjs";
-import { offerApplyButton } from "./effect-apply.mjs";
+import { attachExecution, attackerRollData, resolveExecution } from "./execution.mjs";
 import { displayName } from "../integrations/token-randomizer.mjs";
 
 const BUTTON_TYPE = "resolve-fumble";
@@ -321,6 +321,20 @@ async function completeDraw({ messageId, result }) {
     return;
   }
 
+  /* A fumble carries the same three channels a critical does, and a save over them — a snapped
+   * bowstring is prose, but a fumbled swing that leaves you prone is a condition, and one that
+   * buries the arrow in your own foot deals damage (§6, §7.6). The fumbler is both target and
+   * source here: nobody did this to them, so the damage formula reads their own roll data.
+   *
+   * No `sourceMessage`, deliberately, even when the draw came from an attack card. A save DC is the
+   * damage of the attack that caused the effect (§6) and a fumble caused nothing — the swing missed.
+   * Handing the card over would derive the DC from whichever attack sits at index 0, which on a
+   * full attack is a *different* swing that happened to hit. So a save on a fumble entry falls
+   * through to the GM prompt, which is the only party that knows what to DC it against. */
+  const execution = await resolveExecution(entry, {
+    rollData: attackerRollData(draw.actorId),
+  });
+
   await setFumbleResult(source, {
     tableKey: draw.tableKey,
     total,
@@ -329,13 +343,11 @@ async function completeDraw({ messageId, result }) {
     text: entry.text ?? null,
     note: entry.note ?? null,
     conditions: entry.conditions ?? null,
+    execution,
   });
 
-  /* A fumble can inflict conditions and carry a buff the same way a critical can — a snapped
-   * bowstring is prose, but a fumbled swing that leaves you prone is a condition (§6). The
-   * fumbler is both target and source here: nobody did this to them. */
-  await offerApplyButton(source, {
-    entry,
+  await attachExecution(source, execution, {
+    scope: FUMBLE_RESULT_CLASS,
     target: { actorId: draw.actorId ?? null, tokenId: draw.tokenId ?? null },
     sourceActorId: draw.actorId ?? null,
   });

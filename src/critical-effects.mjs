@@ -29,7 +29,8 @@ import { registerExplosion } from "./flow/explosion.mjs";
 import * as stages from "./flow/stages.mjs";
 import { registerLethal, registerLethalQuickAction, promptLethalDraw, postLethalDraw, offerLethalButton, couldBeLethal } from "./flow/lethal.mjs";
 import { registerResolverQuickAction, openResolver } from "./flow/resolver-app.mjs";
-import { registerEffectApply, offerApplyButton, buffDelivery } from "./flow/effect-apply.mjs";
+import { registerEffectApply, buffDelivery } from "./flow/effect-apply.mjs";
+import { resolveExecution, attachExecution, hasMechanics } from "./flow/execution.mjs";
 import {
   registerDedicatedHealing,
   requestHealCheck,
@@ -40,7 +41,7 @@ import {
 } from "./integrations/dedicated-healing.mjs";
 import { registerDedicatedHealingConfig } from "./apps/dedicated-healing-config.mjs";
 import { registerPipeline, registerPipelineSettings, suppressionEnabled, rollDeferredCritDamage } from "./integrations/pf1-pipeline.mjs";
-import { registerHomebrewSetting, homebrewEnabled } from "./settings.mjs";
+import { registerHomebrewSetting, homebrewEnabled, registerBuffLookupSetting } from "./settings.mjs";
 import { registerCritTrigger } from "./flow/crit-trigger.mjs";
 
 export { MODULE_ID };
@@ -48,13 +49,19 @@ export { MODULE_ID };
 Hooks.once("init", () => {
   // Settings and the libWrapper registration must both exist before any action is used.
   registerHomebrewSetting();
+  registerBuffLookupSetting();
   registerPipelineSettings();
   registerPipeline();
 
   // Hooks that must exist before any action is used. The catalog is not loaded yet — every
   // consumer below reaches it lazily, at click time.
-  registerCardButtons();
+  /* Order matters between these two, and only these two. A button descriptor may name the element
+   * it belongs in (§7.6) — the Apply button for a save's failed branch belongs inside that branch,
+   * not in PF1's footer — and `registerCardButtons` resolves that selector against the rendered
+   * card. So the block that emits those mounts has to have drawn first, which means its hook has to
+   * be registered first. */
   registerCardMutation();
+  registerCardButtons();
   registerFumbleFlow();
   registerLethal();
   registerEffectApply();
@@ -118,10 +125,12 @@ Hooks.once("ready", async () => {
       stages,
     },
 
-    // the mechanical half of an effect (§6) — one apply button on the card covering both
-    // channels: the PF1 conditions an entry inflicts (native, no dependency) and its buff,
-    // delivered through astora-mod when that module is there to deliver it.
-    effects: { offerApplyButton, buffDelivery },
+    /* The mechanical half of an effect (§6): the PF1 conditions an entry inflicts (native, no
+     * dependency), its buff (delivered through astora-mod when that module is there to deliver
+     * it), its own damage instance, and the Fortitude save that splits the first three into a
+     * saved and a failed branch. `resolveExecution` decides all of it; `attachExecution` puts the
+     * save and the buttons on a card. */
+    effects: { resolveExecution, attachExecution, hasMechanics, buffDelivery },
 
     // PF1 pipeline (§9) — deferring critical damage until it is chosen
     pipeline: { suppressionEnabled, rollDeferredCritDamage },

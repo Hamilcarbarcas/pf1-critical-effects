@@ -16,7 +16,7 @@ you always get a named result with its description on the card.
 |---|---|---|
 | **System** | `pf1` (v11.10+) | — |
 | **Required** | `lib-wrapper` | The module does not function. |
-| **Required** | `pf1-roll-requests` | Resolutions cannot post their dice. |
+| **Required** | `pf1-roll-requests` | Resolutions cannot post their dice. Its *embedded requests* API is what puts a save on a result card; an older copy still works, and the save shows as a printed DC to be rolled by hand. |
 | **Recommended** | `pf1-bleed-effects` | Everything runs; the bleed an effect describes ("2d6 bleed") stays prose and has to be tracked and rolled by hand. |
 | **Recommended** | `astora-mod` | Everything runs; effects that use its buff automation can't offer their apply-buff button. |
 
@@ -293,19 +293,64 @@ empty damage type says so rather than failing.
 
 ### Mechanics on an effect
 
-An effect can carry mechanics through **two independent channels**, and either may be absent:
+An effect can carry mechanics through **three independent channels**, and any may be absent:
 
 | | What it is | Needs |
 |---|---|---|
 | **Conditions** | PF1 statuses — stunned, prone, bleeding — with their own durations | nothing |
 | **Buff** | an Item with changes, context notes, a healing lifecycle | astora-mod |
+| **Damage** | a damage instance of the effect's own, with its own type | nothing |
 
-Both are offered by a single **Apply** button on the chat card, GM-only because creating an effect
-on somebody else's actor requires a GM. It appears on critical *and* fumble results.
+The buff and the conditions are offered by a single **Apply** button on the chat card, GM-only
+because creating an effect on somebody else's actor requires a GM. It appears on critical *and*
+fumble results. Above it the card shows what that button will do: the buff as an expandable header
+in the system's own buff colouring, and each condition with its icon and duration.
+
+The buff header is drawn from **Critical Effect Buffs**, this module's own pack. If an effect names
+a buff that isn't in there you get an error saying so — the card still resolves and still offers its
+conditions, but the header is missing and that's a content gap worth knowing about rather than
+guessing at. If you keep your own copies of these buffs in another compendium, turn on **Look for
+effect buffs outside this module** and every item pack is searched by name instead. It's off by
+default because a same-named buff from an unrelated module is as likely as a copy of yours, and a
+header quietly describing the wrong buff is worse than one that doesn't appear.
+
+*(That setting affects the header only. Delivering the buff is astora-mod's job and follows the buff
+sources configured there — so if the two disagree, this is the switch that makes them agree.)*
+
+**Damage keeps PF1's own apply buttons.** It renders as a damage table below the effect, headed
+*Effect Damage* — clickable for the dice breakdown, with the full and half hammer icons you already
+know. It is a genuinely separate instance from the weapon's critical damage: usually a different
+type, applied separately, and it never touches the card's Critical column.
+
+#### Saves
+
+Some effects call for a **Fortitude save**, and the DC is always the same thing: **the damage of the
+attack that caused it**, before any reduction. A few of the worst call for double that. There is
+nothing to configure — the card works it out.
+
+A save splits the effect into two outcomes, and the card offers **both**:
+
+- an embedded save request, rolled by the target's player (or immediately, GM-side, for an NPC);
+- an **Apply · Saved** button and an **Apply · Failed** button, each with its own buff and
+  conditions shown above it.
+
+Both buttons stay live no matter what the save rolled. That is on purpose: a luck point spent to
+turn a failure into a success, or a call that an NPC eats the full result anyway, are decisions the
+table makes and the dice don't. The roll is recorded on the card; you press the button that matches
+what actually happened.
+
+Resolving an effect by hand has no attack behind it, so there is no damage to derive a DC from —
+you'll be asked for it.
+
+Every buff this delivers is stamped with that DC as `saveDC`, readable from the buff's own scripts
+and formulas as `@sourceInfo.saveDC` or `@dFlags.<tag>.saveDC`, so an injury can DC its own recovery
+check against the blow that caused it.
 
 Conditions are applied the way PF1 applies them, including the duration:
 
-- A duration may be a number or a die — *deafened 1d4 minutes* rolls when the condition lands.
+- A duration may be a number or a die — *deafened 1d4 minutes* rolls when the condition lands, dice
+  and all. Every duration on one Apply press is thrown together, so a two-condition effect animates
+  once. (Durations are bare numbers and simple dice only — no `@` references.)
 - PF1 expires it against world time and **removes** it. Nothing to track by hand.
 - Right-click the condition on the character sheet and you get the system's own dialog showing the
   rounds remaining, which you can change.
@@ -333,11 +378,21 @@ sheet and removable there.
 From a macro:
 
 ```js
-// Offer the apply button for an entry on a given card
-await game.criticalEffects.effects.offerApplyButton(message, {
-  entry: game.criticalEffects.catalog.getEntry("concussed-ear"),
+const entry = game.criticalEffects.catalog.getEntry("concussed-ear");
+
+// Roll the damage, look the buffs up, work out the save DC. Once, GM-side.
+const execution = await game.criticalEffects.effects.resolveExecution(entry, {
+  sourceMessage: message,   // the attack card the DC is derived from; omit to be prompted
+});
+
+// Put the save and the apply buttons on a card that already carries the result.
+await game.criticalEffects.effects.attachExecution(message, execution, {
+  scope: "ce-crit-result",
   target: { actorId, tokenId },
 });
+
+// Does this entry have anything to execute at all?
+game.criticalEffects.effects.hasMechanics(entry);
 
 // Is astora-mod there to deliver a buff?
 game.criticalEffects.effects.buffDelivery();   // its API, or null
@@ -403,7 +458,7 @@ the body, gated on the buff representing it — are the reference consumer for `
 
 | Pack | Contents |
 |---|---|
-| **Critical Effect Buffs** (Item) | Buffs carrying the mechanics of an effect — currently the 19 Broken/Shattered bone conditions. Grows with the content track. |
+| **Critical Effect Buffs** (Item) | Buffs carrying the mechanics of an effect — currently the 19 Broken/Shattered bone conditions. Grows with the content track. An effect naming a buff that isn't here is reported to the GM. |
 | **Critical Effect Macros** (Macro) | Script calls for effects whose behaviour doesn't fit a condition or a buff. |
 
 Effect and fumble **content** is not in a compendium at all. It lives in versioned JSON under

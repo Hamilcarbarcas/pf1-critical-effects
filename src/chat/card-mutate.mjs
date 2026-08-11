@@ -11,8 +11,17 @@ import { MODULE_ID } from "../const.mjs";
 import { gmRequest } from "../integrations/socket.mjs";
 import { criticalTotal } from "../integrations/pf1-pipeline.mjs";
 import { describeConditions } from "../resolve/conditions.mjs";
+import { renderExecution } from "./effect-block.mjs";
+import { bindDamageAnchors } from "../flow/effect-apply.mjs";
 
 const RESULT_FLAG = "fumbleResult";
+
+/* The two result blocks' own classes, exported because the button mounts (§7.6) are built from
+ * them: a descriptor names the container it belongs in, and that selector has to be the same string
+ * the renderer emitted. Keeping both halves reading from one constant is what stops a rename here
+ * from silently sending every Apply button back to PF1's footer. */
+export const CRIT_RESULT_CLASS = "ce-crit-result";
+export const FUMBLE_RESULT_CLASS = "ce-fumble-result";
 
 /**
  * Record a fumble result on the attack card.
@@ -483,10 +492,16 @@ export function registerCardMutation() {
     if (!result) return;
 
     const root = html instanceof HTMLElement ? html : html?.[0];
-    if (!root || root.querySelector(".ce-crit-result")) return;
+    if (!root) return;
+    if (root.querySelector(`.${CRIT_RESULT_CLASS}`)) {
+      // Already drawn on this render pass. The anchors are rebuilt every time, so rebinding is
+      // still required — `bindDamageAnchors` no-ops on ones it has already claimed.
+      bindDamageAnchors(root, message, (m) => getCritResult(m)?.execution);
+      return;
+    }
 
     const block = document.createElement("div");
-    block.className = "ce-crit-result";
+    block.className = CRIT_RESULT_CLASS;
 
     const header = document.createElement("div");
     header.className = "ce-fumble-result-header";
@@ -518,7 +533,10 @@ export function registerCardMutation() {
       block.append(save);
     }
 
-    appendConditions(block, result.conditions);
+    // The one-line conditions summary is what a card gets when it has no execution record — every
+    // card drawn before §7.6 existed, and any entry whose mechanics could not be resolved. With a
+    // record, the block below says the same thing better and saying it twice would be noise.
+    if (!result.execution) appendConditions(block, result.conditions);
     appendProse(block, result.text);
 
     /* An entry's note, when it has one — a line for the GM to adjudicate rather than anything
@@ -531,7 +549,13 @@ export function registerCardMutation() {
       block.append(note);
     }
 
+    /* The mechanics, last on the card and synchronously — the buttons hook runs after this one in
+     * the same pass and looks its mounts up by selector, so they have to exist by the time this
+     * returns (§7.6). Only the decoration inside is async. */
+    renderExecution(block, result.execution, { scope: CRIT_RESULT_CLASS, message });
+
     (root.querySelector(".chat-card") ?? root.querySelector(".message-content") ?? root).appendChild(block);
+    bindDamageAnchors(root, message, (m) => getCritResult(m)?.execution);
   });
 
   Hooks.on("renderChatMessageHTML", (message, html) => {
@@ -539,10 +563,14 @@ export function registerCardMutation() {
     if (!result) return;
 
     const root = html instanceof HTMLElement ? html : html?.[0];
-    if (!root || root.querySelector(".ce-fumble-result")) return;
+    if (!root) return;
+    if (root.querySelector(`.${FUMBLE_RESULT_CLASS}`)) {
+      bindDamageAnchors(root, message, (m) => getFumbleResult(m)?.execution);
+      return;
+    }
 
     const block = document.createElement("div");
-    block.className = "ce-fumble-result";
+    block.className = FUMBLE_RESULT_CLASS;
 
     const header = document.createElement("div");
     header.className = "ce-fumble-result-header";
@@ -559,7 +587,7 @@ export function registerCardMutation() {
     name.textContent = result.name;
 
     block.append(header, name);
-    appendConditions(block, result.conditions);
+    if (!result.execution) appendConditions(block, result.conditions);
     appendProse(block, result.text);
 
     if (result.note) {
@@ -569,7 +597,10 @@ export function registerCardMutation() {
       block.append(note);
     }
 
+    renderExecution(block, result.execution, { scope: FUMBLE_RESULT_CLASS, message });
+
     const container = root.querySelector(".chat-card") ?? root.querySelector(".message-content") ?? root;
     container.appendChild(block);
+    bindDamageAnchors(root, message, (m) => getFumbleResult(m)?.execution);
   });
 }

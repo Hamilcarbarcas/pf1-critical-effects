@@ -29,6 +29,7 @@
 
 import { MODULE_ID } from "../const.mjs";
 import { BLEED_CONDITION, CONDITION_DURATION_UNITS, bleedKind } from "../catalog/schema.mjs";
+import { showDice } from "./dice.mjs";
 
 /** pf1-bleed-effects' API, or null when it isn't there to ask. */
 export function bleedApi() {
@@ -40,38 +41,46 @@ export function bleedApi() {
 export const conditionLabel = (id) => pf1.registry.conditions.get(id)?.name || id;
 
 /**
- * How many seconds a duration descriptor is worth, rolling its formula if it has one.
+ * How long a duration descriptor lasts, rolling its formula if it has one — and handing back the
+ * `Roll` so the caller can put the dice on the table.
  *
- * Returns null for "no duration" — a condition that stays until something takes it off — which is
- * a real and common answer, not a failure. A formula that will not evaluate also lands here rather
- * than throwing: an unparseable `1d4 rouns` should cost the entry its timer, not the whole
+ * `timing` is null for "no duration" — a condition that stays until something takes it off — which
+ * is a real and common answer, not a failure. A formula that will not evaluate lands there too
+ * rather than throwing: an unparseable `1d4 rouns` should cost the entry its timer, not the whole
  * resolution.
  *
+ * **No roll data, deliberately.** A duration is a bare number or a simple die — `1d4 minutes` —
+ * and never a scaling expression. Passing roll data would invite `@cl`-style formulas that the
+ * validator's own pattern rejects anyway, so the two limits agree rather than one silently
+ * catching what the other let through.
+ *
  * @param {{ value: number|string, units: string }} [duration]
- * @returns {Promise<{ seconds: number, rolled: number, label: string }|null>}
+ * @returns {Promise<{ timing: { seconds: number, rolled: number, label: string }|null, roll: Roll|null }>}
  */
-export async function durationSeconds(duration) {
-  if (!duration) return null;
+export async function rollDuration(duration) {
+  if (!duration) return { timing: null, roll: null };
 
   const per = CONDITION_DURATION_UNITS[duration.units];
-  if (!per) return null;
+  if (!per) return { timing: null, roll: null };
 
   let rolled;
+  let roll = null;
+
   if (typeof duration.value === "number") {
     rolled = duration.value;
   } else {
     try {
-      const roll = await new Roll(String(duration.value)).evaluate();
+      roll = await new Roll(String(duration.value)).evaluate();
       rolled = roll.total;
     } catch (err) {
       console.error(`${MODULE_ID} | condition duration "${duration.value}" would not roll:`, err);
-      return null;
+      return { timing: null, roll: null };
     }
   }
 
   rolled = Math.max(1, Math.round(Number(rolled) || 0));
   const plural = rolled === 1 ? duration.units : `${duration.units}s`;
-  return { seconds: rolled * per, rolled, label: `${rolled} ${plural}` };
+  return { timing: { seconds: rolled * per, rolled, label: `${rolled} ${plural}` }, roll };
 }
 
 /**
@@ -83,13 +92,20 @@ export async function durationSeconds(duration) {
  *
  * @param {Actor} actor
  * @param {object} condition  a validated descriptor: { id, duration?, bleed? }
+ * @param {object} [opts]
+ * @param {object|null} [opts.timing]  a pre-rolled duration from `rollDuration`. Passing it is how
+ *   `applyConditions` gets every die of one apply press into a single animation — the roll has
+ *   already happened by the time this runs. Omitting it rolls here, for a direct caller with one
+ *   condition and nothing to pool it with.
  * @returns {Promise<string|null>} a one-line summary of what was applied, or null if nothing was
  */
-export async function applyCondition(actor, condition) {
+export async function applyCondition(actor, condition, { timing } = {}) {
   const { id } = condition ?? {};
   if (!actor || !id) return null;
 
-  const timing = await durationSeconds(condition.duration);
+  // `undefined` means "not pre-rolled"; an explicit null means "pre-rolled, and there is no
+  // duration". The two must not collapse, or a pre-rolled untimed condition would be re-rolled.
+  if (timing === undefined) ({ timing } = await rollDuration(condition.duration));
 
   /* An AE update object, not a boolean: this is the whole of what native condition durations
    * needed. `startTime` is set explicitly rather than left to Foundry because expireActiveEffects
@@ -145,9 +161,27 @@ export async function applyCondition(actor, condition) {
  * @returns {Promise<string[]>} summaries of what actually landed
  */
 export async function applyConditions(actor, conditions = []) {
+  const list = conditions ?? [];
+
+  /* Every duration is rolled BEFORE anything is applied, so all of one press's dice go into one
+   * animation. Rolling inside the apply loop instead would animate 1d4 rounds of dazed, apply it,
+   * then animate 1d4 minutes of deafened — two throws for one blow, with a condition landing in
+   * between them. */
+  const timings = [];
+  const rolls = [];
+  for (const condition of list) {
+    const { timing, roll } = await rollDuration(condition.duration);
+    timings.push(timing);
+    if (roll) rolls.push(roll);
+  }
+
+  // Awaited, so the conditions land as the dice come to rest rather than before anyone has read
+  // them. Bare-number durations produce no roll and therefore no animation.
+  await showDice(rolls);
+
   const applied = [];
-  for (const condition of conditions ?? []) {
-    const summary = await applyCondition(actor, condition);
+  for (const [index, condition] of list.entries()) {
+    const summary = await applyCondition(actor, condition, { timing: timings[index] });
     if (summary) applied.push(summary);
   }
   return applied;
@@ -166,11 +200,28 @@ export async function applyConditions(actor, conditions = []) {
 export function describeConditions(conditions = []) {
   return (conditions ?? [])
     .map((c) => {
-      const label = conditionLabel(c.id);
-      if (!c.duration) return label;
-      const { value, units } = c.duration;
-      const plural = value === 1 ? units : `${units}s`;
-      return `${label} (${value} ${plural})`;
+      const duration = durationLabel(c.duration);
+      return duration ? `${conditionLabel(c.id)} (${duration})` : conditionLabel(c.id);
     })
     .join(", ");
 }
+
+/**
+ * A duration as **authored** — `1d4 minutes`, not the number a roll would produce.
+ *
+ * The distinction is the whole reason this is separate from `rollDuration`: that one rolls,
+ * because it is applying the condition; this one does not, because it is labelling one that has
+ * not been applied yet. Rolling here would either mislead (the applied value differs) or commit
+ * (the preview becomes the value).
+ *
+ * @param {{ value: number|string, units: string }} [duration]
+ * @returns {string|null} null for a condition that lasts until something removes it
+ */
+export function durationLabel(duration) {
+  if (!duration) return null;
+  const { value, units } = duration;
+  return `${value} ${value === 1 ? units : `${units}s`}`;
+}
+
+/** The icon PF1 draws for a condition, for a card that wants to name one. */
+export const conditionIcon = (id) => pf1.registry.conditions.get(id)?.texture || null;

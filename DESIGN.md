@@ -17,7 +17,8 @@ Everything below is about the framework that content plugs into.
 | Where the code lives | Grow the existing `pf1-critical-effects` module from content-only into code + content. |
 | Effect storage | Versioned **JSON catalog** in the module — a flat entry list plus one 12-row table per damage type × anatomy × body part (§3). Self-contained as of v5: prose lives in the entry, not in a journal. A **buff compendium** carries the mechanics that need an Item. |
 | Content authoring | A **tagged pool** (`data/pool.json`) that generates the tables (§3). One effect tagged for several damage types and body parts covers many rows, so the grid is saturated by a few hundred effects rather than one per row. |
-| Mechanical effects | Two named fields, not a registry (§6): `conditions` for PF1 statuses with native durations, `buff` for anything needing an Item. A typed-outcome framework was built here and removed. |
+| Mechanical effects | Named fields, not a registry (§6): `conditions` for PF1 statuses with native durations, `buff` for anything needing an Item, `damage` for a damage instance of its own. A typed-outcome framework was built here and removed. |
+| Saves | One optional integer per entry (§6). Always Fortitude, DC always the attack's pre-reduction non-critical damage, so `save` is a DC multiplier and nothing else. A save splits the entry into two outcome branches (`onFail`) and **both** are offered on the card regardless of what was rolled. |
 | Content strategy | **Prose-first.** An entry with `id` and `name` is complete; `text`, `note`, `conditions` and `buff` are additive and get attached incrementally over time. |
 | Player interaction | GM-run **dialog** + player-rolled roll-requests; the player's only decisions are the dice and a called shot. *(Revised twice during phase 7 — the resolution was originally a persistent chat card, and luck-point spending was built and then removed; see §7.2 and §7.3.)* |
 | First shippable slice | **Fumble path end-to-end.** |
@@ -171,6 +172,16 @@ manual resolver and the automated flow share one code path.
 > by hand. The pool is emptied in the same change: every shipped journal and effect was a
 > placeholder, so there was nothing to migrate and the content track restarts against the new shape.
 
+> **Revised again in phase 13.** `version: 6` adds the **execution** fields — `damage`, `save` and
+> `onFail`. Two of them reverse earlier decisions and the third is new. Immediate damage was cut in
+> phase 12 on the reasoning that `@Damage[…]` in an entry's prose covers it; writing the content
+> disproved that, because a critical effect's damage is an *independent damage instance* with its
+> own type, and an enricher button gives no total, no type row and no memory of who the target was.
+> `save` is the piece the content had been writing as prose all along — most of the grave rows are
+> "Fort save or …" — and `onFail` is what a save needs to be worth rolling: a second, complete set
+> of mechanics for the failed branch. No migration: every v5 entry is a valid v6 entry with no save
+> and no damage.
+
 **Why the journals went.** They cost a compendium, a drift-lint, an import tool and a UUID in every
 entry, and bought a click-through. The prose is a paragraph — it belongs on the card, next to the
 result, where it is read. Owning it also means it goes through PF1's enricher, so `@Bleed[2d6;deep=20]`,
@@ -180,7 +191,7 @@ effect a GM adjudicates, `conditions` is for the half that should just happen.
 
 ```jsonc
 {
-  "version": 5,
+  "version": 6,
   "entries": [
     {
       "id": "concussed-ear",                  // stable slug; the join key for everything
@@ -191,7 +202,21 @@ effect a GM adjudicates, `conditions` is for the half that should just happen.
       "conditions": [                         // §6 — OPTIONAL; PF1 statuses, applied natively
         { "id": "dazed", "duration": { "value": 1, "units": "round" } },
         { "id": "deaf", "duration": { "value": "1d4", "units": "minute" } }
-      ]
+      ],
+      "damage": null,                         // §6 — OPTIONAL; [{ formula, type }], own instance
+      "save": null,                           // §6 — OPTIONAL; Fort DC multiplier, 1 or 2
+      "onFail": null                          // §6 — OPTIONAL; the failed branch, channel by channel
+    },
+    {
+      "id": "shattered-eye-socket",           // the same three fields, in use
+      "name": "Shattered Eye Socket",
+      "text": "<p>…</p>",
+      "note": null,
+      "damage": [{ "formula": "2d6", "type": "piercing" }],   // applies either way
+      "buff": "Blinded Eye",                  // the SAVED outcome, once `save` is present
+      "conditions": [{ "id": "blind" }],
+      "save": 1,                              // Fort, DC = the attack's damage; 2 doubles it
+      "onFail": { "buff": "Blinded Eye (Permanent)" }         // overrides `buff`; inherits the rest
     }
   ],
   "tables": {
@@ -610,19 +635,29 @@ no total to look anything up with.
 > rest were a registry, four handlers and a reversible-descriptor protocol standing in for "create
 > this buff". What replaced it is two named fields.
 
+> **Extended in phase 13.** A third channel, `damage`, and a save layer over all three. The
+> "one button, not two" rule below survives contact with the save but is no longer literally one
+> button — a save-carrying entry offers **two**, one per branch, both always live. The reasoning
+> for that is at "Both branches, always" and it is the one place this design deliberately declines
+> to automate something it easily could.
+
 Catalog entries eventually need to *do* things, not just print prose — but they don't need to on
 day one. The design constraint that follows: **an entry with no mechanics must be a first-class
 citizen, not a degraded one.** The card renders the same, the prose reads the same, the only
 difference is that the Apply button doesn't appear.
 
-An entry has **two independent mechanical channels**, and the split is about what each is good for:
+An entry has **three independent mechanical channels**, and the split is about what each is good for:
 
 | | Field | What it is | Dependency |
 |---|---|---|---|
 | **Conditions** | `conditions` | PF1 statuses, with durations | none — bare PF1 |
 | **Buff** | `buff` | an Item with changes, context notes, a healing lifecycle | astora-mod |
+| **Damage** | `damage` | a damage instance of its own, typed, rolled on Confirm | none — bare PF1 |
 
-Neither is required, both may be present, and either may be missing without touching the other.
+None is required, any combination may be present, and each may be missing without touching the
+others. Over the top of all three sits **one optional save** (`save`) which, when present, splits
+the entry into two outcome branches — the fields above being the *saved* branch, and `onFail`
+overriding them for the failed one (see "The save, and the two branches").
 
 ### Conditions — native, and why that matters
 
@@ -695,12 +730,133 @@ There is no `persists` / "bleed lasts" flag. That distinction exists in pf1-blee
 *buff* supplying bleed has to say whether the wound outlives it; a condition applied directly has no
 such ambiguity — a duration means timed, its absence means until cleared.
 
-### One button, not two
+### Damage — an independent instance
 
-Both channels are offered by a **single** `Apply` button on the card (`flow/effect-apply.mjs`). The
+`damage` is an array of `{ formula, type }`, one entry per part, and `type` is **always authored** —
+a `pf1.registry.damageTypes` id, the same vocabulary the tables are keyed by. It is not inherited
+from the triggering attack, because the cases that want it are the ones where it differs: a
+ruptured organ bleeds, a shattered joint grinds, and neither is the sword's slashing.
+
+**It is not PF1's critical damage and must never be confused with it.** The critical column on the
+attack card is the weapon's own multiplied damage, which §9 defers and reinjects. This is a
+*separate instance*, frequently of a different type, that happens to have been caused by the same
+blow — so it gets its own damage table below the effect, and nothing here writes to
+`message.system.rolls`.
+
+| | Decision |
+|---|---|
+| **Rolled** | on **Confirm**, against the **attacker's** roll data — §7.2's "dice are thrown as late as they can be". An abandoned resolution leaves no orphaned roll. |
+| **Animated** | `game.dice3d.showForRoll(pool, game.user, true)`, the same broadcast `flow/explosion.mjs` and the deferred crit damage already use. |
+| **Stored** | serialised into the result flag, so every client draws the same numbers and a reload does not lose them. |
+| **Rendered** | as the markup PF1 emits for a damage-only attack — the `th.attack-damage` header with the total and its two apply anchors, one `damageRow` per part through `damage-type-visual.hbs`. Built rather than referenced, but built to match, so it inherits the system's own styling and `roll.toAnchor()` gives the expandable breakdown for free. |
+| **Applied** | by our own handler, calling the **static** `pf1.documents.actor.ActorPF.applyDamage(value, { instances, message, … })` with `DamagePartModel` instances built from the authored types — so damage reduction and energy resistance see the real types. |
+
+**Why the static, specifically.** Little Helper's apply-damage sanity check — the confirmation that
+appears when you apply to a token that was not a target of the attack — is a libWrapper wrap of
+`ActorPF.applyDamage` itself (`apply-damage-sanity-check.mjs`). Routing through it and passing
+`options.message` earns that dialog with no work at all. Damage lands on the **canvas selection**,
+like any other damage row on any other card; there is no auto-targeting of the recorded victim,
+because the whole point of the confirmation is that the GM sometimes means to hit someone else.
+
+The one gap this leaves is honest and small: Little Helper reads the target list from
+`message.system.targets`, which a **standalone** result card (§7.5) does not have, so there is
+nothing to compare a selection against and the check silently no-ops. Attack-card resolutions —
+every automated crit — are covered.
+
+### The save, and the two branches
+
+Every save in this catalog is a **Fortitude** save, and every DC is the same number: the
+**pre-reduction, non-critical damage total** of the attack that caused the critical. So the entry
+does not carry a save type and does not carry a DC. It carries `save`, an integer **DC
+multiplier** — `1` for the DC, `2` for the doubled DC most of the 13+ rows call for, absent for no
+save at all.
+
+**Why pre-reduction.** Post-reduction damage is the better *rule* and a considerably worse
+*implementation*: it isn't known at Confirm, it differs per target, and it would leave the DC
+undefined until someone pressed an apply button — which is exactly when the save needs to already
+have a number. Rolled damage is on the card, is the same for everyone, and is fixed the moment the
+resolution commits.
+
+Crit damage is deferred at that point (§9), so the card's damage total *is* the non-critical
+total — but it is read as the normal parts of the attack that critted rather than as "whatever the
+card says", because relying on the suppression to define the DC would make a settings change
+silently rewrite it.
+
+**The standalone resolver has no attack**, and therefore no damage to derive from. When a
+hand-driven resolution lands on an entry that carries a save, the GM is **prompted for the DC** at
+the Result stage. A fabricated DC that looks derived would be worse than an empty field.
+
+**Two branches, overriding per channel.** With `save` present, the entry's own `buff`,
+`conditions` and `damage` are the **saved** outcome, and `onFail` is an object of the same three
+fields describing the **failed** one. A channel `onFail` names replaces the base; a channel it omits
+falls through. So damage that happens either way is written once at the top, a buff that differs is
+written twice, and a failure that means *no* buff writes an explicit `"buff": null`.
+
+That rule is worth stating in the negative too: `onFail` is not additive. *Shattered Eye Socket* is
+"blinded until healed" on a save and "permanently blinded" on a failure — alternatives, not a
+base plus an extra — and a merging rule would apply both.
+
+**Death is not this mechanism.** The 13+ save-or-die stays exactly what it is: a printed
+`Fort DC N or die` line with no roll and no button (`catalog.effectAt`). This module does not
+implement death, and a save channel that offered to is a different feature with different
+consequences.
+
+The save itself is an **embedded roll request**, sitting on the result card between the two
+branches — single target, DC shown, results shown, bulk controls suppressed:
+
+```js
+await game.pf1RollRequests.embed(message, {
+  slot: "ce-crit-save",                       // flag key: /^[\w-]+$/, no dots
+  type: "save", key: "fort", dc,
+  mode: "targeted",
+  targetedActors: [{ id: tokenDoc.id }],
+  showDC: true, showResults: true,
+  controls: false,                            // rows only — no bulk row, title or GM footer
+  autoRoll: !hasPlayerOwner,                  // a victim with nobody to click it rolls GM-side
+});
+```
+
+This is roll-requests' embedded-request API (`api.md` § Embedded requests), which exists precisely
+because the mechanism that converts save-based attack cards cannot serve this: it works by
+rewriting `message.content`, and this module's cards are drawn from flags at render time.
+`autoRoll` is the whole of the NPC case — `embed()` calls `bulkRollTargeted` itself, dialog-free.
+
+Results arrive on the existing `pf1RollRequests.rollComplete` hook, which now carries `slot`;
+filtering on it is what separates our save from any other request on the same message.
+
+One restriction to know about rather than work around: an embed's `rollMode` accepts only `roll`
+and `publicblind`, because the whisper modes work by restricting delivery of a *message* the embed
+does not own. Our save is public, so this costs us nothing — and `publicblind` is the option if a
+hidden-total save is ever wanted.
+
+### saveDC on a delivered buff
+
+Every buff delivered by this module is stamped with `saveDC` — **the same number as the save DC
+above**, the attack's pre-reduction non-critical damage — whether or not the entry has a save.
+Injury buffs need it for their own recovery checks, and having one derivation under one name means
+a buff script never has to ask which DC it got.
+
+This costs nothing to build: `saveDC` is already a first-class field of astora-mod's buff delivery
+payload. `buildStamp` puts it on the applied buff as `@sourceInfo.saveDC`, and the dictionary
+mirror republishes it as `@dFlags.<buffTag>.saveDC`, which is the spelling that survives the hop
+into a roll-bonuses conditional (`buff-delivery-apply.mjs`). We pass one payload field.
+
+Like everything else on the buff channel, it degrades with astora-mod: no delivery, no stamp, and
+the entry still names itself, shows its prose, applies its conditions and rolls its damage.
+
+### One button per branch
+
+Both the buff and the condition channel are offered by a **single** `Apply` button (per branch) on
+the card (`flow/effect-apply.mjs`). The
 GM's decision is "did this land", not "did the buff half of this land"; a card with `Apply Broken
 Arm` and `Apply Conditions` side by side invites applying half a critical, which no entry is
 written to mean.
+
+**Damage is not on that button**, and that is not an inconsistency. Applying damage is a genuinely
+separate decision with its own dialog, its own reduction handling and its own notion of who is
+selected — it is the one channel PF1 already has an answer for, and the answer is the two hammer
+anchors in the damage table's own header. Putting it on the Apply button would mean rebuilding that
+and losing the confirmation that comes with it.
 
 Conditions are applied first, before buff delivery opens its Refresh/Overwrite prompt — so if the
 GM cancels that prompt, the conditions the critical inflicted are still on the target rather than
@@ -714,6 +870,29 @@ still applies what that card actually resolved even after the catalog has been r
 The fumble flow offers the same button, for the same reason: a snapped bowstring is prose, but a
 fumbled swing that leaves you prone is a condition. There the fumbler is both target and source —
 nobody did it to them.
+
+### Both branches, always
+
+A save-carrying entry puts **both** apply buttons on the card — `Apply · Saved` and
+`Apply · Failed` — and **neither is gated on what the save actually rolled.** The save result is
+recorded on the card when it arrives; it does not enable, disable, hide or relabel anything.
+
+This is deliberate, and it is the design declining to automate something it could trivially
+automate. The obvious build is "the save comes back, the right button lights up". The reason not to
+is that the roll is not the last word on the outcome:
+
+- A player spends a luck point and turns a failure into a success.
+- A GM rolls a save for an NPC, gets it, and decides the creature eats the full result anyway.
+- The save is rolled late, or by the wrong person, or twice.
+
+Every one of those is a table making a call the dice already answered differently, and a card that
+has decided which button is legal has taken that call away. Both buttons stay live, the GM presses
+the one that matches what happened, and the recorded roll sits above them as the reason.
+
+It also removes an entire class of state from the card. There is no pending/passed/failed machine,
+no re-render on result, and no question of what a card looks like when the save is never rolled at
+all — which, given a save request waits on a human, is a state the card would otherwise have to
+have an opinion about.
 
 ### Why the button and not the dialog
 
@@ -737,10 +916,18 @@ finds a copy already on the actor, and lets a GM keep their buffs in a pack of t
 
 ### What is deliberately not here
 
-- **Immediate damage, ability damage, delegate-to-another-entry, macro.** All were in the removed
-  registry. `@Damage[…]` in an entry's `text` covers the first two as a GM-clicked button, which is
-  the right amount of automation for a number someone has to agree to. The other two had no content
-  asking for them.
+- **Delegate-to-another-entry, macro.** Both were in the removed registry and no content has asked
+  for either. *(Immediate damage was on this list until phase 13 — see `damage`, above.)*
+- **Ability damage as a channel.** The content that wants it — Strength and Dexterity damage on a
+  shattering force critical — expresses it through the branch's buff, which is where an ongoing
+  ability penalty belongs anyway. `@Damage[…]` in an entry's prose stays available for the one-off
+  case a GM should agree to before it happens.
+- **Save types other than Fortitude, and DCs from anywhere but the attack's damage.** The content
+  was reworked to fit this rather than the schema widened to fit the content, and the payoff is
+  large: no save block, no DC formula, no per-entry roll data — one integer.
+- **Per-channel save gating.** "The damage happens regardless, the condition is save-negates" is
+  expressible today only by writing the channel into both branches. If content ever genuinely needs
+  finer gating, `onFail`'s per-channel override is the seam to widen; nothing else would move.
 - **Undo.** Applying is now one button that creates conditions and at most one buff, all of them
   visible on the sheet and removable there. A bespoke undo protocol was machinery for a
   multi-document write that no longer happens.
@@ -1072,6 +1259,102 @@ carrying the flag, and `.card-buttons` is in the card so §6's Apply-buff button
 The card's speaker is the source, but with the alias replaced by the name §10 already sanitised,
 because `getSpeaker` would otherwise stamp an obscured NPC's real name onto a public card.
 
+### 7.6 The execution block (phase 13)
+
+What §6's three channels actually look like on the card. Everything here is drawn at render time
+from the `critResult` flag, like the rest of the block — no stored HTML, one appearance for every
+client, intact after a reload.
+
+```
+┌ Critical Effect · left arm · row 9 ───────────────┐
+│ Shattered Eye Socket                               │  name
+│ <prose>                                            │  text, enriched
+│ <note>                                             │  the GM's line
+│ ── Fortitude DC 14 ──────────────────────────────  │  embedded roll request (§6)
+│    Kobold Sniper   d20 11 → 17   failed            │  its one target row
+│  On a success ───────────────────────────────────  │
+│    ▸ [img] Blinded Eye                             │  buff header, click to expand
+│    ⚠ Blinded                                       │  condition header
+│    [ Apply · Saved ]                               │
+│  On a failure ───────────────────────────────────  │
+│    ▸ [img] Blinded Eye (Permanent)                 │
+│    [ Apply · Failed ]                              │
+│  Effect Damage  8                                  │  PF1's damage-only table markup
+│    8  ⚔ Piercing                                   │
+└────────────────────────────────────────────────────┘
+```
+
+**"Effect Damage", not "Damage".** On an attack card this table sits below PF1's own, and two
+tables both headed *Damage* invite applying the wrong one — the weapon's damage and the effect's are
+different instances, frequently of different types, and only one of them has already been applied.
+
+Order within a branch is **buff, conditions, button**; damage is last and sits outside the branches
+unless `onFail` overrides it, in which case each branch carries its own. An entry with no save has
+no branch headings — just buff, conditions, button, damage.
+
+**The buff header** is PF1's own item-card markup (`header.card-header.type-color.type-buff` plus a
+`.card-content`), so it renders as the buff-coloured bar the system already draws and needs no
+styling of ours. Name, image and description are **snapshotted into the result flag** at
+resolution: one lookup on the GM's client, instant and identical everywhere afterwards, correct
+even when astora-mod is absent and the buff therefore cannot be delivered. It carries a link to the
+item in this module's `effect-buffs` pack for anyone who wants the live version.
+
+The lookup reads **that pack and, by default, only that pack**, with a miss reported to the GM. A
+name found elsewhere is as likely to be a coincidence as a copy — someone else's *Broken Arm* drawn
+on our card as though it were ours is a worse failure than a header that does not appear, and it is
+the failure nobody notices. A world that genuinely keeps its own copies elsewhere sets
+`searchAllBuffPacks` and gets the wide sweep. The setting governs the **snapshot only**: delivery is
+`applyBuffTo`, which searches astora-mod's own configured sources, so turning it on is how a GM
+makes the header agree with what will be delivered rather than how they enable anything.
+
+Its click handler is **ours, not PF1's.** `pf1.utils.chat.onToggleDescription` finds the
+`.card-content` under the closest `.message-content` — which on an attack card is the *item's*
+description, not the buff's, so reusing it would expand the wrong thing.
+
+**The condition header** is icon, name and the authored duration, and does not expand. PF1's
+registry carries a `journal` uuid per condition and an expandable SRD description is therefore
+available, but a wound's condition is one word the table already knows; the duration is the part
+that needs saying and the SRD text would not say it. This replaces the older one-line
+`⚠ stunned 1 round` summary rather than joining it.
+
+**The buttons need a placement they do not currently have.** `addButtons` appends into
+`.card-buttons`, which on an attack card is PF1's own footer — nowhere near the bottom of the
+result block, and two branches now need two distinct homes. So a descriptor gains an optional
+**mount selector**, the result renderer emits a slot per branch, and the two registrations swap
+order (`registerCardMutation` before `registerCardButtons`) so the slots exist before the buttons
+look for them. Descriptors with no mount keep landing exactly where they do today.
+
+**The save widget** is `renderEmbed(message, { slot: "ce-crit-save", into })`'d into a container the
+block emits — called from our own render hook, after the container exists, so there is no
+hook-ordering dependency between the two modules in either direction. It replaces the container's
+contents, which is exactly right for a block that rebuilds itself on every draw.
+
+Two details of the call to respect:
+
+- **It throws** on a missing container or a bad slot, rather than warning. So it goes inside the
+  same per-decorator `try`/`catch` the rest of `card-mutate.mjs` uses — a save widget that fails to
+  draw must not cost the card its effect, its buttons or its damage.
+- **A closed or absent slot empties the container and returns `null`**, so "no save on this entry"
+  and "the save was closed" need no special case here; not calling it at all is equally fine.
+
+An embedded widget is tagged `data-arr-embed` and roll-requests' own whole-card hook explicitly
+skips it (`.arr-card:not([data-arr-embed])`). That matters for one real case: a **save-based spell
+that crits**. Its attack card has already been converted into a whole-card request by the auto-save
+request, and our block — with our embed inside it — then lands on that same message. The two
+coexist by construction.
+
+The embed API is a **version** dependency, not merely a module one: pf1-roll-requests is already
+hard-required (§0), but a copy predating `embed()` would leave the save with nowhere to go. So the
+slot feature-detects `game.pf1RollRequests.embed` and falls back to a printed `Fortitude DC 14`
+line; the branches, the buttons and the recorded result never depended on the widget. `module.json`
+should carry the minimum version alongside it, so the fallback is a safety net rather than the
+thing a stale install silently gets.
+
+**Fumbles get all of it**, through the same renderer: a fumble entry may carry damage and a save
+exactly as an effect entry may, with the fumbler as both target and source. **Lethal draws get none
+of it** — §7.4 is flavour for a death that has already happened, mechanically inert by design, and
+nothing in it has an outcome to apply.
+
 ---
 
 ## 8. Migrating dedicated healing out of astora-mod
@@ -1213,6 +1496,8 @@ data on the way past. ckl-roll-bonuses registers a WRAPPER on the same method
 | **6** | **Dedicated healing migration** out of astora-mod, incl. socket-channel rename + buff script-call retargeting. Removes the last content-level astora coupling. | 5 |
 | **7** | **Automated crit flow.** Attack-card trigger, roll-request sequence wired to the dialog, crit-damage suppression + reinjection (§9), card mutation, lethal card button. | 4 |
 | **12** | **Self-contained catalog** (§3 v5, §6). Journals and their two packs deleted, `text` and `conditions` added, pool emptied, apply button covers both channels. | 5 |
+| **13a** | ✅ **Embedded roll requests** in pf1-roll-requests — non-destructive, slot-namespaced, explicitly placed. **Built and shipped**; reference is that module's `api.md` § Embedded requests, design record its `EMBED-SPEC.md`. The crit save is its first consumer. | — |
+| **13** | **Execution** (§3 v6, §6, §7.6). Catalog gains `damage`, `save`, `onFail`. Damage rolled on Confirm and rendered as its own instance with PF1's apply anchors; buff and condition headers; two branch buttons on a mount selector; `saveDC` stamped on delivered buffs; the save embedded via 13a, with a printed-DC fallback for installs predating it. | 12, 13a |
 | **∞** | **Content track.** Pool entries (id, name, rank, slots, damage types, `text`), then the twelve rows of each damage-type × location table put in severity order. Runs from phase 1 onward, independent of everything else. `conditions`, `note` and `buff` get attached opportunistically, entry by entry. | 0 |
 
 The reordering versus a mechanics-first build is deliberate: **phase 4 is the goal post.** After

@@ -388,6 +388,119 @@ export function validateCondition(condition, where) {
   return problems;
 }
 
+// --- damage (§6) ------------------------------------------------------------
+
+/**
+ * Damage types a `damage` part may be authored as.
+ *
+ * Wider than `DAMAGE_TYPES`, which is the list the *tables* are keyed by. A critical effect deals
+ * damage as its own instance and is under no obligation to deal it as one of the eleven types the
+ * grid has tables for — `untyped` and `nonlethal` are both things a wound plausibly does, and
+ * neither is ever going to have a twelve-row table of its own.
+ *
+ * Unknown types are reported and **kept**, not dropped. This module cannot see
+ * `pf1.registry.damageTypes` (it is imported by the Node tools), so an unrecognised id here is at
+ * least as likely to be a type PF1 knows and this list does not; PF1 treats one it genuinely does
+ * not know as untyped, which is a far better outcome than silently losing the damage.
+ */
+export const DAMAGE_PART_TYPES = [...DAMAGE_TYPES, "untyped", "precision", "nonlethal"];
+
+/**
+ * Structural check of one `{ formula, type }` damage part.
+ *
+ * The formula is checked for presence only, not for parseability: there is no Foundry `Roll` here,
+ * and a formula that will not evaluate degrades to no damage at roll time (`resolve/damage.mjs`)
+ * rather than throwing in the middle of a resolution.
+ */
+export function validateDamagePart(part, where) {
+  if (!isPlainObject(part)) return [`${where}: damage part must be an object`];
+
+  const problems = [];
+  if (!isNonEmptyString(part.formula)) problems.push(`${where}: damage part is missing \`formula\``);
+  if (!isNonEmptyString(part.type)) problems.push(`${where}: damage part is missing \`type\``);
+  else if (!DAMAGE_PART_TYPES.includes(part.type)) {
+    problems.push(`${where}: unrecognised damage type "${part.type}"; it will be rolled as authored`);
+  }
+  return problems;
+}
+
+/** Whether a part is usable at all — the test `validateEffects` drops on. An unknown *type* is not. */
+const damagePartIsUsable = (part) => isPlainObject(part) && isNonEmptyString(part.formula) && isNonEmptyString(part.type);
+
+/** Structural check of a whole `damage` array. Absent and empty are both fine. */
+export function validateDamage(damage, where) {
+  if (damage == null) return [];
+  if (!Array.isArray(damage)) return [`${where}: \`damage\` must be an array when present`];
+  return damage.flatMap((part, i) => validateDamagePart(part, `${where} damage part #${i}`));
+}
+
+// --- saves and the failed branch (§6) ---------------------------------------
+
+/**
+ * Structural check of `save` — a **DC multiplier**, not a save descriptor.
+ *
+ * Every save in this catalog is a Fortitude save against the attack's own damage (§6), so there is
+ * no type to author and no DC to author. `1` is that DC, `2` is the doubled DC most of the 13+ rows
+ * call for, and absent is no save at all. The cap is deliberate: a multiplier past 2 is far more
+ * likely to be a DC someone typed into the wrong field than a rule.
+ */
+export function validateSave(save, where) {
+  if (save == null) return [];
+  if (!Number.isInteger(save) || save < 1 || save > 2) {
+    return [`${where}: \`save\` must be 1 (DC) or 2 (doubled DC), or absent for no save`];
+  }
+  return [];
+}
+
+/**
+ * Structural check of `onFail` — the failed branch, which is the same three mechanical channels
+ * again and is validated by exactly the same rules.
+ *
+ * A channel it names **replaces** the base one; a channel it omits falls through. Explicit `null`
+ * therefore means something different from absent: it clears the base channel for this branch.
+ * Neither is checkable here — both are legal shapes — but it is why this cannot simply be a
+ * required-fields check.
+ */
+export function validateOnFail(onFail, where) {
+  if (onFail == null) return [];
+  if (!isPlainObject(onFail)) return [`${where}: \`onFail\` must be an object when present`];
+
+  const problems = [];
+  if (onFail.buff !== undefined && onFail.buff !== null && !isNonEmptyString(onFail.buff)) {
+    problems.push(`${where}: \`onFail.buff\` must be a buff name or null`);
+  }
+  problems.push(...validateConditions(onFail.conditions, `${where} onFail`));
+  problems.push(...validateDamage(onFail.damage, `${where} onFail`));
+
+  for (const key of Object.keys(onFail)) {
+    if (!["buff", "conditions", "damage"].includes(key)) {
+      problems.push(`${where}: \`onFail.${key}\` is not a mechanical channel and will be ignored`);
+    }
+  }
+  return problems;
+}
+
+/**
+ * The salvage pass that mirrors `validateOnFail`'s reporting: keep every channel that is usable,
+ * drop the rows that are not. Same rule the conditions channel has always followed — a bad row
+ * costs the entry that row, never the entry.
+ */
+function keepMechanics(source) {
+  if (source == null) return source;
+  const kept = { ...source };
+  if (Array.isArray(kept.conditions)) {
+    kept.conditions = kept.conditions.filter((c) => !validateCondition(c, "").length);
+  } else if (kept.conditions != null) {
+    kept.conditions = [];
+  }
+  if (Array.isArray(kept.damage)) {
+    kept.damage = kept.damage.filter(damagePartIsUsable);
+  } else if (kept.damage != null) {
+    kept.damage = [];
+  }
+  return kept;
+}
+
 /** Structural check of an entry's whole `conditions` array. Absent and empty are both fine. */
 export function validateConditions(conditions, where) {
   if (conditions == null) return [];
@@ -453,6 +566,12 @@ export const TABLE_ROWS = 12;
  * one: `buff` for anything that needs changes and a lifecycle, `conditions` for the PF1 statuses a
  * wound imposes directly.
  *
+ * **v6 adds `damage`, `save` and `onFail`** (§6). A third mechanical channel — a damage instance of
+ * the entry's own, typed, entirely separate from PF1's critical column — and a save layer over all
+ * three: `save` is a Fortitude DC *multiplier*, and `onFail` is the same three channels again for
+ * the failed branch, overriding the base ones channel by channel. Every v5 entry is a valid v6
+ * entry; all three fields are optional and absent means what it has always meant.
+ *
  * @returns {{ errors: string[], warnings: string[], entries: object[], tables: object,
  *             mortal: object }}
  */
@@ -466,7 +585,7 @@ export function validateEffects(data) {
   const bail = (message) => ({ errors: [...errors, message], warnings, entries, tables, mortal });
 
   if (!isPlainObject(data)) return bail("effects.json: root is not an object");
-  if (data.version !== 5) warnings.push(`effects.json: version is ${data.version}, expected 5`);
+  if (data.version !== 6) warnings.push(`effects.json: version is ${data.version}, expected 6`);
   if (!Array.isArray(data.entries)) return bail("effects.json: `entries` is not an array");
 
   const seen = new Set();
@@ -490,19 +609,40 @@ export function validateEffects(data) {
       continue;
     }
 
-    /* Conditions are reported as WARNINGS and the bad ones dropped, rather than taking the entry
-     * down with them. An entry's name and prose are the part the flow cannot do without; a
-     * condition it cannot apply degrades it to what a text-only entry would have given you, which
-     * is the §0 rule — absence degrades an entry, never the engine. */
-    const conditionProblems = validateConditions(entry.conditions, where);
-    if (conditionProblems.length) {
-      warnings.push(...conditionProblems);
-      // A non-array `conditions` has nothing salvageable in it; anything else keeps the rows that
-      // passed and drops the rows that didn't.
-      const kept = Array.isArray(entry.conditions)
-        ? entry.conditions.filter((c) => !validateCondition(c, where).length)
-        : [];
-      entries.push({ ...entry, conditions: kept });
+    /* Every mechanical channel is reported as a WARNING and the bad rows dropped, rather than
+     * taking the entry down with them. An entry's name and prose are the part the flow cannot do
+     * without; a condition it cannot apply, a damage part it cannot roll or a save it cannot read
+     * degrades it to what a text-only entry would have given you, which is the §0 rule — absence
+     * degrades an entry, never the engine. */
+    const mechanicalProblems = [
+      ...validateConditions(entry.conditions, where),
+      ...validateDamage(entry.damage, where),
+      ...validateSave(entry.save, where),
+      ...validateOnFail(entry.onFail, where),
+    ];
+
+    /* A save with no failed branch is not malformed, it is pointless: both buttons would offer the
+     * same mechanics and the roll would decide nothing. Worth saying out loud, because the likely
+     * cause is an `onFail` that was meant to be written and wasn't. */
+    if (entry.save != null && entry.onFail == null) {
+      warnings.push(`${where}: has a save but no \`onFail\`, so both branches would apply the same thing`);
+    }
+    // The converse is a real error of the same kind, and reads the other way round: a failed branch
+    // nothing can ever reach.
+    if (entry.save == null && entry.onFail != null) {
+      warnings.push(`${where}: has \`onFail\` but no \`save\`, so the failed branch is unreachable`);
+    }
+
+    if (mechanicalProblems.length) {
+      warnings.push(...mechanicalProblems);
+      const kept = keepMechanics(entry);
+      // A `save` that did not validate is dropped outright: there is no partially-usable multiplier,
+      // and a save left in at some guessed value would set a DC nobody authored.
+      if (validateSave(entry.save, where).length) kept.save = null;
+      if (entry.onFail != null) {
+        kept.onFail = isPlainObject(entry.onFail) ? keepMechanics(entry.onFail) : null;
+      }
+      entries.push(kept);
     } else {
       entries.push(entry);
     }
@@ -650,7 +790,7 @@ export function validateFumbles(data) {
   const tables = {};
 
   if (!isPlainObject(data)) return { errors: ["fumbles.json: root is not an object"], warnings, tables, entries };
-  if (data.version !== 3) warnings.push(`fumbles.json: version is ${data.version}, expected 3`);
+  if (data.version !== 4) warnings.push(`fumbles.json: version is ${data.version}, expected 4`);
   if (!Array.isArray(data.entries)) return { errors: ["fumbles.json: `entries` is not an array"], warnings, tables, entries };
   if (!isPlainObject(data.tables)) return { errors: ["fumbles.json: `tables` is not an object"], warnings, tables, entries };
 
@@ -664,16 +804,23 @@ export function validateFumbles(data) {
     if (byId.has(entry.id)) { errors.push(`fumbles.json: duplicate entry id "${entry.id}"`); continue; }
     if (entry.journal != null) warnings.push(`${where}: \`journal\` was removed in v3 — prose belongs in \`text\``);
 
-    // Same treatment as effects: a bad condition is a warning and is dropped, never a reason to
-    // lose the row the d20 has to land on.
+    /* Same treatment as effects, and the same three channels: a fumble can inflict conditions, deal
+     * damage and turn on a save exactly as a critical can (§7.6). A bad row is a warning and is
+     * dropped, never a reason to lose the row the d20 has to land on. */
     let usable = entry;
-    const conditionProblems = validateConditions(entry.conditions, where);
-    if (conditionProblems.length) {
-      warnings.push(...conditionProblems);
-      const kept = Array.isArray(entry.conditions)
-        ? entry.conditions.filter((c) => !validateCondition(c, where).length)
-        : [];
-      usable = { ...entry, conditions: kept };
+    const mechanicalProblems = [
+      ...validateConditions(entry.conditions, where),
+      ...validateDamage(entry.damage, where),
+      ...validateSave(entry.save, where),
+      ...validateOnFail(entry.onFail, where),
+    ];
+    if (mechanicalProblems.length) {
+      warnings.push(...mechanicalProblems);
+      usable = keepMechanics(entry);
+      if (validateSave(entry.save, where).length) usable.save = null;
+      if (entry.onFail != null) {
+        usable.onFail = isPlainObject(entry.onFail) ? keepMechanics(entry.onFail) : null;
+      }
     }
 
     byId.set(usable.id, usable);

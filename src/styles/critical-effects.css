@@ -98,6 +98,128 @@
   opacity: 0.85;
 }
 
+/* --- the execution block (§7.6) -------------------------------------------
+ *
+ * What an entry's mechanics look like on a card: the save, then one or two outcome branches, then
+ * the damage. Deliberately thin — the two pieces that carry real visual weight, the buff header and
+ * the damage table, are PF1's own markup and are left entirely to the system's stylesheet. Adding
+ * rules for them here would mean maintaining a second opinion about what a buff bar looks like.
+ */
+
+.ce-execution {
+  margin-top: 6px;
+}
+
+.ce-save {
+  margin-bottom: 4px;
+}
+
+/* The printed fallback, for an install whose pf1-roll-requests predates the embed API. The live
+   widget renders in the same slot and brings its own styling. */
+.ce-save-line {
+  font-size: var(--font-size-12, 12px);
+  font-weight: bold;
+  letter-spacing: 0.02em;
+}
+
+.ce-save-line > i {
+  opacity: 0.7;
+  margin-right: 0.25em;
+}
+
+/* A branch is a visually separate outcome, because the whole point of two of them is that a GM
+   must not click the wrong one. The rule above each is what carries that separation. */
+.ce-branch + .ce-branch {
+  margin-top: 6px;
+}
+
+.ce-branch-label {
+  margin-bottom: 3px;
+  padding-top: 3px;
+  border-top: 1px solid var(--color-border-light-tertiary, #7a7971);
+  font-size: var(--font-size-11, 11px);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  opacity: 0.75;
+}
+
+.ce-branch-buttons:empty {
+  display: none;
+}
+
+/* --- buff header --------------------------------------------------------- */
+
+.ce-buff-card {
+  margin: 3px 0;
+}
+
+/* Not `.item-name`: PF1 binds its own description toggle to that class anywhere in a message, and
+   on an attack card it would expand the ITEM's description rather than this buff's. */
+.ce-buff-name {
+  flex: 1 1 auto;
+  font-weight: bold;
+}
+
+.ce-buff-name.ce-expandable {
+  cursor: pointer;
+}
+
+.ce-buff-caret {
+  margin-left: 0.35em;
+  font-size: 0.8em;
+  opacity: 0.6;
+}
+
+.ce-buff-link {
+  flex: 0 0 auto;
+  opacity: 0.7;
+}
+
+.ce-buff-description {
+  padding: 3px 6px;
+  font-size: var(--font-size-12, 12px);
+  border: 1px solid var(--color-border-light-tertiary, #7a7971);
+  border-top: none;
+}
+
+.ce-buff-description > :first-child { margin-top: 0; }
+.ce-buff-description > :last-child { margin-bottom: 0; }
+
+/* --- condition headers --------------------------------------------------- */
+
+.ce-condition-header {
+  display: flex;
+  align-items: center;
+  gap: 0.35em;
+  margin: 2px 0;
+  font-size: var(--font-size-12, 12px);
+}
+
+.ce-condition-header > img {
+  flex: 0 0 auto;
+  border: none;
+  object-fit: contain;
+}
+
+.ce-condition-name {
+  font-weight: bold;
+}
+
+.ce-condition-duration {
+  opacity: 0.75;
+  font-variant-numeric: tabular-nums;
+}
+
+/* --- effect damage --------------------------------------------------------
+ *
+ * PF1's own damage-table markup, so the table itself needs nothing from us. The only rule here is
+ * the one that keeps it from sitting flush against the branch above it.
+ */
+
+.ce-damage {
+  margin-top: 4px;
+}
+
 /* The dialog's preview of the same two, inside the dark result panel. */
 .ce-window .ce-result-conditions {
   margin-top: 3px;

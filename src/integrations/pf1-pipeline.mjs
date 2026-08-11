@@ -196,6 +196,29 @@ export function criticalTotal(message, attackIndex = 0) {
 }
 
 /**
+ * The attack's **normal** damage total — the number every critical-effect save is DC'd against
+ * (§6, "The save, and the two branches").
+ *
+ * Deliberately reads `attack.damage` and nothing else. With suppression on, the critical half has
+ * not been rolled when the save DC is derived, so "the card's damage total" would happen to be the
+ * right number — and would silently become the wrong one the moment suppression was switched off
+ * or this ran a moment later in the flow. Naming the normal parts makes the DC mean the same thing
+ * in every configuration.
+ *
+ * **Pre-reduction, by design.** This is what was rolled, not what a target ended up taking: damage
+ * reduction is per-target and is not known until someone presses an apply button, which is after
+ * the save needs its number. §6 records the trade.
+ *
+ * @returns {number|null} null when the attack has no damage rolled at all — an attack that missed,
+ *   or a card that never carried damage — where there is no DC to derive and the GM is asked.
+ */
+export function normalDamageTotal(message, attackIndex = 0) {
+  const rolls = message?.systemRolls?.attacks?.[attackIndex]?.damage;
+  if (!rolls?.length) return null;
+  return Math.max(1, rolls.reduce((total, roll) => total + (roll?.total ?? 0), 0));
+}
+
+/**
  * Put the rolled crit damage where PF1 would have put it.
  *
  * `system.rolls` is a plain ObjectField holding an array, so the whole `rolls` object is read,

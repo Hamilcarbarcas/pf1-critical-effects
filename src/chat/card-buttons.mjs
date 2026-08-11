@@ -44,7 +44,8 @@ export function registerButtonType(type, handler) {
 /**
  * Attach buttons to a message.
  * @param {ChatMessage} message
- * @param {object[]} descriptors  { id?, type, label, icon?, gmOnly?, data? }
+ * @param {object[]} descriptors  { id?, type, label, icon?, gmOnly?, mount?, data? }
+ *   `mount` is a CSS selector for the element the button belongs in — see the render hook.
  */
 export async function addButtons(message, descriptors) {
   if (!message || !descriptors?.length) return;
@@ -89,13 +90,31 @@ export function registerCardButtons() {
     if (!root) return;
 
     // Ride along in the card's own button area when there is one.
-    const container = root.querySelector(".card-buttons") ?? root.querySelector(".chat-card") ?? root;
+    const fallback = root.querySelector(".card-buttons") ?? root.querySelector(".chat-card") ?? root;
 
     for (const descriptor of flag) {
       if (descriptor.gmOnly && !game.user.isGM) continue;
 
       const id = descriptor?.id ?? "";
       if (id && root.querySelector(`.ce-card-btn[data-ce-id="${id}"]`)) continue; // already injected
+
+      /* Where the button goes. A descriptor may name its own container, which is what lets the
+       * execution block (§7.6) put an Apply button *inside* the branch it belongs to rather than in
+       * PF1's footer — with two branches on a card, "the card's button area" is no longer a place
+       * that says which mechanics a click would apply.
+       *
+       * This is why `registerCardMutation` is registered before `registerCardButtons`
+       * (critical-effects.mjs): the block that emits these mounts has to have drawn by the time we
+       * look for them. A mount that still isn't there is skipped rather than falling back to the
+       * footer — a button whose branch heading failed to render is a button nobody can read. */
+      let container = fallback;
+      if (descriptor.mount) {
+        container = root.querySelector(descriptor.mount);
+        if (!container) {
+          console.error(`${MODULE_ID} | card-buttons: no "${descriptor.mount}" on ${message.id} to mount "${descriptor.label}" in`);
+          continue;
+        }
+      }
 
       const btn = document.createElement("button");
       btn.type = "button";

@@ -328,6 +328,7 @@ export function fumbleResultTable(tableKey) {
 export async function lint() {
   const report = {
     conditions: { unknownToPf1: [], used: {}, bleedWithoutModule: [] },
+    mechanics: { damage: 0, saves: 0, savesWithoutBranch: [], damageTypesUnknownToPf1: [] },
     tables: { written: 0, placeholder: 0, percent: 0, missing: [], byTable: {} },
     mortal: { written: 0, of: 0, missing: [] },
     fumbles: { unreferencedEntries: [] },
@@ -351,6 +352,29 @@ export async function lint() {
       if (condition.id === "bleed" && condition.bleed && !bleedLive) {
         report.conditions.bleedWithoutModule.push(entry.id);
       }
+    }
+  }
+
+  /* The v6 channels, counted the same way and for the same reason — the useful figure is how much
+   * of the grid has grown mechanics, not whether any one entry is well-formed (the validator has
+   * already said so at load).
+   *
+   * The damage-type check is the exact counterpart of the condition drift check above:
+   * `DAMAGE_PART_TYPES` is a static list in a module that cannot see `pf1.registry.damageTypes`,
+   * so a type PF1 does not recognise is reported here rather than discovered as an instance that
+   * silently applied as untyped. */
+  for (const entry of [...effects.entries, ...fumbles.entries]) {
+    for (const branch of [entry, entry.onFail]) {
+      for (const part of branch?.damage ?? []) {
+        report.mechanics.damage += 1;
+        if (!pf1.registry.damageTypes.get(part.type)) {
+          report.mechanics.damageTypesUnknownToPf1.push({ id: entry.id, type: part.type });
+        }
+      }
+    }
+    if (entry.save != null) {
+      report.mechanics.saves += 1;
+      if (entry.onFail == null) report.mechanics.savesWithoutBranch.push(entry.id);
     }
   }
 
