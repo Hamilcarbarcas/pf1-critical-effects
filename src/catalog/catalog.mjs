@@ -23,7 +23,7 @@ import {
   validateAnatomy,
   validateLethal,
   ANATOMIES,
-  CONDITION_IDS,
+  ALL_CONDITION_IDS,
   DAMAGE_TYPES,
   GENERAL_SLOT,
   MOVEMENT_CONDITIONS,
@@ -380,9 +380,13 @@ export async function lint() {
 
   /* The other direction: conditions PF1 knows about that our static list does not. Catches a
    * system update that ADDS one, which is otherwise invisible until an author tries to use it and
-   * the validator rejects a perfectly good id. */
+   * the validator rejects a perfectly good id.
+   *
+   * Companion conditions are excluded because they are in the registry precisely BECAUSE another
+   * module put them there — `burning` is not a system condition and reporting it as one every
+   * load would train a reader to skip this section. */
   for (const condition of pf1.registry.conditions) {
-    if (!CONDITION_IDS.includes(condition.id) && !MOVEMENT_CONDITIONS.includes(condition.id)) {
+    if (!ALL_CONDITION_IDS.includes(condition.id) && !MOVEMENT_CONDITIONS.includes(condition.id)) {
       report.conditions.unknownToPf1.push({ id: "(schema.mjs)", condition: `${condition.id} — in PF1, missing from CONDITION_IDS` });
     }
   }

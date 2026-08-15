@@ -29,7 +29,7 @@ import { showDice } from "./dice.mjs";
 const BUFF_PACK = `${MODULE_ID}.effect-buffs`;
 
 /** The channels a branch carries. Order matters only for reading; nothing iterates it positionally. */
-const CHANNELS = ["buff", "conditions", "damage"];
+const CHANNELS = ["buffs", "conditions", "damage"];
 
 /**
  * The authored (unrolled) shape of both branches.
@@ -47,8 +47,8 @@ export function authoredBranches(entry) {
 
   if (!save || entry?.onFail == null) return { save, saved: base, failed: null };
 
-  /* `in` rather than a nullish read: `onFail.buff === null` is an authored instruction to clear the
-   * buff on this branch, and a nullish coalesce would inherit it instead — the exact opposite. */
+  /* `in` rather than a nullish read: `onFail.buffs === null` is an authored instruction to clear the
+   * buffs on this branch, and a nullish coalesce would inherit them instead — the exact opposite. */
   const failed = Object.fromEntries(
     CHANNELS.map((key) => [key, key in entry.onFail ? (entry.onFail[key] ?? null) : base[key]])
   );
@@ -104,8 +104,13 @@ export async function resolveBranches(entry, { rollData = {} } = {}) {
 
   const dress = async (branch, damage) =>
     branch && {
-      buffName: branch.buff ?? null,
-      buff: await snapshotOf(branch.buff),
+      /* One entry per authored name, in authoring order. The name travels beside the snapshot
+       * because the two can disagree in exactly one way that matters: a buff the catalog names but
+       * no compendium has. Then there is no snapshot to draw and the name is all we know, which is
+       * still worth saying — the GM can go and make the buff. */
+      buffs: await Promise.all(
+        (branch.buffs ?? []).map(async (name) => ({ name, snapshot: await snapshotOf(name) }))
+      ),
       conditions: branch.conditions ?? [],
       // `rolls` are live Roll objects and must not reach a flag; only the serialised parts do.
       damage: damage ? { parts: damage.parts, total: damage.total } : null,

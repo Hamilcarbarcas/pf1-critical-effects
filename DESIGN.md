@@ -17,9 +17,9 @@ Everything below is about the framework that content plugs into.
 | Where the code lives | Grow the existing `pf1-critical-effects` module from content-only into code + content. |
 | Effect storage | Versioned **JSON catalog** in the module — a flat entry list plus one 12-row table per damage type × anatomy × body part (§3). Self-contained as of v5: prose lives in the entry, not in a journal. A **buff compendium** carries the mechanics that need an Item. |
 | Content authoring | A **tagged pool** (`data/pool.json`) that generates the tables (§3). One effect tagged for several damage types and body parts covers many rows, so the grid is saturated by a few hundred effects rather than one per row. |
-| Mechanical effects | Named fields, not a registry (§6): `conditions` for PF1 statuses with native durations, `buff` for anything needing an Item, `damage` for a damage instance of its own. A typed-outcome framework was built here and removed. |
+| Mechanical effects | Named fields, not a registry (§6): `conditions` for PF1 statuses with native durations, `buffs` for anything needing an Item, `damage` for a damage instance of its own. A typed-outcome framework was built here and removed. |
 | Saves | One optional integer per entry (§6). Always Fortitude, DC always the attack's pre-reduction non-critical damage, so `save` is a DC multiplier and nothing else. A save splits the entry into two outcome branches (`onFail`) and **both** are offered on the card regardless of what was rolled. |
-| Content strategy | **Prose-first.** An entry with `id` and `name` is complete; `text`, `note`, `conditions` and `buff` are additive and get attached incrementally over time. |
+| Content strategy | **Prose-first.** An entry with `id` and `name` is complete; `text`, `note`, `conditions` and `buffs` are additive and get attached incrementally over time. |
 | Player interaction | GM-run **dialog** + player-rolled roll-requests; the player's only decisions are the dice and a called shot. *(Revised twice during phase 7 — the resolution was originally a persistent chat card, and luck-point spending was built and then removed; see §7.2 and §7.3.)* |
 | First shippable slice | **Fumble path end-to-end.** |
 
@@ -198,7 +198,7 @@ effect a GM adjudicates, `conditions` is for the half that should just happen.
       "name": "Concussed Ear",
       "text": "<p>The blow catches the side of the head…</p>",  // OPTIONAL; prose, enriched
       "note": null,                           // OPTIONAL; one terse line the GM adjudicates
-      "buff": null,                           // §6 — OPTIONAL; buff name, delivered by astora-mod
+      "buffs": [],                            // §6 — OPTIONAL; buff names, delivered by astora-mod
       "conditions": [                         // §6 — OPTIONAL; PF1 statuses, applied natively
         { "id": "dazed", "duration": { "value": 1, "units": "round" } },
         { "id": "deaf", "duration": { "value": "1d4", "units": "minute" } }
@@ -213,10 +213,10 @@ effect a GM adjudicates, `conditions` is for the half that should just happen.
       "text": "<p>…</p>",
       "note": null,
       "damage": [{ "formula": "2d6", "type": "piercing" }],   // applies either way
-      "buff": "Blinded Eye",                  // the SAVED outcome, once `save` is present
+      "buffs": ["Blinded Eye"],               // the SAVED outcome, once `save` is present
       "conditions": [{ "id": "blind" }],
       "save": 1,                              // Fort, DC = the attack's damage; 2 doubles it
-      "onFail": { "buff": "Blinded Eye (Permanent)" }         // overrides `buff`; inherits the rest
+      "onFail": { "buffs": ["Blinded Eye (Permanent)"] }      // overrides `buffs`; inherits the rest
     }
   ],
   "tables": {
@@ -278,10 +278,30 @@ nothing in `resolve/location.mjs` knows it exists. It is a table key, not a body
 > the twelve rows here are indexed by the **Critical Power** roll. The 12 in this table is the
 > severity ladder, not a die face.
 
-**No inheritance.** Every pair is written out in full. The authoring worksheets have a
-`= humanoid` shorthand for rows that genuinely are the same wound, but it expands at fold-in time
-and the JSON stays explicit, because the engine looks a row up by index and must never chase a
-reference to find one.
+**No inheritance *in the shipped JSON*.** Every pair is written out in full. The authoring
+worksheets have a `= humanoid` shorthand for rows that genuinely are the same wound, but it expands
+at fold-in time and the JSON stays explicit, because the engine looks a row up by index and must
+never chase a reference to find one.
+
+> **`inherits` takes exactly that escape** *(phase 13)*. A 13+ entry may carry
+> `inherits: "row12"` and a `transform` instead of its own mechanics, and it resolves **at fold-in**
+> to whichever entry sits in row 12 of the table it lands on. `effects.json` still ships a fully
+> merged entry per cell; the runtime is untouched and chases nothing.
+>
+> This exists because *"As 12, bleed and DC doubled"* is not a description — it is a derivation, and
+> the thing it derives from is different in all eighteen cells one Mortal Blow row covers. Writing
+> those out by hand meant the same doubling transcribed six ways, which is how *Kebabed · Leg* came
+> to be missing the `4d4 con bleed` its parent implies. One entry with `transform: { bleed: 2 }`
+> cannot drift from its parent, because it has no second copy to drift from.
+>
+> It also dissolved the id collisions: *Kebabed*, *Vorpal Cut* and *Critical Internal Bleeding* were
+> each four or five entries sharing a name and differing only in the limb-specific buff they
+> inherit. As transforms they are one entry apiece.
+>
+> The cost is that row 12 is **not stable** — placement is global, so adding one grave effect can
+> re-seat it and change what a 13+ result inherits. That is accepted rather than prevented, and made
+> visible instead: `effects.json` carries a `_mortalParents` map of every resolved cell, so a
+> re-seat shows up as a line in the diff.
 
 Notes tied to the rules concept:
 
@@ -318,7 +338,27 @@ Notes tied to the rules concept:
   content track honest.
 - **`text` is display only.** Nothing in the engine parses an entry's prose. It is stored as HTML
   and enriched at render; that is the whole of its contract.
-- **`text`, `note`, `buff` and `conditions` are all optional and start absent.** An entry with
+
+  > **The corollary, learned the hard way in phase 13:** if prose is display-only then *mechanics
+  > must never be authored as prose*, and the card's mechanical description is **rendered from the
+  > entry's channels rather than written**. The v5 catalog had 196 entries whose `text` read
+  > `"4d6 deep bleed, 2d4 con bleed, arm useless until healed"` — a structured record wearing a
+  > `<p>` — because the v6 channels existed and had not been filled. Anything written in both
+  > places lands twice: once as a sentence, once as an applied condition.
+- **Bleed placement follows the debuff, not the wound.** A bleed paired with a **timed** penalty
+  goes in `conditions`, because the buff will expire out from under it. A bleed paired with an
+  **until-healed** penalty rides on the buff instead, configured as pf1-bleed-effects' own bleed
+  flag, so that clearing the wound clears the bleeding with it. Ability bleed stays in `conditions`
+  either way — it is not gated by the limb.
+- **A dedicated-healing threshold is derived, never authored:** **5** hit points per die of
+  hit-point bleed, **10** per die of ability bleed. Keeping it a function of the dice is what makes
+  the 13+ doubling work — `transform.bleed` scales the formula and the threshold together, and a
+  doubled bleed that kept its old threshold would close in half the healing the rule asks for.
+- **Two bleeds on one entry are legal, and only bleed is.** Every other condition is one Active
+  Effect and a second application is silently dropped. A bleed's magnitude does not live on the
+  Active Effect at all — pf1-bleed-effects keeps a list of instances in an actor flag and groups
+  them by kind when they tick — so "4d6 deep bleed, 2d4 con bleed" is one wound bleeding two ways.
+- **`text`, `note`, `buffs` and `conditions` are all optional and start absent.** An entry with
   `id` and `name` alone is *complete* and fully usable — the flow resolves it, names it, and stops.
   Everything else is additive, attached entry by entry over time, and no part of the engine may
   assume any of it exists. This is the §0 rule: absence degrades an entry, never the engine.
@@ -344,7 +384,7 @@ saturating the grid needs a pool on the order of a **few hundred** effects. Tag 
 everywhere it fits.
 
 A pool entry carries `rank`, `slots` and `damageTypes` alongside the content fields `text` /
-`note` / `buff` / `conditions`. Slots are anatomy-qualified (`humanoid/arm`, or `*/torso` for anatomy-agnostic), and
+`note` / `buffs` / `conditions`. Slots are anatomy-qualified (`humanoid/arm`, or `*/torso` for anatomy-agnostic), and
 `<anatomy>/general` is where a non-localized damage type's content goes. An effect meant for both
 halves of the grid needs a slot in each; tags that select nothing are reported by
 `pool-to-tables.mjs` without failing the build, because `damageTypes: ["*"]` beside body-part slots
@@ -415,7 +455,7 @@ Deliberately simpler than the effect catalog — no location, no damage type, no
   "entries": [
     { "id": "dropped-weapon", "name": "Dropped Weapon",
       "attackTypes": ["melee", "thrown", "bows", "crossbows"],   // the only tag
-      "text": null, "buff": null, "note": null }
+      "text": null, "buffs": [], "note": null }
   ]
 }
 
@@ -651,7 +691,7 @@ An entry has **three independent mechanical channels**, and the split is about w
 | | Field | What it is | Dependency |
 |---|---|---|---|
 | **Conditions** | `conditions` | PF1 statuses, with durations | none — bare PF1 |
-| **Buff** | `buff` | an Item with changes, context notes, a healing lifecycle | astora-mod |
+| **Buff** | `buffs` | Items with changes, context notes, a healing lifecycle | astora-mod |
 | **Damage** | `damage` | a damage instance of its own, typed, rolled on Confirm | none — bare PF1 |
 
 None is required, any combination may be present, and each may be missing without touching the
@@ -786,20 +826,30 @@ silently rewrite it.
 hand-driven resolution lands on an entry that carries a save, the GM is **prompted for the DC** at
 the Result stage. A fabricated DC that looks derived would be worse than an empty field.
 
-**Two branches, overriding per channel.** With `save` present, the entry's own `buff`,
+**Two branches, overriding per channel.** With `save` present, the entry's own `buffs`,
 `conditions` and `damage` are the **saved** outcome, and `onFail` is an object of the same three
 fields describing the **failed** one. A channel `onFail` names replaces the base; a channel it omits
-falls through. So damage that happens either way is written once at the top, a buff that differs is
-written twice, and a failure that means *no* buff writes an explicit `"buff": null`.
+falls through. So damage that happens either way is written once at the top, buffs that differ are
+written twice, and a failure that means *no* buff writes an explicit `"buffs": null`.
 
 That rule is worth stating in the negative too: `onFail` is not additive. *Shattered Eye Socket* is
 "blinded until healed" on a save and "permanently blinded" on a failure — alternatives, not a
 base plus an extra — and a merging rule would apply both.
 
-**Death is not this mechanism.** The 13+ save-or-die stays exactly what it is: a printed
-`Fort DC N or die` line with no roll and no button (`catalog.effectAt`). This module does not
-implement death, and a save channel that offered to is a different feature with different
-consequences.
+**Death goes through the same button as everything else.** *(Revised in phase 13.)* The failed
+branch of a save-or-die carries `{ id: "dead" }` like any other condition, and it applies when the
+GM presses Apply — never on its own.
+
+The earlier rule here was that this module does not implement death at all, and that the 13+
+save-or-die stays a printed line. Writing the content is what changed it: **fifteen** entries end
+in death, from *Head Cracker* at row 8 to every Mortal Blow, and a card that resolves a save,
+draws two branches and then goes quiet on the only outcome that matters was doing the hardest
+part and stopping short of the point.
+
+What made the old rule right is preserved exactly: nothing is automatic. `dead` sits behind the
+same Apply button as a broken arm, on a card the GM is already reading, and a GM who wants a
+different ending simply does not press it. The objection was never to death being *expressible* —
+it was to death happening without anyone choosing it.
 
 The save itself is an **embedded roll request**, sitting on the result card between the two
 branches — single target, DC shown, results shown, bulk controls suppressed:
@@ -946,7 +996,7 @@ The pack **grows with the content track** — it is not filled up front. Seed it
 ~20 Broken/Shattered buffs currently in
 `astora-mod/packs-source/buffs/Conditions_.../Broken_Bones_...`, which already correspond to
 the injuries the content track will re-author (Broken Knee, Broken Arm, Compound Fracture, …) and
-can be named in an entry's `buff` field the moment those entries are written. Everything else
+can be named in an entry's `buffs` field the moment those entries are written. Everything else
 gets a buff when someone writes one. **Migration catch:** those
 buffs carry `scriptCalls` pointing at `Compendium.astora-mod.macros.Macro.*` (use / toggle /
 preActivate). Those macro UUIDs must be retargeted, or the buffs break the moment astora-mod is
@@ -1380,6 +1430,155 @@ creating buffs that depend on it.
 
 ---
 
+## 8.1 Weapon Stuck — a wound held open
+
+Twelve catalog entries end with the weapon still in the victim — *Lodged Weapon*, *Pinned Arm*,
+*Impaled Gut*, *Skewered Tail* and the rest. They currently carry `note: "Weapon Stuck"` and rely on
+the GM, because an entry delivers one buff and those rows name two. This is the feature that makes
+the second one real.
+
+Numbered 8.1 rather than 9 because its core mechanic is an extension of §8, and because §9 and §10
+are referenced from a dozen places that should not have to move for this.
+
+### The rules
+
+| | |
+|---|---|
+| Remove | DC 10 Strength check, a move action |
+| First attempt | The wielder may try immediately, as a free action |
+| While embedded | The victim is **entangled** |
+| While held | The wielder is **entangled** too |
+| Healing | The paired wound accepts no dedicated healing until the weapon is out |
+| On removal | The blow's damage is dealt again |
+
+**Entangled rather than grappled**, deliberately. Grappled drags in the whole grapple subsystem —
+CMB checks, its own escape rules, and the reasonable player question of why a *spear* is grappling
+them — for a condition that only means "you are snagged on this". Entangled says exactly that, and
+it is already the catalog's word for it in *Pulverized Tail*'s **hangs limp, entangling creature**.
+
+### The block belongs to the victim
+
+The first draft hung the healing block off the **attacker's** buff, and it does not survive contact
+with the rules: *drop weapon* ends the attacker's involvement while leaving the weapon embedded, so
+a fighter could impale someone, let go, and watch the wound become healable with a spear still in
+it. What stops a wound closing is the steel in it, not somebody's grip on the far end.
+
+So the block lives on the victim's buff, and the victim's half works with the attacker holding on,
+let go, unconscious, or dead.
+
+### `blockedBy` — one field, borrowed from a mechanism that already exists
+
+pf1-bleed-effects already blocks a **deep bleed** from dedicated healing while a named item is
+active (`blockedBy`, set by the buff sheet's *Blocks healing while active*), and this module's
+allocation dialog already renders such participants: listed, greyed, allocation refused, sorted
+last. That path is live and its own comment imagines the case — *"an arrow still in it"*.
+
+What is missing is the same block on a **buff** rather than a bleed. `dedicatedHealing` gains one
+optional field:
+
+```jsonc
+"flags.pf1-critical-effects.dedicatedHealing": {
+  "dc": 10, "required": 20,
+  "blockedBy": "Weapon Stuck"      // an item NAME on the same actor
+}
+```
+
+A **name**, not a uuid — the same reasoning as every other buff reference in the catalog (§6): it
+survives a pack recompile and lets a GM keep their own copy. `_itemParticipants` looks for an
+active item of that name and marks the participant blocked.
+
+It **fails open**, matching `blockerOf` in bleed-effects: a blocker that cannot be confirmed lets
+the healing through. A wound that will not close because of a bookkeeping error is far worse than
+one that closes early.
+
+Nothing here is Weapon-Stuck-specific, and it should not become so.
+
+### The bleed needs no block of its own
+
+Follows from §3's placement rule. A bleed paired with an until-healed penalty is configured **on the
+buff** in non-persist mode, so it ends when the buff does. Block the buff's healing and the buff
+cannot clear; the bleed it carries keeps running for exactly as long as the weapon is in.
+
+*Pierced Knee* is the worked example: `3d6 deep bleed`, half move, −4 with the leg — one buff, one
+threshold of 15, one `blockedBy`. Not a bleed and a debuff needing to be blocked in concert.
+
+### Two buffs, and what each may do
+
+| | Victim — **Weapon Stuck** | Wielder — **Weapon Lodged** |
+|---|---|---|
+| Condition | `entangled` while embedded | `entangled` while held |
+| Blocks healing | on the paired wound buff | — |
+| Carries | the blow's damage, and the partner uuid | the partner uuid |
+| **Pull Out** | move action, DC 10 Str | move action, DC 10 Str (free on the first attempt) |
+| **Drop Weapon** | — | unequips, self-disables, no cascade |
+
+### The cascade lives in the actions, not in a toggle-off hook
+
+The wielder's buff has two exits that mean opposite things:
+
+| Exit | The weapon is | The victim's buff |
+|---|---|---|
+| **Pull Out** succeeds | free, in hand | must clear — it is out, and the damage fires |
+| **Drop Weapon** | still embedded | must **stay** — still entangled, still blocked |
+
+A blanket *"my buff turned off, turn off my partner's"* delete hook cannot tell those apart, and
+would clear the victim on the one exit where the weapon is most certainly still in them. So the
+cross-clear sits inside the two **Pull Out** actions, and Drop Weapon touches only its own side.
+
+Two things fall out of that, and both are the reason to prefer it:
+
+- **No recursion guard.** Nothing fires reflexively, so there is no A-clears-B-clears-A to defend
+  against and no in-flight state to track.
+- **No delete hook at all.** The partner write is `gmRequest("updateDocument", { uuid, updates:
+  { "system.active": false } })` — the generic primitive from §0, unchanged. A cross-actor write is
+  the case that channel exists for, and this needs no new handler, which is the standing test of
+  whether a feature is composing the primitives or asking for a private one.
+
+### Damage on removal, from every direction
+
+The blow's damage is stashed on the **victim's** buff at apply time and posted as a damage card when
+that buff toggles off. One hook, and every path lands correctly:
+
+| | Damage |
+|---|---|
+| Wielder pulls it out → cascade disables the victim's buff | ✔ |
+| Victim pulls it out → cascade, same hook | ✔ |
+| Wielder drops the weapon → victim's buff untouched | ✘ *(correct — it is still in them)* |
+| GM toggles the victim's buff off by hand | ✔ *(it came out somehow)* |
+
+Four paths, one hook, no special cases — which is the sign the state is on the right document.
+
+### Where the weapon ends up is the GM's
+
+Deliberately unimplemented. No inventory transfer, no ownership change, nothing to reverse: the
+buff's card says the weapon has come free and the table decides where it lands. The house reading
+is that whoever pulled it out has it, and that a wielder who dropped it has given it up — but that
+is a ruling, and rulings do not need code. An automated transfer would move a player's magic sword
+onto a monster that may be deleted at the end of the encounter, which is how a magic sword is lost.
+
+### Deferred
+
+- **Natural attacks.** Every entry that inflicts this is a manufactured piercing weapon. A gore or a
+  bite lodging in something reads well, but *Drop Weapon* is meaningless for one, and the wielder's
+  half would need a different shape.
+- **Threatening while embedded.** A spear through a leg arguably restrains further; entangled on the
+  victim already covers the useful part.
+- **Multiple weapons in one victim.** The buffs are per-pair and would stack, but nothing tracks
+  which pull-out frees which weapon. Rare enough to leave to the GM.
+
+### Build order
+
+1. `blockedBy` on the DH config, plus the participant lookup in `_itemParticipants`. Independent of
+   everything else, testable on its own, and immediately useful to any wound that should not close.
+2. The two buffs, their conditions, and the partner-uuid link written at apply time.
+3. Pull Out on both, with the cascade; Drop Weapon on the wielder's.
+4. Stashing the damage and posting it from the victim's toggle-off.
+
+Step 1 alone retires the twelve `note: "Weapon Stuck"` entries from being purely advisory, because
+the wound stops being healable the moment a GM applies the buff by hand.
+
+---
+
 ## 9. Overriding PF1's crit handling — the risky part
 
 Concept §9 wants the crit-damage/crit-effect pairing broken: the card shows base damage and a
@@ -1498,7 +1697,9 @@ data on the way past. ckl-roll-bonuses registers a WRAPPER on the same method
 | **12** | **Self-contained catalog** (§3 v5, §6). Journals and their two packs deleted, `text` and `conditions` added, pool emptied, apply button covers both channels. | 5 |
 | **13a** | ✅ **Embedded roll requests** in pf1-roll-requests — non-destructive, slot-namespaced, explicitly placed. **Built and shipped**; reference is that module's `api.md` § Embedded requests, design record its `EMBED-SPEC.md`. The crit save is its first consumer. | — |
 | **13** | **Execution** (§3 v6, §6, §7.6). Catalog gains `damage`, `save`, `onFail`. Damage rolled on Confirm and rendered as its own instance with PF1's apply anchors; buff and condition headers; two branch buttons on a mount selector; `saveDC` stamped on delivered buffs; the save embedded via 13a, with a printed-DC fallback for installs predating it. | 12, 13a |
-| **∞** | **Content track.** Pool entries (id, name, rank, slots, damage types, `text`), then the twelve rows of each damage-type × location table put in severity order. Runs from phase 1 onward, independent of everything else. `conditions`, `note` and `buff` get attached opportunistically, entry by entry. | 0 |
+| **14** | ✅ **The catalog, written.** All 756 rows filled from a 211-effect pool imported off the authoring spreadsheet, plus the 47-row 13+ addendum. Adds `inherits`/`transform` (§3), `setHP` and `negativeLevels` (§6), ability damage through Nevela's registered types, `burning` via `COMPANION_CONDITIONS`, and `tools/verify.mjs`. Death becomes expressible (§6). | 13 |
+| **15** | **Weapon Stuck** (§8.1). `blockedBy` on the dedicated-healing config first — it stands alone and retires twelve advisory `note`s — then the paired buffs, the cascade in their Pull Out actions, and damage on removal. | 6, 14 |
+| **∞** | **Content track.** Pool entries (id, name, rank, slots, damage types, `text`), then the twelve rows of each damage-type × location table put in severity order. Runs from phase 1 onward, independent of everything else. `conditions`, `note` and `buffs` get attached opportunistically, entry by entry. **Closed at phase 14**; what remains is the buff compendium — see [content/BUFFS.md](content/BUFFS.md), 137 buffs of which only the broken-bone set exists. | 0 |
 
 The reordering versus a mechanics-first build is deliberate: **phase 4 is the goal post.** After
 it, you have a working crit-effect resolver producing real, named results at the table — on

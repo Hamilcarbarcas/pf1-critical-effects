@@ -96,7 +96,7 @@ const out = [
   "",
   "**Generated** by `node tools/pool-report.mjs --write`. Do not edit.",
   "",
-  `Pool: **${pool.entries.length} effects**, ${ranked.length} ranked, ${pool.entries.length - ranked.length} untriaged.`,
+  `Pool: **${pool.entries.length} effects**, ${ranked.length} ranked, ${pool.entries.filter((e) => e.rank == null && !e.mortal).length} untriaged, ${pool.entries.filter((e) => e.mortal).length} mortal.`,
   `Grid: **${cells.length} tables**, ${totalSlots} rows — ${localizedTypes.length} weapon damage types ×`,
   `${anatomyLocationPairs().length} anatomy/location pairs, plus ${DAMAGE_TYPES.length - localizedTypes.length} damage types that roll no`,
   `location and keep one \`general\` table per anatomy.`,
@@ -179,7 +179,10 @@ for (const damageType of DAMAGE_TYPES) {
   );
 }
 
-const untriaged = pool.entries.filter((e) => e.rank == null);
+/* Unranked because nobody has scored it yet — NOT because it sits past the ladder. A mortal entry
+ * has no rank by construction (it is the 13+ addendum, not a row), so counting it as inventory
+ * waiting for triage would report a permanent backlog that can never be worked off. */
+const untriaged = pool.entries.filter((e) => e.rank == null && !e.mortal);
 if (untriaged.length) {
   out.push("---", "", "## Untriaged", "",
     `${untriaged.length} pool effects have no \`rank\` and are therefore placed in **no table at all** —`,

@@ -29,6 +29,7 @@ const SECTION_CLASS = "ce-dh-section";
  */
 function readInput(el) {
   if (el.type === "checkbox") return el.checked;
+  if (el.type === "text") return el.value.trim();
   return Math.max(0, parseInt(el.value) || 0);
 }
 

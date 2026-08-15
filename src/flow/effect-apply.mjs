@@ -56,10 +56,10 @@ export function buffDelivery() {
 /** Which halves of a branch can actually be applied here and now. */
 function deliverable(branch) {
   return {
-    // A buff is only offered when it can be delivered. A button that reports "astora-mod isn't
-    // installed" on every click is worse than no button: the header still shows what the buff was
+    // Buffs are only offered when they can be delivered. A button that reports "astora-mod isn't
+    // installed" on every click is worse than no button: the headers still show what the buffs were
     // and the prose still says what happened, which is what a world without astora signed up for.
-    buff: branch?.buffName && buffDelivery() ? branch.buffName : null,
+    buffs: buffDelivery() ? (branch?.buffs ?? []).map((b) => b.name).filter(Boolean) : [],
     conditions: branch?.conditions?.length ? branch.conditions : [],
   };
 }
@@ -92,13 +92,18 @@ export async function offerApplyButtons(message, { execution, scope, target = {}
     const branch = execution[key];
     if (!branch) continue;
 
-    const { buff, conditions } = deliverable(branch);
-    if (!buff && !conditions.length) continue;
+    const { buffs, conditions } = deliverable(branch);
+    if (!buffs.length && !conditions.length) continue;
 
     /* Named for what it will do, so a GM knows before clicking. The buff half leads when there is
      * one — it is the heavier of the two — and conditions alone name themselves. With two branches
-     * the outcome is prefixed, because on this card the question is not only *what* but *which*. */
-    const what = buff ? `Apply ${buff}` : `Apply ${describeConditions(conditions)}`;
+     * the outcome is prefixed, because on this card the question is not only *what* but *which*.
+     *
+     * Several buffs name only the first: "Apply Impaled Gut +1" is readable at a glance where the
+     * full list is not, and the headers directly above the button already spell them all out. */
+    const what = buffs.length
+      ? `Apply ${buffs[0]}${buffs.length > 1 ? ` +${buffs.length - 1}` : ""}`
+      : `Apply ${describeConditions(conditions)}`;
     const label = branched ? `${key === "saved" ? "Saved" : "Failed"} · ${what}` : what;
 
     descriptors.push({
@@ -113,7 +118,7 @@ export async function offerApplyButtons(message, { execution, scope, target = {}
       gmOnly: true,
       data: {
         branch: key,
-        buffName: buff,
+        buffNames: buffs,
         conditions,
         targetActorId: target.actorId ?? null,
         targetTokenId: target.tokenId ?? null,
@@ -150,11 +155,16 @@ async function applyEffect(descriptor) {
    * critical inflicted are still on the target rather than lost with it. */
   applied.push(...(await applyConditions(actor, data.conditions)));
 
-  if (data.buffName) {
+  const buffNames = data.buffNames ?? [];
+  if (buffNames.length) {
     const api = buffDelivery();
     if (!api?.applyBuffTo) {
       ui.notifications.warn(`${MODULE_ID}: astora-mod's buff delivery is not available.`);
     } else {
+      /* In authoring order, and one at a time rather than in parallel: each delivery may raise its
+       * own prompt, and two dialogs racing for the same GM is how one of them gets dismissed
+       * unread. A buff that fails to deliver does not stop the ones after it — the same rule the
+       * conditions half follows. */
       /* `interactive` is left on deliberately. If the buff is already on the target — a second
        * broken arm, a crit on a creature that has one — the GM is the one who should decide
        * between refreshing it and stacking a fresh copy, and that decision is exactly what the
@@ -165,17 +175,19 @@ async function applyEffect(descriptor) {
        * `@dFlags.<buffTag>.saveDC`, which is the spelling that survives the hop into a
        * roll-bonuses conditional. Passed at delivery so the buff's own create/toggle scripts can
        * read it — setting it afterwards would be a frame too late for them. */
-      const buff = await api.applyBuffTo(
-        actor,
-        {
-          buffName: data.buffName,
-          sourceActorId: data.sourceActorId ?? undefined,
-          ...(Number.isFinite(data.saveDC) ? { saveDC: data.saveDC } : {}),
-        },
-        { interactive: true }
-      );
-      // A null return means applyBuffTo already said why in a notification of its own.
-      if (buff) applied.push(buff.name);
+      for (const buffName of buffNames) {
+        const buff = await api.applyBuffTo(
+          actor,
+          {
+            buffName,
+            sourceActorId: data.sourceActorId ?? undefined,
+            ...(Number.isFinite(data.saveDC) ? { saveDC: data.saveDC } : {}),
+          },
+          { interactive: true }
+        );
+        // A null return means applyBuffTo already said why in a notification of its own.
+        if (buff) applied.push(buff.name);
+      }
     }
   }
 

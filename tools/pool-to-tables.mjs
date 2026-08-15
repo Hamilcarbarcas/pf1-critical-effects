@@ -51,6 +51,10 @@ import {
   validateDamage,
   validateSave,
   validateOnFail,
+  validateSetHP,
+  validateNegativeLevels,
+  validateInheritance,
+  validateBuffs,
 } from "../src/catalog/schema.mjs";
 import { parseMortalWorksheet } from "./worksheets.mjs";
 
@@ -160,7 +164,13 @@ function assign(candidates, pins, maxDrift) {
 
 const entries = new Map();
 const tables = {};
-const report = { cells: [], unplaced: new Set(pool.entries.filter((e) => e.rank != null).map((e) => e.id)) };
+const report = {
+  cells: [],
+  unplaced: new Set(pool.entries.filter((e) => e.rank != null).map((e) => e.id)),
+  /* What each inheriting mortal cell resolved to. Reported so a regenerate that re-seats row 12
+   * shows up as a diff — an inherited result silently changing parent is otherwise invisible. */
+  mortalParents: [],
+};
 
 const addEntry = (entry) => {
   if (!entries.has(entry.id)) entries.set(entry.id, entry);
@@ -179,13 +189,89 @@ const catalogEntry = (e) => ({
   id: e.id,
   name: e.name,
   text: e.text ?? null,
-  buff: e.buff ?? null,
   note: e.note ?? null,
+  ...(e.buffs?.length ? { buffs: e.buffs } : {}),
   ...(e.conditions?.length ? { conditions: e.conditions } : {}),
   ...(e.damage?.length ? { damage: e.damage } : {}),
+  ...(e.setHP != null ? { setHP: e.setHP } : {}),
+  ...(e.negativeLevels != null ? { negativeLevels: e.negativeLevels } : {}),
   ...(e.save != null ? { save: e.save } : {}),
   ...(e.onFail != null ? { onFail: e.onFail } : {}),
+  ...(e.dhScale != null ? { dhScale: e.dhScale } : {}),
 });
+
+// --- inheritance ------------------------------------------------------------
+
+/**
+ * Multiply a bleed's **dice count**, leaving everything else in the formula alone.
+ *
+ * "Double bleed" doubles the dice, not the result and not the flat modifiers: 4d6+2 becomes 8d6+2.
+ * A formula with no dice is returned untouched rather than guessed at.
+ */
+function scaleBleedFormula(formula, factor) {
+  if (factor === 1 || typeof formula !== "string") return formula;
+  return formula.replace(/(\d+)\s*d\s*(\d+)/gi, (_, n, d) => `${Number(n) * factor}d${d}`);
+}
+
+/**
+ * Every bleed on a conditions array, with its dice count multiplied. Other conditions pass through.
+ *
+ * The dedicated-healing threshold scales with the dice, because that is where it came from: 5 hit
+ * points per die of hit-point bleed, 10 per die of ability bleed. A doubled bleed that kept its
+ * old threshold would close in half the healing the rule asks for.
+ */
+const scaleBleeds = (conditions, factor) =>
+  (conditions ?? []).map((c) => {
+    if (c.id !== "bleed" || !c.bleed?.formula) return c;
+    const bleed = { ...c.bleed, formula: scaleBleedFormula(c.bleed.formula, factor) };
+    if (bleed.deep) bleed.deep *= factor;
+    return { ...c, bleed };
+  });
+
+/**
+ * Merge a parent entry with the transform that reads on top of it (§3).
+ *
+ * The 13+ result is *"as row 12, but…"*, and this is the "but". The parent supplies every
+ * mechanical channel; the transform multiplies, adds to or replaces them. What comes out is an
+ * ordinary entry with no trace of where it came from — which is the point, because the shipped
+ * catalog must never make the engine chase a reference to find a row.
+ *
+ * `scaleDH` is the one op that cannot be resolved here: a buff's dedicated-healing threshold lives
+ * on the compendium item, not in this file. It bakes through as `dhScale` for the apply path to
+ * multiply when it delivers the buff.
+ */
+function resolveInherited(entry, parent) {
+  const t = entry.transform ?? {};
+  const bleedFactor = t.bleed ?? 1;
+
+  const conditions = [
+    ...scaleBleeds(parent.conditions, bleedFactor),
+    ...(t.conditions ?? []),
+  ];
+  const damage = [...(parent.damage ?? []), ...(t.damage ?? [])];
+  /* The parent's failed branch, bleeds scaled with the rest. When it has none the entry's own is
+   * used instead: several 13+ results add a save-or-die the row-12 wound never had, and that is
+   * the mortal row's own mechanic rather than anything inherited. */
+  const onFail = parent.onFail
+    ? { ...parent.onFail, ...(parent.onFail.conditions ? { conditions: scaleBleeds(parent.onFail.conditions, bleedFactor) } : {}) }
+    : (entry.onFail ?? null);
+
+  return {
+    // The mortal row's own identity and prose; only the mechanics are inherited.
+    id: entry.id,
+    name: entry.name,
+    text: entry.text ?? null,
+    note: entry.note ?? null,
+    buffs: t.buffs !== undefined ? (t.buffs ?? []) : (parent.buffs ?? []),
+    conditions,
+    damage,
+    setHP: entry.setHP ?? parent.setHP ?? null,
+    negativeLevels: entry.negativeLevels ?? parent.negativeLevels ?? null,
+    save: parent.save != null ? parent.save * (t.saveDC ?? 1) : (entry.save ?? null),
+    onFail,
+    ...(t.scaleDH && bleedFactor !== 1 ? { dhScale: bleedFactor } : {}),
+  };
+}
 
 for (const entry of pool.entries) {
   if (entry.rank != null && (entry.rank < 1 || entry.rank > TABLE_ROWS)) {
@@ -213,12 +299,18 @@ for (const entry of pool.entries) {
    * to fix, and the same mistake caught at the table is a critical that quietly did less than it
    * said. Reported against the pool entry, which is the file the author can actually edit. */
   problems.push(
+    ...validateBuffs(entry.buffs, `pool "${entry.id}"`),
     ...validateConditions(entry.conditions, `pool "${entry.id}"`),
     ...validateDamage(entry.damage, `pool "${entry.id}"`),
+    ...validateSetHP(entry.setHP, `pool "${entry.id}"`),
+    ...validateNegativeLevels(entry.negativeLevels, `pool "${entry.id}"`),
     ...validateSave(entry.save, `pool "${entry.id}"`),
-    ...validateOnFail(entry.onFail, `pool "${entry.id}"`)
+    ...validateOnFail(entry.onFail, `pool "${entry.id}"`),
+    ...validateInheritance(entry, `pool "${entry.id}"`)
   );
-  if (entry.save != null && entry.onFail == null) {
+  /* An inheriting entry takes the parent's failed branch, which is where every save-or-die at row
+   * 12 already keeps one — so only a self-contained entry can genuinely be missing it. */
+  if (entry.save != null && entry.onFail == null && entry.inherits == null) {
     notes.push(`"${entry.id}": has a save but no \`onFail\`, so both branches would apply the same thing`);
   }
   if (entry.save == null && entry.onFail != null) {
@@ -263,7 +355,7 @@ for (const { damageType, anatomy, location } of gridCells()) {
       report.unplaced.delete(rows[i]);
     } else {
       const id = `todo-${damageType}-${anatomy}-${location}-${String(i + 1).padStart(2, "0")}`;
-      addEntry({ id, name: `(unwritten — ${damageType} ${anatomy} ${location} ${i + 1})`, text: null, buff: null, note: null, placeholder: true });
+      addEntry({ id, name: `(unwritten — ${damageType} ${anatomy} ${location} ${i + 1})`, text: null, note: null, placeholder: true });
       rows[i] = id;
     }
   }
@@ -297,25 +389,77 @@ if (fs.existsSync(MORTAL)) {
   problems.push(...parseProblems);
   for (const row of rows) {
     if (!row.name) continue;
-    const id = row.name.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
-    const existing = pool.entries.find((e) => e.id === id);
+    const baseId = row.name.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+    const existing = pool.entries.find((e) => e.id === baseId);
+
+    /* An inheriting row resolves against row 12 of the table it sits on, which differs cell by
+     * cell — that is the whole reason one "Mortal Blow" entry can serve eighteen of them. The
+     * resolved result is baked per cell under its own id, so the shipped catalog stays explicit
+     * and the engine never chases the reference at the table. */
+    const anatomies = row.kind === "part" ? [row.anatomy] : Object.keys(ANATOMY_LOCATIONS);
+    const location = row.kind === "part" ? row.location : GENERAL_SLOT;
+
+    const resolutions = existing?.inherits === "row12"
+      ? anatomies.map((anatomy) => {
+        const parentId = tables[row.damageType]?.[anatomy]?.[location]?.[TABLE_ROWS - 1];
+        const parent = parentId ? entries.get(parentId) : null;
+        return { anatomy, parentId, parent };
+      })
+      : [];
+
+    let id = baseId;
+    let resolved = null;
+
+    if (resolutions.length) {
+      const missing = resolutions.filter((r) => !r.parent || r.parent.placeholder);
+      if (missing.length) {
+        notes.push(`"${baseId}": inherits row 12 of ${row.damageType}/${missing.map((m) => m.anatomy).join(",")}/${location}, which is unwritten — the 13+ result falls back to row 12 plus the save`);
+      }
+      /* The non-localized half stores ONE id per damage type, so its three anatomies must resolve
+       * to the same parent. They do today — every energy effect is tagged for all three — but a
+       * future entry tagged for one anatomy would silently give two of them the wrong wound. */
+      const distinctParents = new Set(resolutions.map((r) => r.parentId));
+      if (row.kind !== "part" && distinctParents.size > 1) {
+        problems.push(`mortal "${baseId}" (${row.damageType}): row 12 differs by anatomy (${[...distinctParents].join(", ")}), but the non-localized half stores one entry per damage type`);
+      }
+
+      const { parent } = resolutions[0];
+      if (parent) {
+        id = `${baseId}--${row.damageType}-${resolutions[0].anatomy}-${location}`;
+        resolved = resolveInherited({ ...existing, id, name: row.name }, parent);
+
+        // The multiplier the runtime accepts is 1 or 2; a doubled double is a content mistake.
+        if (resolved.save != null && resolved.save > 2) {
+          problems.push(`mortal "${baseId}" (${row.damageType}/${resolutions[0].anatomy}): save multiplier resolved to ${resolved.save}, above the cap of 2`);
+          resolved.save = 2;
+        }
+        // A transform that finds nothing to act on names a mechanic the result does not have.
+        if (existing.transform?.bleed && !(parent.conditions ?? []).some((c) => c.id === "bleed" && c.bleed?.formula)) {
+          notes.push(`"${baseId}": doubles bleed, but row 12 of ${row.damageType}/${resolutions[0].anatomy}/${location} ("${parent.name}") carries no bleed to double`);
+        }
+      }
+    }
+
     /* A mortal row's mechanics come from its pool entry when it has one, exactly as its prose does.
      * Built through `catalogEntry` so there is one list of what counts as content — a channel added
      * to that function must not need remembering here as well. `note` is the one field the
      * worksheet can override, because the worksheet's mechanic column IS the note. */
     addEntry({
-      ...catalogEntry({ ...(existing ?? {}), id, name: row.name }),
+      ...catalogEntry(resolved ?? { ...(existing ?? {}), id, name: row.name }),
       note: row.mechanic || existing?.note || null,
     });
     if (row.kind === "part") mortal.byPart[row.damageType][row.anatomy][row.location] = id;
     else mortal.byDamageType[row.damageType] = id;
+
+    if (resolved) report.mortalParents.push({ cell: `${row.damageType}/${resolutions[0].anatomy}/${location}`, entry: row.name, parent: resolutions[0].parent.name });
   }
 }
 
 // --- emit -------------------------------------------------------------------
 
 const output = {
-  version: 6,
+  // v7: `buff` became `buffs`, an array. See CHANGELOG.
+  version: 7,
   _generated: "GENERATED by tools/pool-to-tables.mjs from data/pool.json — do not hand-edit. Edit the pool.",
   _shape:
     "tables[damageType][anatomy][location] = 12 entry ids. Anatomy is a real dimension: `arm` is " +
@@ -329,6 +473,13 @@ const output = {
     "The 13+ addendum — read ON TOP of row 12, not instead of it. Two halves keyed by different " +
     "axes: mortal.byPart[damageType][anatomy][location] for the weapon damage types, " +
     "mortal.byDamageType[damageType] for the rest (anatomy agnostic). Authored in content/mortal.md.",
+  /* Which row-12 result each inheriting mortal cell resolved against. Not read by anything — it is
+   * here to be DIFFED. Placement is global, so adding one grave effect can re-seat row 12 and
+   * silently change what a 13+ result inherits; with this in the file that shows up as a line in
+   * the diff instead of as a wound that quietly changed underneath the table. */
+  _mortalParents: Object.fromEntries(
+    report.mortalParents.map(({ cell, entry, parent }) => [cell, `${entry} <- ${parent}`]).sort()
+  ),
   entries: [...entries.values()].sort((a, b) => a.id.localeCompare(b.id)),
   tables,
   mortal,

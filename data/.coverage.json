@@ -138,49 +138,49 @@
     "repeats": [
       {
         "row": 1,
-        "id": "wing-bruised",
+        "id": "bruised-wing",
         "rank": 2,
         "cost": 1
       },
       {
         "row": 3,
-        "id": "wing-bruised",
+        "id": "bruised-wing",
         "rank": 2,
         "cost": 1
       },
       {
         "row": 4,
-        "id": "wing-broken",
+        "id": "broken-wing",
         "rank": 5,
         "cost": 1
       },
       {
         "row": 6,
-        "id": "wing-broken",
+        "id": "broken-wing",
         "rank": 5,
         "cost": 1
       },
       {
         "row": 7,
-        "id": "wing-compound-fractured",
+        "id": "compound-fracture-wing",
         "rank": 8,
         "cost": 1
       },
       {
         "row": 9,
-        "id": "wing-compound-fractured",
+        "id": "compound-fracture-wing",
         "rank": 8,
         "cost": 1
       },
       {
         "row": 10,
-        "id": "wing-crushed",
+        "id": "crushed-wing",
         "rank": 11,
         "cost": 1
       },
       {
         "row": 12,
-        "id": "wing-crushed",
+        "id": "crushed-wing",
         "rank": 11,
         "cost": 1
       }
@@ -356,37 +356,37 @@
       },
       {
         "row": 4,
-        "id": "tail-punctured",
+        "id": "punctured-tail",
         "rank": 5,
         "cost": 1
       },
       {
         "row": 6,
-        "id": "tail-punctured",
+        "id": "punctured-tail",
         "rank": 5,
         "cost": 1
       },
       {
         "row": 7,
-        "id": "tail-pinned",
+        "id": "pinned-tail",
         "rank": 8,
         "cost": 1
       },
       {
         "row": 9,
-        "id": "tail-pinned",
+        "id": "pinned-tail",
         "rank": 8,
         "cost": 1
       },
       {
         "row": 10,
-        "id": "tail-skewered",
+        "id": "skewered-tail",
         "rank": 11,
         "cost": 1
       },
       {
         "row": 12,
-        "id": "tail-skewered",
+        "id": "skewered-tail",
         "rank": 11,
         "cost": 1
       }
@@ -414,37 +414,37 @@
       },
       {
         "row": 4,
-        "id": "wing-punctured",
+        "id": "punctured-wing",
         "rank": 5,
         "cost": 1
       },
       {
         "row": 6,
-        "id": "wing-punctured",
+        "id": "punctured-wing",
         "rank": 5,
         "cost": 1
       },
       {
         "row": 7,
-        "id": "wing-base-pierced",
+        "id": "pierced-wing-base",
         "rank": 8,
         "cost": 1
       },
       {
         "row": 9,
-        "id": "wing-base-pierced",
+        "id": "pierced-wing-base",
         "rank": 8,
         "cost": 1
       },
       {
         "row": 10,
-        "id": "wing-skewered",
+        "id": "skewered-wing",
         "rank": 11,
         "cost": 1
       },
       {
         "row": 12,
-        "id": "wing-skewered",
+        "id": "skewered-wing",
         "rank": 11,
         "cost": 1
       }
@@ -644,13 +644,13 @@
       },
       {
         "row": 10,
-        "id": "tail-severed",
+        "id": "severed-tail",
         "rank": 11,
         "cost": 1
       },
       {
         "row": 12,
-        "id": "tail-severed",
+        "id": "severed-tail",
         "rank": 11,
         "cost": 1
       }
@@ -678,13 +678,13 @@
       },
       {
         "row": 4,
-        "id": "wing-sliced",
+        "id": "sliced-wing",
         "rank": 5,
         "cost": 1
       },
       {
         "row": 6,
-        "id": "wing-sliced",
+        "id": "sliced-wing",
         "rank": 5,
         "cost": 1
       },
@@ -702,13 +702,13 @@
       },
       {
         "row": 10,
-        "id": "wing-severed",
+        "id": "severed-wing",
         "rank": 11,
         "cost": 1
       },
       {
         "row": 12,
-        "id": "wing-severed",
+        "id": "severed-wing",
         "rank": 11,
         "cost": 1
       }
@@ -836,13 +836,13 @@
       },
       {
         "row": 10,
-        "id": "set-ablaze",
+        "id": "set-alight",
         "rank": 11,
         "cost": 1
       },
       {
         "row": 12,
-        "id": "set-ablaze",
+        "id": "set-alight",
         "rank": 11,
         "cost": 1
       }

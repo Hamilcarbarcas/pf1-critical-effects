@@ -84,7 +84,7 @@ export function renderExecution(block, execution, { scope, message } = {}) {
     // which outcome it is.
     if (branched) section.append(el("div", "ce-branch-label", key === "saved" ? "On a success" : "On a failure"));
 
-    appendBuff(section, branch.buff, branch.buffName);
+    for (const { name, snapshot } of branch.buffs ?? []) appendBuff(section, snapshot, name);
     appendConditionHeaders(section, branch.conditions);
 
     // The mount. Emitted even when nothing will be put in it — an empty container is invisible, and
@@ -115,6 +115,10 @@ export function renderExecution(block, execution, { scope, message } = {}) {
  * `buffName` is passed alongside the snapshot because the two can disagree in exactly one way that
  * matters: a buff the catalog names but no compendium has. Then there is no snapshot to draw and
  * the name is all we know, which is still worth saying — the GM can go and make the buff.
+ *
+ * Called once per buff on the branch. Several stack as separate headers rather than merging into
+ * one, because they are separate items with separate lifetimes — a wound and the weapon holding it
+ * open are cleared by different things, and a single header would imply otherwise.
  */
 function appendBuff(section, buff, buffName) {
   if (!buff && !buffName) return;

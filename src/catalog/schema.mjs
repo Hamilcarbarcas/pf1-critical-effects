@@ -8,7 +8,7 @@
  *                  stops a load.
  *
  * The content strategy is **self-contained** (v5): an entry with `id` and `name` is COMPLETE, and
- * `text`, `note`, `buff` and `conditions` are all optional and additive. Nothing in the engine may
+ * `text`, `note`, `buffs` and `conditions` are all optional and additive. Nothing in the engine may
  * assume any of them exist. There is no `journal` — prose is ours, stored here, rendered by us.
  *
  * This module is imported by the Node build tools as well as by the running module, so it must
@@ -268,6 +268,21 @@ export const CONDITION_IDS = [
 export const MOVEMENT_CONDITIONS = ["burrow", "fly", "hover", "swim"];
 
 /**
+ * Conditions a **companion module** registers, which PF1 itself does not have.
+ *
+ * Kept apart from `CONDITION_IDS` so that list stays a faithful mirror of PF1's registry and its
+ * drift check keeps working. An entry may name one of these, and the fire rows do — `burning` is
+ * registered by pf1-bleed-effects (or by Nevela's suite, which owns it when both are installed).
+ *
+ * The consequence of one being absent is the same as for a bleed with no bleed module: the
+ * condition does not apply and the entry degrades to its remaining channels. `lint()` reports it.
+ */
+export const COMPANION_CONDITIONS = ["burning"];
+
+/** Every condition id an entry may legally name, whoever supplies it. */
+export const ALL_CONDITION_IDS = [...CONDITION_IDS, ...COMPANION_CONDITIONS];
+
+/**
  * How long a condition lasts, in seconds per unit.
  *
  * PF1 stores a condition's life as `duration.seconds` on its Active Effect and expires it against
@@ -336,7 +351,7 @@ export function validateCondition(condition, where) {
 
   if (!isPlainObject(condition)) return [`${where}: condition must be an object`];
   if (!isNonEmptyString(condition.id)) return [`${where}: condition is missing \`id\``];
-  if (!CONDITION_IDS.includes(condition.id)) problems.push(`${where}: unknown condition "${condition.id}"`);
+  if (!ALL_CONDITION_IDS.includes(condition.id)) problems.push(`${where}: unknown condition "${condition.id}"`);
 
   const { duration } = condition;
   if (duration != null) {
@@ -403,7 +418,26 @@ export function validateCondition(condition, where) {
  * least as likely to be a type PF1 knows and this list does not; PF1 treats one it genuinely does
  * not know as untyped, which is a far better outcome than silently losing the damage.
  */
-export const DAMAGE_PART_TYPES = [...DAMAGE_TYPES, "untyped", "precision", "nonlethal"];
+/**
+ * Ability damage and drain, as registered by Nevela's Automation Suite.
+ *
+ * These are genuine `pf1.registry.damageTypes` entries in the `ability damage` category, not a
+ * channel of ours — which is why ability damage needs no schema of its own and rides the ordinary
+ * `damage` array. The ids carry spaces because that is how the suite registers them; they are used
+ * verbatim.
+ *
+ * Without the suite installed PF1 treats them as untyped, so a world missing it still rolls and
+ * applies the dice — it just applies them to hit points. That is the usual degradation, and it is
+ * why these are listed rather than gated.
+ */
+export const ABILITY_DAMAGE_TYPES = [
+  "strength damage", "dexterity damage", "constitution damage",
+  "strength drain", "dexterity drain", "constitution drain",
+];
+
+export const DAMAGE_PART_TYPES = [
+  ...DAMAGE_TYPES, "untyped", "precision", "nonlethal", ...ABILITY_DAMAGE_TYPES,
+];
 
 /**
  * Structural check of one `{ formula, type }` damage part.
@@ -432,6 +466,49 @@ export function validateDamage(damage, where) {
   if (damage == null) return [];
   if (!Array.isArray(damage)) return [`${where}: \`damage\` must be an array when present`];
   return damage.flatMap((part, i) => validateDamagePart(part, `${where} damage part #${i}`));
+}
+
+// --- setHP: an assertion about the victim's state, not damage (§6) ----------
+
+/**
+ * Structural check of `setHP` — "reduced to N hit points", written as a number.
+ *
+ * This is deliberately **not** a damage part, and the distinction is the whole reason it exists.
+ * Damage is rolled on Confirm and stored; a formula for "current hp + 1" would be computed before
+ * the attack's own damage had been applied and would miss by exactly that much, with the outcome
+ * depending on which apply button the GM happened to click first. `setHP` is resolved against live
+ * hit points at the moment it is applied, so the target ends where the entry says regardless of
+ * what landed in between.
+ *
+ * It also bypasses damage reduction and the half-damage anchor, which is correct: "reduced to -1"
+ * is a statement about where the victim ends up, not an amount of harm to be resisted.
+ *
+ * Two entries use it — Punctured Heart and Bisected, both `-1`.
+ */
+export function validateSetHP(setHP, where) {
+  if (setHP == null) return [];
+  if (!Number.isInteger(setHP)) return [`${where}: \`setHP\` must be an integer, or absent`];
+  return [];
+}
+
+// --- negativeLevels: energy drain (§6) --------------------------------------
+
+/**
+ * Structural check of `negativeLevels` — a formula, applied through pf1-improved-energy-drain.
+ *
+ * Negative levels are not a damage type and cannot ride the `damage` array the way ability damage
+ * does: they are their own lifecycle (temporary, bestowed, permanent) with their own save and their
+ * own death check, all of which that module already owns. Three entries reach it — Waning Vitality,
+ * Life Drained and Consuming Void.
+ *
+ * Without the module the channel is inert and reported, like a bleed with no bleed module.
+ */
+export function validateNegativeLevels(negativeLevels, where) {
+  if (negativeLevels == null) return [];
+  if (!isNonEmptyString(negativeLevels) && !Number.isInteger(negativeLevels)) {
+    return [`${where}: \`negativeLevels\` must be a formula string or an integer, or absent`];
+  }
+  return [];
 }
 
 // --- saves and the failed branch (§6) ---------------------------------------
@@ -466,15 +543,140 @@ export function validateOnFail(onFail, where) {
   if (!isPlainObject(onFail)) return [`${where}: \`onFail\` must be an object when present`];
 
   const problems = [];
-  if (onFail.buff !== undefined && onFail.buff !== null && !isNonEmptyString(onFail.buff)) {
-    problems.push(`${where}: \`onFail.buff\` must be a buff name or null`);
-  }
+  if (onFail.buff !== undefined) problems.push(`${where}: \`onFail.buff\` became \`onFail.buffs\` in v7`);
+  problems.push(...validateBuffs(onFail.buffs, `${where} onFail`, { nullable: true }));
   problems.push(...validateConditions(onFail.conditions, `${where} onFail`));
   problems.push(...validateDamage(onFail.damage, `${where} onFail`));
+  problems.push(...validateSetHP(onFail.setHP, `${where} onFail`));
+  problems.push(...validateNegativeLevels(onFail.negativeLevels, `${where} onFail`));
 
   for (const key of Object.keys(onFail)) {
-    if (!["buff", "conditions", "damage"].includes(key)) {
+    if (!MECHANICAL_CHANNELS.includes(key)) {
       problems.push(`${where}: \`onFail.${key}\` is not a mechanical channel and will be ignored`);
+    }
+  }
+  return problems;
+}
+
+/**
+ * Every channel an entry — or a failed branch — may carry. Named once so `onFail`'s key check and
+ * the transform vocabulary cannot drift apart from what the entry itself accepts.
+ */
+export const MECHANICAL_CHANNELS = ["buffs", "conditions", "damage", "setHP", "negativeLevels"];
+
+/**
+ * Structural check of `buffs` — an array of buff NAMES.
+ *
+ * **An array since v7**, for the same reason `conditions` always was: the content genuinely
+ * delivers more than one. Thirteen entries pair a wound with *Weapon Stuck* — the steel is still in
+ * the victim, and that is a second buff with its own lifecycle, not a footnote on the first. While
+ * this was a single field those thirteen carried the second one as an adjudication `note`, which is
+ * to say the catalog was describing an effect it could not perform.
+ *
+ * Names rather than uuids (§6): a name survives a pack recompile, finds a copy already on the actor
+ * — which is what makes Refresh work — and lets a GM keep their buffs in a pack of their own.
+ *
+ * Order is meaningful only for presentation: the first buff leads the Apply button's label, so the
+ * wound should be written before the thing holding it open.
+ *
+ * @param {unknown} buffs
+ * @param {string} where
+ * @param {{nullable?: boolean}} [opts]  `null` is legal on a branch, where it means "clear this
+ *                                       channel" rather than "inherit it" (see `validateOnFail`).
+ */
+export function validateBuffs(buffs, where, { nullable = false } = {}) {
+  if (buffs == null) {
+    return buffs === null && !nullable ? [`${where}: \`buffs\` must be an array or absent`] : [];
+  }
+  if (!Array.isArray(buffs)) return [`${where}: \`buffs\` must be an array of buff names`];
+
+  const problems = [];
+  const seen = new Set();
+  for (const [i, name] of buffs.entries()) {
+    if (!isNonEmptyString(name)) { problems.push(`${where}: \`buffs[${i}]\` must be a buff name`); continue; }
+    /* Delivering the same buff twice is not additive — `applyBuffTo` finds the copy already on the
+     * actor and refreshes it — so the second name is a no-op that reads like a mechanic. */
+    const key = name.trim().toLowerCase();
+    if (seen.has(key)) problems.push(`${where}: delivers "${name}" twice; the second would only refresh the first`);
+    seen.add(key);
+  }
+  return problems;
+}
+
+// --- inheritance: "as 12, but worse" (§3) -----------------------------------
+
+/**
+ * What an entry may inherit from. One value today, and deliberately an enum rather than an entry
+ * id: the whole point is that a 13+ result reads *"as row 12 of whatever table you are on"*, which
+ * resolves to a different parent in each of the 39 byPart cells. An id could not say that.
+ *
+ * Resolved at **fold-in time** by `pool-to-tables`, never at runtime: the baked `effects.json`
+ * carries the fully merged entry, so the engine still looks a row up by index and never chases a
+ * reference (§3, "No inheritance"). This is the same escape the `= humanoid` worksheet shorthand
+ * takes — a build-time convenience that leaves the shipped JSON explicit.
+ */
+export const INHERIT_SOURCES = ["row12"];
+
+/**
+ * The transform vocabulary — every way a 13+ row modifies the row-12 result it reads on top of.
+ *
+ * Closed, and small enough to check against the content: the 21 authored mortal rows between them
+ * need to double a bleed, double a save DC, add a damage part, add conditions, add a buff, and
+ * scale a dedicated-healing threshold along with the bleed that set it. Nothing else. A vocabulary
+ * that grew per-row would be prose with extra steps.
+ *
+ * - `bleed`      multiply every bleed's **dice count**, wherever it lives — a condition on the
+ *                entry or a bleed configured on the buff it delivers. Other payloads are untouched:
+ *                "double bleed" doubles bleed.
+ * - `saveDC`     multiply the save's DC multiplier. With `save: 1` on the parent this is what
+ *                turns a Fort save into the doubled-DC one the 13+ rows call for.
+ * - `scaleDH`    scale the inherited buff's dedicated-healing threshold by the same factor as
+ *                `bleed`. Thresholds are derived from dice count (5 per die of hit-point bleed, 10
+ *                per die of ability bleed), so a doubled bleed that kept its old threshold would
+ *                silently undercharge the wound.
+ * - `damage`     damage parts ADDED to the parent's, not replacing them. Vorpal Cut's +6d6.
+ * - `conditions` conditions ADDED to the parent's. Encased's suffocation, Pulverized's entangle.
+ * - `buff`       a buff that REPLACES the parent's. Rare — most 13+ rows keep the parent's.
+ */
+export const TRANSFORM_OPS = ["bleed", "saveDC", "scaleDH", "damage", "conditions", "buffs"];
+
+/**
+ * Structural check of `inherits` and its `transform`.
+ *
+ * A transform with no `inherits` is the error worth catching: it reads as though it does something
+ * and does nothing at all, because there is no parent for it to act on.
+ */
+export function validateInheritance(entry, where) {
+  const { inherits, transform } = entry ?? {};
+  const problems = [];
+
+  if (inherits != null && !INHERIT_SOURCES.includes(inherits)) {
+    problems.push(`${where}: \`inherits\` must be one of ${INHERIT_SOURCES.join(", ")}, or absent`);
+  }
+  if (transform == null) return problems;
+
+  if (!isPlainObject(transform)) return [...problems, `${where}: \`transform\` must be an object when present`];
+  if (inherits == null) {
+    problems.push(`${where}: has a \`transform\` but no \`inherits\`, so there is nothing to transform`);
+  }
+
+  for (const [op, value] of Object.entries(transform)) {
+    if (!TRANSFORM_OPS.includes(op)) {
+      problems.push(`${where}: \`transform.${op}\` is not a transform operation and will be ignored`);
+      continue;
+    }
+    if (op === "bleed" || op === "saveDC") {
+      if (!Number.isInteger(value) || value < 1) {
+        problems.push(`${where}: \`transform.${op}\` must be a positive integer multiplier`);
+      }
+    } else if (op === "scaleDH") {
+      if (typeof value !== "boolean") problems.push(`${where}: \`transform.scaleDH\` must be true or false`);
+    } else if (op === "damage") {
+      problems.push(...validateDamage(value, `${where} transform`));
+    } else if (op === "conditions") {
+      problems.push(...validateConditions(value, `${where} transform`));
+    } else if (op === "buffs") {
+      problems.push(...validateBuffs(value, `${where} transform`, { nullable: true }));
     }
   }
   return problems;
@@ -498,6 +700,14 @@ function keepMechanics(source) {
   } else if (kept.damage != null) {
     kept.damage = [];
   }
+  if (Array.isArray(kept.buffs)) {
+    kept.buffs = kept.buffs.filter((n) => typeof n === "string" && n.trim());
+  } else if (kept.buffs != null) {
+    kept.buffs = [];
+  }
+  // Scalars have no rows to salvage: either the value is usable or the channel is dropped whole.
+  if (validateSetHP(kept.setHP, "").length) kept.setHP = null;
+  if (validateNegativeLevels(kept.negativeLevels, "").length) kept.negativeLevels = null;
   return kept;
 }
 
@@ -513,8 +723,14 @@ export function validateConditions(conditions, where) {
     /* Two of the same condition on one entry cannot both take: PF1 keeps ONE Active Effect per
      * condition, so the second application is dropped and its duration lost. That is a content
      * bug — "stunned 1 round and stunned 1d4 rounds" means one of them, and the author has to say
-     * which. */
-    if (condition?.id) {
+     * which.
+     *
+     * **Bleed is the exception, and it is not a loophole.** A bleed's magnitude does not live on
+     * the Active Effect at all: pf1-bleed-effects keeps a *list* of instances in an actor flag and
+     * groups them by kind when they tick, so hit-point bleed and constitution bleed run side by
+     * side off one condition marker. Several row-12 wounds are written that way — "4d6 deep bleed,
+     * 2d4 con bleed" is one wound bleeding two ways, not an authoring slip. */
+    if (condition?.id && condition.id !== BLEED_CONDITION) {
       if (seen.has(condition.id)) problems.push(`${where}: applies "${condition.id}" twice; only the first would take`);
       seen.add(condition.id);
     }
@@ -585,7 +801,7 @@ export function validateEffects(data) {
   const bail = (message) => ({ errors: [...errors, message], warnings, entries, tables, mortal });
 
   if (!isPlainObject(data)) return bail("effects.json: root is not an object");
-  if (data.version !== 6) warnings.push(`effects.json: version is ${data.version}, expected 6`);
+  if (data.version !== 7) warnings.push(`effects.json: version is ${data.version}, expected 7`);
   if (!Array.isArray(data.entries)) return bail("effects.json: `entries` is not an array");
 
   const seen = new Set();
@@ -599,7 +815,8 @@ export function validateEffects(data) {
     if (!isNonEmptyString(entry?.name)) problems.push("missing `name`");
 
     if (entry?.text != null && typeof entry.text !== "string") problems.push("`text` must be a string when present");
-    if (entry?.buff != null && !isNonEmptyString(entry.buff)) problems.push("`buff` must be a buff name when present");
+    if (entry?.buff !== undefined) problems.push("`buff` became `buffs` (an array) in v7");
+    problems.push(...validateBuffs(entry?.buffs, "entry"));
     if (entry?.note != null && typeof entry.note !== "string") problems.push("`note` must be a string when present");
     if (entry?.tags !== undefined && !Array.isArray(entry.tags)) problems.push("`tags` must be an array when present");
     if (entry?.journal != null) problems.push("`journal` was removed in v5 — prose belongs in `text`");
@@ -617,6 +834,8 @@ export function validateEffects(data) {
     const mechanicalProblems = [
       ...validateConditions(entry.conditions, where),
       ...validateDamage(entry.damage, where),
+      ...validateSetHP(entry.setHP, where),
+      ...validateNegativeLevels(entry.negativeLevels, where),
       ...validateSave(entry.save, where),
       ...validateOnFail(entry.onFail, where),
     ];
@@ -790,7 +1009,7 @@ export function validateFumbles(data) {
   const tables = {};
 
   if (!isPlainObject(data)) return { errors: ["fumbles.json: root is not an object"], warnings, tables, entries };
-  if (data.version !== 4) warnings.push(`fumbles.json: version is ${data.version}, expected 4`);
+  if (data.version !== 5) warnings.push(`fumbles.json: version is ${data.version}, expected 5`);
   if (!Array.isArray(data.entries)) return { errors: ["fumbles.json: `entries` is not an array"], warnings, tables, entries };
   if (!isPlainObject(data.tables)) return { errors: ["fumbles.json: `tables` is not an object"], warnings, tables, entries };
 
@@ -811,6 +1030,8 @@ export function validateFumbles(data) {
     const mechanicalProblems = [
       ...validateConditions(entry.conditions, where),
       ...validateDamage(entry.damage, where),
+      ...validateSetHP(entry.setHP, where),
+      ...validateNegativeLevels(entry.negativeLevels, where),
       ...validateSave(entry.save, where),
       ...validateOnFail(entry.onFail, where),
     ];

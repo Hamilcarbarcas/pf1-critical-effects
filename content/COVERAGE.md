@@ -2,7 +2,7 @@
 
 **Generated** by `node tools/pool-report.mjs --write`. Do not edit.
 
-Pool: **196 effects**, 196 ranked, 0 untriaged.
+Pool: **211 effects**, 195 ranked, 0 untriaged, 16 mortal.
 Grid: **63 tables**, 756 rows — 3 weapon damage types ×
 13 anatomy/location pairs, plus 8 damage types that roll no
 location and keep one `general` table per anatomy.

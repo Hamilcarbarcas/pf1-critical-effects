@@ -39,6 +39,11 @@ const DEFAULTS = Object.freeze({
   required: 0,  // HP of dedicated healing to clear it; 0 = feature off for this item
   received: 0,  // HP accumulated so far (runtime)
   treated: false, // Heal check passed (or waived) — only then does it absorb healing
+  /* The NAME of another item on the same actor that must be gone (or switched off) before this
+   * wound will accept healing at all — the arrow still in it (DESIGN.md §8.1). A name rather than
+   * an id for the same reason every buff reference in this module is one: it survives a pack
+   * recompile and lets a GM keep their own copy. Empty = nothing blocks it. */
+  blockedBy: "",
 });
 
 /* Whoever should be shown the allocation dialog, when the heal is applied by someone else — a GM
@@ -175,6 +180,27 @@ function _anyAllocatable(participants) {
 }
 
 /**
+ * The item holding a wound open, if there is one (DESIGN.md §8.1).
+ *
+ * Deliberately **fails open**, matching `blockerOf` in pf1-bleed-effects: a blocker that cannot be
+ * confirmed — renamed, deleted, switched off, never applied — resolves to "not blocked" and lets
+ * the healing through. A wound left unclosable by a bookkeeping slip is a far worse outcome than
+ * one that closes a round early, and the GM can always switch the blocker back on.
+ *
+ * Matched by name, case-insensitively, because the blocker is authored as a name and a GM may keep
+ * their own copy of the buff under slightly different capitalisation.
+ *
+ * @param {Actor} actor
+ * @param {{blockedBy?: string}} cfg
+ * @returns {Item|null}
+ */
+function blockerFor(actor, cfg) {
+  const name = cfg.blockedBy?.trim().toLowerCase();
+  if (!name) return null;
+  return actor.items.find((i) => i.name.trim().toLowerCase() === name && i.isActive !== false) ?? null;
+}
+
+/**
  * The built-in provider: buffs on the actor that have been treated and still owe healing.
  *
  * @param {Actor} actor
@@ -185,11 +211,13 @@ function _itemParticipants(actor) {
   for (const item of actor.items) {
     const cfg = getConfig(item);
     if (!cfg.required || !cfg.treated) continue;
+    const blocker = blockerFor(actor, cfg);
     out.push({
       id: item.id,
       name: item.name,
       required: cfg.required,
       received: cfg.received,
+      ...(blocker ? { blocked: true, blockedReason: blocker.name } : {}),
       allocate: async (amount) => {
         // Re-read: the dialog may have been open a while.
         const now = getConfig(item);

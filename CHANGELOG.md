@@ -3,6 +3,58 @@
 ## Unreleased
 
 ### Added
+- **The catalogue is written.** All **756 rows** of the effect grid are filled — 63 tables, no
+  placeholders — from a pool of 211 effects imported from the authoring spreadsheet, plus the full
+  47-row 13+ addendum. Every entry carries flavour text; the mechanics render from its channels.
+- **13+ results can inherit row 12.** An entry may carry `inherits: "row12"` and a `transform`
+  instead of its own mechanics, and resolves at fold-in against whichever wound sits in row 12 of
+  the table it lands on. *"As 12, bleed and DC doubled"* is a derivation rather than a description,
+  and it derives from something different in each of the eighteen cells one **Mortal Blow** covers.
+  The transform vocabulary is six operations: multiply the bleed, multiply the save DC, scale the
+  buff's healing threshold with it, add damage, add conditions, replace the buff. `effects.json`
+  still ships one fully merged entry per cell, so the runtime chases nothing.
+- **`setHP`** — "reduced to −1 hit points", resolved against live hit points when it is applied
+  rather than rolled in advance, so it lands where the entry says regardless of what else arrived
+  first. Damage could not express this: a formula for *current hp + 1* is computed before the
+  attack's own damage and misses by exactly that much.
+- **`negativeLevels`** — energy drain, through pf1-improved-energy-drain.
+- **Ability damage and drain**, through Nevela's Automation Suite's registered damage types. No new
+  channel: they are genuine damage types and ride the ordinary `damage` array.
+- **`burning`** is usable as a condition. It is not a system condition — pf1-bleed-effects registers
+  it — so it lives in `COMPANION_CONDITIONS`, apart from the mirror of PF1's own registry.
+- **`node tools/verify.mjs`** runs the runtime validators over the generated files, so a mistake in
+  a generator has somewhere to show up.
+- **A wound can be held open.** *Held Open By* on the buff sheet's Dedicated Healing section names
+  another buff on the same actor; while that buff is active this one absorbs no healing at all. It
+  is the first step of Weapon Stuck (DESIGN.md §8.1) — a wound with steel still in it does not
+  close — and it is deliberately general: the blocker is any named buff, not that feature.
+  The allocation dialog already lists blocked wounds greyed and unallocatable, so the behaviour is
+  visible rather than a silently missing row. It **fails open**: a blocker that has been renamed,
+  deleted or switched off lets the healing through, because a wound left unclosable by a
+  bookkeeping slip is worse than one that closes a round early.
+
+### Changed
+- **An effect can deliver more than one buff.** `buff` is now **`buffs`**, an array, for the same
+  reason `conditions` always was one: the content genuinely delivers several. Thirteen entries pair
+  a wound with *Weapon Stuck* — the steel is still in the victim, which is a second buff with its
+  own lifetime, not a footnote on the first — and while the field was singular those thirteen
+  carried the second as an adjudication `note`. The catalogue was describing an effect it could not
+  perform. The card now draws a header per buff and the Apply button delivers them in order.
+  `onFail.buffs` and `transform.buffs` follow. A singular `buff` anywhere is a hard error naming
+  its replacement, as `journal` was in v5; no data in the repo used it outside generated files.
+- **Death is expressible.** A failed save-or-die now carries the `dead` condition like any other
+  outcome, applied by the same Apply button and never on its own. Fifteen entries end in death, and
+  a card that resolved the save, drew both branches and then went quiet on the only outcome that
+  mattered was stopping one step short. See DESIGN.md §6 — the previous rule was the opposite.
+- **Two bleeds on one entry are legal.** A bleed's magnitude never touches its Active Effect —
+  pf1-bleed-effects keeps a list of instances and groups them by kind when they tick — so
+  *4d6 deep bleed, 2d4 con bleed* is one wound bleeding two ways. Every other condition is still
+  one-per-entry, and still reported when doubled.
+- **Dedicated-healing thresholds are derived from the dice**: 5 hit points per die of hit-point
+  bleed, 10 per die of ability bleed. That is what lets the 13+ doubling scale the formula and the
+  threshold together instead of silently undercharging a doubled wound.
+
+### Added
 - **Effects execute on the card.** A resolved critical (or fumble) now shows what it did and offers
   to do it, rather than naming a buff in a button label: the buff as an expandable header in the
   system's own buff colouring with a link to the compendium item, each condition with its icon and

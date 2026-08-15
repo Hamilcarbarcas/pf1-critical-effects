@@ -68,7 +68,11 @@ export async function resolveExecution(entry, { sourceMessage = null, attackInde
 /** Whether an entry has anything for the execution block to draw at all. */
 export function hasMechanics(entry) {
   if (!entry) return false;
-  return !!(entry.buff || entry.conditions?.length || entry.damage?.length || entry.save || entry.onFail);
+  return !!(
+    entry.buffs?.length || entry.conditions?.length || entry.damage?.length ||
+    entry.setHP != null || entry.negativeLevels != null ||
+    entry.save || entry.onFail
+  );
 }
 
 /**
