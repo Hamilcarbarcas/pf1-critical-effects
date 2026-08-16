@@ -1,0 +1,72 @@
+_id: DZqjbbS4TeqUR4Da
+_key: '!items!DZqjbbS4TeqUR4Da'
+_stats:
+  compendiumSource: null
+  coreVersion: '13.351'
+  createdTime: 1786848327668
+  duplicateSource: null
+  exportSource: null
+  lastModifiedBy: mLW1zeZBsSCEsXlw
+  modifiedTime: 1786854509765
+  systemId: pf1
+  systemVersion: '11.11'
+effects: []
+flags:
+  astora-mod:
+    hiddenBuff: false
+  pf1-improved-energy-drain:
+    staticEnabled: false
+    staticLevels: 0
+  scene-packer:
+    hash: dc75a61bea947c6d9c600ea0aec2d4191e076487
+folder: null
+img: Icons/ICONS/Ability_BackStab.webp
+name: Weapon Stuck - Attacker
+ownership:
+  default: 0
+  mLW1zeZBsSCEsXlw: 3
+sort: 0
+system:
+  actions: []
+  active: false
+  attackNotes: []
+  changeFlags:
+    heavyArmorFullSpeed: false
+    immuneToMorale: false
+    loseDexToAC: false
+    lowLightVision: false
+    mediumArmorFullSpeed: false
+    noHeavyEncumbrance: false
+    noMediumEncumbrance: false
+    seeInDarkness: false
+    seeInvisibility: false
+  changes: []
+  conditions: []
+  contextNotes: []
+  description:
+    instructions: ''
+    value: <p>Your weapon is lodged in your enemy. You cannot make attacks with it. You can attempt to remove it with a DC 10 strength check. If you succeed, you deal damage equal to the attack that lodged it (not including critical damage).</p><p>So long as you hold the weapon, your movement is restricted - your movement must remain within the weapon's reach of the stuck target. Attemps to drag, reposition, or bull rush your target are made with advantage and do not provoke attacks of opportunity so long as the weapon remains stuck.</p><p>You may make an attempt to remove the weapon as a free action immediately after it is lodged.</p><p>You may make a Strength check as an attack of opportunity if your opponent attempts to remove the weapon - If you exceed their check to remove it, you may force it to remain lodged instead.</p>
+  duration:
+    end: ''
+    units: ''
+    value: null
+  effectNotes: []
+  flags:
+    boolean: {}
+    dictionary: {}
+  hideFromToken: false
+  level: 0
+  links:
+    children: []
+  scriptCalls: []
+  showInQuickbar: false
+  subType: temp
+  tag: ''
+  tags: []
+  uses:
+    autoDeductChargesCost: ''
+    maxFormula: ''
+    per: ''
+    rechargeFormula: ''
+    value: null
+type: buff

@@ -65,12 +65,22 @@ const bleeds = (t) => [...t.matchAll(DIE)].map(([, n, d, deep, ab]) => ({
  * They import as `note` and are not buffs to build. */
 const NOTES = new Set(["Signature Slash", "Holy Unmaking"]);
 
+/* How many of the manifest's buffs are actually built, as opposed to blanks carrying their brief.
+ * Not derivable from the sheet or the pack — "built" means a human wrote the changes and the
+ * bleed flag, and a blank is indistinguishable from a buff whose effect is pure narration. Bump
+ * it as they get written. */
+const BUILT = 18;
+
 /* Buff-name corrections. Applied to the *buff* a row delivers, never to the effect's own name.
  *
  *   - Impaled Arm/Appendage: the sheet named these after the lodged weapon, which reads as a
  *     repeat of the separate Weapon Stuck buff. They name the wound instead.
  *   - The three `As Name` rows that describe permanent limb loss but built a private buff for it.
  *     They join the shared {Limb} Destroyed family like every other effect that does the same.
+ *   - Compound Fracture: Finger/Hand were `As Name` rows too, and a compound fracture of a finger
+ *     is a broken finger that broke the skin — the bleed the effect already carries *is* the
+ *     compound part. They deliver the built Broken Finger/Broken Hand rather than a near-duplicate
+ *     of each, as the Foot/Rib/Back rows of the same family always did.
  */
 const RENAME = new Map([
   ["Lodged Weapon", "Impaled Arm"],
@@ -78,6 +88,8 @@ const RENAME = new Map([
   ["Crushed Appendage", "Appendage Destroyed"],
   ["Shattered Vertebrae", "Tail Destroyed"],
   ["Skewered Tail", "Tail Destroyed"],
+  ["Compound Fracture: Finger", "Broken Finger"],
+  ["Compound Fracture: Hand", "Broken Hand"],
 ]);
 
 const buffs = new Map();
@@ -102,8 +114,12 @@ for (const r of R) {
 const rows = [...buffs.values()].sort((a, b) => a.name.localeCompare(b.name));
 const out = [];
 out.push("# Buff manifest", "");
-out.push("**Generated** from `Critical Effects.csv` — the compendium buffs the effect catalog references.");
-out.push("None of these exist yet except the broken-bone set migrated from astora-mod.", "");
+out.push("**Generated** from `Critical Effects.csv` — the compendium buffs the effect catalog references.", "");
+out.push(`All ${rows.length} now exist in \`packs/effect-buffs\`. ${BUILT} are built (the broken-bone set migrated from`);
+out.push(`astora-mod, plus Weapon Stuck); the other ${rows.length - BUILT} are **blanks** — name, folder and sub-type only,`);
+out.push("their description holding the Effect / Bleed / DH cells below as the brief to build from.");
+out.push("`buffSnapshot` copies that description onto the chat card, so an unfilled buff shows its brief");
+out.push("to players until it is written.", "");
 out.push("Dedicated healing is derived from the bleed the buff carries: **5 per die** of hit-point bleed,");
 out.push("**10 per die** of ability bleed. A buff with no bleed takes its threshold from the `(heal N)`");
 out.push("in its own text, or none at all.", "");
@@ -116,15 +132,16 @@ out.push("|---|---|---|---|---|");
 for (const b of rows) {
   const desc = [...b.descs].join(" ");
   const bl = bleeds(desc);
-  const heal = desc.match(/\(?heal\s+(\d+)\)?/i);
-  const dh = bl.length ? bl.reduce((n, x) => n + x.dh, 0) : heal ? Number(heal[1]) : null;
+  // The sheet writes the threshold either way round — "(heal 20)" and "(DC 10, 5 heal)" both occur.
+  const heal = desc.match(/heal\s+(\d+)|(\d+)\s+heal/i);
+  const dh = bl.length ? bl.reduce((n, x) => n + x.dh, 0) : heal ? Number(heal[1] ?? heal[2]) : null;
   const bstr = bl.length ? bl.map((x) => `${x.formula} ${x.kind === "hp" ? "" : x.kind + " "}${x.deep ? "deep" : ""}`.trim()).join("<br>") : "—";
   const refs = [...new Set(b.refs)];
   out.push(`| **${b.name}**${b.inferred ? " ⚠" : ""} | ${sentence(desc) || "—"} | ${bstr} | ${dh ?? "—"} | ${refs.slice(0, 2).join(", ")}${refs.length > 2 ? ` +${refs.length - 2}` : ""} |`);
 }
 out.push("", "⚠ = the sheet gave prose rather than a name; named after its effect. Rename if you'd rather.", "");
 out.push("**Effect** is the sheet's own wording, verbatim but for a capitalised first letter — it is the");
-out.push("brief, not the buff text. `(heal N)` in it is where the DH column came from and need not survive");
+out.push("brief, not the buff text. A `heal N` in it — either word order — is where the DH column came from, and need not survive");
 out.push("into the item. A dash means the sheet gave a bare name, which happens in three cases: the");
 out.push("broken-bone buffs already built in astora-mod, the severed/destroyed family whose name is its");
 out.push("whole rule, and **Weapon Stuck**, specified in DESIGN.md §8.1.", "");

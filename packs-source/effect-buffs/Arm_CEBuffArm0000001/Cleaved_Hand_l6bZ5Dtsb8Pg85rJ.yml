@@ -1,0 +1,80 @@
+_id: l6bZ5Dtsb8Pg85rJ
+_key: '!items!l6bZ5Dtsb8Pg85rJ'
+_stats:
+  compendiumSource: null
+  coreVersion: '13.351'
+  createdTime: 1786827470369
+  duplicateSource: null
+  exportSource: null
+  lastModifiedBy: mLW1zeZBsSCEsXlw
+  modifiedTime: 1786863569443
+  systemId: pf1
+  systemVersion: '11.11'
+effects: []
+flags:
+  astora-mod:
+    hiddenBuff: false
+  pf1-critical-effects:
+    dedicatedHealing:
+      blockedBy: ''
+      dc: 0
+      received: 0
+      required: 20
+      treated: false
+  pf1-improved-energy-drain:
+    staticEnabled: false
+    staticLevels: 0
+folder: CEBuffArm0000001
+img: Icons/craftpix-icons/blood-wound/blood-wound-19-bloody-hand.png
+name: Cleaved Hand
+ownership:
+  default: 0
+sort: 1800000
+system:
+  actions: []
+  active: false
+  attackNotes: []
+  changeFlags:
+    heavyArmorFullSpeed: false
+    immuneToMorale: false
+    loseDexToAC: false
+    lowLightVision: false
+    mediumArmorFullSpeed: false
+    noHeavyEncumbrance: false
+    noMediumEncumbrance: false
+    seeInDarkness: false
+    seeInvisibility: false
+  changes: []
+  conditions: []
+  contextNotes:
+    - target: attack
+      text: '[[-4]] if using cleaved hand'
+    - target: skills
+      text: '[[-4]] if using cleaved hand'
+  description:
+    instructions: ''
+    value: <p>-4 to attacks/checks using hand until healed (heal 20)</p>
+  duration:
+    end: ''
+    units: ''
+    value: null
+  effectNotes: []
+  flags:
+    boolean: {}
+    dictionary: {}
+  hideFromToken: false
+  level: 0
+  links:
+    children: []
+  scriptCalls: []
+  showInQuickbar: false
+  subType: temp
+  tag: ''
+  tags: []
+  uses:
+    autoDeductChargesCost: ''
+    maxFormula: ''
+    per: ''
+    rechargeFormula: ''
+    value: null
+type: buff

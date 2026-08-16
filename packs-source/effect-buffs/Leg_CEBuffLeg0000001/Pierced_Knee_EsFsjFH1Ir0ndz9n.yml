@@ -1,0 +1,77 @@
+_id: EsFsjFH1Ir0ndz9n
+_key: '!items!EsFsjFH1Ir0ndz9n'
+_stats:
+  compendiumSource: null
+  coreVersion: '13.351'
+  createdTime: 1786827470369
+  duplicateSource: null
+  exportSource: null
+  lastModifiedBy: null
+  modifiedTime: 1786827470369
+  systemId: pf1
+  systemVersion: '11.11'
+effects: []
+flags:
+  pf1-bleed-effects:
+    bleed:
+      formula: 3d6
+      kind: hp
+      mode: active
+  pf1-critical-effects:
+    dedicatedHealing:
+      blockedBy: Weapon Stuck
+      dc: 0
+      received: 0
+      required: 15
+      treated: false
+folder: CEBuffLeg0000001
+img: icons/svg/ice-aura.svg
+name: Pierced Knee
+ownership:
+  default: 0
+sort: 0
+system:
+  actions: []
+  active: false
+  attackNotes: []
+  changeFlags:
+    heavyArmorFullSpeed: false
+    immuneToMorale: false
+    loseDexToAC: false
+    lowLightVision: false
+    mediumArmorFullSpeed: false
+    noHeavyEncumbrance: false
+    noMediumEncumbrance: false
+    seeInDarkness: false
+    seeInvisibility: false
+  changes: []
+  conditions:
+    - bleed
+  contextNotes: []
+  description:
+    instructions: ''
+    value: <p><strong>Effect:</strong> 3d6 deep bleed, 1/2 move, -4 to attacks/skills using leg until healed</p><p><strong>Bleed:</strong> 3d6 deep</p><p><strong>DH:</strong> 15</p>
+  duration:
+    end: ''
+    units: ''
+    value: null
+  effectNotes: []
+  flags:
+    boolean: {}
+    dictionary: {}
+  hideFromToken: false
+  level: 0
+  links:
+    children: []
+  scriptCalls: []
+  showInQuickbar: false
+  subType: temp
+  tag: ''
+  tags: []
+  uses:
+    autoDeductChargesCost: ''
+    maxFormula: ''
+    per: ''
+    rechargeFormula: ''
+    value: null
+type: buff

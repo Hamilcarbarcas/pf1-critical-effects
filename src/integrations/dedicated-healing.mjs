@@ -91,6 +91,7 @@ export function getConfig(item) {
     required: Number(raw.required) || 0,
     received: Number(raw.received) || 0,
     treated: !!raw.treated,
+    blockedBy: typeof raw.blockedBy === "string" ? raw.blockedBy : "",
   };
 }
 

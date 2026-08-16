@@ -32,8 +32,43 @@
   visible rather than a silently missing row. It **fails open**: a blocker that has been renamed,
   deleted or switched off lets the healing through, because a wound left unclosable by a
   bookkeeping slip is worse than one that closes a round early.
+- **62 more buffs carry their mechanics.** The bleed and dedicated-healing columns of
+  `content/BUFFS.md` are now on the items they describe — `flags.pf1-bleed-effects.bleed` in active
+  mode (the buff outlives the bleed's own condition, so dedicated healing is what ends it) and
+  `flags.pf1-critical-effects.dedicatedHealing`. Nine of them — the wounds the catalogue delivers
+  alongside *Weapon Stuck* — are **held open by** it, so the steel has to come out before the wound
+  will take healing. Prose and Changes are still per-buff hand work; this is only the two fields
+  that were the same shape every time.
+- **22 buffs supply the condition their brief names** — staggered, nauseated, sickened, fatigued,
+  exhausted, confused, blind, deaf, paralyzed, unconscious, dazed and flat-footed — in
+  `system.conditions`, so they hold for exactly as long as the buff and lift when it clears. This is
+  the buff-lifetime half of the pair: an entry's own `conditions` are the ones with a duration of
+  their own, and several effects carry both (*Muscle Lock* stuns on the hit and stays staggered
+  until healed). *Shattered Eye Socket* is deliberately **not** blinded: its brief says one eye, and
+  the catalogue already draws that distinction — a failed save escalates it to *Permanently Blinded
+  (One Eye)*, which is a different buff from *Permanently Blinded*.
+
+### Fixed
+
+- ***Held Open By* never blocked anything.** `getConfig` rebuilt the config field by field and was
+  not extended with `blockedBy`, so the value a GM typed was written to the flag and then dropped on
+  every read: nothing was ever marked blocked, and the field re-rendered empty as though it had not
+  saved. The stored data was intact throughout — `setFlag` merges — so existing buffs start working
+  without being re-configured.
+- **`buff-manifest.mjs` read the healing threshold in only one word order.** It matched `heal N`
+  but not `N heal`, so *Broken Toes* and *Dislocated Knee* — whose briefs say *(DC 10, 5 heal)* —
+  showed no threshold at all in the DH column and would have shipped unhealable.
 
 ### Changed
+- **The compound-fracture family delivers the broken bones it always meant.** *Compound Fracture:
+  Finger* and *: Hand* each carried a private buff of their own name, while the Foot, Rib and Back
+  rows of the same family delivered *Broken Foot / Rib / Back*. A compound fracture of a finger is
+  a broken finger that broke the skin, and the skin is the `1d6` bleed the entry already carries —
+  the two private buffs were a near-duplicate of a built one. They now deliver **Broken Finger**
+  and **Broken Hand**, and the blanks are gone from the pack.
+- ***Compound Fracture: Wing* is **Shattered Wing***, joining the Shattered Arm/Hand/Rib/Leg family
+  it belongs to rather than a family it shares no buff with. The wing is not a limb that fractures
+  through skin; it breaks in several places at once, and the text says so.
 - **An effect can deliver more than one buff.** `buff` is now **`buffs`**, an array, for the same
   reason `conditions` always was one: the content genuinely delivers several. Thirteen entries pair
   a wound with *Weapon Stuck* — the steel is still in the victim, which is a second buff with its

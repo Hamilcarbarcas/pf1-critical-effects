@@ -1,0 +1,73 @@
+_id: sCNrbNN0FC0GXk2Y
+_key: '!items!sCNrbNN0FC0GXk2Y'
+_stats:
+  compendiumSource: null
+  coreVersion: '13.351'
+  createdTime: 1786827470369
+  duplicateSource: null
+  exportSource: null
+  lastModifiedBy: mLW1zeZBsSCEsXlw
+  modifiedTime: 1786864984956
+  systemId: pf1
+  systemVersion: '11.11'
+effects: []
+flags:
+  astora-mod:
+    hiddenBuff: false
+  pf1-improved-energy-drain:
+    staticEnabled: false
+    staticLevels: 0
+folder: CEBuffArm0000001
+img: Icons/craftpix-icons/blood-wound/blood-wound-19-bloody-hand.png
+name: Nicked Tendon
+ownership:
+  default: 0
+sort: 2200000
+system:
+  actions: []
+  active: false
+  attackNotes: []
+  changeFlags:
+    heavyArmorFullSpeed: false
+    immuneToMorale: false
+    loseDexToAC: false
+    lowLightVision: false
+    mediumArmorFullSpeed: false
+    noHeavyEncumbrance: false
+    noMediumEncumbrance: false
+    seeInDarkness: false
+    seeInvisibility: false
+  changes: []
+  conditions: []
+  contextNotes:
+    - target: attack
+      text: '[[-4]] if using nicked hand'
+    - target: skills
+      text: '[[-4]] if using nicked hand'
+  description:
+    instructions: ''
+    value: <p><strong>-</strong>4 to attacks/checks using arm for 1 round</p>
+  duration:
+    end: initiative
+    units: round
+    value: '1'
+  effectNotes: []
+  flags:
+    boolean: {}
+    dictionary: {}
+  hideFromToken: false
+  level: 0
+  links:
+    children: []
+  scriptCalls: []
+  showInQuickbar: false
+  subType: temp
+  tag: ''
+  tags: []
+  uses:
+    autoDeductChargesCost: ''
+    maxFormula: ''
+    per: ''
+    rechargeFormula: ''
+    value: null
+type: buff

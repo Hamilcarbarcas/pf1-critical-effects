@@ -1,0 +1,64 @@
+_id: BTpgyFLrPSokFsgc
+_key: '!items!BTpgyFLrPSokFsgc'
+_stats:
+  compendiumSource: null
+  coreVersion: '13.351'
+  createdTime: 1786827470369
+  duplicateSource: null
+  exportSource: null
+  lastModifiedBy: null
+  modifiedTime: 1786827470369
+  systemId: pf1
+  systemVersion: '11.11'
+effects: []
+flags: {}
+folder: CEBuffTail000001
+img: icons/svg/ice-aura.svg
+name: Numbed Tail
+ownership:
+  default: 0
+sort: 0
+system:
+  actions: []
+  active: false
+  attackNotes: []
+  changeFlags:
+    heavyArmorFullSpeed: false
+    immuneToMorale: false
+    loseDexToAC: false
+    lowLightVision: false
+    mediumArmorFullSpeed: false
+    noHeavyEncumbrance: false
+    noMediumEncumbrance: false
+    seeInDarkness: false
+    seeInvisibility: false
+  changes: []
+  conditions: []
+  contextNotes: []
+  description:
+    instructions: ''
+    value: <p><strong>Effect:</strong> Tail useless 1d4 rounds</p><p><strong>Bleed:</strong> —</p><p><strong>DH:</strong> —</p>
+  duration:
+    end: ''
+    units: ''
+    value: null
+  effectNotes: []
+  flags:
+    boolean: {}
+    dictionary: {}
+  hideFromToken: false
+  level: 0
+  links:
+    children: []
+  scriptCalls: []
+  showInQuickbar: false
+  subType: temp
+  tag: ''
+  tags: []
+  uses:
+    autoDeductChargesCost: ''
+    maxFormula: ''
+    per: ''
+    rechargeFormula: ''
+    value: null
+type: buff

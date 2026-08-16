@@ -704,7 +704,7 @@
       "text": "<p>The bone comes out through the knuckle.</p>",
       "note": null,
       "buffs": [
-        "Compound Fracture: Finger"
+        "Broken Finger"
       ],
       "conditions": [
         {
@@ -738,7 +738,7 @@
       "text": "<p>The bone breaks and keeps going, out through the back of the hand.</p>",
       "note": null,
       "buffs": [
-        "Compound Fracture: Hand"
+        "Broken Hand"
       ],
       "conditions": [
         {
@@ -756,23 +756,6 @@
       "note": null,
       "buffs": [
         "Broken Rib"
-      ],
-      "conditions": [
-        {
-          "id": "bleed",
-          "bleed": {
-            "formula": "1d6"
-          }
-        }
-      ]
-    },
-    {
-      "id": "compound-fracture-wing",
-      "name": "Compound Fracture: Wing",
-      "text": "<p>The wing bone shears and breaks the skin of the membrane.</p>",
-      "note": null,
-      "buffs": [
-        "Compound Fracture: Wing"
       ],
       "conditions": [
         {
@@ -3632,6 +3615,23 @@
       ]
     },
     {
+      "id": "shattered-wing",
+      "name": "Shattered Wing",
+      "text": "<p>The wing bone breaks in multiple locations.</p>",
+      "note": null,
+      "buffs": [
+        "Shattered Wing"
+      ],
+      "conditions": [
+        {
+          "id": "bleed",
+          "bleed": {
+            "formula": "1d6"
+          }
+        }
+      ]
+    },
+    {
       "id": "shredded-pectoral",
       "name": "Shredded Pectoral",
       "text": "<p>The chest muscle is opened in overlapping cuts.</p>",
@@ -4409,9 +4409,9 @@
           "broken-wing",
           "broken-wing",
           "broken-wing",
-          "compound-fracture-wing",
-          "compound-fracture-wing",
-          "compound-fracture-wing",
+          "shattered-wing",
+          "shattered-wing",
+          "shattered-wing",
           "crushed-wing",
           "crushed-wing",
           "crushed-wing"

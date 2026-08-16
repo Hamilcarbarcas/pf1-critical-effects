@@ -1,0 +1,64 @@
+_id: 9AEZ21hIX2SPGbbH
+_key: '!items!9AEZ21hIX2SPGbbH'
+_stats:
+  compendiumSource: null
+  coreVersion: '13.351'
+  createdTime: 1786827470369
+  duplicateSource: null
+  exportSource: null
+  lastModifiedBy: mLW1zeZBsSCEsXlw
+  modifiedTime: 1786863569443
+  systemId: pf1
+  systemVersion: '11.11'
+effects: []
+flags: {}
+folder: CEBuffArm0000001
+img: icons/svg/ice-aura.svg
+name: Punctured Wrist
+ownership:
+  default: 0
+sort: 500000
+system:
+  actions: []
+  active: false
+  attackNotes: []
+  changeFlags:
+    heavyArmorFullSpeed: false
+    immuneToMorale: false
+    loseDexToAC: false
+    lowLightVision: false
+    mediumArmorFullSpeed: false
+    noHeavyEncumbrance: false
+    noMediumEncumbrance: false
+    seeInDarkness: false
+    seeInvisibility: false
+  changes: []
+  conditions: []
+  contextNotes: []
+  description:
+    instructions: ''
+    value: <p><strong>Effect:</strong> Drop item held, -4 to attacks/checks using arm for 1d4 rounds</p><p><strong>Bleed:</strong> —</p><p><strong>DH:</strong> —</p>
+  duration:
+    end: ''
+    units: ''
+    value: null
+  effectNotes: []
+  flags:
+    boolean: {}
+    dictionary: {}
+  hideFromToken: false
+  level: 0
+  links:
+    children: []
+  scriptCalls: []
+  showInQuickbar: false
+  subType: temp
+  tag: ''
+  tags: []
+  uses:
+    autoDeductChargesCost: ''
+    maxFormula: ''
+    per: ''
+    rechargeFormula: ''
+    value: null
+type: buff

@@ -1,0 +1,77 @@
+_id: n8DbZYxERZxjWA4z
+_key: '!items!n8DbZYxERZxjWA4z'
+_stats:
+  compendiumSource: null
+  coreVersion: '13.351'
+  createdTime: 1786827470369
+  duplicateSource: null
+  exportSource: null
+  lastModifiedBy: null
+  modifiedTime: 1786827470369
+  systemId: pf1
+  systemVersion: '11.11'
+effects: []
+flags:
+  pf1-bleed-effects:
+    bleed:
+      formula: 5d6
+      kind: hp
+      mode: active
+  pf1-critical-effects:
+    dedicatedHealing:
+      blockedBy: ''
+      dc: 0
+      received: 0
+      required: 25
+      treated: false
+folder: CEBuffHead000001
+img: icons/svg/ice-aura.svg
+name: Punctured Neck
+ownership:
+  default: 0
+sort: 0
+system:
+  actions: []
+  active: false
+  attackNotes: []
+  changeFlags:
+    heavyArmorFullSpeed: false
+    immuneToMorale: false
+    loseDexToAC: false
+    lowLightVision: false
+    mediumArmorFullSpeed: false
+    noHeavyEncumbrance: false
+    noMediumEncumbrance: false
+    seeInDarkness: false
+    seeInvisibility: false
+  changes: []
+  conditions:
+    - bleed
+  contextNotes: []
+  description:
+    instructions: ''
+    value: <p><strong>Effect:</strong> 5d6 deep bleed, Suffocating until healed</p><p><strong>Bleed:</strong> 5d6 deep</p><p><strong>DH:</strong> 25</p>
+  duration:
+    end: ''
+    units: ''
+    value: null
+  effectNotes: []
+  flags:
+    boolean: {}
+    dictionary: {}
+  hideFromToken: false
+  level: 0
+  links:
+    children: []
+  scriptCalls: []
+  showInQuickbar: false
+  subType: temp
+  tag: ''
+  tags: []
+  uses:
+    autoDeductChargesCost: ''
+    maxFormula: ''
+    per: ''
+    rechargeFormula: ''
+    value: null
+type: buff

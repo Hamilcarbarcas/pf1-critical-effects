@@ -1,0 +1,144 @@
+_id: C8jGJQttH6JFhg4t
+_key: '!items!C8jGJQttH6JFhg4t'
+_stats:
+  compendiumSource: null
+  coreVersion: '13.351'
+  createdTime: 1786778638047
+  duplicateSource: null
+  exportSource: null
+  lastModifiedBy: mLW1zeZBsSCEsXlw
+  modifiedTime: 1786854182326
+  systemId: pf1
+  systemVersion: '11.11'
+effects: []
+flags:
+  astora-mod:
+    buffToggle:
+      autoDelete: true
+      triggers: []
+    hiddenBuff: false
+  lilhelper:
+    item:
+      autoPowerAttack: false
+      hideAttacks: false
+      keen: false
+      rollOverride: ''
+      rollmodeOverride: ''
+      skipDialog: 0
+  pf1-bleed-effects:
+    bleed:
+      blocks: false
+      deep: 0
+      formula: ''
+      kind: hp
+      mode: active
+  pf1-improved-energy-drain:
+    staticEnabled: false
+    staticLevels: 0
+  scene-packer:
+    hash: 42c6e503a5ae594b08e675daad1d49a518e9c035
+folder: null
+img: Icons/ICONS/Ability_BackStab.webp
+name: Weapon Stuck
+ownership:
+  default: 0
+  mLW1zeZBsSCEsXlw: 3
+sort: 0
+system:
+  actions:
+    - _id: KXlQWUIYr19B3G7y
+      actionType: other
+      activation:
+        cost: 1
+        type: nonaction
+        unchained:
+          cost: 1
+          type: nonaction
+      ammo:
+        type: none
+      damage:
+        parts:
+          - formula: '@sourceInfo.saveDC'
+            types:
+              - untyped
+      flags: {}
+      name: Pull Weapon Out
+      powerAttack:
+        critMultiplier: 1
+        damageBonus: 2
+      uses: {}
+  active: false
+  attackNotes: []
+  changeFlags:
+    heavyArmorFullSpeed: false
+    immuneToMorale: false
+    loseDexToAC: false
+    lowLightVision: false
+    mediumArmorFullSpeed: false
+    noHeavyEncumbrance: false
+    noMediumEncumbrance: false
+    seeInDarkness: false
+    seeInvisibility: false
+  changes:
+    - _id: L9TYwvH3
+      formula: '-2'
+      operator: add
+      priority: 0
+      target: attack
+      type: circumstance
+  conditions: []
+  contextNotes: []
+  description:
+    instructions: ''
+    value: <p><em>A stuck weapon remains lodged in the wound, preventing healing and threatening further damage.</em></p><p>While the weapon is stuck, you take a -2 penalty on all attack rolls, and if the attacker maintains hold of the weapon you are anchored to the attacker - you cannot move out of reach of the weapon.</p><p>Any bleeds or ongoing injuries caused by the attack cannot be healed until the weapon is removed. This includes the application of dedicated healing to the injury.</p><p>A stuck weapon can be removed by succeeding on a DC 10 Strength Check as a Move Action. If removed in this way, it deals damage to you equal to the damage dealt by the attack that caused it.</p><p>A stuck weapon can also be removed by using the Heal skill (DC 20, 1 minute action). On success, the weapon is removed without further damage. Pass or fail, further bleed damage does not occur during this action so long as the check beat a DC of 10.</p>
+  duration:
+    end: ''
+    units: ''
+    value: null
+  effectNotes: []
+  flags:
+    boolean: {}
+    dictionary: {}
+  hideFromToken: false
+  level: 0
+  links:
+    children: []
+  scriptCalls:
+    - _id: LmcUF4S8
+      category: preActivate
+      hidden: false
+      img: null
+      name: Strength Check
+      type: script
+      value: |-
+        const result = await actor.rollAbilityTest("str");
+        if (!result) {
+            shared.reject = true;
+            return;
+        }
+
+        shared.skipDialog = true;
+
+        const roll = result.rolls?.[0];
+        const total = roll?.total;
+
+        if (total < 10)
+        {
+           shared.reject = true;
+           return;
+        }
+        else
+        {
+            item.setActive(false);
+        }
+  showInQuickbar: false
+  subType: feat
+  tag: ''
+  tags: []
+  uses:
+    autoDeductChargesCost: ''
+    maxFormula: ''
+    per: ''
+    rechargeFormula: ''
+    value: null
+type: buff

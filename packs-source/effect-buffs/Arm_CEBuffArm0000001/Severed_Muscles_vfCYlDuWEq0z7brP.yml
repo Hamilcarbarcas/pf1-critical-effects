@@ -1,0 +1,71 @@
+_id: vfCYlDuWEq0z7brP
+_key: '!items!vfCYlDuWEq0z7brP'
+_stats:
+  compendiumSource: null
+  coreVersion: '13.351'
+  createdTime: 1786827470369
+  duplicateSource: null
+  exportSource: null
+  lastModifiedBy: mLW1zeZBsSCEsXlw
+  modifiedTime: 1786863569443
+  systemId: pf1
+  systemVersion: '11.11'
+effects: []
+flags:
+  pf1-critical-effects:
+    dedicatedHealing:
+      blockedBy: ''
+      dc: 0
+      received: 0
+      required: 30
+      treated: false
+folder: CEBuffArm0000001
+img: icons/svg/ice-aura.svg
+name: Severed Muscles
+ownership:
+  default: 0
+sort: 2500000
+system:
+  actions: []
+  active: false
+  attackNotes: []
+  changeFlags:
+    heavyArmorFullSpeed: false
+    immuneToMorale: false
+    loseDexToAC: false
+    lowLightVision: false
+    mediumArmorFullSpeed: false
+    noHeavyEncumbrance: false
+    noMediumEncumbrance: false
+    seeInDarkness: false
+    seeInvisibility: false
+  changes: []
+  conditions: []
+  contextNotes: []
+  description:
+    instructions: ''
+    value: <p><strong>Effect:</strong> Arm useless until healed (heal 30)</p><p><strong>Bleed:</strong> —</p><p><strong>DH:</strong> 30</p>
+  duration:
+    end: ''
+    units: ''
+    value: null
+  effectNotes: []
+  flags:
+    boolean: {}
+    dictionary: {}
+  hideFromToken: false
+  level: 0
+  links:
+    children: []
+  scriptCalls: []
+  showInQuickbar: false
+  subType: temp
+  tag: ''
+  tags: []
+  uses:
+    autoDeductChargesCost: ''
+    maxFormula: ''
+    per: ''
+    rechargeFormula: ''
+    value: null
+type: buff

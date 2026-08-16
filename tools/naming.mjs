@@ -40,7 +40,7 @@ const OVERRIDE = new Map(Object.entries({
   "ear severed (disadvantage on all checks involving hearing)": "Severed Ear",
   "toes severed (disadvantage on acrobatics & climb)": "Severed Toes",
   "shattered vertibrae": "Shattered Vertebrae",         // spelling
-  "wing compound fractured": "Compound Fracture: Wing", // joins the Finger/Hand/Foot/Rib/Back family
+  "wing compound fractured": "Shattered Wing",          // joins the Shattered Arm/Hand/Rib/Leg family
   "wing base pierced": "Pierced Wing Base",
 }));
 

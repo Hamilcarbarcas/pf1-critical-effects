@@ -1,0 +1,112 @@
+_id: 0KWoQ66D9lfRWFmF
+_key: '!items!0KWoQ66D9lfRWFmF'
+_stats:
+  compendiumSource: null
+  coreVersion: '13.351'
+  createdTime: 1786827470369
+  duplicateSource: null
+  exportSource: null
+  lastModifiedBy: mLW1zeZBsSCEsXlw
+  modifiedTime: 1786864509055
+  systemId: pf1
+  systemVersion: '11.11'
+effects: []
+flags:
+  astora-mod:
+    hiddenBuff: false
+  pf1-bleed-effects:
+    bleed:
+      formula: 8d6
+      kind: hp
+      mode: active
+  pf1-critical-effects:
+    dedicatedHealing:
+      blockedBy: ''
+      dc: 0
+      received: 0
+      required: 40
+      treated: false
+  pf1-improved-energy-drain:
+    staticEnabled: false
+    staticLevels: 0
+folder: CEBuffArm0000001
+img: Icons/craftpix-icons/spearman-skill/spearman-skill-40-blood-spear-strike.png
+name: Kebabed Arm
+ownership:
+  default: 0
+sort: 100000
+system:
+  actions: []
+  active: false
+  attackNotes: []
+  changeFlags:
+    heavyArmorFullSpeed: false
+    immuneToMorale: false
+    loseDexToAC: false
+    lowLightVision: false
+    mediumArmorFullSpeed: false
+    noHeavyEncumbrance: false
+    noMediumEncumbrance: false
+    seeInDarkness: false
+    seeInvisibility: false
+  changes:
+    - _id: vyZxX91x
+      formula: '-10'
+      operator: add
+      priority: 0
+      target: skill.clm
+      type: untypedPerm
+    - _id: WcpVoaVU
+      formula: '-10'
+      operator: add
+      priority: 0
+      target: skill.crf
+      type: untypedPerm
+    - _id: r0gbnIGD
+      formula: '-10'
+      operator: add
+      priority: 0
+      target: skill.dev
+      type: untypedPerm
+    - _id: DlND8dtg
+      formula: '-10'
+      operator: add
+      priority: 0
+      target: skill.slt
+      type: untypedPerm
+    - _id: OF4aWqNK
+      formula: '-10'
+      operator: add
+      priority: 0
+      target: skill.umd
+      type: untypedPerm
+  conditions:
+    - bleed
+  contextNotes: []
+  description:
+    instructions: ''
+    value: <p>8d6 deep bleed, arm useless until healed</p><ul><li><p>-10 to climb, craft, disable device, sleight of hand, and use magic device checks</p></li><li><p>Cannot wield 2 handed weapons, dual wield, or wield a shield and weapon</p></li><li><p>Requies a caster level check -10 to cast spells with somatic components</p></li></ul>
+  duration:
+    end: ''
+    units: ''
+    value: null
+  effectNotes: []
+  flags:
+    boolean: {}
+    dictionary: {}
+  hideFromToken: false
+  level: 0
+  links:
+    children: []
+  scriptCalls: []
+  showInQuickbar: false
+  subType: temp
+  tag: ''
+  tags: []
+  uses:
+    autoDeductChargesCost: ''
+    maxFormula: ''
+    per: ''
+    rechargeFormula: ''
+    value: null
+type: buff

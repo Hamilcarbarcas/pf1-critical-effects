@@ -879,7 +879,7 @@
       ],
       "text": "<p>The bone comes out through the knuckle.</p>",
       "buffs": [
-        "Compound Fracture: Finger"
+        "Broken Finger"
       ],
       "conditions": [
         {
@@ -925,7 +925,7 @@
       ],
       "text": "<p>The bone breaks and keeps going, out through the back of the hand.</p>",
       "buffs": [
-        "Compound Fracture: Hand"
+        "Broken Hand"
       ],
       "conditions": [
         {
@@ -949,29 +949,6 @@
       "text": "<p>The rib snaps outward and opens the skin from the inside.</p>",
       "buffs": [
         "Broken Rib"
-      ],
-      "conditions": [
-        {
-          "id": "bleed",
-          "bleed": {
-            "formula": "1d6"
-          }
-        }
-      ]
-    },
-    {
-      "id": "compound-fracture-wing",
-      "name": "Compound Fracture: Wing",
-      "rank": 8,
-      "slots": [
-        "*/wing"
-      ],
-      "damageTypes": [
-        "bludgeoning"
-      ],
-      "text": "<p>The wing bone shears and breaks the skin of the membrane.</p>",
-      "buffs": [
-        "Compound Fracture: Wing"
       ],
       "conditions": [
         {
@@ -3881,6 +3858,29 @@
             "formula": "1d4",
             "ability": "con",
             "deep": 10
+          }
+        }
+      ]
+    },
+    {
+      "id": "shattered-wing",
+      "name": "Shattered Wing",
+      "rank": 8,
+      "slots": [
+        "*/wing"
+      ],
+      "damageTypes": [
+        "bludgeoning"
+      ],
+      "text": "<p>The wing bone breaks in multiple locations.</p>",
+      "buffs": [
+        "Shattered Wing"
+      ],
+      "conditions": [
+        {
+          "id": "bleed",
+          "bleed": {
+            "formula": "1d6"
           }
         }
       ]

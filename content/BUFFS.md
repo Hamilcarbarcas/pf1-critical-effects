@@ -1,7 +1,12 @@
 # Buff manifest
 
 **Generated** from `Critical Effects.csv` — the compendium buffs the effect catalog references.
-None of these exist yet except the broken-bone set migrated from astora-mod.
+
+All 136 now exist in `packs/effect-buffs`. 18 are built (the broken-bone set migrated from
+astora-mod, plus Weapon Stuck); the other 118 are **blanks** — name, folder and sub-type only,
+their description holding the Effect / Bleed / DH cells below as the brief to build from.
+`buffSnapshot` copies that description onto the chat card, so an unfilled buff shows its brief
+to players until it is written.
 
 Dedicated healing is derived from the bleed the buff carries: **5 per die** of hit-point bleed,
 **10 per die** of ability bleed. A buff with no bleed takes its threshold from the `(heal N)`
@@ -10,8 +15,8 @@ in its own text, or none at all.
 Bleed config goes on the buff as `flags.pf1-bleed-effects.bleed` in the default (non-persist)
 mode, so it stops when the buff clears. DH goes in `flags.pf1-critical-effects.dedicatedHealing`.
 
-**138 buffs**, 35 of them carrying a bleed.
-34 carry no description — see the note under the table.
+**136 buffs**, 35 of them carrying a bleed.
+32 carry no description — see the note under the table.
 
 | Buff | Effect | Bleed | DH | Referenced by |
 |---|---|---|---|---|
@@ -21,15 +26,15 @@ mode, so it stops when the buff clears. DH goes in `flags.pf1-critical-effects.d
 | **Brittle Flesh** | Vulnerability to bludgeoning, piercing, slashing (heal 20 or 10 fire damage) | — | 20 | Brittle Flesh · Cold |
 | **Broken Arm** | — | — | — | Broken Arm · Arm |
 | **Broken Back** | — | — | — | Broken Back · Torso, Compound Fracture: Back · Torso |
-| **Broken Finger** | — | — | — | Broken Finger · Arm |
+| **Broken Finger** | — | — | — | Broken Finger · Arm, Compound Fracture: Finger · Arm |
 | **Broken Foot** | — | — | — | Broken Foot · Leg, Compound Fracture: Foot · Leg |
-| **Broken Hand** | — | — | — | Broken Hand · Arm |
+| **Broken Hand** | — | — | — | Broken Hand · Arm, Compound Fracture: Hand · Arm |
 | **Broken Jaw** | Skills involving speech at disadvantage, spells w/verbal components - concentration DC 15 + 2xlevel or fail | — | — | Broken Jaw · Head |
 | **Broken Leg** | — | — | — | Broken Leg · Leg |
 | **Broken Neck** | — | — | — | Broken Neck · Head, Chopped Neck · Head |
 | **Broken Rib** | — | — | — | Broken Rib · Torso, Compound Fracture: Rib · Torso |
 | **Broken Skull** | — | — | — | Broken Skull · Head, Head Cracker · Head +1 |
-| **Broken Toes** | Disadvantage on all climb and acrobatics checks until healed (DC 10, 5 heal) | — | — | Broken Toes · Leg |
+| **Broken Toes** | Disadvantage on all climb and acrobatics checks until healed (DC 10, 5 heal) | — | 5 | Broken Toes · Leg |
 | **Broken Wing** | Half fly speed, -4 attacks/checks using wing until healed (heal 10) | — | 10 | Wing broken · Wing |
 | **Bruised Tail** | -4 to attacks/checks using tail until healed (heal 10) | — | 10 | Bruised Tail · Tail |
 | **Bruised Wing** | Wing useless 1d4 rounds | — | — | Wing bruised · Wing |
@@ -43,9 +48,6 @@ mode, so it stops when the buff clears. DH goes in `flags.pf1-critical-effects.d
 | **Cleaved Tail** | -2 to attacks or checks using tail until healed (heal 20) | — | 20 | Cleaved Tail · Tail |
 | **Cleaved Wing** | 1/2 fly speed, -2 to attacks/skills using wing until healed (heal 10) | — | 10 | Cleaved Wing · Wing |
 | **Clipped Foot** ⚠ | 3/4 move, -2 to attacks/skills using leg until healed (heal 10) | — | 10 | Foot clipped · Leg |
-| **Compound Fracture: Finger** | — | — | — | Compound Fracture: Finger · Arm |
-| **Compound Fracture: Hand** | — | — | — | Compound Fracture: Hand · Arm |
-| **Compound Fracture: Wing** | Can't fly until healed (heal 20) | — | 20 | Wing compound fractured · Wing |
 | **Consuming Brilliance** | Staggered and lose DR for 1d6 rounds | — | — | Consuming Brilliance · Positive |
 | **Corrosive Wound** | 1d6 acid damage per round 3 rounds | — | — | Corrosive Wound · Acid |
 | **Crushed Larynx** | Fatigued, muted until healed (heal 20) | — | 20 | Crushed Larynx · Head |
@@ -55,7 +57,7 @@ mode, so it stops when the buff clears. DH goes in `flags.pf1-critical-effects.d
 | **Dead Leg** | Leg useless 1d4 rounds | — | — | Dead Leg · Leg |
 | **Deep Slice** | -2 to attacks or checks using appendage until healed (heal 10) | — | 10 | Deep Slice · Appendage |
 | **Disemboweled** | 1d4 con damage each round a standard/move action is taken until healed. Full-round action (DC 15 fort to do it yourself) to put it back in. Move action each round to hold it in until healed (heal 20). | — | 20 | Disemboweled · Torso |
-| **Dislocated Knee** | Half move, no 5 foot step, -2 AC until healed (DC 10, 10 heal) | — | — | Dislocated Knee · Leg |
+| **Dislocated Knee** | Half move, no 5 foot step, -2 AC until healed (DC 10, 10 heal) | — | 10 | Dislocated Knee · Leg |
 | **Disoriented** | Deafened (heal 10) | — | 10 | Disoriented · Sonic |
 | **Encased** | As 12 + suffocation | — | — | Encased · Cold |
 | **Flash Frozen** | Paralyzed (20 fire damage or 20 bludgeoning damage), Vulnerability to bludgeoning until freed | — | — | Flash Frozen · Cold |
@@ -139,6 +141,7 @@ mode, so it stops when the buff clears. DH goes in `flags.pf1-critical-effects.d
 | **Shattered Neck** | — | — | — | Shattered Neck · Head, Cleaved Neck · Head |
 | **Shattered Rib** | — | — | — | Crushing Blast · Force, Shattered Rib · Torso +2 |
 | **Shattered Skull** | — | — | — | Shattered Skull · Head, Caved Cranium · Head |
+| **Shattered Wing** | Can't fly until healed (heal 20) | — | 20 | Wing compound fractured · Wing |
 | **Skewered Arm** | 4d6 deep bleed, arm useless until healed | 4d6 deep | 20 | Arm skewered · Arm |
 | **Slashed Arm** | Drop item held, -4 to attacks/checks using arm for 1 round | — | — | Slashed arm · Arm |
 | **Slashed Brow** ⚠ | Blinded 1d6 rounds or until wiped off (standard action) | — | — | Slashed Brow · Head |
@@ -157,7 +160,7 @@ mode, so it stops when the buff clears. DH goes in `flags.pf1-critical-effects.d
 ⚠ = the sheet gave prose rather than a name; named after its effect. Rename if you'd rather.
 
 **Effect** is the sheet's own wording, verbatim but for a capitalised first letter — it is the
-brief, not the buff text. `(heal N)` in it is where the DH column came from and need not survive
+brief, not the buff text. A `heal N` in it — either word order — is where the DH column came from, and need not survive
 into the item. A dash means the sheet gave a bare name, which happens in three cases: the
 broken-bone buffs already built in astora-mod, the severed/destroyed family whose name is its
 whole rule, and **Weapon Stuck**, specified in DESIGN.md §8.1.
