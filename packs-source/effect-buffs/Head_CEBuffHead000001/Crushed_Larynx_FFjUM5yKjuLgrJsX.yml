@@ -6,12 +6,14 @@ _stats:
   createdTime: 1786827470369
   duplicateSource: null
   exportSource: null
-  lastModifiedBy: null
-  modifiedTime: 1786827470369
+  lastModifiedBy: mLW1zeZBsSCEsXlw
+  modifiedTime: 1786909876040
   systemId: pf1
   systemVersion: '11.11'
 effects: []
 flags:
+  astora-mod:
+    hiddenBuff: false
   pf1-critical-effects:
     dedicatedHealing:
       blockedBy: ''
@@ -19,8 +21,11 @@ flags:
       received: 0
       required: 20
       treated: false
+  pf1-improved-energy-drain:
+    staticEnabled: false
+    staticLevels: 0
 folder: CEBuffHead000001
-img: icons/svg/ice-aura.svg
+img: Icons/gameicons/delapouite-silenced__ef2525-2a2622.svg
 name: Crushed Larynx
 ownership:
   default: 0
@@ -42,10 +47,12 @@ system:
   changes: []
   conditions:
     - fatigued
-  contextNotes: []
+  contextNotes:
+    - target: chaSkills
+      text: Muted
   description:
     instructions: ''
-    value: <p><strong>Effect:</strong> Fatigued, muted until healed (heal 20)</p><p><strong>Bleed:</strong> —</p><p><strong>DH:</strong> 20</p>
+    value: <p>Fatigued, muted until healed (heal 20)</p><p></p>
   duration:
     end: ''
     units: ''

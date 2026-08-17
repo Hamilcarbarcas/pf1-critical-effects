@@ -6,12 +6,14 @@ _stats:
   createdTime: 1786827470369
   duplicateSource: null
   exportSource: null
-  lastModifiedBy: null
-  modifiedTime: 1786827470369
+  lastModifiedBy: mLW1zeZBsSCEsXlw
+  modifiedTime: 1786904657899
   systemId: pf1
   systemVersion: '11.11'
 effects: []
 flags:
+  astora-mod:
+    hiddenBuff: false
   pf1-bleed-effects:
     bleed:
       formula: 3d6
@@ -24,8 +26,11 @@ flags:
       received: 0
       required: 15
       treated: false
+  pf1-improved-energy-drain:
+    staticEnabled: false
+    staticLevels: 0
 folder: CEBuffTorso00001
-img: icons/svg/ice-aura.svg
+img: Icons/craftpix-icons/spearman-skill/spearman-skill-40-blood-spear-strike.png
 name: Pierced Stomach
 ownership:
   default: 0
@@ -51,7 +56,7 @@ system:
   contextNotes: []
   description:
     instructions: ''
-    value: <p><strong>Effect:</strong> 3d6 deep bleed, Staggered until healed</p><p><strong>Bleed:</strong> 3d6 deep</p><p><strong>DH:</strong> 15</p>
+    value: <p>3d6 deep bleed, Staggered until healed</p>
   duration:
     end: ''
     units: ''

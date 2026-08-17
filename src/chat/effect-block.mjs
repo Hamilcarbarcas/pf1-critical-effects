@@ -22,7 +22,7 @@
  */
 
 import { MODULE_ID } from "../const.mjs";
-import { conditionIcon, conditionLabel, durationLabel } from "../resolve/conditions.mjs";
+import { bleedLabel, conditionIcon, conditionLabel, durationLabel } from "../resolve/conditions.mjs";
 import { damageTypeModel, rollOf } from "../resolve/damage.mjs";
 import { renderSaveSlot } from "../flow/save-request.mjs";
 
@@ -190,6 +190,11 @@ function appendConditionHeaders(section, conditions) {
     }
 
     row.append(el("span", "ce-condition-name", conditionLabel(condition.id)));
+
+    /* Bleed is the only condition carrying a payload, and the only one whose name does not say how
+     * bad it is. Parenthesised so it reads as a qualifier on the name rather than a second field. */
+    const bleed = bleedLabel(condition.bleed);
+    if (bleed) row.append(el("span", "ce-condition-bleed", `(${bleed})`));
 
     const duration = durationLabel(condition.duration);
     if (duration) row.append(el("span", "ce-condition-duration", duration));

@@ -19,11 +19,15 @@
       "text": "<p>The note finds the pitch a body breaks at and holds it there.</p>",
       "save": 1,
       "onFail": {
+        "buffs": null,
         "conditions": [
           {
             "id": "dead"
           }
-        ]
+        ],
+        "damage": null,
+        "setHP": null,
+        "negativeLevels": null
       },
       "inherits": "row12"
     },
@@ -87,7 +91,9 @@
           {
             "id": "dead"
           }
-        ]
+        ],
+        "damage": null,
+        "setHP": null
       }
     },
     {
@@ -276,6 +282,7 @@
       ],
       "save": 1,
       "onFail": {
+        "buffs": null,
         "conditions": [
           {
             "id": "dead"
@@ -437,11 +444,15 @@
       "text": "<p>What is left holds its shape until something touches it.</p>",
       "save": 1,
       "onFail": {
+        "buffs": null,
         "conditions": [
           {
             "id": "dead"
           }
-        ]
+        ],
+        "damage": null,
+        "setHP": null,
+        "negativeLevels": null
       },
       "inherits": "row12"
     },
@@ -488,6 +499,7 @@
       ],
       "save": 1,
       "onFail": {
+        "buffs": null,
         "conditions": [
           {
             "id": "dead"
@@ -519,6 +531,7 @@
       ],
       "save": 1,
       "onFail": {
+        "buffs": null,
         "conditions": [
           {
             "id": "dead"
@@ -538,7 +551,7 @@
       ],
       "text": "<p>The ankle opens and the foot turns loose beneath it.</p>",
       "buffs": [
-        "Cleaved Ankle"
+        "Injured Leg"
       ],
       "conditions": [
         {
@@ -596,7 +609,7 @@
       ],
       "text": "<p>The blade takes the finger at the knuckle, cleanly.</p>",
       "buffs": [
-        "Cleaved Finger"
+        "Sliced Tendons"
       ],
       "conditions": [
         {
@@ -609,7 +622,7 @@
       "save": 1,
       "onFail": {
         "buffs": [
-          "Severed Finger"
+          "Severed Fingers"
         ]
       }
     },
@@ -625,18 +638,12 @@
       ],
       "text": "<p>The steel splits the brow and lodges in the bone above the eyes.</p>",
       "buffs": [
-        "Cleaved Forehead"
-      ],
-      "conditions": [
-        {
-          "id": "bleed",
-          "bleed": {
-            "formula": "7d6"
-          }
-        }
+        "Cleaved Forehead",
+        "Weapon Stuck"
       ],
       "save": 1,
       "onFail": {
+        "buffs": null,
         "conditions": [
           {
             "id": "dead"
@@ -656,7 +663,7 @@
       ],
       "text": "<p>The hand comes apart along the line of the cut.</p>",
       "buffs": [
-        "Cleaved Hand"
+        "Sliced Muscle"
       ],
       "conditions": [
         {
@@ -727,6 +734,7 @@
       ],
       "save": 1,
       "onFail": {
+        "buffs": null,
         "conditions": [
           {
             "id": "dead"
@@ -804,7 +812,7 @@
       ],
       "text": "<p>The blade catches the foot on the way past and takes something with it.</p>",
       "buffs": [
-        "Clipped Foot"
+        "Injured Foot"
       ],
       "conditions": [
         {
@@ -992,7 +1000,8 @@
           {
             "id": "dead"
           }
-        ]
+        ],
+        "negativeLevels": null
       }
     },
     {
@@ -1134,6 +1143,7 @@
       ],
       "save": 1,
       "onFail": {
+        "buffs": null,
         "conditions": [
           {
             "id": "dead"
@@ -1208,7 +1218,7 @@
       ],
       "text": "<p>The point finds the artery inside the arm and opens it.</p>",
       "buffs": [
-        "Cut Brachial"
+        "Cut Deltoids"
       ],
       "conditions": [
         {
@@ -1374,11 +1384,13 @@
       ],
       "save": 1,
       "onFail": {
+        "buffs": null,
         "conditions": [
           {
             "id": "dead"
           }
-        ]
+        ],
+        "damage": null
       }
     },
     {
@@ -1671,7 +1683,7 @@
       ],
       "text": "<p>The blade goes behind the knee and the leg stops holding weight.</p>",
       "buffs": [
-        "Hamstring"
+        "Injured Foot"
       ],
       "conditions": [
         {
@@ -1698,6 +1710,7 @@
       ],
       "save": 1,
       "onFail": {
+        "buffs": null,
         "conditions": [
           {
             "id": "dead"
@@ -1867,7 +1880,10 @@
       "inherits": "row12",
       "transform": {
         "bleed": 2,
-        "scaleDH": true
+        "scaleDH": true,
+        "addBuffs": [
+          "Weapon Stuck"
+        ]
       }
     },
     {
@@ -1885,7 +1901,10 @@
       "inherits": "row12",
       "transform": {
         "bleed": 2,
-        "scaleDH": true
+        "scaleDH": true,
+        "addBuffs": [
+          "Weapon Stuck"
+        ]
       }
     },
     {
@@ -1975,11 +1994,15 @@
       "text": "<p>The charge finds a path straight through and takes it.</p>",
       "save": 2,
       "onFail": {
+        "buffs": null,
         "conditions": [
           {
             "id": "dead"
           }
-        ]
+        ],
+        "damage": null,
+        "setHP": null,
+        "negativeLevels": null
       },
       "inherits": "row12",
       "transform": {
@@ -2144,7 +2167,7 @@
       ],
       "text": "<p>The point finds the artery high in the thigh and opens a seam in it.</p>",
       "buffs": [
-        "Nicked Femoral"
+        "Cut Femoral"
       ],
       "conditions": [
         {
@@ -2209,11 +2232,15 @@
       "text": "<p>The force arrives from every direction at once.</p>",
       "save": 2,
       "onFail": {
+        "buffs": null,
         "conditions": [
           {
             "id": "dead"
           }
-        ]
+        ],
+        "damage": null,
+        "setHP": null,
+        "negativeLevels": null
       },
       "inherits": "row12",
       "transform": {
@@ -2274,7 +2301,31 @@
       ],
       "text": "<p>The point goes through the calf and out the other side.</p>",
       "buffs": [
-        "Pierced Calf"
+        "Pierced Leg"
+      ]
+    },
+    {
+      "id": "pierced-heel",
+      "name": "Pierced Heel",
+      "rank": 4,
+      "slots": [
+        "*/leg"
+      ],
+      "damageTypes": [
+        "piercing"
+      ],
+      "text": "<p>The point goes through the heel and the tendon goes with it.</p>",
+      "buffs": [
+        "Nicked Achilles"
+      ],
+      "conditions": [
+        {
+          "id": "bleed",
+          "bleed": {
+            "formula": "2d6",
+            "deep": 10
+          }
+        }
       ]
     },
     {
@@ -2385,6 +2436,7 @@
       ],
       "save": 1,
       "onFail": {
+        "buffs": null,
         "conditions": [
           {
             "id": "dead"
@@ -2486,7 +2538,7 @@
       ],
       "text": "<p>The blade goes through the arm and holds it where it is.</p>",
       "buffs": [
-        "Pinned Arm",
+        "Pierced Muscle",
         "Weapon Stuck"
       ]
     },
@@ -2695,6 +2747,7 @@
       ],
       "save": 1,
       "onFail": {
+        "buffs": null,
         "conditions": [
           {
             "id": "dead"
@@ -2902,7 +2955,8 @@
           {
             "id": "dead"
           }
-        ]
+        ],
+        "setHP": null
       }
     },
     {
@@ -2918,30 +2972,6 @@
       "text": "<p>The point drives deep into the hip and the leg gives up.</p>",
       "buffs": [
         "Punctured Hip"
-      ]
-    },
-    {
-      "id": "punctured-knee",
-      "name": "Punctured Knee",
-      "rank": 4,
-      "slots": [
-        "*/leg"
-      ],
-      "damageTypes": [
-        "piercing"
-      ],
-      "text": "<p>The point goes into the knee and the leg folds under it.</p>",
-      "buffs": [
-        "Punctured Knee"
-      ],
-      "conditions": [
-        {
-          "id": "bleed",
-          "bleed": {
-            "formula": "2d6",
-            "deep": 10
-          }
-        }
       ]
     },
     {
@@ -3092,6 +3122,7 @@
       ],
       "save": 1,
       "onFail": {
+        "buffs": null,
         "conditions": [
           {
             "id": "dead"
@@ -3405,8 +3436,7 @@
       ],
       "text": "<p>The great vessel of the thigh is opened and empties fast.</p>",
       "buffs": [
-        "Severed Femoral",
-        "Weapon Stuck"
+        "Cut Femoral"
       ],
       "conditions": [
         {
@@ -3568,7 +3598,7 @@
       ],
       "text": "<p>The front of the thigh opens and the leg will not straighten again.</p>",
       "buffs": [
-        "Severed Quads"
+        "Debilitated Leg"
       ],
       "conditions": [
         {
@@ -3614,7 +3644,7 @@
       ],
       "text": "<p>The tendons of the leg part and the foot goes loose.</p>",
       "buffs": [
-        "Severed Tendons"
+        "Pierced Knee"
       ]
     },
     {
@@ -3667,7 +3697,8 @@
           {
             "id": "dead"
           }
-        ]
+        ],
+        "damage": null
       }
     },
     {
@@ -3782,6 +3813,7 @@
       ],
       "save": 1,
       "onFail": {
+        "buffs": null,
         "conditions": [
           {
             "id": "dead"
@@ -3830,6 +3862,7 @@
       ],
       "save": 1,
       "onFail": {
+        "buffs": null,
         "conditions": [
           {
             "id": "dead"
@@ -3951,8 +3984,7 @@
       ],
       "text": "<p>The arm is run through end to end and pinned to nothing.</p>",
       "buffs": [
-        "Skewered Arm",
-        "Weapon Stuck"
+        "Cut Deltoids"
       ],
       "conditions": [
         {
@@ -4038,8 +4070,7 @@
       ],
       "text": "<p>The point goes all the way through the limb and out the far side.</p>",
       "buffs": [
-        "Appendage Destroyed",
-        "Weapon Stuck"
+        "Appendage Destroyed"
       ],
       "conditions": [
         {
@@ -4259,7 +4290,7 @@
       ],
       "text": "<p>The calf opens and the leg will not push off it.</p>",
       "buffs": [
-        "Sliced Calf"
+        "Injured Leg"
       ],
       "conditions": [
         {
@@ -4463,7 +4494,8 @@
           {
             "id": "dead"
           }
-        ]
+        ],
+        "damage": null
       }
     },
     {

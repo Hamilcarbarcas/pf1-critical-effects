@@ -1,5 +1,5 @@
-_id: sLsgMFKuJgKFATKZ
-_key: '!items!sLsgMFKuJgKFATKZ'
+_id: vUb5OLMaiBh4CLOz
+_key: '!items!vUb5OLMaiBh4CLOz'
 _stats:
   compendiumSource: null
   coreVersion: '13.351'
@@ -7,7 +7,7 @@ _stats:
   duplicateSource: null
   exportSource: null
   lastModifiedBy: mLW1zeZBsSCEsXlw
-  modifiedTime: 1786863569443
+  modifiedTime: 1786936539656
   systemId: pf1
   systemVersion: '11.11'
 effects: []
@@ -16,7 +16,7 @@ flags:
     hiddenBuff: false
   pf1-bleed-effects:
     bleed:
-      formula: 4d6
+      formula: 2d6
       kind: hp
       mode: active
   pf1-critical-effects:
@@ -24,17 +24,17 @@ flags:
       blockedBy: ''
       dc: 0
       received: 0
-      required: 20
+      required: 10
       treated: false
   pf1-improved-energy-drain:
     staticEnabled: false
     staticLevels: 0
-folder: CEBuffArm0000001
-img: Icons/craftpix-icons/spearman-skill/spearman-skill-40-blood-spear-strike.png
-name: Cut Brachial
+folder: CEBuffLeg0000001
+img: Icons/gameicons/delapouite-knee-bandage__ef2525-2a2622.svg
+name: Pierced Leg
 ownership:
   default: 0
-sort: 2300000
+sort: 1700000
 system:
   actions: []
   active: false
@@ -50,42 +50,60 @@ system:
     seeInDarkness: false
     seeInvisibility: false
   changes:
-    - _id: pbiJSe6K
-      formula: '-10'
+    - _id: H9bTCwCT
+      formula: max(5, floor(@attributes.speed.land.total  / 10) * 5)
+      operator: set
+      priority: -1
+      target: landSpeed
+      type: untyped
+    - _id: QxWmnYzD
+      formula: '-6'
+      operator: add
+      priority: 0
+      target: skill.acr
+      type: untyped
+    - _id: wXvoP8Az
+      formula: '-6'
       operator: add
       priority: 0
       target: skill.clm
-      type: untypedPerm
-    - _id: tkXFM2G6
-      formula: '-10'
+      type: untyped
+    - _id: dKgEfWkN
+      formula: '-6'
       operator: add
       priority: 0
-      target: skill.crf
-      type: untypedPerm
-    - _id: KGQCcrLv
-      formula: '-10'
+      target: skill.rid
+      type: untyped
+    - _id: 4k4mHMVn
+      formula: '-6'
       operator: add
       priority: 0
-      target: skill.dev
-      type: untypedPerm
-    - _id: wUF9JJwc
-      formula: '-10'
+      target: skill.ste
+      type: untyped
+    - _id: 4mZR4Dgr
+      formula: '-6'
       operator: add
       priority: 0
-      target: skill.slt
-      type: untypedPerm
-    - _id: Ozji5JKa
-      formula: '-10'
+      target: skill.swm
+      type: untyped
+    - _id: vOqWfiat
+      formula: '-6'
       operator: add
       priority: 0
-      target: skill.umd
-      type: untypedPerm
+      target: cmb
+      type: untyped
+    - _id: cBoUCr82
+      formula: '-6'
+      operator: add
+      priority: 0
+      target: cmd
+      type: untyped
   conditions:
     - bleed
   contextNotes: []
   description:
     instructions: ''
-    value: <p>4d6 deep bleed, arm useless until healed</p><ul><li><p>-10 to climb, craft, disable device, sleight of hand, and use magic device checks</p></li><li><p>Cannot wield 2 handed weapons, dual wield, or wield a shield and weapon</p></li><li><p>Requies a caster level check -10 to cast spells with somatic components</p></li></ul>
+    value: <p>2d6 deep bleed, and you suffer the following penalties until healed:</p><ul><li><p>Half movement</p></li><li><p>Cannot run or charge</p></li><li><p>-6 to Acrobatics, Climb, Stealth, and Swim checks</p></li><li><p>Cannot perform Bull Rush or Overrun combat maneuvers</p></li><li><p>-6 penalty to CMB and CMD</p></li><li><p>-6 to attacks using the injured leg</p></li></ul>
   duration:
     end: ''
     units: ''

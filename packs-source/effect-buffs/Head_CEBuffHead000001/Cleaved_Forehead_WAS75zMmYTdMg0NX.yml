@@ -6,14 +6,32 @@ _stats:
   createdTime: 1786827470369
   duplicateSource: null
   exportSource: null
-  lastModifiedBy: null
-  modifiedTime: 1786827470369
+  lastModifiedBy: mLW1zeZBsSCEsXlw
+  modifiedTime: 1786912061557
   systemId: pf1
   systemVersion: '11.11'
 effects: []
-flags: {}
+flags:
+  astora-mod:
+    hiddenBuff: false
+  pf1-bleed-effects:
+    bleed:
+      formula: 7d6
+      kind: hp
+      mode: active
+  pf1-critical-effects:
+    dedicatedHealing:
+      blockedBy: Weapon Stuck
+      clearOnHeal: true
+      dc: 0
+      received: 0
+      required: 0
+      treated: false
+  pf1-improved-energy-drain:
+    staticEnabled: false
+    staticLevels: 0
 folder: CEBuffHead000001
-img: icons/svg/ice-aura.svg
+img: Icons/ICONS/INV_Skullsplitter.webp
 name: Cleaved Forehead
 ownership:
   default: 0
@@ -34,11 +52,12 @@ system:
     seeInvisibility: false
   changes: []
   conditions:
+    - bleed
     - dazed
   contextNotes: []
   description:
     instructions: ''
-    value: <p><strong>Effect:</strong> Weapon stuck, dazed until removed</p><p><strong>Bleed:</strong> —</p><p><strong>DH:</strong> —</p>
+    value: <p>7d6 bleed, Weapon stuck, dazed until healed.</p>
   duration:
     end: ''
     units: ''

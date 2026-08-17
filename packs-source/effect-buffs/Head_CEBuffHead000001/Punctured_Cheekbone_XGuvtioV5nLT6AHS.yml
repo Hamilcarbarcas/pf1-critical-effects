@@ -6,12 +6,14 @@ _stats:
   createdTime: 1786827470369
   duplicateSource: null
   exportSource: null
-  lastModifiedBy: null
-  modifiedTime: 1786827470369
+  lastModifiedBy: mLW1zeZBsSCEsXlw
+  modifiedTime: 1786910917574
   systemId: pf1
   systemVersion: '11.11'
 effects: []
 flags:
+  astora-mod:
+    hiddenBuff: false
   pf1-bleed-effects:
     bleed:
       formula: 2d6
@@ -24,8 +26,11 @@ flags:
       received: 0
       required: 10
       treated: false
+  pf1-improved-energy-drain:
+    staticEnabled: false
+    staticLevels: 0
 folder: CEBuffHead000001
-img: icons/svg/ice-aura.svg
+img: Icons/gameicons/lorc-headshot__ef2525-2a2622.svg
 name: Punctured Cheekbone
 ownership:
   default: 0
@@ -50,7 +55,7 @@ system:
   contextNotes: []
   description:
     instructions: ''
-    value: <p><strong>Effect:</strong> 2d6 deep bleed</p><p><strong>Bleed:</strong> 2d6 deep</p><p><strong>DH:</strong> 10</p>
+    value: <p>2d6 deep bleed</p>
   duration:
     end: ''
     units: ''

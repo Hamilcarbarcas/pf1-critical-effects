@@ -6,20 +6,55 @@ _stats:
   createdTime: 1786827470369
   duplicateSource: null
   exportSource: null
-  lastModifiedBy: null
-  modifiedTime: 1786827470369
+  lastModifiedBy: mLW1zeZBsSCEsXlw
+  modifiedTime: 1786911960390
   systemId: pf1
   systemVersion: '11.11'
 effects: []
-flags: {}
+flags:
+  astora-mod:
+    buffToggle:
+      triggers:
+        - action: use
+          trigger: onTurnEnd
+    hiddenBuff: false
+  lilhelper:
+    item:
+      autoPowerAttack: false
+      hideAttacks: false
+      keen: false
+      rollOverride: ''
+      rollmodeOverride: ''
+      skipDialog: -1
+  pf1-improved-energy-drain:
+    staticEnabled: false
+    staticLevels: 0
 folder: CEBuffHead000001
-img: icons/svg/ice-aura.svg
+img: Icons/craftpix-icons/debuff-skill/debuff-skill-20-dizzy-stars-head.png
 name: Rung Bell
 ownership:
   default: 0
 sort: 0
 system:
-  actions: []
+  actions:
+    - _id: EOD7DK5YLlXkD6Or
+      actionType: other
+      activation:
+        cost: 1
+        type: nonaction
+        unchained:
+          cost: 1
+          type: nonaction
+      ammo:
+        type: none
+      flags: {}
+      name: Fortitude Save
+      powerAttack:
+        critMultiplier: 1
+        damageBonus: 2
+      range:
+        units: personal
+      uses: {}
   active: false
   attackNotes: []
   changeFlags:
@@ -38,7 +73,7 @@ system:
   contextNotes: []
   description:
     instructions: ''
-    value: <p><strong>Effect:</strong> Unconscious - Fort at end of each round to come to</p><p><strong>Bleed:</strong> —</p><p><strong>DH:</strong> —</p>
+    value: <p>You are unconscious.</p><p>You may make a Fortitude Save at end of each round to come to.</p>
   duration:
     end: ''
     units: ''
@@ -51,15 +86,22 @@ system:
   level: 0
   links:
     children: []
-  scriptCalls: []
+  scriptCalls:
+    - _id: cvNSrc63
+      category: use
+      hidden: false
+      img: null
+      name: ''
+      type: macro
+      value: Compendium.pf1-critical-effects.macros.Macro.aRyWPVHwyFbktitf
   showInQuickbar: false
   subType: temp
   tag: ''
   tags: []
   uses:
     autoDeductChargesCost: ''
-    maxFormula: ''
-    per: ''
+    maxFormula: '1'
+    per: round
     rechargeFormula: ''
-    value: null
+    value: 1
 type: buff

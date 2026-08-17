@@ -240,6 +240,20 @@ const scaleBleeds = (conditions, factor) =>
  * on the compendium item, not in this file. It bakes through as `dhScale` for the apply path to
  * multiply when it delivers the buff.
  */
+/**
+ * Append buffs the 13+ row adds, skipping any the inherited result already has.
+ *
+ * The idempotence is the whole reason this is not a concat. One mortal row covers several cells and
+ * reads a different row 12 in each — *Kebabed* spans arm, leg, tail and wing — so an added buff will
+ * already be there in some cells and missing in others. Adding it unconditionally would deliver
+ * *Weapon Stuck* twice on the arm and once on the tail from the same authored line.
+ */
+function addBuffs(buffs, added) {
+  if (!added?.length) return buffs;
+  const have = new Set(buffs.map((b) => String(b).trim().toLowerCase()));
+  return [...buffs, ...added.filter((b) => !have.has(String(b).trim().toLowerCase()))];
+}
+
 function resolveInherited(entry, parent) {
   const t = entry.transform ?? {};
   const bleedFactor = t.bleed ?? 1;
@@ -262,7 +276,7 @@ function resolveInherited(entry, parent) {
     name: entry.name,
     text: entry.text ?? null,
     note: entry.note ?? null,
-    buffs: t.buffs !== undefined ? (t.buffs ?? []) : (parent.buffs ?? []),
+    buffs: addBuffs(t.buffs !== undefined ? (t.buffs ?? []) : (parent.buffs ?? []), t.addBuffs),
     conditions,
     damage,
     setHP: entry.setHP ?? parent.setHP ?? null,

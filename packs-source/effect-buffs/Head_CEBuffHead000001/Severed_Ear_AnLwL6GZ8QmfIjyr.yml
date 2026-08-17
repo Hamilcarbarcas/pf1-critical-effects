@@ -6,14 +6,19 @@ _stats:
   createdTime: 1786827470369
   duplicateSource: null
   exportSource: null
-  lastModifiedBy: null
-  modifiedTime: 1786827470369
+  lastModifiedBy: mLW1zeZBsSCEsXlw
+  modifiedTime: 1786912339184
   systemId: pf1
   systemVersion: '11.11'
 effects: []
-flags: {}
+flags:
+  astora-mod:
+    hiddenBuff: false
+  pf1-improved-energy-drain:
+    staticEnabled: false
+    staticLevels: 0
 folder: CEBuffHead000001
-img: icons/svg/ice-aura.svg
+img: Icons/gameicons/delapouite-human-ear__ef2525-2a2622.svg
 name: Severed Ear
 ownership:
   default: 0
@@ -34,10 +39,14 @@ system:
     seeInvisibility: false
   changes: []
   conditions: []
-  contextNotes: []
+  contextNotes:
+    - target: skill.per
+      text: -4 when involving hearing
+    - target: skill.spl
+      text: -4 to identify spells being cast with verbal components
   description:
     instructions: ''
-    value: <p><strong>Effect:</strong> Disadvantage on all checks involving hearing</p><p><strong>Bleed:</strong> —</p><p><strong>DH:</strong> —</p>
+    value: <p>-4 on all checks involving hearing</p>
   duration:
     end: ''
     units: ''

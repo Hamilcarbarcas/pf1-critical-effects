@@ -10,6 +10,18 @@
   <div class="ce-dh-body">
     <p class="notes">{{localize "CRITICAL_EFFECTS.DedicatedHealing.Section.Hint"}}</p>
 
+    {{!-- The two modes are exclusive: a wound that ends on the first cure spell has no threshold
+          to absorb, so Healing Required goes away rather than sitting there contradicting it.
+          The stored number is left untouched, and comes back if this is unticked. --}}
+    <div class="form-group">
+      <label>{{localize "CRITICAL_EFFECTS.DedicatedHealing.Field.ClearOnHeal"}}</label>
+      <div class="form-fields">
+        <input type="checkbox" class="ce-dh-input" data-field="clearOnHeal" {{checked clearOnHeal}} />
+      </div>
+      <p class="hint">{{localize "CRITICAL_EFFECTS.DedicatedHealing.Field.ClearOnHealHint"}}</p>
+    </div>
+
+    {{#unless clearOnHeal}}
     <div class="form-group">
       <label>{{localize "CRITICAL_EFFECTS.DedicatedHealing.Field.Required"}}</label>
       <div class="form-fields">
@@ -17,13 +29,20 @@
       </div>
       <p class="hint">{{localize "CRITICAL_EFFECTS.DedicatedHealing.Field.RequiredHint"}}</p>
     </div>
+    {{/unless}}
 
     <div class="form-group">
       <label>{{localize "CRITICAL_EFFECTS.DedicatedHealing.Field.DC"}}</label>
       <div class="form-fields">
         <input type="number" class="ce-dh-input" data-field="dc" min="0" step="1" value="{{dc}}" />
       </div>
-      <p class="hint">{{localize "CRITICAL_EFFECTS.DedicatedHealing.Field.DCHint"}}</p>
+      <p class="hint">
+        {{~#if clearOnHeal~}}
+          {{localize "CRITICAL_EFFECTS.DedicatedHealing.Field.DCHintOnHeal"}}
+        {{~else~}}
+          {{localize "CRITICAL_EFFECTS.DedicatedHealing.Field.DCHint"}}
+        {{~/if~}}
+      </p>
     </div>
 
     <div class="form-group">
@@ -35,9 +54,17 @@
       <p class="hint">{{localize "CRITICAL_EFFECTS.DedicatedHealing.Field.BlockedByHint"}}</p>
     </div>
 
-    {{#if configured}}
+    {{!-- Nothing to show for a clear-on-heal wound with no DC on it: there is no running total
+          and no gate, so there is no state to read or reset. --}}
+    {{#if showStatus}}
     <div class="form-group ce-dh-status">
-      <label>{{localize "CRITICAL_EFFECTS.DedicatedHealing.Field.Status"}}</label>
+      <label>
+        {{~#if clearOnHeal~}}
+          {{localize "CRITICAL_EFFECTS.DedicatedHealing.Field.StatusOnHeal"}}
+        {{~else~}}
+          {{localize "CRITICAL_EFFECTS.DedicatedHealing.Field.Status"}}
+        {{~/if~}}
+      </label>
       <div class="form-fields ce-dh-status-fields">
         <label class="checkbox ce-dh-treated-label">
           <input type="checkbox" class="ce-dh-input" data-field="treated" {{checked treated}} />
@@ -45,8 +72,12 @@
         </label>
         <span class="ce-dh-progress {{#unless treated}}ce-dh-untreated{{/unless}}">
           {{#if treated}}
-            {{localize "CRITICAL_EFFECTS.DedicatedHealing.Field.Progress"}}
-            <strong>{{received}} / {{required}}</strong>
+            {{#if clearOnHeal}}
+              {{localize "CRITICAL_EFFECTS.DedicatedHealing.Field.ReadyOnHeal"}}
+            {{else}}
+              {{localize "CRITICAL_EFFECTS.DedicatedHealing.Field.Progress"}}
+              <strong>{{received}} / {{required}}</strong>
+            {{/if}}
           {{else}}
             {{#if dc}}
               {{localize "CRITICAL_EFFECTS.DedicatedHealing.Field.AwaitingCheck"}}

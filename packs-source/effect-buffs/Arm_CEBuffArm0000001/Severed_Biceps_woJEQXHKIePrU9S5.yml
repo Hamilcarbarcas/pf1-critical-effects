@@ -7,11 +7,13 @@ _stats:
   duplicateSource: null
   exportSource: null
   lastModifiedBy: mLW1zeZBsSCEsXlw
-  modifiedTime: 1786863569443
+  modifiedTime: 1786908401097
   systemId: pf1
   systemVersion: '11.11'
 effects: []
 flags:
+  astora-mod:
+    hiddenBuff: false
   pf1-bleed-effects:
     bleed:
       formula: 3d6
@@ -24,8 +26,11 @@ flags:
       received: 0
       required: 15
       treated: false
+  pf1-improved-energy-drain:
+    staticEnabled: false
+    staticLevels: 0
 folder: CEBuffArm0000001
-img: icons/svg/ice-aura.svg
+img: Icons/craftpix-icons/spearman-skill/spearman-skill-40-blood-spear-strike.png
 name: Severed Biceps
 ownership:
   default: 0
@@ -44,13 +49,43 @@ system:
     noMediumEncumbrance: false
     seeInDarkness: false
     seeInvisibility: false
-  changes: []
+  changes:
+    - _id: 7nOAe3l0
+      formula: '-10'
+      operator: add
+      priority: 0
+      target: skill.clm
+      type: untypedPerm
+    - _id: xa4OVIVZ
+      formula: '-10'
+      operator: add
+      priority: 0
+      target: skill.crf
+      type: untypedPerm
+    - _id: dwQbkrX0
+      formula: '-10'
+      operator: add
+      priority: 0
+      target: skill.dev
+      type: untypedPerm
+    - _id: DFkIJEFF
+      formula: '-10'
+      operator: add
+      priority: 0
+      target: skill.slt
+      type: untypedPerm
+    - _id: IFtidJDh
+      formula: '-10'
+      operator: add
+      priority: 0
+      target: skill.umd
+      type: untypedPerm
   conditions:
     - bleed
   contextNotes: []
   description:
     instructions: ''
-    value: <p><strong>Effect:</strong> 3d6 deep bleed, arm useless until healed</p><p><strong>Bleed:</strong> 3d6 deep</p><p><strong>DH:</strong> 15</p>
+    value: <p>3d6 deep bleed, arm useless until healed</p><ul><li><p>-10 to climb, craft, disable device, sleight of hand, and use magic device checks</p></li><li><p>Cannot wield 2 handed weapons, dual wield, or wield a shield and weapon</p></li><li><p>Requies a concentration check (DC 15 + 2x the level of the spell) to cast spells with somatic components</p></li></ul>
   duration:
     end: ''
     units: ''

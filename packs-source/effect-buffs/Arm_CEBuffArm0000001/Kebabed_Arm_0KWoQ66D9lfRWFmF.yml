@@ -7,7 +7,7 @@ _stats:
   duplicateSource: null
   exportSource: null
   lastModifiedBy: mLW1zeZBsSCEsXlw
-  modifiedTime: 1786864509055
+  modifiedTime: 1786908325583
   systemId: pf1
   systemVersion: '11.11'
 effects: []
@@ -85,7 +85,7 @@ system:
   contextNotes: []
   description:
     instructions: ''
-    value: <p>8d6 deep bleed, arm useless until healed</p><ul><li><p>-10 to climb, craft, disable device, sleight of hand, and use magic device checks</p></li><li><p>Cannot wield 2 handed weapons, dual wield, or wield a shield and weapon</p></li><li><p>Requies a caster level check -10 to cast spells with somatic components</p></li></ul>
+    value: <p>8d6 deep bleed, arm useless until healed</p><ul><li><p>-10 to climb, craft, disable device, sleight of hand, and use magic device checks</p></li><li><p>Cannot wield 2 handed weapons, dual wield, or wield a shield and weapon</p></li><li><p>Requies a concentration check (DC 15 + 2x the level of the spell) to cast spells with somatic components</p></li></ul>
   duration:
     end: ''
     units: ''

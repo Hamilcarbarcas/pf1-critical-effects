@@ -7,7 +7,7 @@ _stats:
   duplicateSource: null
   exportSource: null
   lastModifiedBy: mLW1zeZBsSCEsXlw
-  modifiedTime: 1786863577016
+  modifiedTime: 1786937319614
   systemId: pf1
   systemVersion: '11.11'
 effects: []
@@ -55,31 +55,31 @@ system:
     seeInvisibility: false
   changes:
     - _id: opJBBo4D
-      formula: '-10'
+      formula: '-8'
       operator: add
       priority: 0
       target: skill.clm
       type: untypedPerm
     - _id: BYZjnJ76
-      formula: '-10'
+      formula: '-8'
       operator: add
       priority: 0
       target: skill.crf
       type: untypedPerm
     - _id: JFuCGpZc
-      formula: '-10'
+      formula: '-8'
       operator: add
       priority: 0
       target: skill.dev
       type: untypedPerm
     - _id: ZYZ6lNn5
-      formula: '-10'
+      formula: '-8'
       operator: add
       priority: 0
       target: skill.slt
       type: untypedPerm
     - _id: 35sZsfeT
-      formula: '-10'
+      formula: '-8'
       operator: add
       priority: 0
       target: skill.umd
@@ -89,7 +89,7 @@ system:
   contextNotes: []
   description:
     instructions: ''
-    value: <p>4d6 deep bleed, arm useless until healed</p><ul><li><p>-10 to climb, craft, disable device, sleight of hand, and use magic device checks</p></li><li><p>Cannot wield 2 handed weapons, dual wield, or wield a shield and weapon</p></li><li><p>Requies a caster level check -10 to cast spells with somatic components</p></li></ul>
+    value: <p>4d6 deep bleed, arm useless until healed</p><ul><li><p>-8 to climb, craft, disable device, sleight of hand, and use magic device checks</p></li><li><p>Cannot wield 2 handed weapons, dual wield, or wield a shield and weapon</p></li><li><p>Requies a concentration check (DC 15 + 2x the level of the spell) to cast spells with somatic components</p></li></ul>
   duration:
     end: ''
     units: ''

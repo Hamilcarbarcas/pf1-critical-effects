@@ -6,12 +6,14 @@ _stats:
   createdTime: 1786827470369
   duplicateSource: null
   exportSource: null
-  lastModifiedBy: null
-  modifiedTime: 1786827470369
+  lastModifiedBy: mLW1zeZBsSCEsXlw
+  modifiedTime: 1786936848823
   systemId: pf1
   systemVersion: '11.11'
 effects: []
 flags:
+  astora-mod:
+    hiddenBuff: false
   pf1-critical-effects:
     dedicatedHealing:
       blockedBy: ''
@@ -19,12 +21,15 @@ flags:
       received: 0
       required: 5
       treated: false
+  pf1-improved-energy-drain:
+    staticEnabled: false
+    staticLevels: 0
 folder: CEBuffLeg0000001
-img: icons/svg/ice-aura.svg
+img: Icons/gameicons/delapouite-foot-plaster__ef2525-2a2622.svg
 name: Broken Toes
 ownership:
   default: 0
-sort: 0
+sort: 1800000
 system:
   actions: []
   active: false
@@ -39,12 +44,24 @@ system:
     noMediumEncumbrance: false
     seeInDarkness: false
     seeInvisibility: false
-  changes: []
+  changes:
+    - _id: POqaRwQ0
+      formula: '-2'
+      operator: add
+      priority: 0
+      target: skill.acr
+      type: untyped
+    - _id: fG9geIZ2
+      formula: '-2'
+      operator: add
+      priority: 0
+      target: skill.clm
+      type: untyped
   conditions: []
   contextNotes: []
   description:
     instructions: ''
-    value: <p><strong>Effect:</strong> Disadvantage on all climb and acrobatics checks until healed (DC 10, 5 heal)</p><p><strong>Bleed:</strong> —</p><p><strong>DH:</strong> —</p>
+    value: <p>The following penalties are applied until healed:</p><ul><li><p>-2 to Acrobatics and Climb checks</p></li><li><p>-2 to all attacks using the injured leg</p></li></ul>
   duration:
     end: ''
     units: ''

@@ -7,13 +7,18 @@ _stats:
   duplicateSource: null
   exportSource: null
   lastModifiedBy: mLW1zeZBsSCEsXlw
-  modifiedTime: 1786863569443
+  modifiedTime: 1786901602978
   systemId: pf1
   systemVersion: '11.11'
 effects: []
-flags: {}
+flags:
+  astora-mod:
+    hiddenBuff: false
+  pf1-improved-energy-drain:
+    staticEnabled: false
+    staticLevels: 0
 folder: CEBuffArm0000001
-img: icons/svg/ice-aura.svg
+img: Icons/craftpix-icons/spearman-skill/spearman-skill-40-blood-spear-strike.png
 name: Punctured Wrist
 ownership:
   default: 0
@@ -34,10 +39,14 @@ system:
     seeInvisibility: false
   changes: []
   conditions: []
-  contextNotes: []
+  contextNotes:
+    - target: attack
+      text: '[[-4]] if using punctured arm'
+    - target: skills
+      text: '[[-4]] if using punctured arm'
   description:
     instructions: ''
-    value: <p><strong>Effect:</strong> Drop item held, -4 to attacks/checks using arm for 1d4 rounds</p><p><strong>Bleed:</strong> —</p><p><strong>DH:</strong> —</p>
+    value: <p>-4 to attacks/checks using arm for 1d4 rounds</p>
   duration:
     end: ''
     units: ''

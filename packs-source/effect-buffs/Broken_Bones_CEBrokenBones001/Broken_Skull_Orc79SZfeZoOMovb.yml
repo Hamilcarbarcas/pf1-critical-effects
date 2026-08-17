@@ -7,7 +7,7 @@ _stats:
   duplicateSource: null
   exportSource: null
   lastModifiedBy: mLW1zeZBsSCEsXlw
-  modifiedTime: 1779744211312
+  modifiedTime: 1786908603683
   systemId: pf1
   systemVersion: '11.11'
 effects:
@@ -42,6 +42,8 @@ effects:
     transfer: true
     type: buff
 flags:
+  astora-mod:
+    hiddenBuff: false
   lilhelper:
     item:
       autoPowerAttack: false
@@ -70,6 +72,9 @@ flags:
       received: 0
       required: 40
       treated: false
+  pf1-improved-energy-drain:
+    staticEnabled: false
+    staticLevels: 0
   scene-packer:
     hash: 3f18d8279d4b62d7a24bac843c52dc0f241bf1a4
     sourceId: Scene.FQ5mCt4L7UKYb3rs.Token.m4rvzr5RDEP5sZNz.Actor.aiYrAq6pSoQd8m4O.Item.NaI1cpZJTz1lpbHz
@@ -120,7 +125,7 @@ system:
     value: <p>A broken skull represents a crack or break of the skull significant enough to be paired with damage and/or inflammation to the brain. </p><p>The character's hit point total is reduced to zero (before the damage from the breaking attack is applied, putting them into the negative), and they suffer 2d4 <span class="world-variable world-variable-string condition-ability-damage"><a href="https://www.worldanvil.com/w/astora-hamilcarbarca/a/conditions-article#ability_damaged" target="_blank">Ability Damage</a></span> to both <span class="world-variable world-variable-string ability-score-intelligence"><a href="https://www.worldanvil.com/w/astora-hamilcarbarca/a/ability-scores-article#intelligence" target="_blank">Intelligence</a></span> and <span class="world-variable world-variable-string ability-score-wisdom"><a href="https://www.worldanvil.com/w/astora-hamilcarbarca/a/ability-scores-article#wisdom" target="_blank">Wisdom</a></span> (roll each separately).</p><p>A broken skull can be healed by making a DC 20 Heal check to set the bone, followed by 40 points of healing dedicated to the break (dedicated healing does not heal hit point damage) and one full day of bed-rest. a @UUID[Compendium.pf1.spells.Item.anya5qwdjhdfyk8u]{Restoration } spell can be used in place of a full day of bed-rest.</p>
   duration:
     end: ''
-    start: -15704702526
+    start: -15704080844
     units: ''
     value: null
   effectNotes: []

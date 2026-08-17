@@ -6,14 +6,19 @@ _stats:
   createdTime: 1786827470369
   duplicateSource: null
   exportSource: null
-  lastModifiedBy: null
-  modifiedTime: 1786827470369
+  lastModifiedBy: mLW1zeZBsSCEsXlw
+  modifiedTime: 1786910121504
   systemId: pf1
   systemVersion: '11.11'
 effects: []
-flags: {}
+flags:
+  astora-mod:
+    hiddenBuff: false
+  pf1-improved-energy-drain:
+    staticEnabled: false
+    staticLevels: 0
 folder: CEBuffHead000001
-img: icons/svg/ice-aura.svg
+img: Icons/craftpix-icons/blood-wound/blood-wound-40-blood-slash-drip.png
 name: Horrific Scar
 ownership:
   default: 0
@@ -32,16 +37,40 @@ system:
     noMediumEncumbrance: false
     seeInDarkness: false
     seeInvisibility: false
-  changes: []
+  changes:
+    - _id: rMpbDe2c
+      formula: '-4'
+      operator: add
+      priority: 0
+      target: skill.blf
+      type: untyped
+    - _id: m7yn7tIg
+      formula: '-4'
+      operator: add
+      priority: 0
+      target: skill.dip
+      type: untyped
+    - _id: l7FcJqHL
+      formula: '-4'
+      operator: add
+      priority: 0
+      target: skill.dis
+      type: untyped
+    - _id: ypCubYfe
+      formula: '4'
+      operator: add
+      priority: 0
+      target: skill.int
+      type: untyped
   conditions: []
   contextNotes: []
   description:
     instructions: ''
-    value: <p><strong>Effect:</strong> Disadvantage on charisma checks other than intimidate, advantage on intimidate (lasts 1 month)</p><p><strong>Bleed:</strong> —</p><p><strong>DH:</strong> —</p>
+    value: <p>-4 penalty on all bluff, diplomacy, and disguise checks, +4 bonus on intimidate (lasts 1 month)</p>
   duration:
-    end: ''
-    units: ''
-    value: null
+    end: initiative
+    units: hour
+    value: 24*28
   effectNotes: []
   flags:
     boolean: {}

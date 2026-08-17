@@ -17,6 +17,17 @@
  * ⚠ Providers must be **synchronous**. `onApplyDamage` runs on a sync hook and has to zero
  * `options.value` in the same tick to suppress the heal; there is no opportunity to await.
  *
+ * ── Clears on any healing ────────────────────────────────────────────────────
+ * The second mode, and *not* a participant: a wound with no threshold at all, which simply ends
+ * the moment its bearer's hit points go up. It absorbs nothing, so it never appears in the
+ * allocation arithmetic and an actor carrying only these heals exactly as it would with none —
+ * the buff just switches itself off afterwards. It is listed in the allocation dialog when one
+ * opens for something else, so the healer can see what their spell is about to take with it.
+ *
+ * The line for what counts as healing is pf1-bleed-effects' — `pf1ApplyDamage` and nothing else,
+ * so a cure spell, a potion, channelled energy and the Apply Healing button all clear it, while
+ * a GM typing into the hit point box does not. See `restoresHitPoints` below.
+ *
  * ── Configuration ────────────────────────────────────────────────────────────
  * Item config lives in this module's own flag (`flags.pf1-critical-effects.dedicatedHealing`),
  * written by the Dedicated Healing section on the buff sheet's Advanced tab. The PF1 dictionary
@@ -39,6 +50,12 @@ const DEFAULTS = Object.freeze({
   required: 0,  // HP of dedicated healing to clear it; 0 = feature off for this item
   received: 0,  // HP accumulated so far (runtime)
   treated: false, // Heal check passed (or waived) — only then does it absorb healing
+  /* The other mode: no threshold, ends on the first hit-point healing its bearer receives.
+   * Takes precedence over `required`, which is hidden on the sheet while this is set — the two
+   * are contradictory, and a stale threshold left behind by unticking the box must not turn the
+   * wound back into a participant behind the author's back. `dc` still applies when one is
+   * authored: a DC means treat it first, no DC means the next cure spell is enough. */
+  clearOnHeal: false,
   /* The NAME of another item on the same actor that must be gone (or switched off) before this
    * wound will accept healing at all — the arrow still in it (DESIGN.md §8.1). A name rather than
    * an id for the same reason every buff reference in this module is one: it survives a pack
@@ -91,6 +108,7 @@ export function getConfig(item) {
     required: Number(raw.required) || 0,
     received: Number(raw.received) || 0,
     treated: !!raw.treated,
+    clearOnHeal: !!raw.clearOnHeal,
     blockedBy: typeof raw.blockedBy === "string" ? raw.blockedBy : "",
   };
 }
@@ -106,13 +124,14 @@ export async function setConfig(item, patch) {
 }
 
 /**
- * Whether an item is configured to use dedicated healing at all.
+ * Whether an item is configured to use dedicated healing at all, in either mode.
  *
  * @param {Item} item
  * @returns {boolean}
  */
 export function isConfigured(item) {
-  return getConfig(item).required > 0;
+  const cfg = getConfig(item);
+  return cfg.clearOnHeal || cfg.required > 0;
 }
 
 // ─── Provider registry ────────────────────────────────────────────────────────
@@ -211,6 +230,9 @@ function _itemParticipants(actor) {
   const out = [];
   for (const item of actor.items) {
     const cfg = getConfig(item);
+    // Clear-on-heal takes precedence over any threshold still stored on the item: a wound that
+    // ends on the first cure spell has nothing to absorb, and must never open a dialog.
+    if (cfg.clearOnHeal) continue;
     if (!cfg.required || !cfg.treated) continue;
     const blocker = blockerFor(actor, cfg);
     out.push({
@@ -233,22 +255,150 @@ function _itemParticipants(actor) {
   return out;
 }
 
+// ─── Clears-on-any-healing wounds ─────────────────────────────────────────────
+
+/**
+ * The hit point pool `applyDamage` will actually adjust, mirroring how it picks one itself.
+ *
+ * Lifted from pf1-bleed-effects' `bleed-healing.mjs`, because this feature is deliberately the
+ * same rule and the two should not drift.
+ *
+ * @param {Actor} actor
+ * @returns {{value:number, max:number}|null}
+ */
+function healthPool(actor) {
+  try {
+    const config = game.settings.get("pf1", "healthConfig");
+    const useWoundsAndVigor = config?.getActorConfig?.(actor)?.rules?.useWoundsAndVigor ?? false;
+    return (useWoundsAndVigor ? actor.system?.attributes?.vigor : actor.system?.attributes?.hp) ?? null;
+  } catch {
+    return actor?.system?.attributes?.hp ?? null;
+  }
+}
+
+/**
+ * Whether an application of `applyDamage` will actually restore hit points.
+ *
+ * Decided from the options up front rather than by watching for the update that follows, which
+ * keeps the decision synchronous and free of any race with the write. Three cases move no hit
+ * points at all:
+ *
+ *  - `asNonlethal` healing reduces the nonlethal pool and leaves `hp.value` untouched.
+ *  - `asWounds` healing goes to wounds under the Wounds & Vigor rules, not to the pool.
+ *  - A creature already at full has nothing to regain.
+ *
+ * Must be evaluated **before** the healing lands — it reads the live pool.
+ *
+ * @param {Actor} actor
+ * @param {object} options - The options `applyDamage` was called with.
+ * @returns {boolean}
+ */
+function restoresHitPoints(actor, options) {
+  if (!(Number(options?.value) < 0)) return false; // damage, or nothing
+  if (options?.asNonlethal || options?.asWounds) return false;
+
+  const pool = healthPool(actor);
+  if (!pool) return false;
+  return Number(pool.value) < Number(pool.max);
+}
+
+/**
+ * @typedef {object} DHClearOnHeal
+ * @property {Item} item
+ * @property {Item|null} blocker Held open by this, and so not clearable yet.
+ */
+
+/**
+ * Every active wound on an actor set to end on the next hit-point healing, blocked ones included.
+ *
+ * The Heal check gates this only when a DC is authored: `dc: 0` means the next cure spell is
+ * enough on its own, `dc: 15` means somebody has to set it first and healing then finishes the
+ * job. That keeps one checkbox covering both "a scald that any healing soothes" and "a broken
+ * nose that must be straightened before it will knit".
+ *
+ * @param {Actor} actor
+ * @returns {DHClearOnHeal[]}
+ */
+function _clearOnHealWounds(actor) {
+  const out = [];
+  for (const item of actor.items) {
+    if (item.isActive === false) continue;
+    const cfg = getConfig(item);
+    if (!cfg.clearOnHeal) continue;
+    if (cfg.dc && !cfg.treated) continue; // authored gate, not yet passed
+    out.push({ item, blocker: blockerFor(actor, cfg) });
+  }
+  return out;
+}
+
+/**
+ * Switch off every clear-on-heal wound that isn't being held open, and say so.
+ *
+ * Called only once hit points have genuinely moved — see the call sites in `onApplyDamage` and
+ * `_applyHp`, which between them cover healing that passes straight through and healing that
+ * comes out the far side of the allocation dialog. Healing entirely absorbed by a threshold
+ * wound reaches neither, and correctly leaves these alone: it never became hit points.
+ *
+ * @param {Actor} actor
+ */
+async function _clearOnHeal(actor) {
+  const clearable = _clearOnHealWounds(actor).filter((w) => !w.blocker);
+  if (!clearable.length) return;
+
+  const cleared = [];
+  for (const { item } of clearable) {
+    try {
+      await item.update({ "system.active": false });
+      cleared.push(item.name);
+    } catch (err) {
+      console.error(`${MODULE_ID} | dedicated healing: could not clear "${item.name}" on heal`, err);
+    }
+  }
+  if (!cleared.length) return;
+
+  await ChatMessage.create({
+    content: `<p>Healing closes <strong>${cleared.join("</strong>, <strong>")}</strong> on <strong>${actor.name}</strong>.</p>`,
+    speaker: { alias: "Dedicated Healing" },
+  });
+}
+
+/**
+ * Fire-and-forget wrapper for the synchronous hook path, which cannot await.
+ *
+ * @param {Actor} actor
+ */
+function _clearOnHealDetached(actor) {
+  _clearOnHeal(actor).catch((err) =>
+    console.error(`${MODULE_ID} | dedicated healing: clear-on-heal failed`, err));
+}
+
 // ─── Phase 1: Condition Treatment (use script entry point) ───────────────────
 
 /**
- * Run the Heal check that makes a condition ready to absorb dedicated healing.
+ * Run the Heal check that makes a condition ready to be closed by healing.
  *
- * Called from the buff's `use` script call. A DC of 0 waives the check.
+ * Called from the buff's `use` script call. Serves both modes: for a threshold wound it is the
+ * gate on absorbing anything, for a clear-on-heal wound it is the gate on being cleared — and in
+ * that mode a DC of 0 means there is no gate at all, so there is nothing to run.
  *
  * @param {Actor} actor
  * @param {Item} item
  */
 export async function requestHealCheck(actor, item) {
   const cfg = getConfig(item);
-  if (!cfg.required) return;
+  if (!cfg.clearOnHeal && !cfg.required) return;
+
+  // The wording follows the mode, because "awaiting dedicated healing" is a lie about a wound
+  // that absorbs none.
+  const awaiting = cfg.clearOnHeal ? "will close with any healing" : "awaiting dedicated healing";
+
+  if (cfg.clearOnHeal && !cfg.dc) {
+    ui.notifications.info(`${item.name} needs no treatment — any healing closes it.`);
+    return;
+  }
 
   if (cfg.treated) {
-    ui.notifications.warn(`${item.name}: Condition already treated — awaiting dedicated healing.`);
+    ui.notifications.warn(`${item.name}: Condition already treated — ${awaiting}.`);
     return;
   }
 
@@ -284,8 +434,11 @@ export async function requestHealCheck(actor, item) {
   if (getConfig(item).treated) return;
   await setConfig(item, { treated: true });
 
+  const ready = cfg.clearOnHeal
+    ? "has been treated, and will close with any healing"
+    : "has been treated and is ready to receive dedicated healing";
   ChatMessage.create({
-    content: `<p><strong>${item.name}</strong> on <strong>${actor.name}</strong> has been treated and is ready to receive dedicated healing.</p>`,
+    content: `<p><strong>${item.name}</strong> on <strong>${actor.name}</strong> ${ready}.</p>`,
     speaker: { alias: "Dedicated Healing" },
   });
 }
@@ -295,17 +448,27 @@ export async function requestHealCheck(actor, item) {
 // Handles overhealing and full-HP cases correctly.
 
 function onApplyDamage(actor, options) {
+  // `_applyHp` re-enters this hook with the amount that truly landed, and does its own clearing.
   if (_bypassHealingIntercept) return;
-  if (_dialogOpen) return;
   if (options.value >= 0) return; // Positive = damage
   if (!actor.isOwner) return;
 
   const rawHealing = -options.value;
-  const participants = _getParticipants(actor);
-  if (!_anyAllocatable(participants)) return;
+
+  // A dialog already up means this heal is not ours to intercept — it goes straight to hit
+  // points, so it is exactly the kind that ends a clear-on-heal wound.
+  const participants = _dialogOpen ? [] : _getParticipants(actor);
+
+  if (!_anyAllocatable(participants)) {
+    // Nothing can absorb it: PF1 applies the healing untouched. This is the only place the raw
+    // options are still intact, so the hit-point test has to happen here.
+    if (restoresHitPoints(actor, options)) _clearOnHealDetached(actor);
+    return;
+  }
 
   // Explicit delegation (e.g. short rest applied by the GM): hand the allocation
   // dialog to the submitting player. Suppress here and let their client apply.
+  // Clearing goes with it — the delegate's `_applyHp` does it on the other client.
   if (_delegateHealing(actor, rawHealing, options)) return;
 
   const maxHpHealable = Math.max(0, actor.system.attributes.hp.max - actor.system.attributes.hp.value);
@@ -370,21 +533,28 @@ function _delegateHealing(actor, rawHealing, options) {
 
 async function _applyHp(actor, amount) {
   if (amount <= 0) return;
+  // Read the pool before the write, not after — afterwards it may be at full precisely because
+  // this healing landed.
+  const landed = restoresHitPoints(actor, { value: -amount });
   _bypassHealingIntercept = true;
   try {
     await actor.applyDamage(-amount); // Negative = healing in PF1's convention
   } finally {
     _bypassHealingIntercept = false;
   }
+  if (landed) await _clearOnHeal(actor);
 }
 
 // ─── Phase 2: Allocation Dialog ───────────────────────────────────────────────
 
 async function _showAllocationDialog(actor, totalHealing, participants, maxHpHealable) {
-  // Blocked wounds are listed but not allocatable — sorted last so the actionable rows stay at
-  // the top where the healer is typing.
-  const rows = participants
-    .map((p) => ({
+  // Three kinds of row, in this order, so the ones the healer is typing into stay at the top:
+  //   0  allocatable — a threshold wound taking input
+  //   1  clears on healing — takes no input, but will go when hit points land, and the healer
+  //      deserves to know that before deciding to pour everything into a broken arm instead
+  //   2  blocked — held open, either kind, listed so it doesn't silently vanish
+  const rows = [
+    ...participants.map((p) => ({
       id: p.id,
       name: p.name,
       required: p.required,
@@ -392,8 +562,17 @@ async function _showAllocationDialog(actor, totalHealing, participants, maxHpHea
       remaining: p.required - p.received,
       blocked: !!p.blocked,
       blockedReason: p.blockedReason || "blocked",
-    }))
-    .sort((a, b) => a.blocked - b.blocked);
+      rank: p.blocked ? 2 : 0,
+    })),
+    ..._clearOnHealWounds(actor).map(({ item, blocker }) => ({
+      id: item.id,
+      name: item.name,
+      clearOnHeal: true,
+      blocked: !!blocker,
+      blockedReason: blocker?.name || "blocked",
+      rank: blocker ? 2 : 1,
+    })),
+  ].sort((a, b) => a.rank - b.rank);
 
   const content = await foundry.applications.handlebars.renderTemplate(TEMPLATE, {
     totalHealing, maxHpHealable, participants: rows,

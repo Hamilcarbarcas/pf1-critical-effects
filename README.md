@@ -418,6 +418,31 @@ far with a reset control. With homebrew off the section is hidden on unconfigure
 condition can be given a threshold; a buff that already has one keeps its section, since those
 numbers are still live and a GM needs to see and be able to reset what's outstanding.
 
+#### Clears on any healing
+
+The other mode, and the shallow end of the same idea: **Clears on Any Healing** gives a buff no
+threshold at all. It absorbs nothing, and simply switches itself off the moment its bearer's hit
+points go up. A scald, a bout of dizziness, a wound that just needs closing — things that shouldn't
+soak up a cure spell, but shouldn't survive one either.
+
+The two modes are exclusive. Ticking the box hides *Healing Required*, and the buff stops being a
+participant even if a threshold is still stored on it.
+
+- The **Heal check DC** still applies when you author one: a DC means somebody has to treat the
+  wound before healing will close it, and `0` means the next cure spell is enough on its own.
+- **Held Open By** still applies. A buff held open by another absorbs nothing *and* isn't cleared
+  by healing — the steel has to come out first.
+- What counts as healing is [pf1-bleed-effects'](https://github.com/Hamilcarbarcas/pf1-bleed-effects)
+  line, exactly: cure spells, potions, channelled energy, the Apply Healing button and the
+  apply-damage dialog in healing mode all count, because they go through `ActorPF#applyDamage()`.
+  Typing a number into the sheet's hit point field or dragging the token HUD's health bar does not —
+  that's book-keeping, not treatment.
+- Healing that a *threshold* wound soaked up doesn't count either. It never became hit points, so
+  nothing closes on it. Only what actually reaches the hit point pool clears these.
+- An actor carrying only clear-on-heal buffs heals completely normally, with no dialog. When a
+  dialog does open for something else, they're listed in it — no input, marked *clears on healing* —
+  so the healer can see what pouring everything into a broken arm is about to leave untouched.
+
 ```js
 game.criticalEffects.dedicatedHealing.requestHealCheck(actor, item);
 ```

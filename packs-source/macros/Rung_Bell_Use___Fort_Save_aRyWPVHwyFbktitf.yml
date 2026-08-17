@@ -1,0 +1,66 @@
+_id: aRyWPVHwyFbktitf
+_key: '!macros!aRyWPVHwyFbktitf'
+_stats:
+  compendiumSource: null
+  coreVersion: '13.351'
+  createdTime: 1786911497691
+  duplicateSource: null
+  exportSource: null
+  lastModifiedBy: mLW1zeZBsSCEsXlw
+  modifiedTime: 1786911894847
+  systemId: pf1
+  systemVersion: '11.11'
+author: mLW1zeZBsSCEsXlw
+command: |-
+  // ===========================================================================
+  // Save to Shake It Off — using the buff's action rolls a Fortitude save against
+  // the DC the critical was delivered at. Success ends the buff; failure does
+  // nothing (the effect rides on until the next attempt).
+  //
+  // ATTACH AS: a "Use" script call on the BUFF itself.
+  // IN SCOPE:  item (the buff), actor, shared.
+  // PREREQ:    delivered by critical-effects / Buff Delivery so the buff carries
+  //            flags.astora-mod.sourceInfo.saveDC.
+  // ===========================================================================
+
+  const SAVE_ID     = "fort";                  // "fort" | "ref" | "will"
+  const SKIP_DIALOG = !actor?.hasPlayerOwner;  // NPC/unowned auto-rolls skip the prompt
+
+  if (!actor || !item) return;
+
+  // DC from the delivery stamp; roll-data mirror as a fallback so this doesn't
+  // depend on the libWrapper accessor being live.
+  const info = item.getFlag("astora-mod", "sourceInfo") ?? item.getRollData()?.sourceInfo ?? {};
+  const dc = Number(info.saveDC);
+  if (!Number.isFinite(dc)) {
+    ui.notifications.warn(`${item.name}: no save DC stamped on this buff — no save rolled.`);
+    return;
+  }
+
+  // dc flows through to the card, so it renders Success / Failure natively.
+  const message = await actor.rollSavingThrow(SAVE_ID, { dc, skipDialog: SKIP_DIALOG });
+  if (!message) { shared.reject = true; return; } // dialog cancelled — abort the use
+
+  const total = message.rolls?.[0]?.total;
+  if (!Number.isFinite(total) || total < dc) return; // failed, or unreadable — buff stays
+
+  // Success. Name first: if the buff is configured to auto-delete on toggle-off,
+  // `item` (and item.name) is gone the moment setActive lands.
+  const name = item.name;
+  await ChatMessage.create({
+    speaker: ChatMessage.getSpeaker({ actor }),
+    content: `<p><strong>${actor.name}</strong> shakes it off — ${name} ends.</p>`,
+  });
+  await item.setActive(false);
+flags:
+  scene-packer:
+    hash: c5fc403310cc86db552446cef82bea4b2d9c5d7f
+folder: null
+img: icons/svg/dice-target.svg
+name: Rung Bell Use - Fort Save
+ownership:
+  default: 0
+  mLW1zeZBsSCEsXlw: 3
+scope: global
+sort: 0
+type: script

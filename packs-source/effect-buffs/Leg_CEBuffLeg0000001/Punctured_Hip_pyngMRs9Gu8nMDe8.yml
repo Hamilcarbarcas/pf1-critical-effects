@@ -6,18 +6,36 @@ _stats:
   createdTime: 1786827470369
   duplicateSource: null
   exportSource: null
-  lastModifiedBy: null
-  modifiedTime: 1786827470369
+  lastModifiedBy: mLW1zeZBsSCEsXlw
+  modifiedTime: 1786936539656
   systemId: pf1
   systemVersion: '11.11'
 effects: []
-flags: {}
+flags:
+  astora-mod:
+    hiddenBuff: false
+  pf1-bleed-effects:
+    bleed:
+      formula: 4d6
+      kind: hp
+      mode: active
+  pf1-critical-effects:
+    dedicatedHealing:
+      blockedBy: ''
+      clearOnHeal: false
+      dc: 0
+      received: 0
+      required: 20
+      treated: false
+  pf1-improved-energy-drain:
+    staticEnabled: false
+    staticLevels: 0
 folder: CEBuffLeg0000001
-img: icons/svg/ice-aura.svg
+img: Icons/craftpix-icons/spearman-skill/spearman-skill-40-blood-spear-strike.png
 name: Punctured Hip
 ownership:
   default: 0
-sort: 0
+sort: 1500000
 system:
   actions: []
   active: false
@@ -33,11 +51,12 @@ system:
     seeInDarkness: false
     seeInvisibility: false
   changes: []
-  conditions: []
+  conditions:
+    - bleed
   contextNotes: []
   description:
     instructions: ''
-    value: <p><strong>Effect:</strong> Leg useless until healed</p><p><strong>Bleed:</strong> —</p><p><strong>DH:</strong> —</p>
+    value: <p>4d6 deep bleed, leg useless until healed</p><ul><li><p>Speed reduced to 5 feet</p></li><li><p>Cannot take a 5 foot step</p></li><li><p>Cannot run or charge</p></li><li><p>-8 to Acrobatics, Climb, Ride, Stealth, and Swim checks</p></li><li><p>Cannot perform the Bull Rush or Overrun Combat Maneuvers</p></li><li><p>Cannot make attacks with the injured leg</p></li><li><p>-8 Penalty to CMB and CMD</p></li></ul>
   duration:
     end: ''
     units: ''

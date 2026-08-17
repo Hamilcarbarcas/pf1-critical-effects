@@ -6,12 +6,35 @@ _stats:
   createdTime: 1786827470369
   duplicateSource: null
   exportSource: null
-  lastModifiedBy: null
-  modifiedTime: 1786827470369
+  lastModifiedBy: mLW1zeZBsSCEsXlw
+  modifiedTime: 1786903708130
   systemId: pf1
   systemVersion: '11.11'
 effects: []
 flags:
+  astora-mod:
+    hiddenBuff: false
+  lilhelper:
+    item:
+      autoPowerAttack: false
+      hideAttacks: false
+      keen: false
+      rollOverride: ''
+      rollmodeOverride: ''
+      skipDialog: 0
+  pf1-bleed-effects:
+    dot:
+      instances:
+        syPoqIpXvHAPbeqr:
+          bypass: []
+          enabled: true
+          formula: (@dFlags.Disemboweled.spilled)d4
+          kind: damage
+          label: ''
+          onActivate: true
+          timing: turnEnd
+          types:
+            - constitution damage
   pf1-critical-effects:
     dedicatedHealing:
       blockedBy: ''
@@ -19,14 +42,53 @@ flags:
       received: 0
       required: 20
       treated: false
+  pf1-improved-energy-drain:
+    staticEnabled: false
+    staticLevels: 0
 folder: CEBuffTorso00001
-img: icons/svg/ice-aura.svg
+img: Icons/craftpix-icons/swordsman-skill/swordsman-skill-29-blood-splatter-blade.png
 name: Disemboweled
 ownership:
   default: 0
 sort: 0
 system:
-  actions: []
+  actions:
+    - _id: ZOGyzHl3zraGxBP7
+      actionType: other
+      activation:
+        cost: 1
+        type: full
+        unchained:
+          cost: 1
+          type: nonaction
+      ammo:
+        type: none
+      flags: {}
+      name: Replace Innards
+      powerAttack:
+        critMultiplier: 1
+        damageBonus: 2
+      range:
+        units: personal
+      uses: {}
+    - _id: fIqNUXsTLKul0tII
+      actionType: other
+      activation:
+        cost: 1
+        type: move
+        unchained:
+          cost: 1
+          type: nonaction
+      ammo:
+        type: none
+      flags: {}
+      name: Hold Innards In
+      powerAttack:
+        critMultiplier: 1
+        damageBonus: 2
+      range:
+        units: personal
+      uses: {}
   active: false
   attackNotes: []
   changeFlags:
@@ -44,7 +106,7 @@ system:
   contextNotes: []
   description:
     instructions: ''
-    value: <p><strong>Effect:</strong> 1d4 con damage each round a standard/move action is taken until healed. Full-round action (DC 15 fort to do it yourself) to put it back in. Move action each round to hold it in until healed (heal 20).</p><p><strong>Bleed:</strong> —</p><p><strong>DH:</strong> 20</p>
+    value: <p>Your stomach has been sliced open, spilling your internal organs.</p><p>You take 1d4 constitution damage each round your internals are spilled.</p><p>As a full-round action your internals can be replaced within your stomach. If you attempt this yourself, you must make a DC 15 Fortitude Save to do so.</p><p>It is a move action each round to hold them in, and requires at least one hand to do so. If they are not held in for a round, they spill back out and you resume taking constitution damage.</p>
   duration:
     end: ''
     units: ''
@@ -52,7 +114,8 @@ system:
   effectNotes: []
   flags:
     boolean: {}
-    dictionary: {}
+    dictionary:
+      spilled: '1'
   hideFromToken: false
   level: 0
   links:

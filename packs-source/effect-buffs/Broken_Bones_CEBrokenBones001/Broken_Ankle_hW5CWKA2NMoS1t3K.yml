@@ -7,7 +7,7 @@ _stats:
   duplicateSource: null
   exportSource: null
   lastModifiedBy: mLW1zeZBsSCEsXlw
-  modifiedTime: 1779744332917
+  modifiedTime: 1786908961643
   systemId: pf1
   systemVersion: '11.11'
 effects:
@@ -41,6 +41,8 @@ effects:
     transfer: true
     type: buff
 flags:
+  astora-mod:
+    hiddenBuff: false
   lilhelper:
     item:
       autoPowerAttack: false
@@ -55,6 +57,9 @@ flags:
       received: 0
       required: 10
       treated: false
+  pf1-improved-energy-drain:
+    staticEnabled: false
+    staticLevels: 0
   scene-packer:
     hash: fae909103bf1dd70339f69d5100fbe06973dc3e8
     sourceId: Actor.IdemNU0cmN3HicaS.Item.PyKlGfuRTD68Nwht
@@ -137,40 +142,18 @@ system:
     value: <p>A broken ankle is difficult and painful to put any amount of weight on. <a data-article-privacy="public" data-article-id="34340b9b-7215-410b-a17a-992036d613f0" data-template-type="article" class="article-link article-explorer-link tooltipstered" data-article="34340b9b-7215-410b-a17a-992036d613f0" href="https://www.worldanvil.com/w/astora-hamilcarbarca/a/movement-article">Movement</a> rates are halved, a -2 penalty is applied to AC and <span class="world-variable world-variable-string ability-score-dexterity"><a href="https://www.worldanvil.com/w/astora-hamilcarbarca/a/ability-scores-article#dexterity" target="_blank">Dexterity</a> checks that involve movement</span>, and the character cannot run or charge.</p><p>A character with both ankles broken instead takes a -4 penalty to AC and <span class="world-variable world-variable-string ability-score-dexterity"><a href="https://www.worldanvil.com/w/astora-hamilcarbarca/a/ability-scores-article#dexterity" target="_blank">Dexterity</a></span> checks that involve movement, and has a movement rate of 5 feet.</p><p>A broken ankle can be healed by making a DC 15 Heal check to set the break, followed by 15 points of healing dedicated to the break (dedicated healing does not heal hit point damage).</p>
   duration:
     end: ''
-    start: -15704702526
+    start: -15704080844
     units: ''
     value: null
   effectNotes: []
   flags:
     boolean: {}
-    dictionary:
-      useFortSave: '10'
+    dictionary: {}
   hideFromToken: false
   level: 0
   links:
     children: []
-  scriptCalls:
-    - _id: RBBM7aHN
-      category: use
-      hidden: false
-      img: null
-      name: ''
-      type: macro
-      value: Compendium.pf1-critical-effects.macros.Macro.2KJDXE3liCDaKEWO
-    - _id: QdH2K5gx
-      category: toggle
-      hidden: false
-      img: null
-      name: ''
-      type: macro
-      value: Compendium.pf1-critical-effects.macros.Macro.DSmUMLDLIt9z26p0
-    - _id: GZBBPTA1
-      category: preActivate
-      hidden: false
-      img: null
-      name: ''
-      type: macro
-      value: Compendium.pf1-critical-effects.macros.Macro.PEtshlwi0AEvwNJ6
+  scriptCalls: []
   showInQuickbar: false
   subType: perm
   tag: ''

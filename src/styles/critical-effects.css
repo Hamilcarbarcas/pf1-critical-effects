@@ -210,6 +210,14 @@
   font-variant-numeric: tabular-nums;
 }
 
+/* Sits directly against the name it qualifies, so the negative margin cancels the row's gap.
+ * Weight is the row's default: bold would compete with the condition's own name. */
+.ce-condition-bleed {
+  margin-left: -0.15em;
+  opacity: 0.85;
+  font-variant-numeric: tabular-nums;
+}
+
 /* --- effect damage --------------------------------------------------------
  *
  * PF1's own damage-table markup, so the table itself needs nothing from us. The only rule here is
@@ -796,6 +804,23 @@
 
 .dedicated-healing-form .dh-blocked .dh-name {
   font-style: italic;
+}
+
+/* A wound with no threshold, which ends the moment hit points land. It takes no allocation, so
+   its row is a warning rather than a control — dimmed less than a blocked one, because unlike a
+   blocked wound something is about to happen to it. */
+.dedicated-healing-form .dh-on-heal .dh-name {
+  font-style: italic;
+}
+
+.dedicated-healing-form .dh-on-heal-note {
+  display: block;
+  font-size: 0.8em;
+  font-style: italic;
+  line-height: 1.15;
+  text-align: center;
+  white-space: normal;
+  opacity: 0.75;
 }
 
 .dedicated-healing-form .dh-blocked-reason {

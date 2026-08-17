@@ -10,12 +10,18 @@
     </thead>
     <tbody>
       {{#each participants}}
-      <tr class="{{#if blocked}}dh-blocked{{/if}}">
+      <tr class="{{#if blocked}}dh-blocked{{/if}}{{#if clearOnHeal}} dh-on-heal{{/if}}">
         <td class="dh-name">{{name}}</td>
-        <td class="dh-progress">{{received}} / {{required}} HP</td>
+        <td class="dh-progress">
+          {{~#if clearOnHeal}}&mdash;{{else}}{{received}} / {{required}} HP{{/if~}}
+        </td>
         <td>
           {{#if blocked}}
           <span class="dh-blocked-reason">{{blockedReason}}</span>
+          {{else if clearOnHeal}}
+          {{!-- No input: it absorbs nothing. It goes when hit points do, so it is here for
+                warning rather than for allocation. --}}
+          <span class="dh-on-heal-note">clears on healing</span>
           {{else}}
           <input type="number" class="dh-alloc-input"
                  data-participant-id="{{id}}"

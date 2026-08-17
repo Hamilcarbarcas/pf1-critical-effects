@@ -302,6 +302,14 @@ never chase a reference to find one.
 > re-seat it and change what a 13+ result inherits. That is accepted rather than prevented, and made
 > visible instead: `effects.json` carries a `_mortalParents` map of every resolved cell, so a
 > re-seat shows up as a line in the diff.
+>
+> **`transform.addBuffs` is the one op that had to be idempotent** *(phase 14)*. A 13+ row can state
+> something true of the wound in every cell it covers while row 12 differs in each — *Kebabed* leaves
+> the weapon in the victim whether it went through an arm, a leg, a tail or a wing. `transform.buffs`
+> cannot say that: a replacement is the same list everywhere, and the limb-specific buff underneath
+> it is exactly what differs per cell. So `addBuffs` appends, and skips a name the resolved row
+> already carries — which is not a nicety but the condition of the op being writable at all, since
+> the author cannot know which of the four rows below already delivers it.
 
 Notes tied to the rules concept:
 
@@ -1427,6 +1435,56 @@ This migration is what moves dedicated healing from the "content-coupled" column
 module proper — after it, a broken-bone effect works with astora-mod absent. Do it as its own
 phase, after the fumble slice proves the module structure, and before crit outcomes start
 creating buffs that depend on it.
+
+### Clears on any healing — the mode with no threshold
+
+A second shape for the same section, added after the migration. Not every wound that shouldn't be
+*ignored* by healing deserves to *eat* it: a scald, a bout of dizziness, a gash that just needs
+closing. Those want "the next cure spell ends this", which the threshold model can only approximate
+with a `required: 1` that still opens a dialog and still asks the healer to type a number.
+
+`clearOnHeal` is that, as one checkbox. Three things fall out of it, and each is a deliberate
+choice rather than an omission:
+
+**It is not a participant.** It absorbs nothing, so it never enters `_getParticipants`,
+`_anyAllocatable`, or the allocation arithmetic — and an actor carrying only these heals *exactly*
+as it would carrying none. No dialog, no suppression, no interception. `_itemParticipants` skips
+`clearOnHeal` items outright, so a threshold left stored on the item from before the box was ticked
+cannot quietly turn it back into one.
+
+**It fires on hit points landing, not on healing arriving.** The distinction only shows up in the
+combined case — a broken arm and a scald on the same actor, ten points of healing, all of it
+allocated to the arm. Nothing reached the hit point pool, so nothing closes. This falls out of
+*where* the clear is called from rather than from a test: `_applyHp` is the single funnel through
+which the dialog's leftover becomes hit points, and `onApplyDamage`'s early return is where a heal
+with nothing to absorb it passes through untouched. Those two are the only paths, and neither can
+be reached by healing that a wound swallowed.
+
+**What counts as healing is pf1-bleed-effects' line, unchanged.** `pf1ApplyDamage` and nothing
+else. `restoresHitPoints` and `healthPool` are lifted from `bleed-healing.mjs` verbatim, deliberately
+— the two features are the same rule wearing different hats, and the exclusions (`asNonlethal`,
+`asWounds`, already at full) should not drift apart.
+
+This does mean the module's two hooks disagree with each other: `preUpdateActor` intercepts rest and
+sheet HP edits for the *threshold* path, and `clearOnHeal` ignores that hook entirely. That is
+intentional, not an oversight. Diverting a hand-typed number into an allocation dialog is a
+book-keeping aid — the GM sees what they did and can still put it where they meant. Silently
+deleting a buff on the same edit is not, because there is nothing on screen to undo.
+
+| | Threshold (`required`) | `clearOnHeal` |
+|---|---|---|
+| A participant | yes | **no** |
+| Opens a dialog | yes | **no** (listed in one that opens for something else) |
+| `pf1ApplyDamage` | intercepted, suppressed | clears, after HP land |
+| `preUpdateActor` (rest, sheet) | intercepted, suppressed | **ignored** |
+| Heal check DC | always gates | gates **only when authored** — `dc: 0` needs no treatment |
+| `blockedBy` | absorbs nothing while blocked | **isn't cleared** while blocked |
+
+The **DC gate is conditional** because both readings are wanted and neither is the obvious default.
+*Frostbite clears with any healing* wants no gate; *a broken nose must be straightened before it
+will knit* wants one. `dc: 0` meaning "no gate" rather than "waive the roll but still require a use"
+is the one place this diverges from the threshold path, and it is what lets one checkbox cover both
+without a third state.
 
 ---
 

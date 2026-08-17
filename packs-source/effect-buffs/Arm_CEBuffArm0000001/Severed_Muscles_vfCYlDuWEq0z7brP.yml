@@ -7,11 +7,13 @@ _stats:
   duplicateSource: null
   exportSource: null
   lastModifiedBy: mLW1zeZBsSCEsXlw
-  modifiedTime: 1786863569443
+  modifiedTime: 1786908448407
   systemId: pf1
   systemVersion: '11.11'
 effects: []
 flags:
+  astora-mod:
+    hiddenBuff: false
   pf1-critical-effects:
     dedicatedHealing:
       blockedBy: ''
@@ -19,8 +21,11 @@ flags:
       received: 0
       required: 30
       treated: false
+  pf1-improved-energy-drain:
+    staticEnabled: false
+    staticLevels: 0
 folder: CEBuffArm0000001
-img: icons/svg/ice-aura.svg
+img: Icons/craftpix-icons/spearman-skill/spearman-skill-40-blood-spear-strike.png
 name: Severed Muscles
 ownership:
   default: 0
@@ -39,12 +44,42 @@ system:
     noMediumEncumbrance: false
     seeInDarkness: false
     seeInvisibility: false
-  changes: []
+  changes:
+    - _id: nrE5nkyE
+      formula: '-10'
+      operator: add
+      priority: 0
+      target: skill.clm
+      type: untypedPerm
+    - _id: 1Uwe8LVG
+      formula: '-10'
+      operator: add
+      priority: 0
+      target: skill.crf
+      type: untypedPerm
+    - _id: nFhiw3eQ
+      formula: '-10'
+      operator: add
+      priority: 0
+      target: skill.dev
+      type: untypedPerm
+    - _id: c0j0PcoS
+      formula: '-10'
+      operator: add
+      priority: 0
+      target: skill.slt
+      type: untypedPerm
+    - _id: Nlvn98zs
+      formula: '-10'
+      operator: add
+      priority: 0
+      target: skill.umd
+      type: untypedPerm
   conditions: []
   contextNotes: []
   description:
     instructions: ''
-    value: <p><strong>Effect:</strong> Arm useless until healed (heal 30)</p><p><strong>Bleed:</strong> —</p><p><strong>DH:</strong> 30</p>
+    value: <p>Arm useless until healed (heal 30)</p><ul><li><p>-10 to climb, craft, disable device, sleight of hand, and use magic device checks</p></li><li><p>Cannot wield 2 handed weapons, dual wield, or wield a shield and weapon</p></li><li><p>Requies a concentration check (DC 15 + 2x the level of the spell) to cast spells with somatic components</p></li></ul>
   duration:
     end: ''
     units: ''

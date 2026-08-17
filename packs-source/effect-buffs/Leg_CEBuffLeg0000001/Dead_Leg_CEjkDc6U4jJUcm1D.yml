@@ -6,18 +6,23 @@ _stats:
   createdTime: 1786827470369
   duplicateSource: null
   exportSource: null
-  lastModifiedBy: null
-  modifiedTime: 1786827470369
+  lastModifiedBy: mLW1zeZBsSCEsXlw
+  modifiedTime: 1786936539656
   systemId: pf1
   systemVersion: '11.11'
 effects: []
-flags: {}
+flags:
+  astora-mod:
+    hiddenBuff: false
+  pf1-improved-energy-drain:
+    staticEnabled: false
+    staticLevels: 0
 folder: CEBuffLeg0000001
-img: icons/svg/ice-aura.svg
+img: Icons/craftpix-icons/debuff-skill/debuff-skill-26-chained-leg.png
 name: Dead Leg
 ownership:
   default: 0
-sort: 0
+sort: 600000
 system:
   actions: []
   active: false
@@ -32,16 +37,64 @@ system:
     noMediumEncumbrance: false
     seeInDarkness: false
     seeInvisibility: false
-  changes: []
+  changes:
+    - _id: rQRJuGMe
+      formula: '-8'
+      operator: add
+      priority: 0
+      target: skill.acr
+      type: untyped
+    - _id: mFm7vduo
+      formula: '-8'
+      operator: add
+      priority: 0
+      target: skill.clm
+      type: untyped
+    - _id: H2CsGUoG
+      formula: '-8'
+      operator: add
+      priority: 0
+      target: skill.rid
+      type: untyped
+    - _id: UKDUzNz5
+      formula: '-8'
+      operator: add
+      priority: 0
+      target: skill.ste
+      type: untyped
+    - _id: gPPYOJet
+      formula: '-8'
+      operator: add
+      priority: 0
+      target: skill.swm
+      type: untyped
+    - _id: Idvxwbxt
+      formula: min(@attributes.speed.land.total, 5)
+      operator: set
+      priority: -1
+      target: landSpeed
+      type: untyped
+    - _id: k9sxmUh7
+      formula: '-8'
+      operator: add
+      priority: 0
+      target: cmb
+      type: untyped
+    - _id: 2POvRm4m
+      formula: '-8'
+      operator: add
+      priority: 0
+      target: cmd
+      type: untyped
   conditions: []
   contextNotes: []
   description:
     instructions: ''
-    value: <p><strong>Effect:</strong> Leg useless 1d4 rounds</p><p><strong>Bleed:</strong> —</p><p><strong>DH:</strong> —</p>
+    value: <p>Your leg is useless for 1d4 rounds:</p><ul><li><p>Speed reduced to 5 feet</p></li><li><p>Cannot take a 5 foot step</p></li><li><p>Cannot run or charge</p></li><li><p>-8 to Acrobatics, Climb, Ride, Stealth, and Swim checks</p></li><li><p>Cannot perform the Bull Rush or Overrun Combat Maneuvers</p></li><li><p>Cannot make attacks with the injured leg</p></li><li><p>-8 Penalty to CMB and CMD</p></li></ul>
   duration:
-    end: ''
-    units: ''
-    value: null
+    end: initiative
+    units: round
+    value: 1d4
   effectNotes: []
   flags:
     boolean: {}

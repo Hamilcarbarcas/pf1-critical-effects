@@ -7,11 +7,13 @@ _stats:
   duplicateSource: null
   exportSource: null
   lastModifiedBy: mLW1zeZBsSCEsXlw
-  modifiedTime: 1786863569443
+  modifiedTime: 1786902796764
   systemId: pf1
   systemVersion: '11.11'
 effects: []
 flags:
+  astora-mod:
+    hiddenBuff: false
   pf1-critical-effects:
     dedicatedHealing:
       blockedBy: ''
@@ -19,8 +21,11 @@ flags:
       received: 0
       required: 10
       treated: false
+  pf1-improved-energy-drain:
+    staticEnabled: false
+    staticLevels: 0
 folder: CEBuffArm0000001
-img: icons/svg/ice-aura.svg
+img: Icons/craftpix-icons/swordsman-skill/swordsman-skill-29-blood-splatter-blade.png
 name: Sliced Tendons
 ownership:
   default: 0
@@ -41,10 +46,14 @@ system:
     seeInvisibility: false
   changes: []
   conditions: []
-  contextNotes: []
+  contextNotes:
+    - target: attack
+      text: '[[-2]] if using sliced arm'
+    - target: skills
+      text: '[[-2]] if using sliced arm'
   description:
     instructions: ''
-    value: <p><strong>Effect:</strong> -2 to attacks/checks using arm until healed (heal 10)</p><p><strong>Bleed:</strong> —</p><p><strong>DH:</strong> 10</p>
+    value: <p><strong>-</strong>2 to attacks/checks using arm until healed (heal 10)</p>
   duration:
     end: ''
     units: ''

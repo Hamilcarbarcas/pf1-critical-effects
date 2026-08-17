@@ -13,6 +13,11 @@
   The transform vocabulary is six operations: multiply the bleed, multiply the save DC, scale the
   buff's healing threshold with it, add damage, add conditions, replace the buff. `effects.json`
   still ships one fully merged entry per cell, so the runtime chases nothing.
+- **`transform.addBuffs`** — a seventh transform operation, and the only additive one for buffs: it
+  appends to whatever the 13+ row resolved to and skips a name already there. `transform.buffs`
+  replaces, which one mortal row spanning four cells cannot use — the buff underneath differs in
+  each, and that difference is the point. *Kebabed* needed to say "and the weapon stays in it" once,
+  for arm, leg, tail and wing alike.
 - **`setHP`** — "reduced to −1 hit points", resolved against live hit points when it is applied
   rather than rolled in advance, so it lands where the entry says regardless of what else arrived
   first. Damage could not express this: a formula for *current hp + 1* is computed before the
@@ -24,6 +29,19 @@
   it — so it lives in `COMPANION_CONDITIONS`, apart from the mirror of PF1's own registry.
 - **`node tools/verify.mjs`** runs the runtime validators over the generated files, so a mistake in
   a generator has somewhere to show up.
+- **A wound can simply close.** *Clears on Any Healing* on the buff sheet's Dedicated Healing
+  section is the mode with no threshold: the buff absorbs nothing and switches itself off the moment
+  its bearer's hit points go up. A scald or a bout of dizziness shouldn't soak up a cure spell, but
+  shouldn't survive one either, and a `required: 1` threshold was the closest the section could get —
+  a dialog asking the healer to type a number to close something that costs nothing to close.
+  What counts as healing is pf1-bleed-effects' line exactly: cure spells, potions, channelled
+  energy and the Apply Healing button all count; typing into the hit point field does not. Healing
+  a *threshold* wound soaked up doesn't either, since it never became hit points. The **Heal check
+  DC** still applies when one is authored, so the same checkbox covers *"any healing soothes this"*
+  and *"set it first, then healing knits it"*. **Held Open By** still applies too — the steel has to
+  come out before the wound will close. An actor carrying only these heals completely normally, with
+  no dialog; when one opens for something else they're listed in it, marked *clears on healing* and
+  taking no input, so the healer can see what pouring everything into a broken arm will leave behind.
 - **A wound can be held open.** *Held Open By* on the buff sheet's Dedicated Healing section names
   another buff on the same actor; while that buff is active this one absorbs no healing at all. It
   is the first step of Weapon Stuck (DESIGN.md §8.1) — a wound with steel still in it does not
@@ -55,9 +73,30 @@
   every read: nothing was ever marked blocked, and the field re-rendered empty as though it had not
   saved. The stored data was intact throughout — `setFlag` merges — so existing buffs start working
   without being re-configured.
+- **A failed save that kills no longer applies anything else.** `onFail` inherits every channel it
+  does not name (§6), so *Cleaved Forehead* delivered its buff on the branch where the victim is
+  dead — and it was not only buffs: *Bisected* inherited its ability damage and its `setHP`,
+  *Consuming Void* its negative levels. Nineteen entries were clearing their conditions for the
+  death branch and silently keeping the rest. They now clear all of it. **`Soul Rend` is untouched**
+  — death in the *base* branch is a statement, not an oversight, and *Become Undead* is the entry.
+- **The validator warns when a death branch inherits.** The rule above only holds while someone
+  remembers it, and the entries that inherit row 12 do not read as though they carry anything at all
+  — *Carbonized* has no mechanics in the pool and picked up a buff from the row it landed on, which
+  is a leak no reading of the pool file would have shown. Caught at fold-in instead.
+- **A bleed on the card says how much it bleeds.** The condition row read *Bleed* whether the wound
+  was a `1d6` scratch or `2d4` Con with a deep threshold behind it, which is the one condition where
+  the name is not the whole of what it does — and the one an entry may carry twice, where two
+  identical rows told the GM nothing. It now reads **Bleed** *(3d6)*, *(4d6 deep)*, *(1d4 Con)*.
 - **`buff-manifest.mjs` read the healing threshold in only one word order.** It matched `heal N`
   but not `N heal`, so *Broken Toes* and *Dislocated Knee* — whose briefs say *(DC 10, 5 heal)* —
   showed no threshold at all in the DH column and would have shipped unhealable.
+- **Applying a configured bleed no longer asks the GM to configure it.** pf1-bleed-effects prompts
+  for an amount whenever the bleed condition turns on with nothing stored against it — correct for a
+  GM ticking the box on the token HUD, wrong for an entry that already knows it bleeds `4d6`. The
+  marker was going on first and the amount a line later, so the prompt fired in the gap. The bleed
+  is now registered first and `BleedAPI.apply` raises its own marker, which is also the only order
+  that can carry a duration: PF1's `setConditions` drops a condition whose effect already exists
+  rather than updating it, so a timed bleed has to be written to the effect directly.
 
 ### Changed
 - **The compound-fracture family delivers the broken bones it always meant.** *Compound Fracture:
@@ -88,6 +127,34 @@
 - **Dedicated-healing thresholds are derived from the dice**: 5 hit points per die of hit-point
   bleed, 10 per die of ability bleed. That is what lets the 13+ doubling scale the formula and the
   threshold together instead of silently undercharging a doubled wound.
+- **Fifteen debuffs that were functional copies are one debuff each.** Where two wounds differed
+  only in the prose on the buff, they now deliver the same one, and the entries keep their own
+  bleed and save to carry the difference in severity: *Pierced Calf* → **Pierced Leg**, *Severed
+  Tendons* → **Pierced Knee**, *Nicked Femoral* and *Severed Femoral* → **Cut Femoral**, *Hamstring*
+  and *Clipped Foot* → **Injured Foot**, *Sliced Calf* and *Cleaved Ankle* → **Injured Leg**,
+  *Severed Quads* → **Debilitated Leg**, *Pinned Arm* → **Pierced Muscle**, *Cut Brachial* and
+  *Skewered Arm* → **Cut Deltoids**, *Cleaved Finger* → **Sliced Tendons**, *Cleaved Hand* →
+  **Sliced Muscle**. Every one of these is the success branch; the failed branches are untouched,
+  so a cleaved hand that fails its save still severs. The retired buffs are gone from the pack.
+- ***Punctured Knee* is *Pierced Heel***, delivering **Nicked Achilles**. The wound it described was
+  the Achilles wound one rank up, differing only in where the prose put the point, and it keeps its
+  own `2d6` deep bleed to sit above the *Nicked Achilles* row rather than duplicate it.
+- ***Cleaved Forehead*'s bleed moved onto the buff**, so the `7d6` runs as long as the buff does —
+  which is as long as the weapon is in the skull — instead of being a one-shot the entry hung on
+  the card beside it. The entry now carries the save and the death branch and nothing else.
+- ***Weapon Stuck* is on the eleven wounds that pin a weapon, and no others.** *Cleaved Forehead*
+  was authored with it in the spreadsheet and lost it at import — steel lodged in a skull, with
+  nothing saying so — and it is back. Going the other way, *Skewering Blow*, *Arm Skewered* and
+  *Severed Femoral* carried it and now do not: a weapon that goes all the way through and out the
+  far side is not a weapon left in the wound, whatever the import read. The eleven are *Lodging
+  Blow*, *Lodged Weapon*, *Pinned Arm*, *Pinned Leg*, *Pinned Tail*, *Pierced Knee*, *Pierced Wing
+  Base*, *Punctured Cheekbone*, *Cleaved Forehead*, *Impaled Gut* and *Impaled Stomach*.
+- **Every *Kebabed* cell leaves the weapon in.** The 13+ piercing rows are where the spreadsheet put
+  *Weapon Stuck* on this family, and now the mechanics agree: all seven cells carry it, rather than
+  the two that happened to inherit it from an arm and a leg while the tail and wing — whose sheet
+  rows say *weapon stuck* in as many words — silently did not.
+- ***Severed Finger* is *Severed Fingers***, following the pack rename. *Cleaved Finger*'s failed
+  branch was the only reference and now points at the surviving buff.
 
 ### Added
 - **Effects execute on the card.** A resolved critical (or fumble) now shows what it did and offers

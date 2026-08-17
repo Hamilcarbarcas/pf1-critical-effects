@@ -6,14 +6,26 @@ _stats:
   createdTime: 1786827470369
   duplicateSource: null
   exportSource: null
-  lastModifiedBy: null
-  modifiedTime: 1786827470369
+  lastModifiedBy: mLW1zeZBsSCEsXlw
+  modifiedTime: 1786908925076
   systemId: pf1
   systemVersion: '11.11'
 effects: []
-flags: {}
+flags:
+  astora-mod:
+    hiddenBuff: false
+  pf1-critical-effects:
+    dedicatedHealing:
+      blockedBy: ''
+      dc: 15
+      received: 0
+      required: 10
+      treated: false
+  pf1-improved-energy-drain:
+    staticEnabled: false
+    staticLevels: 0
 folder: CEBuffHead000001
-img: icons/svg/ice-aura.svg
+img: Icons/craftpix-icons/undead-loot/undead-loot-3-jawbone-with-teeth.png
 name: Broken Jaw
 ownership:
   default: 0
@@ -32,12 +44,18 @@ system:
     noMediumEncumbrance: false
     seeInDarkness: false
     seeInvisibility: false
-  changes: []
+  changes:
+    - _id: LLSMUaD1
+      formula: '-4'
+      operator: add
+      priority: 0
+      target: chaSkills
+      type: circumstance
   conditions: []
   contextNotes: []
   description:
     instructions: ''
-    value: <p><strong>Effect:</strong> Skills involving speech at disadvantage, spells w/verbal components - concentration DC 15 + 2xlevel or fail</p><p><strong>Bleed:</strong> —</p><p><strong>DH:</strong> —</p>
+    value: <p>-4 penalty to skills involving speech, spells with verbal components require a Concentration check (DC 15 + 2x the level of the spell) or fail until healed.</p>
   duration:
     end: ''
     units: ''

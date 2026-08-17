@@ -7,7 +7,7 @@ _stats:
   duplicateSource: null
   exportSource: null
   lastModifiedBy: mLW1zeZBsSCEsXlw
-  modifiedTime: 1786865091945
+  modifiedTime: 1786937077507
   systemId: pf1
   systemVersion: '11.11'
 effects: []
@@ -21,7 +21,8 @@ flags:
       mode: active
   pf1-critical-effects:
     dedicatedHealing:
-      blockedBy: ''
+      blockedBy: Weapon Stuck
+      clearOnHeal: false
       dc: 0
       received: 0
       required: 10

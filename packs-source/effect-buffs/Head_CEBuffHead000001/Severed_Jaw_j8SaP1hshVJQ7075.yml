@@ -6,14 +6,19 @@ _stats:
   createdTime: 1786827470369
   duplicateSource: null
   exportSource: null
-  lastModifiedBy: null
-  modifiedTime: 1786827470369
+  lastModifiedBy: mLW1zeZBsSCEsXlw
+  modifiedTime: 1786912393772
   systemId: pf1
   systemVersion: '11.11'
 effects: []
-flags: {}
+flags:
+  astora-mod:
+    hiddenBuff: false
+  pf1-improved-energy-drain:
+    staticEnabled: false
+    staticLevels: 0
 folder: CEBuffHead000001
-img: icons/svg/ice-aura.svg
+img: Icons/craftpix-icons/undead-loot/undead-loot-3-jawbone-with-teeth.png
 name: Severed Jaw
 ownership:
   default: 0
@@ -34,10 +39,12 @@ system:
     seeInvisibility: false
   changes: []
   conditions: []
-  contextNotes: []
+  contextNotes:
+    - target: chaSkills
+      text: Can't speak
   description:
     instructions: ''
-    value: <p><strong>Effect:</strong> Can't speak</p><p><strong>Bleed:</strong> —</p><p><strong>DH:</strong> —</p>
+    value: <p>Can't speak</p>
   duration:
     end: ''
     units: ''

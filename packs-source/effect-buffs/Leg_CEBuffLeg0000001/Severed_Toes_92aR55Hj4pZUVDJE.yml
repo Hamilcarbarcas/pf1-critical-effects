@@ -6,18 +6,23 @@ _stats:
   createdTime: 1786827470369
   duplicateSource: null
   exportSource: null
-  lastModifiedBy: null
-  modifiedTime: 1786827470369
+  lastModifiedBy: mLW1zeZBsSCEsXlw
+  modifiedTime: 1786936539656
   systemId: pf1
   systemVersion: '11.11'
 effects: []
-flags: {}
+flags:
+  astora-mod:
+    hiddenBuff: false
+  pf1-improved-energy-drain:
+    staticEnabled: false
+    staticLevels: 0
 folder: CEBuffLeg0000001
-img: icons/svg/ice-aura.svg
+img: Icons/gameicons/delapouite-foot-plaster__ef2525-2a2622.svg
 name: Severed Toes
 ownership:
   default: 0
-sort: 0
+sort: 500000
 system:
   actions: []
   active: false
@@ -37,7 +42,7 @@ system:
   contextNotes: []
   description:
     instructions: ''
-    value: <p><strong>Effect:</strong> Disadvantage on acrobatics & climb</p><p><strong>Bleed:</strong> —</p><p><strong>DH:</strong> —</p>
+    value: <p>The following penalties are applied:</p><ul><li><p>-2 to Acrobatics and Climb checks</p></li><li><p>-2 to all attacks using the injured leg</p></li></ul><p>Time spent growing accustomed to disabilities or prosthetics may mitigate some or all of these penalties.</p>
   duration:
     end: ''
     units: ''

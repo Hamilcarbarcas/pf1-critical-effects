@@ -1,5 +1,5 @@
-_id: EOAGjVNNGv8BuPon
-_key: '!items!EOAGjVNNGv8BuPon'
+_id: nu3uJRantOd6wHBf
+_key: '!items!nu3uJRantOd6wHBf'
 _stats:
   compendiumSource: null
   coreVersion: '13.351'
@@ -7,7 +7,7 @@ _stats:
   duplicateSource: null
   exportSource: null
   lastModifiedBy: mLW1zeZBsSCEsXlw
-  modifiedTime: 1786908317879
+  modifiedTime: 1786902270826
   systemId: pf1
   systemVersion: '11.11'
 effects: []
@@ -18,11 +18,11 @@ flags:
     staticEnabled: false
     staticLevels: 0
 folder: CEBuffArm0000001
-img: icons/skills/wounds/anatomy-bone-joint.webp
-name: Funny Bone
+img: Icons/gameicons/skoll-amputation__ef2525-2a2622.svg
+name: Severed Fingers
 ownership:
   default: 0
-sort: 800000
+sort: 1900000
 system:
   actions: []
   active: false
@@ -38,56 +38,59 @@ system:
     seeInDarkness: false
     seeInvisibility: false
   changes:
-    - _id: Lqj93UDV
-      formula: '-10'
+    - _id: l4GNRiRn
+      formula: '@dFlags.severedFinger.numberSevered'
       operator: add
       priority: 0
       target: skill.clm
       type: untypedPerm
-    - _id: daMF7Xww
-      formula: '-10'
+    - _id: 5VtLo8tv
+      formula: '@dFlags.severedFinger.numberSevered'
       operator: add
       priority: 0
       target: skill.crf
       type: untypedPerm
-    - _id: EDZ0VPn1
-      formula: '-10'
+    - _id: bhguKHkA
+      formula: '@dFlags.severedFinger.numberSevered'
       operator: add
       priority: 0
       target: skill.dev
       type: untypedPerm
-    - _id: jxucY9BX
-      formula: '-10'
+    - _id: sDqtCUvL
+      formula: '@dFlags.severedFinger.numberSevered'
       operator: add
       priority: 0
       target: skill.slt
       type: untypedPerm
-    - _id: tB3IxxWS
-      formula: '-10'
+    - _id: Z1M20sKZ
+      formula: '@dFlags.severedFinger.numberSevered'
       operator: add
       priority: 0
       target: skill.umd
       type: untypedPerm
   conditions: []
-  contextNotes: []
+  contextNotes:
+    - target: attack
+      text: '[[-@dFlags.severedFinger.numberSevered]] when using hand with severed finger(s).'
   description:
-    instructions: ''
-    value: <p>Arm useless for 1d4 rounds</p><ul><li><p>-10 to climb, craft, disable device, sleight of hand, and use magic device checks</p></li><li><p>Cannot wield 2 handed weapons, dual wield, or wield a shield and weapon</p></li><li><p>Requies a concentration check (DC 15 + 2x the level of the spell) to cast spells with somatic components</p></li></ul>
+    instructions: <p>If more fingers are severed, update the numberSevered dictionary flag to the number of fingers severed.</p>
+    value: <p>One or more fingers on your hand have been amputated.</p><p></p><p>The following effects are cumulative for each severed finger:</p><ul><li><p>-1 climb, craft, disable device, sleight of hand, use magic device</p></li><li><p>-1 to attack when using said hand</p></li></ul><p>If more than 3 fingers are missing from one hand, that hand is considered useless.</p><p>Time spent growing accustomed to disabilities or prosthetics may mitigate some or all of these penalties.</p>
   duration:
-    end: initiative
-    units: round
-    value: 1d4
+    end: ''
+    units: ''
+    value: null
   effectNotes: []
   flags:
     boolean: {}
-    dictionary: {}
+    dictionary:
+      numberSevered: '1'
   hideFromToken: false
   level: 0
   links:
     children: []
   scriptCalls: []
   showInQuickbar: false
-  subType: temp
+  subType: perm
   tag: ''
   tags: []
   uses:

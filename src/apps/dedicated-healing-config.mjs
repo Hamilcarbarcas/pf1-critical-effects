@@ -49,7 +49,11 @@ async function injectSection(app, html) {
   if (tab.querySelector(`.${SECTION_CLASS}`)) return; // already injected this render
 
   const cfg = getConfig(item);
-  const configured = cfg.required > 0;
+  const configured = cfg.clearOnHeal || cfg.required > 0;
+
+  // A clear-on-heal wound with no DC has no running total and no gate, so the status row would
+  // be an empty control. One with a DC still needs its treated mark shown and resettable.
+  const showStatus = configured && (cfg.clearOnHeal ? cfg.dc > 0 : true);
 
   // With the house rule off, this is where new obligations would be created, so it goes away.
   // An item that is *already* configured keeps its section, because the numbers on it are still
@@ -60,6 +64,7 @@ async function injectSection(app, html) {
   const rendered = await foundry.applications.handlebars.renderTemplate(TEMPLATE, {
     ...cfg,
     configured,
+    showStatus,
   });
 
   const container = tab.querySelector(".flexcol") ?? tab;
@@ -112,12 +117,17 @@ function wire(app, item, el, configured) {
     await setConfig(item, { received: 0, treated: false });
   });
 
+  const cfg = getConfig(item);
   makeCollapsible(app, el, {
     key: "dedicated-healing",
     header: ".ce-dh-header",
     body: ".ce-dh-body",
     configured,
-    badge: configured ? `${getConfig(item).received}/${getConfig(item).required}` : null,
+    badge: !configured
+      ? null
+      : cfg.clearOnHeal
+        ? game.i18n.localize("CRITICAL_EFFECTS.DedicatedHealing.Field.OnHealBadge")
+        : `${cfg.received}/${cfg.required}`,
   });
 }
 

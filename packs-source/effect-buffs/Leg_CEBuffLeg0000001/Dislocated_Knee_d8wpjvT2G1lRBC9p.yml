@@ -6,12 +6,14 @@ _stats:
   createdTime: 1786827470369
   duplicateSource: null
   exportSource: null
-  lastModifiedBy: null
-  modifiedTime: 1786827470369
+  lastModifiedBy: mLW1zeZBsSCEsXlw
+  modifiedTime: 1786936539656
   systemId: pf1
   systemVersion: '11.11'
 effects: []
 flags:
+  astora-mod:
+    hiddenBuff: false
   pf1-critical-effects:
     dedicatedHealing:
       blockedBy: ''
@@ -19,12 +21,15 @@ flags:
       received: 0
       required: 10
       treated: false
+  pf1-improved-energy-drain:
+    staticEnabled: false
+    staticLevels: 0
 folder: CEBuffLeg0000001
-img: icons/svg/ice-aura.svg
+img: Icons/gameicons/delapouite-knee-bandage__ef2525-2a2622.svg
 name: Dislocated Knee
 ownership:
   default: 0
-sort: 0
+sort: 1400000
 system:
   actions: []
   active: false
@@ -39,12 +44,60 @@ system:
     noMediumEncumbrance: false
     seeInDarkness: false
     seeInvisibility: false
-  changes: []
+  changes:
+    - _id: rBmvdFln
+      formula: max(5, floor(@attributes.speed.land.total  / 10) * 5)
+      operator: set
+      priority: -1
+      target: landSpeed
+      type: untyped
+    - _id: SgWZCmR5
+      formula: '-6'
+      operator: add
+      priority: 0
+      target: skill.acr
+      type: untyped
+    - _id: YWf21LDt
+      formula: '-6'
+      operator: add
+      priority: 0
+      target: skill.clm
+      type: untyped
+    - _id: lYsZ7brD
+      formula: '-6'
+      operator: add
+      priority: 0
+      target: skill.rid
+      type: untyped
+    - _id: d2yydops
+      formula: '-6'
+      operator: add
+      priority: 0
+      target: skill.ste
+      type: untyped
+    - _id: 4EFk4I88
+      formula: '-6'
+      operator: add
+      priority: 0
+      target: skill.swm
+      type: untyped
+    - _id: apmxMaYr
+      formula: '-6'
+      operator: add
+      priority: 0
+      target: cmb
+      type: untyped
+    - _id: wWort3Y3
+      formula: '-6'
+      operator: add
+      priority: 0
+      target: cmd
+      type: untyped
   conditions: []
   contextNotes: []
   description:
     instructions: ''
-    value: <p><strong>Effect:</strong> Half move, no 5 foot step, -2 AC until healed (DC 10, 10 heal)</p><p><strong>Bleed:</strong> —</p><p><strong>DH:</strong> —</p>
+    value: <p>You suffer the following penalties until healed:</p><ul><li><p>Half movement</p></li><li><p>Cannot run or charge</p></li><li><p>-6 to Acrobatics, Climb, Stealth, and Swim checks</p></li><li><p>Cannot perform Bull Rush or Overrun combat maneuvers</p></li><li><p>-6 penalty to CMB and CMD</p></li><li><p>-6 to attacks using the injured leg</p></li></ul>
   duration:
     end: ''
     units: ''

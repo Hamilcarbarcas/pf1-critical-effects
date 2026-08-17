@@ -6,12 +6,14 @@ _stats:
   createdTime: 1786827470369
   duplicateSource: null
   exportSource: null
-  lastModifiedBy: null
-  modifiedTime: 1786827470369
+  lastModifiedBy: mLW1zeZBsSCEsXlw
+  modifiedTime: 1786936539656
   systemId: pf1
   systemVersion: '11.11'
 effects: []
 flags:
+  astora-mod:
+    hiddenBuff: false
   pf1-bleed-effects:
     bleed:
       formula: 8d6
@@ -24,12 +26,15 @@ flags:
       received: 0
       required: 40
       treated: false
+  pf1-improved-energy-drain:
+    staticEnabled: false
+    staticLevels: 0
 folder: CEBuffLeg0000001
-img: icons/svg/ice-aura.svg
+img: Icons/gameicons/delapouite-knee-bandage__ef2525-2a2622.svg
 name: Kebabed Leg
 ownership:
   default: 0
-sort: 0
+sort: 1600000
 system:
   actions: []
   active: false
@@ -44,13 +49,61 @@ system:
     noMediumEncumbrance: false
     seeInDarkness: false
     seeInvisibility: false
-  changes: []
+  changes:
+    - _id: UXj8IGUt
+      formula: '-8'
+      operator: add
+      priority: 0
+      target: skill.acr
+      type: untyped
+    - _id: z6EssF2m
+      formula: '-8'
+      operator: add
+      priority: 0
+      target: skill.clm
+      type: untyped
+    - _id: vg8X0saN
+      formula: '-8'
+      operator: add
+      priority: 0
+      target: skill.rid
+      type: untyped
+    - _id: Wjbt9rgb
+      formula: '-8'
+      operator: add
+      priority: 0
+      target: skill.ste
+      type: untyped
+    - _id: AlbFzLwX
+      formula: '-8'
+      operator: add
+      priority: 0
+      target: skill.swm
+      type: untyped
+    - _id: nZvfM1mb
+      formula: min(@attributes.speed.land.total, 5)
+      operator: set
+      priority: -1
+      target: landSpeed
+      type: untyped
+    - _id: wpMgPtK3
+      formula: '-8'
+      operator: add
+      priority: 0
+      target: cmb
+      type: untyped
+    - _id: U7qGEE4w
+      formula: '-8'
+      operator: add
+      priority: 0
+      target: cmd
+      type: untyped
   conditions:
     - bleed
   contextNotes: []
   description:
     instructions: ''
-    value: <p><strong>Effect:</strong> 8d6 deep bleed, leg useless until healed</p><p><strong>Bleed:</strong> 8d6 deep</p><p><strong>DH:</strong> 40</p>
+    value: <p>8d6 deep bleed, leg useless until healed</p><ul><li><p>Speed reduced to 5 feet</p></li><li><p>Cannot take a 5 foot step</p></li><li><p>Cannot run or charge</p></li><li><p>-8 to Acrobatics, Climb, Ride, Stealth, and Swim checks</p></li><li><p>Cannot perform the Bull Rush or Overrun Combat Maneuvers</p></li><li><p>Cannot make attacks with the injured leg</p></li><li><p>-8 Penalty to CMB and CMD</p></li></ul>
   duration:
     end: ''
     units: ''

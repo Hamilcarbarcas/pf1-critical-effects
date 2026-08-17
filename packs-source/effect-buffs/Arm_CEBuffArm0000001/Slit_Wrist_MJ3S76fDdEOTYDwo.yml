@@ -7,13 +7,18 @@ _stats:
   duplicateSource: null
   exportSource: null
   lastModifiedBy: mLW1zeZBsSCEsXlw
-  modifiedTime: 1786863569443
+  modifiedTime: 1786902864760
   systemId: pf1
   systemVersion: '11.11'
 effects: []
-flags: {}
+flags:
+  astora-mod:
+    hiddenBuff: false
+  pf1-improved-energy-drain:
+    staticEnabled: false
+    staticLevels: 0
 folder: CEBuffArm0000001
-img: icons/svg/ice-aura.svg
+img: Icons/craftpix-icons/swordsman-skill/swordsman-skill-29-blood-splatter-blade.png
 name: Slit Wrist
 ownership:
   default: 0
@@ -34,14 +39,18 @@ system:
     seeInvisibility: false
   changes: []
   conditions: []
-  contextNotes: []
+  contextNotes:
+    - target: attack
+      text: '[[-4]] if using slit arm'
+    - target: skills
+      text: '[[-4]] if using slit arm'
   description:
     instructions: ''
-    value: <p><strong>Effect:</strong> Drop item held, -4 to attacks/checks using arm for 1d4 rounds</p><p><strong>Bleed:</strong> —</p><p><strong>DH:</strong> —</p>
+    value: <p>-4 to attacks/checks using arm for 1d4 rounds</p>
   duration:
-    end: ''
-    units: ''
-    value: null
+    end: initiative
+    units: round
+    value: 1d4
   effectNotes: []
   flags:
     boolean: {}

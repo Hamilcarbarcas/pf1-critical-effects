@@ -6,20 +6,65 @@ _stats:
   createdTime: 1786827470369
   duplicateSource: null
   exportSource: null
-  lastModifiedBy: null
-  modifiedTime: 1786827470369
+  lastModifiedBy: mLW1zeZBsSCEsXlw
+  modifiedTime: 1786912697151
   systemId: pf1
   systemVersion: '11.11'
 effects: []
-flags: {}
+flags:
+  astora-mod:
+    buffDeliveryActions:
+      G0r3ML952B3XjtWY:
+        YLodVzEnteX8de7q:
+          buffName: Slashed Brow
+          data: []
+          dcFormula: ''
+          enabled: true
+          levelFormula: ''
+          mode: deactivate
+          name: ''
+          onExisting: prompt
+          setDC: true
+          setLevel: true
+    hiddenBuff: false
+  lilhelper:
+    item:
+      autoPowerAttack: false
+      hideAttacks: false
+      keen: false
+      rollOverride: ''
+      rollmodeOverride: ''
+      skipDialog: 0
+  pf1-improved-energy-drain:
+    staticEnabled: false
+    staticLevels: 0
 folder: CEBuffHead000001
-img: icons/svg/ice-aura.svg
+img: Icons/ICONS/Ability_Rogue_BloodyEye.webp
 name: Slashed Brow
 ownership:
   default: 0
 sort: 0
 system:
-  actions: []
+  actions:
+    - _id: G0r3ML952B3XjtWY
+      actionType: other
+      activation:
+        cost: 1
+        type: standard
+        unchained:
+          cost: 1
+          type: nonaction
+      ammo:
+        type: none
+      flags: {}
+      img: Icons/ICONS/Ability_Rogue_BloodyEye.webp
+      name: Wipe off
+      powerAttack:
+        critMultiplier: 1
+        damageBonus: 2
+      range:
+        units: personal
+      uses: {}
   active: false
   attackNotes: []
   changeFlags:
@@ -38,11 +83,11 @@ system:
   contextNotes: []
   description:
     instructions: ''
-    value: <p><strong>Effect:</strong> Blinded 1d6 rounds or until wiped off (standard action)</p><p><strong>Bleed:</strong> —</p><p><strong>DH:</strong> —</p>
+    value: <p>Blinded 1d6 rounds or until wiped off (standard action)</p>
   duration:
-    end: ''
-    units: ''
-    value: null
+    end: initiative
+    units: round
+    value: 1d6
   effectNotes: []
   flags:
     boolean: {}

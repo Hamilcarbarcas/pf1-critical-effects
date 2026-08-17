@@ -312,6 +312,9 @@ export const CONDITION_END_EVENTS = ["turnStart", "initiative", "turnEnd"];
 /** The one condition that carries a payload beyond its own name. See `validateBleed`. */
 export const BLEED_CONDITION = "bleed";
 
+/** The condition that ends the conversation, named for the branch rule in `deathBranchLeftovers`. */
+export const DEAD_CONDITION = "dead";
+
 /**
  * Ability scores a bleed may drain or damage instead of hit points. pf1-bleed-effects' `kind` is
  * `"hp"` or `"<ability>.<damage|drain>"`; we validate the halves rather than the joined string so
@@ -565,6 +568,43 @@ export function validateOnFail(onFail, where) {
 export const MECHANICAL_CHANNELS = ["buffs", "conditions", "damage", "setHP", "negativeLevels"];
 
 /**
+ * A failed save that kills carries nothing else.
+ *
+ * The trap is `onFail`'s fall-through (§6): a channel the branch does not name inherits the base
+ * one, so *Cleaved Forehead* — a buff on a survivor, death on a failure — delivered the buff on the
+ * branch where the victim is dead. Every channel is affected, not only `buffs`: the entry that
+ * reduces you to −1 hit points on a save inherits that `setHP` onto the branch that kills you.
+ *
+ * The cure is `null`, which §6 already distinguishes from absent: it clears the base channel for
+ * this branch. This only warns — clearing a channel is an authoring decision and a warning that
+ * names the entry is enough to make it.
+ *
+ * **Scoped to `onFail` deliberately.** Death in the base branch is a different statement — *Soul
+ * Rend* kills and delivers *Become Undead*, and that pairing is the entry — so the rule is about
+ * the failed branch of a save, which is where the inheritance is invisible.
+ */
+function deathBranchLeftovers(entry, where) {
+  const onFail = entry?.onFail;
+  if (!isPlainObject(onFail)) return [];
+  if (!(onFail.conditions ?? []).some((c) => c?.id === DEAD_CONDITION)) return [];
+
+  const left = [];
+  for (const channel of MECHANICAL_CHANNELS) {
+    if (channel === "conditions") continue;
+    if (onFail[channel] !== undefined) continue; // named by the branch, including an explicit null
+    const base = entry[channel];
+    if (base == null || (Array.isArray(base) && !base.length)) continue;
+    left.push(channel);
+  }
+
+  if (!left.length) return [];
+  return [
+    `${where}: \`onFail\` kills, but ${left.map((c) => `\`${c}\``).join(" and ")} ` +
+      `fall through from the entry and would be applied to a corpse — set them to null on the branch`,
+  ];
+}
+
+/**
  * Structural check of `buffs` — an array of buff NAMES.
  *
  * **An array since v7**, for the same reason `conditions` always was: the content genuinely
@@ -636,9 +676,15 @@ export const INHERIT_SOURCES = ["row12"];
  *                silently undercharge the wound.
  * - `damage`     damage parts ADDED to the parent's, not replacing them. Vorpal Cut's +6d6.
  * - `conditions` conditions ADDED to the parent's. Encased's suffocation, Pulverized's entangle.
- * - `buff`       a buff that REPLACES the parent's. Rare — most 13+ rows keep the parent's.
+ * - `buffs`      buffs that REPLACE the parent's. Rare — most 13+ rows keep the parent's.
+ * - `addBuffs`   buffs ADDED to whatever the row resolved to, and the only op that has to be
+ *                idempotent: one mortal row spans several cells and reads a different row 12 in
+ *                each, so *Kebabed* adding **Weapon Stuck** across arm, leg, tail and wing lands on
+ *                some rows that already have it. Names already present are skipped rather than
+ *                doubled. `buffs` cannot express this — a replacement is the same list everywhere,
+ *                and the wound the row-12 cell describes differs per cell.
  */
-export const TRANSFORM_OPS = ["bleed", "saveDC", "scaleDH", "damage", "conditions", "buffs"];
+export const TRANSFORM_OPS = ["bleed", "saveDC", "scaleDH", "damage", "conditions", "buffs", "addBuffs"];
 
 /**
  * Structural check of `inherits` and its `transform`.
@@ -677,6 +723,10 @@ export function validateInheritance(entry, where) {
       problems.push(...validateConditions(value, `${where} transform`));
     } else if (op === "buffs") {
       problems.push(...validateBuffs(value, `${where} transform`, { nullable: true }));
+    } else if (op === "addBuffs") {
+      // Not nullable, unlike `buffs`: null there means "clear the parent's", which is what `buffs`
+      // is for. An additive op with nothing to add is the absent op.
+      problems.push(...validateBuffs(value, `${where} transform.addBuffs`, { nullable: false }));
     }
   }
   return problems;
@@ -851,6 +901,8 @@ export function validateEffects(data) {
     if (entry.save == null && entry.onFail != null) {
       warnings.push(`${where}: has \`onFail\` but no \`save\`, so the failed branch is unreachable`);
     }
+
+    warnings.push(...deathBranchLeftovers(entry, where));
 
     if (mechanicalProblems.length) {
       warnings.push(...mechanicalProblems);

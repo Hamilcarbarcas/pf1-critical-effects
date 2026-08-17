@@ -117,31 +117,63 @@ export async function applyCondition(actor, condition, { timing } = {}) {
       }
     : true;
 
+  let summary = timing ? `${conditionLabel(id)} (${timing.label})` : conditionLabel(id);
+
+  /* ── Configured bleed registers BEFORE its marker ──────────────────────────
+   *
+   * pf1-bleed-effects prompts for an amount from `pf1ToggleActorCondition` whenever bleed turns on
+   * with nothing stored for it, which is the right behaviour for a GM ticking the box on the token
+   * HUD and the wrong one here: this entry already knows how much it bleeds. Setting the condition
+   * first raised that dialog over a bleed that was about to be configured a line later.
+   *
+   * `BleedAPI.apply` sets the marker itself once it has written its stored effects, so the marker
+   * arrives from inside the module that owns it with the amount already there and the prompt's own
+   * "already configured" guard satisfied. Calling `setCondition` afterwards would be a no-op in any
+   * case — PF1's `setConditions` drops a condition whose AE already exists rather than updating it,
+   * so the duration below has to be written to the effect directly. */
+  const bleed = id === BLEED_CONDITION ? condition.bleed : null;
+  const api = bleed ? bleedApi() : null;
+
+  if (bleed && api?.apply) {
+    const { formula, ability = null, mode = "damage", deep = null } = bleed;
+    let registered = false;
+    try {
+      await api.apply(actor, {
+        formula,
+        kind: bleedKind({ ability, mode }),
+        ...(deep ? { deepRequired: deep } : {}),
+      });
+      registered = true;
+      summary += ` — ${formula}${ability ? ` ${ability.toUpperCase()} ${mode}` : ""}${deep ? `, ${deep} HP to close` : ""}`;
+    } catch (err) {
+      // Fall through to the plain marker: a bleed that could not be registered should still show.
+      console.error(`${MODULE_ID} | could not apply bleed to ${actor.name}:`, err);
+    }
+
+    if (registered) {
+      /* No entry in the catalog gives bleed a duration — it runs until it is closed — but the
+       * channel allows one, and the marker it would have gone on was created by someone else. */
+      if (timing) {
+        const marker = actor.effects.find((ae) => ae.statuses?.has(BLEED_CONDITION));
+        if (marker) {
+          try {
+            await marker.update(aeData);
+          } catch (err) {
+            console.error(`${MODULE_ID} | could not time the bleed on ${actor.name}:`, err);
+          }
+        }
+      }
+      return summary;
+    }
+  }
+
+  /* Everything else, and bleed with no configuration or no pf1-bleed-effects to configure — the
+   * condition goes on and, for bleed, is the inert marker vanilla PF1 would have given it. */
   try {
     await actor.setCondition(id, aeData);
   } catch (err) {
     console.error(`${MODULE_ID} | could not set condition "${id}" on ${actor.name}:`, err);
     return null;
-  }
-
-  let summary = timing ? `${conditionLabel(id)} (${timing.label})` : conditionLabel(id);
-
-  if (id === BLEED_CONDITION && condition.bleed) {
-    const api = bleedApi();
-    if (api?.apply) {
-      const { formula, ability = null, mode = "damage", deep = null } = condition.bleed;
-      try {
-        await api.apply(actor, {
-          formula,
-          kind: bleedKind({ ability, mode }),
-          ...(deep ? { deepRequired: deep } : {}),
-        });
-        summary += ` — ${formula}${ability ? ` ${ability.toUpperCase()} ${mode}` : ""}${deep ? `, ${deep} HP to close` : ""}`;
-      } catch (err) {
-        console.error(`${MODULE_ID} | could not apply bleed to ${actor.name}:`, err);
-      }
-    }
-    // No API: the condition is on and inert, which is vanilla PF1 bleed. Nothing to report.
   }
 
   return summary;
@@ -221,6 +253,36 @@ export function durationLabel(duration) {
   if (!duration) return null;
   const { value, units } = duration;
   return `${value} ${value === 1 ? units : `${units}s`}`;
+}
+
+/**
+ * How much a bleed bleeds, short enough to sit on a card row: `3d6`, `4d6 deep`, `1d4 Con`.
+ *
+ * Bleed is the one condition whose name says nothing about its severity — every other one on a
+ * card is the whole of what it does, while *Bleed* is the same word for a scratch and a severed
+ * femoral. It is also the one condition an entry may carry twice, and two identical *Bleed* rows
+ * are unreadable without this.
+ *
+ * `damage` is omitted because it is the default and the unremarkable half of the pair; `drain` is
+ * named because it is not. `deep` says only that the wound is deep, not the hit points it takes to
+ * close — that number is the dedicated-healing threshold and belongs to the healing UI, not here.
+ *
+ * @param {{ formula: string, ability?: string|null, mode?: string, deep?: number|null }} [bleed]
+ * @returns {string|null} null when there is no configured bleed to describe
+ */
+export function bleedLabel(bleed) {
+  if (!bleed?.formula) return null;
+  const parts = [String(bleed.formula)];
+
+  if (bleed.ability) {
+    // The config carries i18n keys; localize passes an already-localized string through unchanged.
+    const key = pf1.config.abilitiesShort?.[bleed.ability];
+    parts.push(key ? game.i18n.localize(key) : bleed.ability.toUpperCase());
+  }
+  if (bleed.mode === "drain") parts.push("drain");
+  if (bleed.deep) parts.push("deep");
+
+  return parts.join(" ");
 }
 
 /** The icon PF1 draws for a condition, for a card that wants to name one. */

@@ -1,5 +1,5 @@
-_id: EsFsjFH1Ir0ndz9n
-_key: '!items!EsFsjFH1Ir0ndz9n'
+_id: R7G1GpNNtXYtZx07
+_key: '!items!R7G1GpNNtXYtZx07'
 _stats:
   compendiumSource: null
   coreVersion: '13.351'
@@ -14,27 +14,22 @@ effects: []
 flags:
   astora-mod:
     hiddenBuff: false
-  pf1-bleed-effects:
-    bleed:
-      formula: 3d6
-      kind: hp
-      mode: active
   pf1-critical-effects:
     dedicatedHealing:
-      blockedBy: Weapon Stuck
+      blockedBy: ''
       dc: 0
       received: 0
-      required: 15
+      required: 30
       treated: false
   pf1-improved-energy-drain:
     staticEnabled: false
     staticLevels: 0
 folder: CEBuffLeg0000001
-img: Icons/gameicons/delapouite-knee-bandage__ef2525-2a2622.svg
-name: Pierced Knee
+img: Icons/craftpix-icons/debuff-skill/debuff-skill-26-chained-leg.png
+name: Debilitated Leg
 ownership:
   default: 0
-sort: 700000
+sort: 1000000
 system:
   actions: []
   active: false
@@ -50,60 +45,59 @@ system:
     seeInDarkness: false
     seeInvisibility: false
   changes:
-    - _id: OQB9Aoj2
-      formula: max(5, floor(@attributes.speed.land.total  / 10) * 5)
-      operator: set
-      priority: -1
-      target: landSpeed
-      type: untyped
-    - _id: 6Iu0XbPD
-      formula: '-6'
+    - _id: DdI8sk3e
+      formula: '-8'
       operator: add
       priority: 0
       target: skill.acr
       type: untyped
-    - _id: 85H3KosG
-      formula: '-6'
+    - _id: OK6ItF16
+      formula: '-8'
       operator: add
       priority: 0
       target: skill.clm
       type: untyped
-    - _id: jubFNFcV
-      formula: '-6'
+    - _id: CkqcECZ4
+      formula: '-8'
       operator: add
       priority: 0
       target: skill.rid
       type: untyped
-    - _id: fKXB3ctW
-      formula: '-6'
+    - _id: S7mVdxJQ
+      formula: '-8'
       operator: add
       priority: 0
       target: skill.ste
       type: untyped
-    - _id: 2sktQegm
-      formula: '-6'
+    - _id: DwCL42v8
+      formula: '-8'
       operator: add
       priority: 0
       target: skill.swm
       type: untyped
-    - _id: LmKZzM46
-      formula: '-6'
+    - _id: RRygu5jA
+      formula: min(@attributes.speed.land.total, 5)
+      operator: set
+      priority: -1
+      target: landSpeed
+      type: untyped
+    - _id: IVSuxXtC
+      formula: '-8'
       operator: add
       priority: 0
       target: cmb
       type: untyped
-    - _id: uY7laYUY
-      formula: '-6'
+    - _id: LCtOEZuj
+      formula: '-8'
       operator: add
       priority: 0
       target: cmd
       type: untyped
-  conditions:
-    - bleed
+  conditions: []
   contextNotes: []
   description:
     instructions: ''
-    value: <p>3d6 deep bleed, you suffer the following penalties until healed:</p><ul><li><p>Half movement</p></li><li><p>Cannot run or charge</p></li><li><p>-6 to Acrobatics, Climb, Stealth, and Swim checks</p></li><li><p>Cannot perform Bull Rush or Overrun combat maneuvers</p></li><li><p>-6 penalty to CMB and CMD</p></li><li><p>-6 to attacks using the injured leg</p></li></ul>
+    value: <p>Leg useless until healed</p><ul><li><p>Speed reduced to 5 feet</p></li><li><p>Cannot take a 5 foot step</p></li><li><p>Cannot run or charge</p></li><li><p>-8 to Acrobatics, Climb, Ride, Stealth, and Swim checks</p></li><li><p>Cannot perform the Bull Rush or Overrun Combat Maneuvers</p></li><li><p>Cannot make attacks with the injured leg</p></li><li><p>-8 Penalty to CMB and CMD</p></li></ul>
   duration:
     end: ''
     units: ''

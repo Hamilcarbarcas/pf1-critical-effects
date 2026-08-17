@@ -6,12 +6,14 @@ _stats:
   createdTime: 1786827470369
   duplicateSource: null
   exportSource: null
-  lastModifiedBy: null
-  modifiedTime: 1786827470369
+  lastModifiedBy: mLW1zeZBsSCEsXlw
+  modifiedTime: 1786912583185
   systemId: pf1
   systemVersion: '11.11'
 effects: []
 flags:
+  astora-mod:
+    hiddenBuff: false
   pf1-critical-effects:
     dedicatedHealing:
       blockedBy: ''
@@ -19,8 +21,11 @@ flags:
       received: 0
       required: 30
       treated: false
+  pf1-improved-energy-drain:
+    staticEnabled: false
+    staticLevels: 0
 folder: CEBuffHead000001
-img: icons/svg/ice-aura.svg
+img: Icons/craftpix-icons/undead-skill/undead-skill-33-stone-axe-eye.png
 name: Shattered Eye Socket
 ownership:
   default: 0
@@ -39,12 +44,54 @@ system:
     noMediumEncumbrance: false
     seeInDarkness: false
     seeInvisibility: false
-  changes: []
+  changes:
+    - _id: AlwJMM7W
+      formula: '-2'
+      operator: add
+      priority: 0
+      target: skill.apr
+      type: untypedPerm
+    - _id: 2HcC0xfK
+      formula: '-2'
+      operator: add
+      priority: 0
+      target: skill.crf
+      type: untypedPerm
+    - _id: CpJle7Qr
+      formula: '-2'
+      operator: add
+      priority: 0
+      target: skill.dev
+      type: untypedPerm
+    - _id: tvR31RjM
+      formula: '-2'
+      operator: add
+      priority: 0
+      target: skill.per
+      type: untypedPerm
+    - _id: H8UzNepD
+      formula: '-2'
+      operator: add
+      priority: 0
+      target: skill.sen
+      type: untypedPerm
+    - _id: DXqQ6inG
+      formula: '-2'
+      operator: add
+      priority: 0
+      target: skill.spl
+      type: untypedPerm
+    - _id: aNEH2ayz
+      formula: '-2'
+      operator: add
+      priority: 0
+      target: rattack
+      type: untypedPerm
   conditions: []
   contextNotes: []
   description:
     instructions: ''
-    value: <p><strong>Effect:</strong> Blinded in eye until healed (heal 30)</p><p><strong>Bleed:</strong> —</p><p><strong>DH:</strong> 30</p>
+    value: <p>Blinded in eye until healed (heal 30)</p><ul><li><p>-2 to appraise, craft, disable device, perception, sense motive, and spellcraft checks</p></li><li><p>-2 to ranged attacks</p></li></ul>
   duration:
     end: ''
     units: ''
