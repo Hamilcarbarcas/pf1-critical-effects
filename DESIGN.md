@@ -1560,15 +1560,75 @@ cannot clear; the bleed it carries keeps running for exactly as long as the weap
 *Pierced Knee* is the worked example: `3d6 deep bleed`, half move, −4 with the leg — one buff, one
 threshold of 15, one `blockedBy`. Not a bleed and a debuff needing to be blocked in concert.
 
-### Two buffs, and what each may do
+### Three buffs, and what each may do
 
-| | Victim — **Weapon Stuck** | Wielder — **Weapon Lodged** |
-|---|---|---|
-| Condition | `entangled` while embedded | `entangled` while held |
-| Blocks healing | on the paired wound buff | — |
-| Carries | the blow's damage, and the partner uuid | the partner uuid |
-| **Pull Out** | move action, DC 10 Str | move action, DC 10 Str (free on the first attempt) |
-| **Drop Weapon** | — | unequips, self-disables, no cascade |
+*(Revised in build. The first draft had two, and put `entangled` on both — see "held vs unheld"
+below for why that did not survive.)*
+
+| | Victim — **Weapon Stuck** | Victim — **Tethered** | Wielder — **Weapon Lodged** |
+|---|---|---|---|
+| Present | always | while the wielder holds on | while the wielder holds on |
+| Condition | — | `entangled` | **none** |
+| Changes | −2 attack, untyped | — | — |
+| Blocks healing | on the paired wound buff | — | — |
+| Carries | the blow's damage, the partner uuid | — | the partner uuid |
+| **Pull Out** | move action, DC 10 Str | — | move action, DC 10 Str (free on the first attempt) |
+| **Let Go** | — | cleared | unequips, self-disables |
+
+### Held vs unheld is the axis, not the weapon
+
+Eleven entries leave a weapon in the victim and they span crossbow bolts to two-handed spears. A
+bolt in the arm does not entangle anyone; a spear with a fighter braced against it plainly does. The
+distinction that survives contact with every weapon in the game is not size or category but whether
+**anyone is still holding the other end** — which is also the one the fiction already made, since a
+weapon that is let go of should behave exactly like a thrown one, and under this rule it does with
+no rule about throwing.
+
+Read from the **action**, not the weapon: `mwak`/`mcman` are held, everything else is not. A thrown
+dagger is a `light` weapon and an `rwak` attack, so asking the weapon would have called it held.
+A hand-driven resolution (§7.5) has no action and reads as unheld — the conservative answer.
+
+**The wielder gets no condition at all.** The draft above entangled them, which is −2 attack and
+−4 Dex *for landing a critical hit* — a penalty for succeeding. It is also the wrong instrument:
+PF1's `entangled` carries no movement component (`registry/conditions.mjs` is those two changes and
+nothing else), so it would not have modelled the one thing the wielder actually suffers. What they
+face is a choice — pull it free, or give up the weapon — and a choice is two buttons.
+
+`entangled` already *is* −2 attack, so the two victim tiers are exactly "entangled minus the
+mobility" and "entangled entire", stacking to −4 attack and −4 Dex while tethered. That is a heavy
+state, and it is paid for by the attacker: they are giving up the use of their weapon to maintain
+it.
+
+**Speed is not touched.** PF1 does not model entangled's half-speed, and papering over that locally
+would be this module quietly redefining a core condition for one case.
+
+### The free attempt is a card button, not a prompt
+
+§8.1 wants the wielder's first attempt to be immediate, which reads as a dialog — and a dialog
+cannot find its audience here. The buff is created by the GM (the apply button has to be GM-only:
+creating an item on someone else's actor requires it), and PF1 fires `create` and `toggle` script
+calls only on the client that made the change — both `_onCreate` and `_onUpdate` guard with
+`if (userId !== game.user.id) return`. So a script on the buff prompts the GM for the player's free
+action, and switching between `create` and `toggle` changes nothing about that.
+
+A card button answers the question by not asking it. `canSee` filters per viewer at render time
+from data already on the card: `ownerOf: <actorId>` draws for that actor's owners **and the GM
+always**. An absent owner finds it waiting at login; several owners all see it and the first click
+wins; a monster has no player owner and shows only to the GM. No live-client lookup, and no socket
+in the GM→player direction the module does not have — `gmRequest` is player→GM only.
+
+### The cascade is three deletes, and PF1 does one of them
+
+*(Revised in build.)* Every buff in this module carries astora-mod's `buffToggle.autoDelete`, so
+disabling one deletes it. That lets PF1's own `children` link carry weight: **Tethered is a child of
+Weapon Stuck**, and PF1 deletes children with their parent (`actor-pf.mjs` `_enumChildren`). "The
+weapon comes out" is then one write on the victim and one on the wielder, with Tethered leaving on
+its own.
+
+This only works because the buffs delete rather than deactivate — `children` links cascade on
+**delete** and do nothing whatsoever on a toggle-off. The link is a convenience, not the record:
+every path also resolves the tether by name on the same actor, so a lost link costs the free
+cascade and not the feature.
 
 ### The cascade lives in the actions, not in a toggle-off hook
 

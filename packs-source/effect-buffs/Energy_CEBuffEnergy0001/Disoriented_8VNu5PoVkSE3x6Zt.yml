@@ -12,6 +12,9 @@ _stats:
   systemVersion: '11.11'
 effects: []
 flags:
+  astora-mod:
+    buffToggle:
+      autoDelete: true
   pf1-critical-effects:
     dedicatedHealing:
       blockedBy: ''

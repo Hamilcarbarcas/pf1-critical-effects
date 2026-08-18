@@ -13,6 +13,8 @@ _stats:
 effects: []
 flags:
   astora-mod:
+    buffToggle:
+      autoDelete: true
     hiddenBuff: false
   pf1-bleed-effects:
     bleed:

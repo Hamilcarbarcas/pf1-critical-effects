@@ -13,6 +13,8 @@ _stats:
 effects: []
 flags:
   astora-mod:
+    buffToggle:
+      autoDelete: true
     hiddenBuff: false
   pf1-improved-energy-drain:
     staticEnabled: false
@@ -21,7 +23,7 @@ flags:
     hash: dc75a61bea947c6d9c600ea0aec2d4191e076487
 folder: null
 img: Icons/ICONS/Ability_BackStab.webp
-name: Weapon Stuck - Attacker
+name: Weapon Lodged
 ownership:
   default: 0
   mLW1zeZBsSCEsXlw: 3

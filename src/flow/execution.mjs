@@ -18,6 +18,7 @@ import { MODULE_ID } from "../const.mjs";
 import { resolveBranches } from "../resolve/branches.mjs";
 import { normalDamageTotal } from "../integrations/pf1-pipeline.mjs";
 import { offerApplyButtons } from "./effect-apply.mjs";
+import { blowDamage } from "./weapon-stuck.mjs";
 import { postSave, promptForDC, saveDC } from "./save-request.mjs";
 
 /**
@@ -59,6 +60,10 @@ export async function resolveExecution(entry, { sourceMessage = null, attackInde
      * be as hard as the critical that caused it, so where this critical DID set a DC the buff gets
      * that one (including a doubled one) and otherwise it gets the raw damage. */
     saveDC: damage,
+    /* §8.1's two inputs, read here because this is where the attack card is still in hand. Both are
+     * about the *blow*, not the entry, so they are resolved once and carried rather than looked up
+     * again from a button click that may happen an hour later on a different client. */
+    blow: sourceMessage ? blowDamage(sourceMessage, attackIndex) : [],
     saved: branches.saved,
     failed: branches.failed,
     sharedDamage: branches.sharedDamage,
@@ -88,15 +93,20 @@ export function hasMechanics(entry) {
  * @param {string} opts.scope           the result block's class, for the button mounts
  * @param {object} opts.target          { actorId, tokenId }
  * @param {string|null} [opts.sourceActorId]
+ * @param {string|null} [opts.actionType]  PF1's action type, for §8.1's held/unheld split
  */
-export async function attachExecution(message, execution, { scope, target = {}, sourceActorId = null } = {}) {
+export async function attachExecution(
+  message,
+  execution,
+  { scope, target = {}, sourceActorId = null, actionType = null } = {}
+) {
   if (!message || !execution) return;
 
   if (execution.save?.dc) {
     await postSave(message, { dc: execution.save.dc, token: tokenOf(target) });
   }
 
-  await offerApplyButtons(message, { execution, scope, target, sourceActorId });
+  await offerApplyButtons(message, { execution, scope, target, sourceActorId, actionType });
 }
 
 /** The victim's token, if it is still on the scene — the save is addressed to a token, not an actor. */

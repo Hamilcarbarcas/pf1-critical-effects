@@ -11,7 +11,10 @@ _stats:
   systemId: pf1
   systemVersion: '11.11'
 effects: []
-flags: {}
+flags:
+  astora-mod:
+    buffToggle:
+      autoDelete: true
 folder: CEBuffAppend0001
 img: icons/svg/ice-aura.svg
 name: Severed Appendage

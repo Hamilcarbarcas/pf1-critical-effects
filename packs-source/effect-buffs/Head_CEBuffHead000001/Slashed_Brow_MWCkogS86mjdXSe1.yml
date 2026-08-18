@@ -26,6 +26,8 @@ flags:
           onExisting: prompt
           setDC: true
           setLevel: true
+    buffToggle:
+      autoDelete: true
     hiddenBuff: false
   lilhelper:
     item:

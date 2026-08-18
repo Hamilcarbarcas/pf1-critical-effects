@@ -14,6 +14,7 @@ effects: []
 flags:
   astora-mod:
     buffToggle:
+      autoDelete: true
       triggers:
         - action: use
           trigger: onTurnEnd

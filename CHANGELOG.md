@@ -13,6 +13,25 @@
   The transform vocabulary is six operations: multiply the bleed, multiply the save DC, scale the
   buff's healing threshold with it, add damage, add conditions, replace the buff. `effects.json`
   still ships one fully merged entry per cell, so the runtime chases nothing.
+- **Weapon Stuck delivers itself** (§8.1). The eleven wounds that leave the steel in now put the
+  whole situation on the table instead of a `note` and a GM's memory. **Weapon Stuck** goes on the
+  victim always — −2 to attack, and the wound it pairs with will not close while it is there. Where
+  the attack was a melee one, **Tethered** joins it (`entangled`, and linked as a child of Weapon
+  Stuck so it leaves with it) and **Weapon Lodged** goes on the attacker. A thrown dagger and a
+  crossbow bolt are unheld by construction — the split is read off the action, `mwak` against
+  everything else, because a thrown dagger is still a `light` weapon and only the action knows it
+  left the hand.
+- **The blow is dealt again when the weapon comes out, in the types it was dealt in.** A flaming
+  spear that did 7 physical and 3 fire posts 7 physical and 3 fire — PF1 keeps `damage` and
+  `critDamage` as separate arrays, so "not including critical damage" needs no filtering, and each
+  roll's own types come along. Stored as totals rather than formulas and replayed rather than
+  re-rolled: the wound deals *the damage it dealt*. One `deleteItem` hook covers every route — either
+  side pulling it free, or a GM removing the buff by hand — and correctly stays silent on the one
+  exit that leaves the weapon where it is.
+- **Card buttons can be addressed to an actor's owners.** `ownerOf` beside `gmOnly`, filtered per
+  viewer at render. Weapon Lodged's free first attempt and its *Let Go* are the first users: an
+  option that belongs to a player reaches them without a dialog having to find a live client at one
+  instant, and an absent owner finds it waiting at login.
 - **`transform.addBuffs`** — a seventh transform operation, and the only additive one for buffs: it
   appends to whatever the 13+ row resolved to and skips a name already there. `transform.buffs`
   replaces, which one mortal row spanning four cells cannot use — the buff underneath differs in

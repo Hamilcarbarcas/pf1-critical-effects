@@ -30,6 +30,7 @@ import * as stages from "./flow/stages.mjs";
 import { registerLethal, registerLethalQuickAction, promptLethalDraw, postLethalDraw, offerLethalButton, couldBeLethal } from "./flow/lethal.mjs";
 import { registerResolverQuickAction, openResolver } from "./flow/resolver-app.mjs";
 import { registerEffectApply, buffDelivery } from "./flow/effect-apply.mjs";
+import { registerWeaponStuck, releaseWeapon, blowDamage } from "./flow/weapon-stuck.mjs";
 import { resolveExecution, attachExecution, hasMechanics } from "./flow/execution.mjs";
 import {
   registerDedicatedHealing,
@@ -65,6 +66,7 @@ Hooks.once("init", () => {
   registerFumbleFlow();
   registerLethal();
   registerEffectApply();
+  registerWeaponStuck();
   registerDedicatedHealing();
   registerDedicatedHealingConfig();
   registerCritTrigger();
@@ -131,6 +133,10 @@ Hooks.once("ready", async () => {
      * saved and a failed branch. `resolveExecution` decides all of it; `attachExecution` puts the
      * save and the buttons on a card. */
     effects: { resolveExecution, attachExecution, hasMechanics, buffDelivery },
+
+    /* Weapon Stuck (§8.1). `releaseWeapon` is the console door for "it came out somehow" — the
+     * same path the card buttons take, so the removal damage fires from it too. */
+    weaponStuck: { release: releaseWeapon, blowDamage },
 
     // PF1 pipeline (§9) — deferring critical damage until it is chosen
     pipeline: { suppressionEnabled, rollDeferredCritDamage },

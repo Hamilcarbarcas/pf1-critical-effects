@@ -41,6 +41,9 @@ effects:
     transfer: true
     type: buff
 flags:
+  astora-mod:
+    buffToggle:
+      autoDelete: true
   lilhelper:
     item:
       autoPowerAttack: false

@@ -1,30 +1,17 @@
-_id: pBqGdPRHYpp4XTe6
-_key: '!items!pBqGdPRHYpp4XTe6'
-_stats:
-  compendiumSource: null
-  coreVersion: '13.351'
-  createdTime: 1786827470369
-  duplicateSource: null
-  exportSource: null
-  lastModifiedBy: null
-  modifiedTime: 1786827470369
-  systemId: pf1
-  systemVersion: '11.11'
+_id: CEWpnTether0001
+_key: '!items!CEWpnTether0001'
 effects: []
 flags:
   astora-mod:
     buffToggle:
       autoDelete: true
-  pf1-critical-effects:
-    dedicatedHealing:
-      blockedBy: ''
-      dc: 0
-      received: 0
-      required: 20
-      treated: false
-folder: CEBuffEnergy0001
-img: icons/svg/ice-aura.svg
-name: Brittle Flesh
+    hiddenBuff: false
+  pf1-improved-energy-drain:
+    staticEnabled: false
+    staticLevels: 0
+folder: null
+img: Icons/ICONS/Ability_BackStab.webp
+name: Tethered
 ownership:
   default: 0
 sort: 0
@@ -43,11 +30,12 @@ system:
     seeInDarkness: false
     seeInvisibility: false
   changes: []
-  conditions: []
+  conditions:
+    - entangled
   contextNotes: []
   description:
     instructions: ''
-    value: <p><strong>Effect:</strong> Vulnerability to bludgeoning, piercing, slashing (heal 20 or 10 fire damage)</p><p><strong>Bleed:</strong> —</p><p><strong>DH:</strong> 20</p>
+    value: <p><em>Someone still has hold of the weapon in you.</em></p><p>You are <strong>entangled</strong> while your attacker keeps hold of the embedded weapon, and your movement is limited to the weapon's reach of them. If they let go, or the weapon comes free, this ends — though a weapon they have let go of is still in you.</p><p>This is delivered and removed by the critical-effects module alongside <em>Weapon Stuck</em>; it is linked as a child of that buff, so it leaves with it.</p>
   duration:
     end: ''
     units: ''

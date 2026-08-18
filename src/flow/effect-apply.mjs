@@ -44,6 +44,7 @@ import { registerButtonType, addButtons } from "../chat/card-buttons.mjs";
 import { mountFor } from "../chat/effect-block.mjs";
 import { applyConditions, describeConditions } from "../resolve/conditions.mjs";
 import { damageInstances, halfOf } from "../resolve/damage.mjs";
+import { STUCK_BUFF, deliverWeaponStuck, heldFrom, offerWielderButtons } from "./weapon-stuck.mjs";
 
 const BUTTON_TYPE = "apply-effect";
 
@@ -82,7 +83,10 @@ function deliverable(branch) {
  * @param {object} opts.target     { actorId, tokenId } from the resolution's display snapshot
  * @param {string} [opts.sourceActorId]  the attacker, stamped onto the buff
  */
-export async function offerApplyButtons(message, { execution, scope, target = {}, sourceActorId = null } = {}) {
+export async function offerApplyButtons(
+  message,
+  { execution, scope, target = {}, sourceActorId = null, actionType = null } = {}
+) {
   if (!message || !execution) return;
 
   const branched = !!execution.failed;
@@ -127,6 +131,12 @@ export async function offerApplyButtons(message, { execution, scope, target = {}
          * Every delivered buff gets one whether or not the entry had a save, because injury buffs
          * DC their own recovery checks against it — one derivation, one name (§6). */
         saveDC: execution.save?.dc ?? execution.saveDC ?? null,
+        /* §8.1. Carried on the descriptor rather than looked up at click time for the same reason
+         * the conditions are: the button may be pressed long after the attack card has scrolled
+         * away, and "was the weapon in their hands" is a fact about the blow, not about now. */
+        held: heldFrom(actionType),
+        blow: execution.blow ?? [],
+        messageId: message.id,
       },
     });
   }
@@ -149,6 +159,8 @@ async function applyEffect(descriptor) {
   }
 
   const applied = [];
+  /** The delivered Weapon Stuck, if this effect was one of the eleven that leave the steel in. */
+  let stuck = null;
 
   /* Conditions first. They are the half that cannot prompt, so they land before the buff delivery
    * dialog takes the GM's attention — and if the GM cancels that dialog, the conditions the
@@ -186,8 +198,36 @@ async function applyEffect(descriptor) {
           { interactive: true }
         );
         // A null return means applyBuffTo already said why in a notification of its own.
-        if (buff) applied.push(buff.name);
+        if (buff) {
+          applied.push(buff.name);
+          if (buff.name?.trim().toLowerCase() === STUCK_BUFF.toLowerCase()) stuck = buff;
+        }
       }
+    }
+  }
+
+  /* §8.1's second and third buffs. Deliberately downstream of the catalog: all eleven entries name
+   * *Weapon Stuck* and nothing else, because the tether and the wielder's half are consequences of
+   * how the blow landed rather than things the content decided. */
+  if (stuck) {
+    const wielder = data.sourceActorId ? game.actors.get(data.sourceActorId) : null;
+    const extra = await deliverWeaponStuck({
+      victim: actor,
+      wielder,
+      stuck,
+      held: !!data.held,
+      damage: data.blow ?? [],
+    });
+    if (extra?.length) applied.push(...extra);
+
+    const lodgedUuid = stuck.getFlag(MODULE_ID, "weaponStuck")?.lodgedUuid ?? null;
+    if (lodgedUuid) {
+      const message = data.messageId ? game.messages.get(data.messageId) : null;
+      await offerWielderButtons(message, {
+        wielderActorId: wielder?.id ?? null,
+        lodgedUuid,
+        stuckUuid: stuck.uuid,
+      });
     }
   }
 

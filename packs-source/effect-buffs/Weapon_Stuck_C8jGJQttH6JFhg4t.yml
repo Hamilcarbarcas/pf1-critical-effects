@@ -7,7 +7,7 @@ _stats:
   duplicateSource: null
   exportSource: null
   lastModifiedBy: mLW1zeZBsSCEsXlw
-  modifiedTime: 1786854182326
+  modifiedTime: 1787032250849
   systemId: pf1
   systemVersion: '11.11'
 effects: []
@@ -57,10 +57,7 @@ system:
       ammo:
         type: none
       damage:
-        parts:
-          - formula: '@sourceInfo.saveDC'
-            types:
-              - untyped
+        parts: []
       flags: {}
       name: Pull Weapon Out
       powerAttack:
@@ -80,12 +77,12 @@ system:
     seeInDarkness: false
     seeInvisibility: false
   changes:
-    - _id: L9TYwvH3
+    - _id: ceWpnStuck1
       formula: '-2'
       operator: add
       priority: 0
       target: attack
-      type: circumstance
+      type: untyped
   conditions: []
   contextNotes: []
   description:

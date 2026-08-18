@@ -42,6 +42,8 @@ effects:
     type: buff
 flags:
   astora-mod:
+    buffToggle:
+      autoDelete: true
     hiddenBuff: false
   lilhelper:
     item:

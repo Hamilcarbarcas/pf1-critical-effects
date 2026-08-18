@@ -44,8 +44,9 @@ export function registerButtonType(type, handler) {
 /**
  * Attach buttons to a message.
  * @param {ChatMessage} message
- * @param {object[]} descriptors  { id?, type, label, icon?, gmOnly?, mount?, data? }
+ * @param {object[]} descriptors  { id?, type, label, icon?, gmOnly?, ownerOf?, mount?, data? }
  *   `mount` is a CSS selector for the element the button belongs in — see the render hook.
+ *   `gmOnly` and `ownerOf` are the audience; see {@link canSee}.
  */
 export async function addButtons(message, descriptors) {
   if (!message || !descriptors?.length) return;
@@ -64,6 +65,35 @@ export async function removeButton(message, id) {
     if (!Array.isArray(existing)) return;
     await message.setFlag(MODULE_ID, BUTTONS_FLAG, existing.filter((d) => d.id !== id));
   });
+}
+
+/**
+ * Whether this client draws a given button.
+ *
+ * Two audiences, and a button may name either:
+ *
+ * - `gmOnly` — the GM, and only the GM. What creating an item on someone else's actor requires.
+ * - `ownerOf: <actorId>` — whoever owns that actor, **plus the GM always**. This is how an option
+ *   that belongs to a player reaches them without a dialog having to find a live client at one
+ *   instant: the button is drawn per viewer, at render, from data already on the card. An absent
+ *   owner finds it waiting when they log in; several owners all see it and the first click wins; an
+ *   actor with no player owner is a monster, and only the GM was ever going to act for it.
+ *
+ * The GM is included unconditionally rather than by permission test, because `testUserPermission`
+ * answers true for a GM on every document — asking it would make "owner" mean "everyone".
+ *
+ * @param {object} descriptor
+ * @returns {boolean}
+ */
+export function canSee(descriptor) {
+  if (descriptor?.gmOnly && !game.user.isGM) return false;
+
+  const ownerOf = descriptor?.ownerOf;
+  if (ownerOf && !game.user.isGM) {
+    const actor = game.actors.get(ownerOf) ?? fromUuidSync(ownerOf);
+    if (!actor?.testUserPermission?.(game.user, "OWNER")) return false;
+  }
+  return true;
 }
 
 async function dispatch(descriptor, ctx) {
@@ -93,7 +123,7 @@ export function registerCardButtons() {
     const fallback = root.querySelector(".card-buttons") ?? root.querySelector(".chat-card") ?? root;
 
     for (const descriptor of flag) {
-      if (descriptor.gmOnly && !game.user.isGM) continue;
+      if (!canSee(descriptor)) continue;
 
       const id = descriptor?.id ?? "";
       if (id && root.querySelector(`.ce-card-btn[data-ce-id="${id}"]`)) continue; // already injected

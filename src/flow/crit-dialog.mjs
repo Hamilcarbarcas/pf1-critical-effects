@@ -175,6 +175,11 @@ export class CritResolution extends HandlebarsApplicationMixin(ApplicationV2) {
         targetTokenId: context?.target?.token?.id ?? null,
         attackerTokenId: context?.attacker?.token?.id ?? null,
         attackerActorId: context?.attacker?.actor?.id ?? null,
+        /* PF1's action type, carried for §8.1 alone: `mwak`/`mcman` mean the weapon was in the
+         * attacker's hands when this landed, which is what decides whether a stuck weapon tethers
+         * them together. Asked of the action rather than the weapon because a thrown dagger is a
+         * `light` weapon and an `rwak` attack, and only the second of those is the truth. */
+        actionType: context?.attacker?.action?.data?.actionType ?? context?.attacker?.action?.actionType ?? null,
       },
     };
 
@@ -814,6 +819,7 @@ export class CritResolution extends HandlebarsApplicationMixin(ApplicationV2) {
       scope: CRIT_RESULT_CLASS,
       target: { actorId: state.display?.targetActorId, tokenId: state.display?.targetTokenId },
       sourceActorId: state.display?.attackerActorId ?? null,
+      actionType: state.display?.actionType ?? null,
     });
   }
 

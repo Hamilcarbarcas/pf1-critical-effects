@@ -13,6 +13,8 @@ _stats:
 effects: []
 flags:
   astora-mod:
+    buffToggle:
+      autoDelete: true
     hiddenBuff: false
   pf1-bleed-effects:
     bleed:
@@ -21,7 +23,7 @@ flags:
       mode: active
   pf1-critical-effects:
     dedicatedHealing:
-      blockedBy: ''
+      blockedBy: Weapon Stuck
       dc: 0
       received: 0
       required: 10
