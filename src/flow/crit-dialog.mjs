@@ -171,6 +171,11 @@ export class CritResolution extends HandlebarsApplicationMixin(ApplicationV2) {
         attackerSize: context?.attacker?.size ?? null,
         targetSize: context?.target?.size ?? null,
         critImmunity: context?.target?.critImmunity ?? 0,
+        /* The designation, distinct from the numeric dial above and with no effect on the grade:
+         * it draws a banner and nothing else. The GM opened this window knowing, or is finding
+         * out now; either way the resolution proceeds normally from here. */
+        critImmune: context?.target?.critImmune === true,
+        critImmuneSources: [...(context?.target?.critImmuneSources ?? [])],
         targetActorId: context?.target?.actor?.id ?? null,
         targetTokenId: context?.target?.token?.id ?? null,
         attackerTokenId: context?.attacker?.token?.id ?? null,
@@ -230,6 +235,15 @@ export class CritResolution extends HandlebarsApplicationMixin(ApplicationV2) {
       display: state.display,
       grade,
       gradeFormula: this.powerFormula,
+      /* How the grade and the flat modifier were arrived at, named input by input. The formula
+       * above says what will be rolled; this says why it is that and not something else — which
+       * is the difference between a GM trusting the number and re-deriving it by hand. */
+      gradeTrail: power.explainGrade(grade),
+
+      /* What is granting the immunity, as one line. Named rather than left implicit: "immune to
+       * criticals" is a claim the GM may well want to overrule, and the item it came from is what
+       * tells them whether to. Empty when nothing named a source. */
+      critImmuneSources: (state.display?.critImmuneSources ?? []).join(", "),
 
       // Location stage
       anatomies: location.ANATOMIES.map((key) => ({ key, selected: key === state.anatomy })),
@@ -445,18 +459,17 @@ export class CritResolution extends HandlebarsApplicationMixin(ApplicationV2) {
     /* Critical immunity is a reduction in rows. The severity BANDS it used to be expressed in are
      * gone — the effect table's twelve rows are the severity ladder now — so the honest
      * translation of "this target shrugs off some of it" is a penalty to the total that indexes
-     * into them. Folded into the flat modifier so it shows up in the breakdown rather than
-     * silently moving the answer. */
-    const immunity = Number(d.critImmunity) || 0;
-
+     * into them. Passed as its own input rather than subtracted from the GM's modifier here, so
+     * the breakdown attributes it to the target instead of to the GM. */
     return power.computeGrade({
       critMult: d.critMult,
       attackerSize: d.attackerSize,
       targetSize: d.targetSize,
       weaponClass: d.weaponClass,
+      critImmunity: Number(d.critImmunity) || 0,
       explosionTiers: state.explosionTiers ?? 0,
       extraTiers: state.extraTiers ?? 0,
-      extraFlat: (state.extraFlat ?? 0) - immunity,
+      extraFlat: state.extraFlat ?? 0,
     });
   }
 

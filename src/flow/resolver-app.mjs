@@ -13,18 +13,23 @@ import { MODULE_ID } from "../const.mjs";
 import * as power from "../resolve/power.mjs";
 import { buildContext } from "../resolve/context.mjs";
 import { displayName } from "../integrations/token-randomizer.mjs";
+import { isCritImmune, critImmunitySources } from "../integrations/defense-manager.mjs";
 import { startCritResolution } from "./crit-dialog.mjs";
 
 const { ApplicationV2, HandlebarsApplicationMixin } = foundry.applications.api;
 
-const WEAPON_CLASSES = [
+/* Generated from power.mjs rather than written out, so a class cannot be renamed there and keep
+ * its old name here — or, worse, keep a "(−1)" suffix the tier table no longer agrees with. The
+ * shared labels are lower-case for use mid-sentence in the Power line's trail; the dropdown wants
+ * them sentence-cased, which is the only thing this adds. */
+const WEAPON_CLASS_OPTIONS = [
   { key: "", label: "— none —" },
-  { key: "light", label: "Light weapon (−1)" },
-  { key: "oneHanded", label: "One-handed" },
-  { key: "twoHanded", label: "Two-handed (+1)" },
-  { key: "naturalPrimary", label: "Natural, primary" },
-  { key: "naturalSecondary", label: "Natural, secondary (−1)" },
-  { key: "naturalSole", label: "Natural, sole attack (+1)" },
+  ...power.WEAPON_CLASSES.map((key) => {
+    const label = power.weaponClassLabel(key);
+    const tiers = power.weaponClassTiers(key);
+    const suffix = tiers ? ` (${tiers > 0 ? "+" : "−"}${Math.abs(tiers)})` : "";
+    return { key, label: `${label[0].toUpperCase()}${label.slice(1)}${suffix}` };
+  }),
 ];
 
 export class CriticalResolver extends HandlebarsApplicationMixin(ApplicationV2) {
@@ -68,6 +73,13 @@ export class CriticalResolver extends HandlebarsApplicationMixin(ApplicationV2) 
       targetSize: seed.targetSize ?? sizeOfToken(targetId) ?? 4,
     };
 
+    /* Same statement the resolution dialog makes, made one window earlier — this is where the
+     * target is CHOSEN, so it is the first moment the answer exists and the cheapest moment to
+     * change course. Re-derived on every render, and the form re-renders on every change, so
+     * switching targets in the dropdown updates it. Nothing is blocked by it. */
+    const targetToken = targetId ? canvas.scene?.tokens?.get(targetId) : null;
+    const targetCritImmune = isCritImmune(targetToken);
+
     // Shown live so the GM can see what the inputs buy before committing.
     const preview = power.computeGrade({
       critMult: resolved.critMult,
@@ -79,13 +91,18 @@ export class CriticalResolver extends HandlebarsApplicationMixin(ApplicationV2) 
     return {
       tokens,
       hasTokens: tokens.length > 0,
-      weaponClasses: WEAPON_CLASSES,
+      weaponClasses: WEAPON_CLASS_OPTIONS,
       critMults: [2, 3, 4],
       sizes: sizeOptions(),
       seed: resolved,
+      targetCritImmune,
+      targetCritImmuneSources: targetCritImmune ? critImmunitySources(targetToken).join(", ") : "",
       preview,
       // Pool plus flat as one expression, the same way the resolution dialog states it.
       previewFormula: preview.flat ? `${preview.formula}${preview.flat > 0 ? "+" : ""}${preview.flat}` : preview.formula,
+      // ...and the same derivation trail under it, so the readout does not change shape when the
+      // resolution this window opens takes over from it.
+      gradeTrail: power.explainGrade(preview),
     };
   }
 

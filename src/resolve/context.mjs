@@ -10,6 +10,7 @@
 
 import { MODULE_ID } from "../const.mjs";
 import { anatomyFor, limbConfigFor } from "./location.mjs";
+import { isCritImmune, critImmunitySources } from "../integrations/defense-manager.mjs";
 
 /**
  * Build a frozen resolution context.
@@ -60,6 +61,13 @@ export function buildContext({ actionUse = null, chatAttack = null, target = nul
       // Numeric severity reduction, not a boolean (§5.1). PF1 v11 models no such thing, so this
       // is ours: set flags.<module>.critImmunity to the number of bands a target shrugs off.
       critImmunity: Number(manual.critImmunity ?? targetActor?.getFlag?.(MODULE_ID, "critImmunity") ?? 0) || 0,
+
+      /* The DESIGNATION, which is a different thing from the dial above and does not feed it:
+       * "this creature is immune to critical hits", as declared in pf1-defense-manager's Granted
+       * Defenses. Purely an indicator — nothing branches on it and no resolution is blocked by it
+       * (integrations/defense-manager.mjs). False when that module is absent. */
+      critImmune: manual.critImmune ?? isCritImmune(targetActor),
+      critImmuneSources: manual.critImmuneSources ?? critImmunitySources(targetActor),
 
       // v11 stores DR as free text (`system.traits.dr` is split on a regex for display), so it
       // cannot be reduced to a number here. Surfaced raw for a GM to read; nothing branches on it.

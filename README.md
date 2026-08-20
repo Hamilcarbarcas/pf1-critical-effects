@@ -154,9 +154,26 @@ inferred rather than making you cancel and start over:
   location; everything else gets a **Continue** instead.
 - **Power** — the grade, as a dropdown, and a free-text modifier (`+1`, `-2`). Picking a grade sets
   it *absolutely*: whatever the size difference and the explosions did, the pool becomes the one
-  you named.
+  you named. The field is labelled with the **total** flat modifier, which is not the same as what
+  you type in it — the total also carries the size gap, ladder overflow and the target's critical
+  immunity.
 - **Result** — a dropdown of the same fourteen rows the player rolled against, so a result can be
   changed to any of them before it is committed.
+
+The readout at the top of the dialog shows the **Power** line's whole derivation, so nothing about
+the pool has to be taken on trust:
+
+```
+POWER   Glancing 1d4-1
+        Solid (×2) → Glancing (light weapon −1)
+        Modifier  size +1, crit immunity −2
+```
+
+The first row is the grade the crit multiplier bought, then whatever moved it and by how much; the
+second names every point of the flat modifier. Each row appears only when it has something to say —
+an unmodified ×2 one-handed weapon against a same-size target shows neither. Tier shifts that
+*cancel* are still listed, because a light weapon and a confirming threat are two facts about the
+critical rather than none. The same two rows appear in the standalone resolver's live preview.
 
 Pressing **Confirm Result** is what commits: the effect is written onto the attack card with its
 name, conditions and description, any deferred critical damage is rolled then and not before, the
@@ -532,6 +549,11 @@ const R = game.criticalEffects.resolve;
 R.computeGrade({ critMult: 3, attackerSize: 5, targetSize: 4, weaponClass: "twoHanded" });
 // -> { base: "heavy", grade: "brutal", formula: "2d6", flat: 1, breakdown: {...} }
 
+// The same result as the derivation the dialog's Power line shows: which input moved the grade,
+// and where each point of the flat modifier came from.
+R.explainGrade(R.computeGrade({ critMult: 2, weaponClass: "light", critImmunity: 2 }));
+// -> base "Solid", grade "Glancing", tiers: ["light weapon −1"], flats: ["crit immunity −2"]
+
 // Shifts past either end of the ladder become a flat modifier instead of clamping away.
 R.shiftGrade("brutal", 2);        // -> { grade: "devastating", flat: 1 }
 
@@ -559,6 +581,7 @@ thing:
 await actor.setFlag("pf1-critical-effects", "anatomy", "beast");
 await actor.setFlag("pf1-critical-effects", "beastLimbs", ["leg", "wing", "tail"]);
 await actor.setFlag("pf1-critical-effects", "critImmunity", 1);  // shrug off one table row
+// Not the same thing as being *designated* immune to critical hits — see below.
 
 // Aberrants instead name their appendages. "" is an unnamed one, and reads as "Appendage".
 await actor.setFlag("pf1-critical-effects", "anatomy", "aberrant");
@@ -574,6 +597,36 @@ array is a creature with none, which folds its limb band into the torso.
 > The pre-d20 `limbs` flag is still read for backwards compatibility — its beast half maps over
 > unchanged, and `["appendage"]` becomes a single unnamed appendage — and is cleared the first time
 > a layout is saved over it.
+
+### Immunity to critical hits
+
+Two different things, and they do not feed each other:
+
+| | What it says | Where you set it |
+|---|---|---|
+| `critImmunity` (number) | *soften* a resolution that is happening — this many effect-table rows are shrugged off, as a penalty to the Critical Power total | the actor flag above |
+| **Critical Immunity** (designation) | this creature is immune to critical hits at all | **pf1-defense-manager** — a Critical Immunity entry in Granted Defenses |
+
+The designation lives in **pf1-defense-manager** because that is where a
+creature's DR, energy resistances and immunities already are, entered on the item that grants them:
+an undead's racial traits, a fortification enchantment. One entry there does both halves of the PF1
+rule — the critical immunity this module reads, and the precision-damage immunity that comes with it
+in the same clause, which goes onto the actor's native Damage Immunity trait.
+
+Here it draws a marking, in three places:
+
+- the **Critical Effect** button on the attack card gets a red edge and a shield;
+- the **resolution dialog** carries a banner naming what grants the immunity;
+- the **standalone resolver** says so under the target dropdown.
+
+**Nothing is blocked and no number changes.** The button opens a full resolution, the grade is
+untouched, and a creature that is immune "except against…" is one click away as it always was.
+Overruling a printed immunity is a ruling, and this module's job is to make sure you are making it
+on purpose. The card's marking needs a *single* target — with two, the button no longer names which
+creature it would be talking about — and it is decided each time the card renders, so designating a
+creature immune after the fact shows up straight away.
+
+With pf1-defense-manager not installed, nothing is marked and nothing else changes.
 
 ### The resolution dialog
 

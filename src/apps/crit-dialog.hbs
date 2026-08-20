@@ -12,6 +12,21 @@
     </span>
   </header>
 
+  {{!-- The target is designated immune to critical hits (pf1-defense-manager's Granted Defenses).
+        A statement, not a stop: every control below stays live and the grade is untouched. It is
+        here because the resolution can be opened from places the attack card's marking never
+        reaches — the standalone resolver, the console, a re-opened old card. --}}
+  {{#if display.critImmune}}
+    <div class="ce-immune">
+      <i class="fa-solid fa-shield-halved"></i>
+      <span>
+        <strong>{{display.targetName}} is immune to critical hits.</strong>
+        {{#if critImmuneSources}}<em class="ce-muted">{{critImmuneSources}}</em>{{/if}}
+        Resolving anyway is a ruling, not an error.
+      </span>
+    </div>
+  {{/if}}
+
   {{!-- Stage rail: where the resolution is, and where it still has to go. --}}
   <ol class="ce-stage-rail">
     {{#each stages}}
@@ -28,7 +43,27 @@
       <span class="ce-line-value">
         <strong class="ce-accent">{{grade.grade}}</strong>
         <span class="ce-mono">{{gradeFormula}}</span>
-        {{#unless (eq grade.base grade.grade)}}<em class="ce-muted">from {{grade.base}}</em>{{/unless}}
+
+        {{!-- The derivation, on its own row beneath the formula: which grade the multiplier bought,
+              what moved it, and where each point of the flat modifier came from. Both rows drop
+              entirely when there is nothing to account for — an unmodified ×2 is its own
+              explanation. --}}
+        {{#if gradeTrail.shifted}}
+          <span class="ce-trail">
+            {{gradeTrail.base}} <span class="ce-trail-src">(<span class="ce-mono">&times;{{gradeTrail.critMult}}</span>)</span>
+            <i class="fa-solid fa-arrow-right"></i>
+            {{gradeTrail.grade}}
+            {{#if gradeTrail.tiers.length}}
+              <span class="ce-trail-src">({{#each gradeTrail.tiers}}{{#unless @first}}, {{/unless}}{{text}}{{/each}})</span>
+            {{/if}}
+          </span>
+        {{/if}}
+        {{#if gradeTrail.flats.length}}
+          <span class="ce-trail">
+            Modifier
+            <span class="ce-trail-src">{{#each gradeTrail.flats}}{{#unless @first}}, {{/unless}}{{text}}{{/each}}</span>
+          </span>
+        {{/if}}
       </span>
     </div>
 
@@ -188,8 +223,11 @@
                   {{#each ../gradeOptions}}<option value="{{key}}" {{#if selected}}selected{{/if}}>{{key}}</option>{{/each}}
                 </select>
               </label>
+              {{!-- The box holds the GM's own modifier; the parenthetical is the TOTAL flat, which
+                    also carries size, overflow and the target's immunity. Labelled "total" because
+                    unlabelled it reads as a description of the box and disagrees with it. --}}
               <label class="ce-field">
-                <span class="ce-field-label">Modifier ({{#if (gt ../grade.flat 0)}}+{{/if}}{{../grade.flat}})</span>
+                <span class="ce-field-label">Modifier (total {{#if (gt ../grade.flat 0)}}+{{/if}}{{../grade.flat}})</span>
                 <input type="text" name="extraFlat" value="{{../state.extraFlat}}" placeholder="+1, -2" />
               </label>
             </div>

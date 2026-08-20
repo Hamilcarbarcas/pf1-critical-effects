@@ -3,6 +3,18 @@
 ## Unreleased
 
 ### Added
+- **Creatures can be designated immune to critical hits**, and every surface that opens a
+  resolution says so. The designation is entered in **pf1-defense-manager** — a **Critical
+  Immunity** entry in an item's Granted Defenses, on an undead's racial traits or a fortification
+  enchantment — which also grants the precision-damage immunity that comes with it in the same
+  clause. Here it draws a marking in three places: a red edge and a shield on the **Critical
+  Effect** button on the attack card, a banner in the resolution dialog naming what grants the
+  immunity, and a line under the target dropdown in the standalone resolver. **None of them
+  blocks anything.** The button still opens a full resolution, the grade is untouched, and
+  overruling a published creature's immunity stays a GM ruling rather than a fight with the UI.
+  Distinct from `flags.pf1-critical-effects.critImmunity`, which is still the numeric dial that
+  softens a resolution actually under way. With pf1-defense-manager absent, nothing is marked and
+  nothing else changes.
 - **The catalogue is written.** All **756 rows** of the effect grid are filled — 63 tables, no
   placeholders — from a pool of 211 effects imported from the authoring spreadsheet, plus the full
   47-row 13+ addendum. Every entry carries flavour text; the mechanics render from its channels.
@@ -118,6 +130,19 @@
   rather than updating it, so a timed bleed has to be written to the effect directly.
 
 ### Changed
+- **The Power line shows its working.** The readout used to end with *"from solid"* — the grade the
+  multiplier bought, and not one word about what moved it off that. It now reads
+  **Solid (×2) → Glancing (light weapon −1)**, and where the total carries a flat modifier, a second
+  row names every point of it: *size +1, crit immunity −2, GM +1*. Same two rows in the standalone
+  resolver, where they double as a check on the dropdowns above them. `power.explainGrade()` builds
+  them from a `computeGrade` result and nothing else, so the account cannot drift from the
+  arithmetic; **critical immunity is its own input** to `computeGrade` now rather than being
+  subtracted from `extraFlat` by the caller, because a target's toughness attributed to the GM's
+  modifier box is worse than not naming it. Tier shifts that *cancel* are shown too — a light weapon
+  and a confirming threat are two facts about the critical, not none.
+- The Power stage's modifier field is labelled **Modifier (total ±n)**. The parenthetical was
+  already the whole flat modifier while the box holds only the GM's own, so unlabelled it read as a
+  description of the box and disagreed with it.
 - **The compound-fracture family delivers the broken bones it always meant.** *Compound Fracture:
   Finger* and *: Hand* each carried a private buff of their own name, while the Foot, Rib and Back
   rows of the same family delivered *Broken Foot / Rib / Back*. A compound fracture of a finger is

@@ -111,6 +111,36 @@ export function weaponClassTiers(weaponClass) {
 }
 
 /**
+ * The weapon classes, in the order they are offered, and how each one reads.
+ *
+ * Lives next to `weaponClassTiers` so a class cannot gain a name in one place and a tier in
+ * another. Lower-case because these are read mid-sentence in the Power line's derivation trail
+ * ("Solid ×2 → Glancing (light weapon −1)"); the resolver's dropdown capitalises its own copy.
+ */
+export const WEAPON_CLASSES = [
+  "light",
+  "oneHanded",
+  "twoHanded",
+  "naturalPrimary",
+  "naturalSecondary",
+  "naturalSole",
+];
+
+const WEAPON_CLASS_LABELS = {
+  light: "light weapon",
+  oneHanded: "one-handed",
+  twoHanded: "two-handed",
+  naturalPrimary: "natural, primary",
+  naturalSecondary: "natural, secondary",
+  naturalSole: "natural, sole attack",
+};
+
+export const weaponClassLabel = (weaponClass) => WEAPON_CLASS_LABELS[weaponClass] ?? null;
+
+/** Grade keys are stored lower-case; this is the display form. */
+export const gradeLabel = (grade) => (grade ? `${grade[0].toUpperCase()}${grade.slice(1)}` : "");
+
+/**
  * One iteration of the confirmation explosion (concept §4.2).
  *
  * If a confirmation roll is itself within the threat range, Critical Power goes up a tier and
@@ -185,6 +215,11 @@ export function tiersToReach(target, { base, priorSteps = 0 } = {}) {
  * override and a free-text modifier, and both arrive here rather than being applied to the total
  * afterwards, so the breakdown stays a complete account of how the pool was arrived at.
  *
+ * `critImmunity` is the target's own reduction, given as the positive number of rows it shrugs off
+ * and negated here. It has its own input rather than being folded into `extraFlat` by the caller
+ * because `explainGrade` names every contribution, and a target's toughness attributed to the GM's
+ * modifier box is worse than not naming it at all.
+ *
  * @returns {{ grade: string, formula: string, flat: number, steps: number, base: string,
  *             breakdown: object }}
  */
@@ -194,6 +229,7 @@ export function computeGrade({
   targetSize = null,
   explosionTiers = 0,
   weaponClass = null,
+  critImmunity = 0,
   extraTiers = 0,
   extraFlat = 0,
 } = {}) {
@@ -205,9 +241,11 @@ export function computeGrade({
 
   const { grade, flat: overflow } = shiftGrade(base, steps);
 
-  // Flat side: the size gap, whatever the tier shift overflowed by, and the GM's own modifier.
+  // Flat side: the size gap, whatever the tier shift overflowed by, the target's immunity, and
+  // the GM's own modifier.
   const sizeFlat = attackerSize == null || targetSize == null ? 0 : sizeModifier(attackerSize, targetSize);
-  const flat = overflow + sizeFlat + (Number(extraFlat) || 0);
+  const immunityFlat = -(Number(critImmunity) || 0);
+  const flat = overflow + sizeFlat + immunityFlat + (Number(extraFlat) || 0);
 
   return {
     base,
@@ -216,12 +254,74 @@ export function computeGrade({
     steps,
     flat,
     breakdown: {
+      // Echoed rather than merely consumed: `explainGrade` reads the result alone, and the base
+      // grade is meaningless without the multiplier it came from.
+      critMult: Math.round(Number(critMult) || 2),
+      weaponClass: weaponClass ?? null,
+
       weaponTiers,
       explosionTiers: Number(explosionTiers) || 0,
       extraTiers: Number(extraTiers) || 0,
       overflow,
       sizeFlat,
+      immunityFlat,
       extraFlat: Number(extraFlat) || 0,
     },
+  };
+}
+
+/** ±n with a typographic minus, matching the tier suffixes in the resolver's own labels. */
+const signed = (n) => `${n > 0 ? "+" : "−"}${Math.abs(n)}`;
+
+/**
+ * A `computeGrade` result as the parts the Power line reads back (§7.2).
+ *
+ * The readout used to say only "Glancing 1d4 — from solid", which names the two ends and none of
+ * the reasons: a ×2 light weapon and a ×3 secondary natural attack produce the same line, and
+ * neither says which input moved it. This turns the breakdown into the sentence
+ * "Solid ×2 → Glancing (light weapon −1)", plus the flat modifiers as their own named list.
+ *
+ * Every contribution that is non-zero is named; zeroes are dropped rather than shown as "+0",
+ * because the point is to account for the number that IS there.
+ *
+ * Pure, like the rest of this file — it formats numbers into strings and reads nothing. The
+ * capitalisation is applied here rather than in CSS: the trail mixes grade keys, which need it,
+ * with authored phrases like "light weapon", which `text-transform: capitalize` would mangle.
+ *
+ * @param {object} result  a `computeGrade` return value
+ * @returns {{ base: string, grade: string, critMult: number, shifted: boolean,
+ *             tiers: Array<{label: string, delta: number, text: string}>,
+ *             flats: Array<{label: string, delta: number, text: string}> }}
+ */
+export function explainGrade(result) {
+  const b = result?.breakdown ?? {};
+  const part = (delta, label) => ({ delta, label, text: `${label} ${signed(delta)}` });
+
+  const tiers = [];
+  if (b.weaponTiers) tiers.push(part(b.weaponTiers, weaponClassLabel(b.weaponClass) ?? "weapon"));
+  if (b.explosionTiers) {
+    // One threat is "confirm threat"; several is worth counting, since each was a separate roll.
+    const label = b.explosionTiers === 1 ? "confirm threat" : `${b.explosionTiers} confirm threats`;
+    tiers.push(part(b.explosionTiers, label));
+  }
+  if (b.extraTiers) tiers.push(part(b.extraTiers, "GM"));
+
+  const flats = [];
+  if (b.sizeFlat) flats.push(part(b.sizeFlat, "size"));
+  // Overflow is the ladder's doing, not an input's — named so the total never gains an unexplained
+  // point when a shift runs off the end.
+  if (b.overflow) flats.push(part(b.overflow, "past the ladder"));
+  if (b.immunityFlat) flats.push(part(b.immunityFlat, "crit immunity"));
+  if (b.extraFlat) flats.push(part(b.extraFlat, "GM"));
+
+  return {
+    base: gradeLabel(result?.base),
+    grade: gradeLabel(result?.grade),
+    critMult: b.critMult ?? 2,
+    // Shown whenever a tier moved, not merely when the ends differ: shifts that cancel out
+    // (light weapon −1 and a confirm threat +1) are still two facts about this critical.
+    shifted: tiers.length > 0 || result?.base !== result?.grade,
+    tiers,
+    flats,
   };
 }

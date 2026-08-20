@@ -29,6 +29,7 @@ Everything below is about the framework that content plugs into.
 |---|---|---|
 | **Hard** | `pf1` system, `lib-wrapper`, `pf1-roll-requests` | Module does not function. Declared in `relationships.requires`. |
 | **Optional** | `astora-mod` | Everything runs. Outcomes that deliver a buff through astora's buff automation degrade to their prose. |
+| **Optional** | `pf1-defense-manager` | Everything runs. No creature reads as immune to critical hits and nothing is marked (§10.1). |
 | **Content-coupled** | `astora-mod` | Individual *outcomes* may depend on it (see below). Absence degrades that entry, never the engine. |
 
 **The engine runs standalone; the back end of individual effects may not.** The resolution path —
@@ -533,6 +534,8 @@ One function, `buildContext({ actionUse | manual })`, returning a frozen object 
 | `target.armorBySlot` | for the armor-sacrifice mechanic (§10) |
 | `target.conditions` | for stacking rules |
 | `target.critImmunity` | numeric reduction in effect-table rows, not a boolean |
+| `target.critImmune` | the boolean **designation**, read from pf1-defense-manager — indicator only, feeds nothing (§10.1) |
+| `target.critImmuneSources` | what grants it, for the tooltip and the banner |
 | `target.dr` | to void the effect when damage is fully absorbed |
 | `calledShot` | `{ chosen: <location>` \| `null }` |
 
@@ -551,6 +554,8 @@ weaponClassTiers(weaponClass)      // TIER: light/secondary −1, two-handed/sol
 sizeModifier(attackerSize, target)  // FLAT: ±1 per size category
 tiersToReach(target, { base, priorSteps })   // solve the GM's grade pick back into a shift
 computeGrade({ … })                // every input, one auditable result
+explainGrade(result)               // that result as the Power line's derivation trail
+weaponClassLabel(key) / gradeLabel(grade)    // the display vocabulary, next to the maths
 ```
 
 Every input lands on one of two sides, and which side is the interesting part:
@@ -590,8 +595,16 @@ body part that was hit (§3), so the twelve rows *are* the severity ladder. The
 minor/moderate/severe/grave banding this section used to describe was an abstraction over content
 that turned out to be authored per-location already; `severity.mjs` was deleted rather than kept
 as a second, disagreeing scale. Critical immunity survives as a flat penalty to the total — rows
-shrugged off — folded into the modifier so it appears in the breakdown rather than silently moving
-the answer.
+shrugged off — and is its **own** input to `computeGrade`, not something the caller folds into
+`extraFlat`, so the breakdown attributes it to the target rather than to the GM.
+
+**`explainGrade` is why the breakdown is worth keeping.** A breakdown nothing reads is a comment
+with extra steps. It turns a `computeGrade` result into the sentence the readout shows —
+`Solid (×2) → Glancing (light weapon −1)`, plus the flat modifiers as a named list — and it reads
+the result *alone*, which is why `computeGrade` echoes `critMult` and `weaponClass` back into the
+breakdown rather than merely consuming them. A grade with no multiplier beside it is not an
+explanation of anything. Both windows that show a Power line render the same two rows from it: a
+GM who has to re-derive the pool by hand to check it will stop checking it.
 
 The bands came *back* in phase 8, but only as far as `SEVERITY_BANDS` in `schema.mjs`: rows 1-3
 minor, 4-6 moderate, 7-9 severe, 10-12 grave. That is an **authoring** grouping — the twelve rows
@@ -1779,24 +1792,65 @@ data on the way past. ckl-roll-bonuses registers a WRAPPER on the same method
   know.
 - **Feats** (concept §3, "future"): the trigger layer should read from a list of trigger
   sources rather than hardcoding the five known ones, so a feat can register a trigger later.
-- **Designating a creature crit-immune** — *no UI exists yet.* PF1 v11 models critical immunity
-  nowhere at all: there is no field, no trait, and no fortification handling to read, so the
-  resolve layer reads `flags.pf1-critical-effects.critImmunity`, a number of effect-table rows
-  the target shrugs off — applied as a penalty to the Critical Power total (§5.2). Today that
-  flag can only be set from the console:
-  ```js
-  await actor.setFlag("pf1-critical-effects", "critImmunity", 1);
-  ```
-  What's missing is the *designation*, not the mechanic. Wants some combination of: a control on
-  the actor sheet; a default derived from creature type (undead, constructs, oozes, elementals,
-  plants and swarms are all crit-immune in core PF1, which `anatomy.json` is already the natural
-  home for); and a decision on whether "immune" means full immunity (a large reduction) or the
-  house rule that everything is at least mitigable — the tenet in §1 says effects are *not
-  negatable*, which argues immunity should reduce rather than erase. Worth doing before crit
-  outcomes start applying to undead in practice.
+- **Designating a creature crit-immune** — **resolved.** See §10.1; the remainder of the original
+  entry (a creature-type default derived from `anatomy.json`) is still open and now the whole of
+  what is deferred here.
 - **pf1-token-randomizer**: any card showing a target's name to players must route through
   `api.getDisplayName` / `shouldObscure`, or obscured NPC names leak. Applies to the fumble
   "wrong target" result and every crit-effect card.
+
+---
+
+## 10.1 Critical immunity — the designation, and why it lives in another module
+
+PF1 v11 models critical immunity nowhere at all: no field, no trait, no fortification handling.
+This module needed *two* different things from it, and conflating them was what kept the original
+§10 entry stuck:
+
+| | What it is | Where it lives | What it does |
+|---|---|---|---|
+| `target.critImmunity` | a number of effect-table rows the target shrugs off | `flags.pf1-critical-effects.critImmunity` | a penalty to the Critical Power total (§5.2) |
+| `target.critImmune` | a boolean **designation** | pf1-defense-manager, as a **Critical Immunity** entry in an item's Granted Defenses | draws a marking; changes nothing |
+
+The dial mitigates a resolution that is happening. The designation says one should not be happening
+at all. Neither feeds the other, and the designation deliberately applies **no** Critical Power
+penalty of its own — a silent penalty behind a button the GM chose to click anyway is a number
+nobody can account for, and §1's tenet is about what an effect does once it lands, not about
+whether the GM may decline to land one.
+
+**Why pf1-defense-manager owns it.** The designation is a defensive trait of a creature, sitting
+beside its DR and its energy resistances, entered on the item that grants it — an undead's racial
+traits, a fortification enchantment. That module already owns exactly that surface, and it already
+had the second half of the PF1 rule to hand: everything crit-immune in core PF1 is precision-immune
+by the same clause, and precision immunity **is** expressible natively (`system.traits.di`). So one
+entry produces a real PF1 trait plus a designation this module reads. An actor-sheet control here
+would have been a second place to say the same thing.
+
+**Where it shows.** Three places, all of them statements and none of them gates:
+
+- the **Critical Effect button** on an attack card — red edge and a trailing shield, still clickable
+  (`flow/crit-trigger.mjs`);
+- the **resolution dialog**, above the stage rail, naming what grants the immunity;
+- the **standalone resolver** (§7.5), under the target dropdown — the window where the target is
+  chosen, and so the cheapest place to change course.
+
+**Marking on the card is decided at render, not at attach.** A descriptor is a frozen record of the
+moment the card posted; whether a creature is crit-immune is a fact about now. So button types may
+register an optional `decorate(button, descriptor, { message })` alongside their click handler
+(`chat/card-buttons.mjs`), run per client on every render. Marking a creature immune after the fact
+therefore shows up the next time the log draws. The marking also requires **exactly one** target:
+the descriptor only ever keeps `targets[0]`, so with two targets a marker would be a claim about a
+creature the button does not necessarily name.
+
+**Optional dependency, in the ordinary way.** With pf1-defense-manager absent,
+`integrations/defense-manager.mjs` answers "not immune" everywhere and nothing is marked. Nothing
+in the resolution path branches on it either way.
+
+**Known limitation, upstream.** PF1's `_processImmunities` zeroes a damage instance only when
+*every* type on it matches the immunity (`instance.typeIds.every(...)`, with a `// TODO: Mixed
+damage` beside it). So the precision half works on a damage part tagged `precision` alone and
+silently misses one tagged `piercing + precision`. Not fixable from here without patching damage
+application.
 
 ---
 

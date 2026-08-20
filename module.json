@@ -46,6 +46,11 @@
         "id": "astora-mod",
         "type": "module",
         "reason": "Optional integration: individual effects may use its buff automation to offer an apply-buff button. The engine is fully functional without it."
+      },
+      {
+        "id": "pf1-defense-manager",
+        "type": "module",
+        "reason": "Optional integration: supplies the designation for creatures immune to critical hits, which marks the Critical Effect button on attack cards and banners the resolution dialog. PF1 models critical immunity nowhere natively. Without it, no creature reads as immune and nothing else changes."
       }
     ]
   },

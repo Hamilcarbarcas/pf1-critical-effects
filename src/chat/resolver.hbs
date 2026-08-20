@@ -31,6 +31,19 @@
   </div>
   <span class="ce-hint">The source's player rolls location and power; with no source, the GM does. Creature type comes from the target.</span>
 
+  {{!-- The chosen target is designated crit-immune. Stated here rather than only in the resolution
+        it opens, because this is the window where the target is picked — the cheapest place to
+        change course. Submitting anyway is allowed and unmodified. --}}
+  {{#if targetCritImmune}}
+    <div class="ce-immune">
+      <i class="fa-solid fa-shield-halved"></i>
+      <span>
+        <strong>That target is immune to critical hits.</strong>
+        {{#if targetCritImmuneSources}}<em class="ce-muted">{{targetCritImmuneSources}}</em>{{/if}}
+      </span>
+    </div>
+  {{/if}}
+
   <div class="ce-fields">
     <label class="ce-field">
       <span class="ce-field-label">Critical multiplier</span>
@@ -72,7 +85,26 @@
       <span class="ce-line-value">
         <strong class="ce-accent">{{preview.grade}}</strong>
         <span class="ce-mono">{{previewFormula}}</span>
-        {{#unless (eq preview.base preview.grade)}}<em class="ce-muted">from {{preview.base}}</em>{{/unless}}
+
+        {{!-- Same two trail rows as the resolution dialog (crit-dialog.hbs). Here they double as a
+              check on the controls above: the trail names the input that produced each term, so a
+              dropdown left on the wrong value shows up as a term the GM did not expect. --}}
+        {{#if gradeTrail.shifted}}
+          <span class="ce-trail">
+            {{gradeTrail.base}} <span class="ce-trail-src">(<span class="ce-mono">&times;{{gradeTrail.critMult}}</span>)</span>
+            <i class="fa-solid fa-arrow-right"></i>
+            {{gradeTrail.grade}}
+            {{#if gradeTrail.tiers.length}}
+              <span class="ce-trail-src">({{#each gradeTrail.tiers}}{{#unless @first}}, {{/unless}}{{text}}{{/each}})</span>
+            {{/if}}
+          </span>
+        {{/if}}
+        {{#if gradeTrail.flats.length}}
+          <span class="ce-trail">
+            Modifier
+            <span class="ce-trail-src">{{#each gradeTrail.flats}}{{#unless @first}}, {{/unless}}{{text}}{{/each}}</span>
+          </span>
+        {{/if}}
       </span>
     </div>
   </div>

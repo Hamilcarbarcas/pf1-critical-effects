@@ -15,6 +15,8 @@ import { MODULE_ID } from "../const.mjs";
 import { DAMAGE_TYPES } from "../catalog/schema.mjs";
 import { registerButtonType, addButtons } from "../chat/card-buttons.mjs";
 import { buildContext } from "../resolve/context.mjs";
+import { isCritImmune, critImmunitySources } from "../integrations/defense-manager.mjs";
+import { displayName } from "../integrations/token-randomizer.mjs";
 import { startCritResolution } from "./crit-dialog.mjs";
 import { offerLethalButton } from "./lethal.mjs";
 
@@ -45,18 +47,59 @@ async function attachCritButton(actionUse, message) {
   // GM call about which one to resolve, and re-running the button covers the second.
   const [{ atk: first, index }] = found;
 
+  const targets = actionUse.shared?.targets ?? [];
+
   await addButtons(message, [{
     type: BUTTON_TYPE,
     label: "Critical Effect",
     icon: "fa-solid fa-burst",
     gmOnly: true,
     data: {
-      targetTokenId: actionUse.shared?.targets?.[0]?.id ?? null,
+      targetTokenId: targets[0]?.id ?? null,
       critMult: first.chatAttack?.rollData?.critMult ?? actionUse.shared?.action?.data?.ability?.critMult ?? 2,
       attackIndex: index,
       threatCount: found.length,
+      /* Carried so the immunity marking can tell "the one target" from "the first of several".
+       * The descriptor only ever keeps `targets[0]`, so with two targets a marker on the button
+       * would be a claim about a creature the button doesn't necessarily name. */
+      targetCount: targets.length,
     },
   }]);
+}
+
+/**
+ * Mark the button when its single target is designated immune to critical hits.
+ *
+ * A marking, never a gate — the button stays live and does exactly what it did before. PF1 has no
+ * fortification handling, several published creatures are immune "except…", and the GM is the one
+ * driving the resolution; what they need is to be told, not stopped.
+ *
+ * Runs at render, per client, so marking a creature immune after the card posted shows up the next
+ * time the log draws it. Only the *recorded* target is consulted: the click-time fallbacks
+ * (`game.user.targets`, the controlled token) differ per viewer, and a marker that meant a
+ * different creature for each person reading the card would be worse than none.
+ *
+ * Cards posted before `targetCount` existed carry no count, so they are never marked — the right
+ * answer, since "one target or several" is exactly what those cards cannot say.
+ */
+function decorateCritButton(button, descriptor) {
+  const { targetTokenId, targetCount } = descriptor?.data ?? {};
+  if (targetCount !== 1 || !targetTokenId) return;
+
+  const token = canvas.scene?.tokens?.get(targetTokenId) ?? null;
+  if (!token || !isCritImmune(token)) return;
+
+  button.classList.add("ce-card-btn-immune");
+
+  const sources = critImmunitySources(token);
+  const name = displayName(token, token.actor?.name ?? "That creature");
+  button.dataset.tooltip = sources.length
+    ? `${name} is immune to critical hits (${sources.join(", ")}). Click to resolve anyway.`
+    : `${name} is immune to critical hits. Click to resolve anyway.`;
+
+  const flag = document.createElement("i");
+  flag.className = "fa-solid fa-shield-halved ce-card-btn-immune-flag";
+  button.append(flag);
 }
 
 /**
@@ -121,7 +164,7 @@ function damageTypeOf(action) {
 }
 
 export function registerCritTrigger() {
-  registerButtonType(BUTTON_TYPE, resolveCrit);
+  registerButtonType(BUTTON_TYPE, resolveCrit, { decorate: decorateCritButton });
 
   Hooks.on("pf1PostActionUse", async (actionUse, message) => {
     try {

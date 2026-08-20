@@ -13,6 +13,15 @@ const DEFAULT_ICON = "fa-solid fa-burst";
 /** type -> handler(descriptor, { message, event }) */
 const HANDLERS = new Map();
 
+/* type -> decorate(button, descriptor, { message })
+ *
+ * Optional, and called at RENDER rather than when the descriptor is stored. A button may need to
+ * say something about the world that is only true right now — the crit trigger marks its button
+ * when the target is designated immune to critical hits — and a descriptor is a frozen record of
+ * the moment the card posted. Deciding at render keeps the answer live for every viewer, and keeps
+ * this file from having to know what any of it means. */
+const DECORATORS = new Map();
+
 /* message id -> tail of that message's pending flag writes.
  *
  * Both addButtons and removeButton are read-modify-write on one array, and independent features
@@ -36,9 +45,19 @@ function enqueue(message, mutate) {
   return next;
 }
 
-export function registerButtonType(type, handler) {
+/**
+ * @param {string} type
+ * @param {Function} handler        what a click does: (descriptor, { message, event })
+ * @param {object} [options]
+ * @param {Function} [options.decorate]  optional per-render pass over the built element:
+ *                                       (button, descriptor, { message }) => void. Synchronous —
+ *                                       it runs inside the render hook, so it may only read state
+ *                                       that is already in memory.
+ */
+export function registerButtonType(type, handler, { decorate } = {}) {
   if (HANDLERS.has(type)) console.error(`${MODULE_ID} | card-buttons: type "${type}" re-registered`);
   HANDLERS.set(type, handler);
+  if (decorate) DECORATORS.set(type, decorate);
 }
 
 /**
@@ -157,6 +176,18 @@ export function registerCardButtons() {
       btn.append(icon, document.createTextNode(` ${descriptor.label || "Resolve"}`));
 
       btn.addEventListener("click", (event) => dispatch(descriptor, { message, event }));
+
+      /* Decoration is cosmetic by construction, so a decorator that throws costs the marking and
+       * nothing else — the button is still appended below, and still works. */
+      const decorate = DECORATORS.get(descriptor?.type);
+      if (decorate) {
+        try {
+          decorate(btn, descriptor, { message });
+        } catch (err) {
+          console.error(`${MODULE_ID} | card-buttons: decorating "${descriptor.type}" failed:`, err);
+        }
+      }
+
       container.appendChild(btn);
     }
   });

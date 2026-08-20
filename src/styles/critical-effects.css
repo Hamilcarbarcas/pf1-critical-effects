@@ -30,6 +30,28 @@
   opacity: 0.85;
 }
 
+/* The target is designated immune to critical hits (pf1-defense-manager). Deliberately NOT
+   `disabled` and not dimmed: the button does exactly what it always did, and overruling the
+   immunity is a GM call this module has no business taking. So it reads as a warning — red edge,
+   faint red ground — rather than as an unavailable control. */
+.ce-card-btn-immune {
+  border-color: #d4574a;
+  background: rgba(212, 87, 74, 0.1);
+}
+
+.ce-card-btn-immune:hover {
+  background: rgba(212, 87, 74, 0.18);
+}
+
+/* Trailing shield, so the marking survives a colour-blind reader and a re-themed chat log.
+   Overrides the leading-icon rule above, which is why it is stated rather than inherited. */
+.ce-card-btn > i.ce-card-btn-immune-flag {
+  margin-right: 0;
+  margin-left: 0.4em;
+  color: #d4574a;
+  opacity: 1;
+}
+
 /* --- fumble result block -------------------------------------------------- */
 
 .ce-fumble-result {
@@ -398,6 +420,59 @@
   align-items: baseline;
   flex-wrap: wrap;
 }
+
+/* The Power line's derivation, on rows of its own beneath the grade and formula.
+ *
+ * `flex-basis: 100%` is what breaks it out of the value's flex row rather than letting it trail
+ * along behind the formula — the trail is an explanation of the line above it, not another term
+ * in it, and wrapping only when it happens to be too long would read as the latter.
+ *
+ * `text-transform: none` undoes the value's `capitalize`, which exists for the raw lower-case keys
+ * elsewhere in the readout. The trail carries authored phrases ("light weapon", "past the ladder")
+ * and capitalises its own grade names in power.explainGrade, so capitalising here would only give
+ * "Light Weapon". */
+.ce-window .ce-trail {
+  flex: 0 0 100%;
+  text-transform: none;
+  font-size: 11px;
+  color: var(--ce-dim);
+}
+
+.ce-window .ce-trail > i {
+  margin: 0 0.15em;
+  font-size: 9px;
+}
+
+/* The sources themselves, a shade dimmer than the grades they explain. */
+.ce-window .ce-trail-src { color: rgba(255, 255, 255, 0.38); }
+
+/* Crit-immunity banner, in both the resolution dialog and the standalone resolver. Same red as
+   `.ce-deadly` and the card button's edge — one colour means "the module is telling you something
+   it will not act on for you" everywhere it appears. */
+.ce-window .ce-immune {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5em;
+  /* No margin: both banners are direct children of `.ce-body`, whose flex `gap` already spaces
+     them from the header above and the rail below. */
+  margin: 0;
+  padding: 5px 8px;
+  border: 1px solid rgba(212, 87, 74, 0.5);
+  border-left: 3px solid #d4574a;
+  border-radius: 3px;
+  background: rgba(212, 87, 74, 0.12);
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.ce-window .ce-immune > i {
+  flex: 0 0 auto;
+  color: #d4574a;
+}
+
+.ce-window .ce-immune > span { flex: 1 1 auto; }
+
+.ce-window .ce-immune em { margin: 0 0.15em; }
 
 .ce-deadly { color: #d4574a; }
 
