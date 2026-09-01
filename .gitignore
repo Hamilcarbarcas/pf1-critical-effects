@@ -1,1 +1,4 @@
 packs/
+
+# The design record is kept locally, not published with the module.
+DESIGN*.md
