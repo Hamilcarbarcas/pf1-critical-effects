@@ -106,6 +106,15 @@
 
 ### Fixed
 
+- **Injuries with no Heal check DC now absorb dedicated healing straight away.** A threshold wound
+  authored with `dc: 0` was treated as *waive the roll, but still require somebody to use the buff*,
+  so it sat inert — no allocation dialog, no absorption — until a GM used it by hand. Since every
+  injury in the shipped catalogue is authored that way, that was all of them. The Heal check DC is
+  now the only thing that gates treatment, in both modes: no DC, no gate. A wound **with** a DC is
+  unchanged, and still has to be treated before it will take anything. On the buff sheet the
+  *Treated* mark now appears only when a DC is set, and the *Awaiting treatment* status it used to
+  show alongside `dc: 0` is gone with the step it described. Inactive buffs, which were incidentally
+  kept out of the dialog by their untreated mark, are now skipped outright.
 - ***Held Open By* never blocked anything.** `getConfig` rebuilt the config field by field and was
   not extended with `blockedBy`, so the value a GM typed was written to the flag and then dropped on
   every read: nothing was ever marked blocked, and the field re-rendered empty as though it had not

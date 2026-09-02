@@ -21,7 +21,7 @@
     "DedicatedHealing": {
       "Section": {
         "Title": "Dedicated Healing",
-        "Hint": "Once treated, this condition absorbs healing instead of hit points, and clears when it has taken enough."
+        "Hint": "Absorbs healing instead of hit points, and clears once it has taken enough."
       },
       "Field": {
         "Required": "Healing Required",
@@ -30,7 +30,7 @@
         "ClearOnHealHint": "No threshold: this buff switches itself off as soon as its bearer's hit points go up. Held Open By still applies.",
         "OnHealBadge": "on heal",
         "DC": "Heal Check DC",
-        "DCHint": "Heal check to make it ready to absorb healing. 0 waives the check.",
+        "DCHint": "Heal check before it will absorb healing. 0 = no check needed.",
         "DCHintOnHeal": "Heal check before healing will close it. 0 = no check needed.",
         "BlockedBy": "Held Open By",
         "BlockedByPlaceholder": "e.g. Weapon Stuck",
@@ -41,8 +41,7 @@
         "Progress": "Received",
         "ReadyOnHeal": "Ready — the next healing clears this",
         "AwaitingCheck": "Awaiting Heal check",
-        "AwaitingUse": "Awaiting treatment",
-        "ResetTooltip": "Clear the treated mark and healing received."
+        "ResetTooltip": "Clear the healing received and any treated mark."
       }
     }
   }

@@ -66,12 +66,17 @@
         {{~/if~}}
       </label>
       <div class="form-fields ce-dh-status-fields">
+        {{!-- Only an authored DC gates anything, so the mark is only offered when one is set —
+              a wound with no DC is ready as it stands, and a checkbox saying otherwise would
+              imply a treatment step that no longer exists. --}}
+        {{#if gated}}
         <label class="checkbox ce-dh-treated-label">
           <input type="checkbox" class="ce-dh-input" data-field="treated" {{checked treated}} />
           {{localize "CRITICAL_EFFECTS.DedicatedHealing.Field.Treated"}}
         </label>
-        <span class="ce-dh-progress {{#unless treated}}ce-dh-untreated{{/unless}}">
-          {{#if treated}}
+        {{/if}}
+        <span class="ce-dh-progress {{#unless ready}}ce-dh-untreated{{/unless}}">
+          {{#if ready}}
             {{#if clearOnHeal}}
               {{localize "CRITICAL_EFFECTS.DedicatedHealing.Field.ReadyOnHeal"}}
             {{else}}
@@ -79,11 +84,7 @@
               <strong>{{received}} / {{required}}</strong>
             {{/if}}
           {{else}}
-            {{#if dc}}
-              {{localize "CRITICAL_EFFECTS.DedicatedHealing.Field.AwaitingCheck"}}
-            {{else}}
-              {{localize "CRITICAL_EFFECTS.DedicatedHealing.Field.AwaitingUse"}}
-            {{/if}}
+            {{localize "CRITICAL_EFFECTS.DedicatedHealing.Field.AwaitingCheck"}}
           {{/if}}
         </span>
         <a class="ce-dh-reset" data-tooltip="{{localize 'CRITICAL_EFFECTS.DedicatedHealing.Field.ResetTooltip'}}">

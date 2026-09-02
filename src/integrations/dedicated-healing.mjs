@@ -1,8 +1,9 @@
 /* Dedicated healing (DESIGN.md §8) — migrated out of astora-mod.
  *
- * A house rule: some conditions (broken bones, mostly) can't simply be healed away. They must
- * first be *treated* (a Heal check), after which they absorb a threshold of healing before
- * clearing — healing that would otherwise have gone to hit points.
+ * A house rule: some conditions (broken bones, mostly) can't simply be healed away. They absorb a
+ * threshold of healing before clearing — healing that would otherwise have gone to hit points —
+ * and where a Heal check DC is authored on them, they must be *treated* first. No DC, no gate:
+ * such a wound is absorbing from the moment it lands.
  *
  * ── Participants, not buffs ──────────────────────────────────────────────────
  * Anything that can absorb dedicated healing is a **participant**: a plain descriptor with a
@@ -46,10 +47,10 @@ export const FLAG_KEY = "dedicatedHealing";
 
 /** Shape of a freshly-configured item, and the defaults every read falls back to. */
 const DEFAULTS = Object.freeze({
-  dc: 0,        // Heal check DC to treat the condition; 0 = no check needed
+  dc: 0,        // Heal check DC to treat the condition; 0 = no gate at all (see `isTreated`)
   required: 0,  // HP of dedicated healing to clear it; 0 = feature off for this item
   received: 0,  // HP accumulated so far (runtime)
-  treated: false, // Heal check passed (or waived) — only then does it absorb healing
+  treated: false, // Heal check passed — meaningful only while a DC is authored
   /* The other mode: no threshold, ends on the first hit-point healing its bearer receives.
    * Takes precedence over `required`, which is hidden on the sheet while this is set — the two
    * are contradictory, and a stale threshold left behind by unticking the box must not turn the
@@ -121,6 +122,20 @@ export function getConfig(item) {
  */
 export async function setConfig(item, patch) {
   return item.setFlag(MODULE_ID, FLAG_KEY, { ...getConfig(item), ...patch });
+}
+
+/**
+ * Whether the treatment gate on a config is open.
+ *
+ * The DC is the gate, and only a DC is: `dc: 0` means there is nothing to treat, so the wound is
+ * ready the moment it lands. The same rule in both modes — a threshold wound with no DC that sat
+ * inert until somebody used the buff was a trap, since nothing on the sheet said a use was owed.
+ *
+ * @param {typeof DEFAULTS} cfg
+ * @returns {boolean}
+ */
+export function isTreated(cfg) {
+  return !cfg.dc || cfg.treated;
 }
 
 /**
@@ -221,7 +236,7 @@ function blockerFor(actor, cfg) {
 }
 
 /**
- * The built-in provider: buffs on the actor that have been treated and still owe healing.
+ * The built-in provider: buffs on the actor past their treatment gate that still owe healing.
  *
  * @param {Actor} actor
  * @returns {DHParticipant[]}
@@ -229,11 +244,14 @@ function blockerFor(actor, cfg) {
 function _itemParticipants(actor) {
   const out = [];
   for (const item of actor.items) {
+    // A switched-off buff is afflicting nobody. Load-bearing now that the treatment gate opens on
+    // its own: an unauthored copy sitting inactive on the sheet must not appear in the dialog.
+    if (item.isActive === false) continue;
     const cfg = getConfig(item);
     // Clear-on-heal takes precedence over any threshold still stored on the item: a wound that
     // ends on the first cure spell has nothing to absorb, and must never open a dialog.
     if (cfg.clearOnHeal) continue;
-    if (!cfg.required || !cfg.treated) continue;
+    if (!cfg.required || !isTreated(cfg)) continue;
     const blocker = blockerFor(actor, cfg);
     out.push({
       id: item.id,
@@ -325,7 +343,7 @@ function _clearOnHealWounds(actor) {
     if (item.isActive === false) continue;
     const cfg = getConfig(item);
     if (!cfg.clearOnHeal) continue;
-    if (cfg.dc && !cfg.treated) continue; // authored gate, not yet passed
+    if (!isTreated(cfg)) continue; // authored gate, not yet passed
     out.push({ item, blocker: blockerFor(actor, cfg) });
   }
   return out;
@@ -379,7 +397,7 @@ function _clearOnHealDetached(actor) {
  *
  * Called from the buff's `use` script call. Serves both modes: for a threshold wound it is the
  * gate on absorbing anything, for a clear-on-heal wound it is the gate on being cleared — and in
- * that mode a DC of 0 means there is no gate at all, so there is nothing to run.
+ * either mode a DC of 0 means there is no gate at all, so there is nothing to run.
  *
  * @param {Actor} actor
  * @param {Item} item
@@ -392,19 +410,14 @@ export async function requestHealCheck(actor, item) {
   // that absorbs none.
   const awaiting = cfg.clearOnHeal ? "will close with any healing" : "awaiting dedicated healing";
 
-  if (cfg.clearOnHeal && !cfg.dc) {
-    ui.notifications.info(`${item.name} needs no treatment — any healing closes it.`);
+  if (!cfg.dc) {
+    const ready = cfg.clearOnHeal ? "any healing closes it" : "it already absorbs healing";
+    ui.notifications.info(`${item.name} needs no treatment — ${ready}.`);
     return;
   }
 
   if (cfg.treated) {
     ui.notifications.warn(`${item.name}: Condition already treated — ${awaiting}.`);
-    return;
-  }
-
-  if (!cfg.dc) {
-    await setConfig(item, { treated: true });
-    ui.notifications.info(`${item.name} is ready to receive dedicated healing.`);
     return;
   }
 

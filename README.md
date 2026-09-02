@@ -419,19 +419,21 @@ game.criticalEffects.effects.buffDelivery();   // its API, or null
 
 **Requires the [Astora Homebrew rules](#astora-homebrew-rules) setting.**
 
-Some conditions — broken bones, mostly — can't simply be healed away. They must first be
-**treated** (a Heal check), after which they absorb a threshold of healing before clearing:
-healing that would otherwise have gone to hit points.
+Some conditions — broken bones, mostly — can't simply be healed away. They absorb a threshold of
+healing before clearing: healing that would otherwise have gone to hit points. Where a **Heal check
+DC** is authored on one, it must be **treated** first; with no DC there is nothing to treat, and the
+condition absorbs healing from the moment it lands.
 
-Once a treated condition is on an actor, any incoming healing opens an allocation dialog so the
+Once such a condition is on an actor, any incoming healing opens an allocation dialog so the
 player can split it between hit points and their conditions. When healing is applied on someone's
 behalf — a GM resolving a short rest — the dialog opens for the player who submitted it rather
 than the GM.
 
 Configure it on the buff sheet's **Advanced** tab, in the collapsible **Dedicated Healing**
-section: the healing required to clear the condition, the Heal check DC that makes it ready to
-absorb healing (0 waives the check), and — once it's configured — a read-out of the progress so
-far with a reset control. With homebrew off the section is hidden on unconfigured buffs, so no new
+section: the healing required to clear the condition, the Heal check DC that must be passed before
+it will absorb any (0 = no check), and — once it's configured — a read-out of the progress so
+far with a reset control. The *Treated* mark appears only when a DC is set, since that is the only
+thing it gates. With homebrew off the section is hidden on unconfigured buffs, so no new
 condition can be given a threshold; a buff that already has one keeps its section, since those
 numbers are still live and a GM needs to see and be able to reset what's outstanding.
 

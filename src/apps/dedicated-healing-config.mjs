@@ -11,7 +11,7 @@
  */
 
 import { MODULE_ID } from "../const.mjs";
-import { getConfig, setConfig } from "../integrations/dedicated-healing.mjs";
+import { getConfig, isTreated, setConfig } from "../integrations/dedicated-healing.mjs";
 import { homebrewEnabled } from "../settings.mjs";
 import { makeCollapsible } from "./sheet-section-collapse.mjs";
 
@@ -51,9 +51,12 @@ async function injectSection(app, html) {
   const cfg = getConfig(item);
   const configured = cfg.clearOnHeal || cfg.required > 0;
 
+  // Only an authored DC gates anything, so only then is there a treated mark to show or clear.
+  const gated = cfg.dc > 0;
+
   // A clear-on-heal wound with no DC has no running total and no gate, so the status row would
   // be an empty control. One with a DC still needs its treated mark shown and resettable.
-  const showStatus = configured && (cfg.clearOnHeal ? cfg.dc > 0 : true);
+  const showStatus = configured && (cfg.clearOnHeal ? gated : true);
 
   // With the house rule off, this is where new obligations would be created, so it goes away.
   // An item that is *already* configured keeps its section, because the numbers on it are still
@@ -65,6 +68,8 @@ async function injectSection(app, html) {
     ...cfg,
     configured,
     showStatus,
+    gated,
+    ready: isTreated(cfg),
   });
 
   const container = tab.querySelector(".flexcol") ?? tab;
