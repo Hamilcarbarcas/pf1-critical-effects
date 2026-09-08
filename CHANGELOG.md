@@ -10,6 +10,31 @@
 ## [Unreleased]
 
 ### Added
+- **Effects can stop a creature recovering hit points.** A poison, curse or disease carries one of
+  three boolean flags on its Advanced tab — `noHealing`, `noMagicalHealing` or `noNaturalHealing` —
+  and healing of that kind is turned away rather than absorbed. Nothing needs configuring beyond
+  typing the flag, and switching the buff off restores healing immediately.
+  - **Magical or natural is PF1's own distinction**, read off the source: spells and potions are
+    magical, and a feature is magical if its ability type is spell-like or supernatural, natural if
+    extraordinary. So a magic-only block stops a cure spell while leaving a troll's regeneration
+    alone, and a natural-only block does the reverse.
+  - **Healing whose source cannot be identified is refused**, by any block. A bare
+    `applyDamage(-10)` from a macro says nothing about what it is, and a curse should not have
+    exceptions because a macro was terse — pass the source item to classify it.
+  - **Hit points only.** Nonlethal damage, ability damage and temporary hit points still recover
+    normally, including the nonlethal half of a cure spell under the system's Dual Heal setting.
+  - **One heal can be let through** with `applyDamage(-10, { ignoreHealingBlock: true })`, without
+    switching the effect off.
+  - **Blocked healing never becomes dedicated healing.** A wound cannot absorb hit points that were
+    never going to arrive, and a "clears on any healing" wound is not closed by a cure spell that
+    did nothing.
+  - **A hand-typed hit point total is never blocked** — a GM correcting a number is bookkeeping, not
+    treatment, and it is the deliberate way to overrule the effect.
+  - **Rest is gated by astora-mod**, which asks this module the same question from its own rest
+    engine and prints the reason on the rest summary instead of "0 hp".
+  - **pf1-bleed-effects agrees with it**: healing no longer stops bleeding when the healing was
+    refused, and a time jump's preview leaves refused healing out of the walk, so the hit points and
+    the death round it shows are the ones that will actually happen.
 - **Creatures can be designated immune to critical hits**, and every surface that opens a
   resolution says so. The designation is entered in **pf1-defense-manager** — a **Critical
   Immunity** entry in an item's Granted Defenses, on an undead's racial traits or a fortification

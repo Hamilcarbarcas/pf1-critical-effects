@@ -38,6 +38,7 @@
 
 import { MODULE_ID } from "../const.mjs";
 import { gmRequest } from "./socket.mjs";
+import { SUPPRESSED_KEY as HEALING_SUPPRESSED, EXEMPT_KEY as HEALING_EXEMPT } from "./healing-block.mjs";
 
 const TEMPLATE = `modules/${MODULE_ID}/src/chat/dedicated-healing-dialog.hbs`;
 const CHANNEL = `module.${MODULE_ID}`;
@@ -463,6 +464,10 @@ export async function requestHealCheck(actor, item) {
 function onApplyDamage(actor, options) {
   // `_applyHp` re-enters this hook with the amount that truly landed, and does its own clearing.
   if (_bypassHealingIntercept) return;
+  /* Healing suppression comes first (§8.2): hit points that are not going to arrive cannot be
+   * absorbed by a wound, and must not close a clear-on-heal one. The marker rather than a zeroed
+   * value, because a suppressed dual heal is redirected to nonlethal and keeps a negative value. */
+  if (options[HEALING_SUPPRESSED]) return;
   if (options.value >= 0) return; // Positive = damage
   if (!actor.isOwner) return;
 
@@ -551,7 +556,11 @@ async function _applyHp(actor, amount) {
   const landed = restoresHitPoints(actor, { value: -amount });
   _bypassHealingIntercept = true;
   try {
-    await actor.applyDamage(-amount); // Negative = healing in PF1's convention
+    /* Exempt from healing suppression (§8.2). This is the residual of a heal that was already
+     * judged when it first arrived — and being re-entrant it carries no source item, so it would
+     * otherwise be classified unknown and refused under the fail-closed rule, destroying the
+     * leftover of healing that had just been allowed through. */
+    await actor.applyDamage(-amount, { [HEALING_EXEMPT]: true }); // Negative = healing in PF1
   } finally {
     _bypassHealingIntercept = false;
   }

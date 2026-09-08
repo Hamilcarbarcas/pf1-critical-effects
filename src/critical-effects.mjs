@@ -41,6 +41,16 @@ import {
   setConfig as setDedicatedHealingConfig,
 } from "./integrations/dedicated-healing.mjs";
 import { registerDedicatedHealingConfig } from "./apps/dedicated-healing-config.mjs";
+import {
+  registerHealingBlock,
+  wouldBlock,
+  refusesMagical,
+  refusesNatural,
+  classify as classifyHealing,
+  FLAGS as HEALING_BLOCK_FLAGS,
+  SUPPRESSED_KEY,
+  EXEMPT_KEY,
+} from "./integrations/healing-block.mjs";
 import { registerPipeline, registerPipelineSettings, suppressionEnabled, rollDeferredCritDamage } from "./integrations/pf1-pipeline.mjs";
 import { registerHomebrewSetting, homebrewEnabled, registerBuffLookupSetting } from "./settings.mjs";
 import { registerCritTrigger } from "./flow/crit-trigger.mjs";
@@ -67,6 +77,10 @@ Hooks.once("init", () => {
   registerLethal();
   registerEffectApply();
   registerWeaponStuck();
+  /* Before dedicated healing, and that order is load-bearing (§8.2): a heal that suppression
+   * refuses must not reach the allocation dialog. The suppression marker on the options makes the
+   * precedence hold regardless, but a listener that runs first never has to rely on it. */
+  registerHealingBlock();
   registerDedicatedHealing();
   registerDedicatedHealingConfig();
   registerCritTrigger();
@@ -88,6 +102,22 @@ Hooks.once("init", () => {
     // creating a *new* obligation — pf1-bleed-effects gates Deep Bleed on it. Registration and
     // allocation stay available regardless, so anything already in progress can still be paid off.
     enabled: homebrewEnabled,
+  };
+
+  /* Healing suppression (§8.2). Published at init for the same reason as dedicated healing above:
+   * pf1-bleed-effects and astora-mod's rest engine both ask it questions, and both sort ahead of
+   * this module. `wouldBlock` is the one every caller wants — it classifies the application and
+   * answers in one step, and asking it outright is order-independent in a way that looking for
+   * `SUPPRESSED_KEY` on a shared hook is not. */
+  mod.api.healingBlock = {
+    wouldBlock,
+    refusesMagical,
+    refusesNatural,
+    classify: classifyHealing,
+    FLAGS: HEALING_BLOCK_FLAGS,
+    SUPPRESSED_KEY,
+    // Set on applyDamage options to pass one heal through untouched, overruling every block.
+    EXEMPT_KEY,
   };
 });
 
@@ -145,6 +175,10 @@ Hooks.once("ready", async () => {
     // invokes requestHealCheck through this. Same object as `module.api.dedicatedHealing`,
     // which integrators should prefer — it exists from init.
     dedicatedHealing: game.modules.get(MODULE_ID).api.dedicatedHealing,
+
+    // healing suppression (§8.2) — the noHealing / noMagicalHealing / noNaturalHealing boolean
+    // flags. Same object as `module.api.healingBlock`, which integrators should prefer.
+    healingBlock: game.modules.get(MODULE_ID).api.healingBlock,
 
     // standalone manual resolver (§7.5) — the same resolve path, driven by hand
     openResolver,

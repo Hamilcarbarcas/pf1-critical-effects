@@ -58,6 +58,7 @@
     "src/critical-effects.mjs"
   ],
   "styles": [
+    "src/common/sheet/kit.css",
     "src/styles/critical-effects.css"
   ],
   "languages": [

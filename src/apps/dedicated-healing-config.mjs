@@ -13,7 +13,7 @@
 import { MODULE_ID } from "../const.mjs";
 import { getConfig, isTreated, setConfig } from "../integrations/dedicated-healing.mjs";
 import { homebrewEnabled } from "../settings.mjs";
-import { makeCollapsible } from "./sheet-section-collapse.mjs";
+import { makeCollapsible } from "../common/sheet/collapse.mjs";
 
 const TEMPLATE = `modules/${MODULE_ID}/src/apps/dedicated-healing-section.hbs`;
 

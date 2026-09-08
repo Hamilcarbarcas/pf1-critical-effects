@@ -498,6 +498,52 @@ rather than an item, and lands in the same allocation dialog as a broken arm wit
 module knowing anything about the other's storage. Its healing-blocked wounds — an arrow still in
 the body, gated on the buff representing it — are the reference consumer for `blocked`.
 
+### Healing suppression
+
+The other half of the same subject, and a separate rule: an effect that stops its bearer recovering
+hit points at all. Nothing is absorbed and no debt is created — the healing simply doesn't land.
+Plenty of published poisons, curses and diseases work this way, so unlike dedicated healing this
+isn't behind the Astora Homebrew switch; nothing happens until an effect asks for it.
+
+Configured with a **boolean flag** on the Advanced tab of the buff carrying the effect — no config
+section, because it needs no numbers:
+
+| Flag | Refuses |
+|---|---|
+| `noHealing` | all healing |
+| `noMagicalHealing` | spells, potions, wands, and spell-like or supernatural abilities |
+| `noNaturalHealing` | rest, healing dice, and extraordinary fast healing or regeneration |
+
+Magical or natural is read off the source rather than configured: spells and magical consumables are
+magical by type, and a feature follows its **ability type** — spell-like and supernatural are
+magical, extraordinary is not. So a magic-only block stops a cure spell while leaving a troll's
+regeneration alone.
+
+Healing whose source can't be identified — a bare `applyDamage(-10)` from a macro — is **refused by
+any block**. Pass the source item (`applyDamage(-10, { item })`) to have it classified instead, or
+`applyDamage(-10, { ignoreHealingBlock: true })` to overrule every block for that one heal.
+
+A few things are deliberately outside it:
+
+- **Hit points only.** Nonlethal damage, ability damage and temporary hit points recover normally,
+  including the nonlethal half of a cure spell under the system's Dual Heal setting.
+- **A hand-typed hit point total is never blocked.** A GM correcting a number is bookkeeping, not
+  treatment — and it's the intended way to overrule the effect, which is why there's no override UI.
+- **Blocked healing never becomes dedicated healing.** Suppression is checked first, so a wound
+  can't absorb hit points that were never going to arrive.
+
+Rest doesn't go through the system's healing pipeline at all, so it's gated by whatever owns the
+rest: **astora-mod** asks this module the same question from its own rest engine, refuses the HP,
+and prints the reason on the rest summary. The short rest checks *before* rolling, so a refused heal
+doesn't also cost the healing dice.
+
+Integrators ask one function, which classifies and answers together:
+
+```js
+const refusedBy = game.modules.get("pf1-critical-effects")
+  .api.healingBlock.wouldBlock(actor, options); // [] when the healing may land
+```
+
 ## Compendia
 
 | Pack | Contents |
