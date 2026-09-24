@@ -26,6 +26,7 @@ import { setFumbleResult, createFumbleResultCard, FUMBLE_RESULT_CLASS } from "..
 import { postFumbleDraw, totalFromResult, DRAW_FLAG } from "../integrations/roll-requests.mjs";
 import { attachExecution, attackerRollData, resolveExecution } from "./execution.mjs";
 import { displayName } from "../integrations/token-randomizer.mjs";
+import { onAttackCard } from "../integrations/sequential-attacks.mjs";
 
 const BUTTON_TYPE = "resolve-fumble";
 
@@ -378,7 +379,7 @@ export function registerFumbleFlow() {
     }
   });
 
-  Hooks.on("pf1PostActionUse", async (actionUse, message) => {
+  onAttackCard(async (actionUse, message) => {
     try {
       await attachFumbleButton(actionUse, message);
     } catch (err) {

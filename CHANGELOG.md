@@ -131,6 +131,12 @@
 
 ### Fixed
 
+- **Critical effects work on the second and later attacks of a sequential full attack.** With
+  pf1-sequential-attacks, each attack posts its own card, but the Critical Effect button landed on
+  the last card and pointed at the wrong attack. Confirming then failed with "no attack 1 … to store
+  critical damage on". Each card now gets its own Critical Effect, Resolve Fumble and Lethal Blow
+  buttons and its own explosion count, as soon as it posts, so you can resolve a critical mid-sequence.
+  Requires the pf1-sequential-attacks version that fires `pf1SequentialAttacks.postCard`.
 - **Injuries with no Heal check DC now absorb dedicated healing straight away.** A threshold wound
   authored with `dc: 0` was treated as *waive the roll, but still require somebody to use the buff*,
   so it sat inert — no allocation dialog, no absorption — until a GM used it by hand. Since every

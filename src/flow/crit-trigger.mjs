@@ -19,6 +19,7 @@ import { isCritImmune, critImmunitySources } from "../integrations/defense-manag
 import { displayName } from "../integrations/token-randomizer.mjs";
 import { startCritResolution } from "./crit-dialog.mjs";
 import { offerLethalButton } from "./lethal.mjs";
+import { onAttackCard } from "../integrations/sequential-attacks.mjs";
 
 const BUTTON_TYPE = "resolve-crit";
 
@@ -166,7 +167,7 @@ function damageTypeOf(action) {
 export function registerCritTrigger() {
   registerButtonType(BUTTON_TYPE, resolveCrit, { decorate: decorateCritButton });
 
-  Hooks.on("pf1PostActionUse", async (actionUse, message) => {
+  onAttackCard(async (actionUse, message) => {
     try {
       await attachCritButton(actionUse, message);
     } catch (err) {

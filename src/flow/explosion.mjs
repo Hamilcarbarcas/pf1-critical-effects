@@ -27,6 +27,7 @@
 import { MODULE_ID } from "../const.mjs";
 import { suppressionEnabled } from "../integrations/pf1-pipeline.mjs";
 import { setExplosions } from "../chat/card-mutate.mjs";
+import { onAttackCard } from "../integrations/sequential-attacks.mjs";
 
 /** A keen weapon with a wide threat range can chain for a while; a runaway loop is a bug. */
 const CAP = 10;
@@ -102,7 +103,7 @@ async function onActionUse(actionUse, message) {
 }
 
 export function registerExplosion() {
-  Hooks.on("pf1PostActionUse", async (actionUse, message) => {
+  onAttackCard(async (actionUse, message) => {
     try {
       await onActionUse(actionUse, message);
     } catch (err) {
