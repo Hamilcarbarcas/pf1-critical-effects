@@ -21,6 +21,7 @@ import {
   promptFumbleDraw,
   inferAttackType,
 } from "./flow/fumble-flow.mjs";
+import { registerFumbleSpecials } from "./flow/fumble-special.mjs";
 import * as power from "./resolve/power.mjs";
 import * as location from "./resolve/location.mjs";
 import { buildContext, weaponClassFor } from "./resolve/context.mjs";
@@ -74,6 +75,7 @@ Hooks.once("init", () => {
   registerCardMutation();
   registerCardButtons();
   registerFumbleFlow();
+  registerFumbleSpecials();
   registerLethal();
   registerEffectApply();
   registerWeaponStuck();

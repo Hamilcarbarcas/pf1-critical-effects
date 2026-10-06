@@ -208,7 +208,8 @@ if (untagged.length) {
 
 const fumbleCounts = FUMBLE_TABLES.map((type) => ({
   type,
-  have: fumblePool.entries.filter((e) => e.attackTypes?.includes(type)).length,
+  // Faces, not entries: a weighted entry (`faces`) fills several.
+  have: fumblePool.entries.filter((e) => e.attackTypes?.includes(type)).reduce((sum, e) => sum + (e.faces ?? 1), 0),
 }));
 
 out.push("---", "", "## Fumbles", "",

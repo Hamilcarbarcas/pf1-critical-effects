@@ -127,8 +127,15 @@ async function dispatch(descriptor, ctx) {
   } catch (err) {
     console.error(`${MODULE_ID} | card-buttons: handler "${descriptor.type}" threw:`, err);
     ui.notifications.error(`${MODULE_ID}: that button failed — see the console.`);
+    return;
   }
+  /* Told to anyone who cares that a button on this card has been used — the fumble flow withdraws
+   * its luck reroll then, since what a used button did cannot be rerolled away. */
+  Hooks.callAll(BUTTON_USED_HOOK, descriptor, ctx.message);
 }
+
+/** Fired after a card button's handler completes: (descriptor, message). */
+export const BUTTON_USED_HOOK = "pf1CriticalEffects.cardButtonUsed";
 
 export function registerCardButtons() {
   Hooks.on("renderChatMessageHTML", (message, html) => {

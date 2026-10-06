@@ -50,6 +50,50 @@ export async function rollDamage(parts, rollData = {}) {
   return { parts: rolled, total: rolled.reduce((sum, p) => sum + (p.total ?? 0), 0), rolls };
 }
 
+/**
+ * The fumbling attack's own damage, rolled now, in the same stored shape as an entry's damage.
+ *
+ * A fumble that hurts the fumbler or their weapon deals *the attack's* damage (§4, "Specials"), so
+ * this asks PF1 for it — `ItemAction#rollDamage` is the normal, non-critical roll with every bonus
+ * the action would have had — rather than re-deriving a formula. `minimize` re-evaluates the same
+ * rolls at their lowest, floored at PF1's minimum of 1 for the whole instance.
+ *
+ * @param {ItemAction} action
+ * @param {object} [opts]
+ * @param {boolean} [opts.minimize]
+ * @returns {Promise<{ parts: object[], total: number, rolls: Roll[] }|null>} null when there is
+ *   nothing to roll
+ */
+export async function rollActionDamage(action, { minimize = false } = {}) {
+  if (!action?.hasDamage) return null;
+
+  let rolled;
+  try {
+    rolled = await action.rollDamage({ data: action.getRollData() });
+  } catch (err) {
+    console.error(`${MODULE_ID} | could not roll ${action.item?.name ?? "the attack"}'s damage:`, err);
+    return null;
+  }
+
+  const parts = [];
+  const rolls = [];
+  for (const roll of rolled ?? []) {
+    const used = minimize ? await roll.clone().evaluate({ minimize: true }) : roll;
+    rolls.push(used);
+    parts.push({ formula: roll.formula, type: firstType(roll.options?.damageType), total: used.total, roll: used.toJSON() });
+  }
+  if (!parts.length) return null;
+
+  const total = parts.reduce((sum, p) => sum + (p.total ?? 0), 0);
+  return { parts, total: Math.max(1, total), rolls };
+}
+
+/** The first damage type id on a PF1 damage roll; its `damageType` may be a Set or an array. */
+function firstType(types) {
+  const list = types instanceof Set ? [...types] : Array.isArray(types) ? types : [];
+  return list.find((t) => typeof t === "string" && t) ?? "untyped";
+}
+
 /** A stored part's `Roll`, rebuilt. Null when the data will not rehydrate. */
 export function rollOf(part) {
   if (!part?.roll) return null;

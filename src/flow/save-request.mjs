@@ -6,6 +6,9 @@
  * that DC, 2 for the doubled DC most of the 13+ rows call for. The content was reworked to fit
  * that rather than the schema widened to fit the content, and the payoff is this file being short.
  *
+ * Fumbles are the exception: a missed swing has no damage to derive a DC from, so a fumble entry
+ * authors `{ type, dc }` outright (§4) and the save type rides through to the embed.
+ *
  * ── Why the roll is embedded rather than its own card ───────────────────────
  * A card of its own would put the save somewhere other than the two branches it decides between,
  * and the result would have to be carried back. pf1-roll-requests' embed API (its `api.md`
@@ -25,6 +28,13 @@ import { normalDamageTotal } from "../integrations/pf1-pipeline.mjs";
 
 /** The slot this module owns on a host card. Namespaced by convention — slots may not contain dots. */
 export const SAVE_SLOT = "ce-crit-save";
+
+/* A fumble's save gets a slot of its own: a full attack can crit with one swing and fumble with
+ * another, and both results — each with its own save — then live on the same card. */
+export const FUMBLE_SAVE_SLOT = "ce-fumble-save";
+
+/** The save slot for a result block, by its scope class. */
+export const saveSlotFor = (scope) => (String(scope ?? "").includes("fumble") ? FUMBLE_SAVE_SLOT : SAVE_SLOT);
 
 /** Whether the installed pf1-roll-requests is new enough to embed. */
 export const embedAvailable = () => typeof game.pf1RollRequests?.embed === "function";
@@ -97,17 +107,19 @@ export async function promptForDC({ multiplier = 1, entryName = null } = {}) {
  * @param {object} opts
  * @param {number} opts.dc
  * @param {TokenDocument|null} opts.token  the victim
+ * @param {string} [opts.type]  fort, ref or will. Crits are always fort; a fumble names its own.
+ * @param {string} [opts.slot]
  */
-export async function postSave(message, { dc, token = null } = {}) {
+export async function postSave(message, { dc, token = null, type = "fort", slot = SAVE_SLOT } = {}) {
   if (!message || !dc) return;
   if (!embedAvailable()) return; // printed DC only; renderSaveSlot says so on the card
   if (!token) return; // nobody to ask — same outcome
 
   try {
     await game.pf1RollRequests.embed(message, {
-      slot: SAVE_SLOT,
+      slot,
       type: "save",
-      key: "fort",
+      key: type,
       dc,
       mode: "targeted",
       targetedActors: [{ id: token.id }],
@@ -135,12 +147,13 @@ export async function postSave(message, { dc, token = null } = {}) {
  * @param {object} opts
  * @param {ChatMessage} opts.message
  * @param {{ dc: number|null, multiplier: number }} opts.save
+ * @param {string} [opts.slot]
  */
-export async function renderSaveSlot(into, { message, save } = {}) {
+export async function renderSaveSlot(into, { message, save, slot = SAVE_SLOT } = {}) {
   if (!into) return;
 
-  if (embedAvailable() && game.pf1RollRequests.getEmbed(message, SAVE_SLOT)) {
-    const card = await game.pf1RollRequests.renderEmbed(message, { slot: SAVE_SLOT, into });
+  if (embedAvailable() && game.pf1RollRequests.getEmbed(message, slot)) {
+    const card = await game.pf1RollRequests.renderEmbed(message, { slot, into });
     if (card) return;
   }
 
@@ -150,8 +163,21 @@ export async function renderSaveSlot(into, { message, save } = {}) {
   line.className = "ce-save-line";
   const icon = document.createElement("i");
   icon.className = "fa-solid fa-shield-halved";
-  line.append(icon, document.createTextNode(` Fortitude DC ${save?.dc ?? "—"}`));
+  line.append(icon, document.createTextNode(` ${SAVE_LABELS[save?.type] ?? SAVE_LABELS.fort} DC ${save?.dc ?? "—"}`));
   into.append(line);
+}
+
+const SAVE_LABELS = { fort: "Fortitude", ref: "Reflex", will: "Will" };
+
+/** Take a save off a card entirely — for a result that is being replaced, not retired. */
+export async function removeSave(message, slot = SAVE_SLOT) {
+  if (!embedAvailable() || !message) return;
+  if (!game.pf1RollRequests.getEmbed(message, slot)) return;
+  try {
+    await game.pf1RollRequests.closeEmbed(message, slot);
+  } catch (err) {
+    console.error(`${MODULE_ID} | could not remove the save request:`, err);
+  }
 }
 
 /**

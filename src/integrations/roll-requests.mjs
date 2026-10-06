@@ -19,7 +19,7 @@ export const DRAW_FLAG = "fumbleDraw";
 export const available = () => !!game.pf1RollRequests;
 
 /**
- * Post a targeted d12 draw against a fumble table. The player clicks to roll it; this call does
+ * Post a targeted d20 draw against a fumble table. The player clicks to roll it; this call does
  * NOT wait for that.
  *
  * The result is picked up later from the `pf1RollRequests.rollComplete` hook rather than from a
@@ -37,6 +37,7 @@ export const available = () => !!game.pf1RollRequests;
  * @param {string} opts.tableKey
  * @param {string|null} [opts.fumblerName]    carried for that card's header
  * @param {object|null} [opts.speaker]        carried for that card's speaker
+ * @param {object} [opts.context]             the attack that fumbled — see fumble-flow's `drawContext`
  * @returns {Promise<ChatMessage|null>} the request card
  */
 export async function postFumbleDraw({
@@ -47,6 +48,7 @@ export async function postFumbleDraw({
   tableKey,
   fumblerName = null,
   speaker = null,
+  context = {},
 }) {
   if (!available()) {
     ui.notifications.warn(`${MODULE_ID}: pf1-roll-requests is not active; cannot post the fumble draw.`);
@@ -91,6 +93,8 @@ export async function postFumbleDraw({
     speaker,
     tokenId: token.id ?? null,
     actorId: token.actor?.id ?? null,
+    // The weapon, the action and the defender, for the entries that act on the attack itself.
+    context,
   });
 
   return message;

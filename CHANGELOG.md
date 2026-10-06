@@ -10,6 +10,23 @@
 ## [Unreleased]
 
 ### Added
+- **The fumble tables are written.** All six tables — melee, thrown, bows, crossbows, unarmed and
+  natural — are full: 34 results, from Prone and Off Balance to Snapped String and Ally Struck.
+  Every one is moderate at worst. Lucky Miss takes three faces of every table, so 15% of fumbles
+  come to nothing.
+- **Fumbles that act on the attack itself.** *Ally Struck* and *Wrong Target* re-attack a random
+  eligible creature with the same weapon: a real attack that can crit but not fumble, and spends no
+  ammunition. The GM marks who is eligible; melee attacks pre-check whoever is in reach. *Damage
+  Self* and *Like Hitting a Wall* roll the attack's damage (or its minimum) onto the result as
+  nonlethal damage. *Weapon Takes Damage*, *Weapon Broken* and *Weapon Stuck* act on the weapon
+  that fumbled.
+- **Spend luck to reroll a fumble.** With astora-mod, the fumbler's player gets a *Spend Luck:
+  Reroll* button on the result. The new result replaces the old one and must be kept, and the offer
+  goes once anything on the result has been used.
+- **Fumble saves name their own type and DC** — *Overcommitted Throw* is a Reflex save at DC 10 —
+  and live in their own slot, so a crit and a fumble on the same full attack each keep their save.
+- **Fumble buffs can land on the defender**, and with ckl-roll-bonuses a delivered buff's target is
+  set for you: *Telegraphed Moves* targets the fumbler, *Bruising Attack* the attack that fumbled.
 - **Effects can stop a creature recovering hit points.** A poison, curse or disease carries one of
   three boolean flags on its Advanced tab — `noHealing`, `noMagicalHealing` or `noNaturalHealing` —
   and healing of that kind is turned away rather than absorbed. Nothing needs configuring beyond
@@ -130,7 +147,12 @@
   (One Eye)*, which is a different buff from *Permanently Blinded*.
 
 ### Fixed
+- **Adding or changing an entry in a sheet section no longer jumps the sheet back to the top of
+  the tab.** Sections from the shared sheet kit now restore the scroll position once they have
+  drawn.
 
+- **A fumble result names its die and table properly.** The header read "melee d12: 7" — a leftover
+  from the old d12 tables — and now reads "Melee d20: 7".
 - **Critical effects work on the second and later attacks of a sequential full attack.** With
   pf1-sequential-attacks, each attack posts its own card, but the Critical Effect button landed on
   the last card and pointed at the wrong attack. Confirming then failed with "no attack 1 … to store
@@ -177,6 +199,9 @@
   rather than updating it, so a timed bleed has to be written to the effect directly.
 
 ### Changed
+- **Thrown attacks pre-select the thrown fumble table exactly.** The pre-selection reads PF1's own
+  thrown action type rather than guessing from the weapon group, so a thrown dagger or javelin opens
+  on the thrown table and a sling on the bow table.
 - **The Power line shows its working.** The readout used to end with *"from solid"* — the grade the
   multiplier bought, and not one word about what moved it off that. It now reads
   **Solid (×2) → Glancing (light weapon −1)**, and where the total carries a flat modifier, a second

@@ -208,9 +208,10 @@ export const mortalCells = () => [
  * The six fumble tables, keyed by how the attack was delivered.
  *
  * `bows` and `crossbows` are separate because PF1's own weapon groups are (`pf1.config.weaponGroups`)
- * and because they fail differently — a bowstring snaps, a crossbow's mechanism jams. `unarmed` and
- * `natural` are likewise distinct: a natural attack is a claw or a bite, an unarmed strike is a
- * person's fist, and "you break a finger" only reads for one of them.
+ * and because they fail differently — a bowstring slaps the arm, a crossbow's mechanism jams — though
+ * most of their entries are shared. `unarmed` and `natural` are likewise distinct: a natural attack
+ * is a claw or a bite, an unarmed strike is a person's fist, and "you jam a finger" only reads for
+ * one of them.
  */
 export const FUMBLE_TABLES = ["melee", "thrown", "bows", "crossbows", "unarmed", "natural"];
 
@@ -224,6 +225,34 @@ export const FUMBLE_TABLES = ["melee", "thrown", "bows", "crossbows", "unarmed",
  * measure and fumble pool entries carry no rank.
  */
 export const FUMBLE_ROWS = 20;
+
+// --- fumble-only fields (§4) -------------------------------------------------
+
+/** Save types a fumble entry may name. Fumble saves are authored with a fixed DC, unlike crits. */
+export const FUMBLE_SAVE_TYPES = ["fort", "ref", "will"];
+
+/**
+ * The automated outcomes a fumble entry may carry in `special`, beyond the three shared channels.
+ * Each is a button on the result, resolved against the attack that fumbled (§4, "Specials").
+ *
+ *   reattack      a fresh attack with the same action against a new target (`targets`: ally | any)
+ *   selfDamage    the action's damage, rolled now, to the fumbler as nonlethal (`minimize` optional)
+ *   weaponDamage  the action's damage, rolled now, to the weapon less its hardness
+ *   weaponBroken  the weapon down to half its hit points
+ *   weaponStuck   the wielder half of Weapon Stuck, with no victim
+ */
+export const FUMBLE_SPECIALS = ["reattack", "selfDamage", "weaponDamage", "weaponBroken", "weaponStuck"];
+export const REATTACK_TARGETS = ["ally", "any"];
+
+/** Who an entry's buffs and conditions land on. The defender is the attack's target. */
+export const FUMBLE_RECIPIENTS = ["fumbler", "defender"];
+
+/**
+ * What a delivered buff's roll-bonuses target is pointed at, when it has one:
+ *   fumbler        Token target = the fumbler's token (a bonus against them)
+ *   fumblingItem   Specific Item target = the attack that fumbled
+ */
+export const FUMBLE_BUFF_TARGETS = ["fumbler", "fumblingItem"];
 
 export const ANATOMIES = ["humanoid", "beast", "aberrant"];
 
@@ -1051,6 +1080,54 @@ export function validateEffects(data) {
 }
 
 /**
+ * Structural check of a fumble's `save`: `{ type, dc }`, a fixed DC.
+ *
+ * Not the crit shape. A crit's DC comes from the blow that caused it (§6), and a fumble has no blow —
+ * the swing missed — so its DC is authored outright.
+ */
+export function validateFumbleSave(save, where) {
+  if (save == null) return [];
+  if (!isPlainObject(save)) return [`${where}: \`save\` must be { type, dc } on a fumble`];
+  const problems = [];
+  if (!FUMBLE_SAVE_TYPES.includes(save.type)) {
+    problems.push(`${where}: \`save.type\` must be one of ${FUMBLE_SAVE_TYPES.join(", ")}`);
+  }
+  if (!Number.isInteger(save.dc) || save.dc < 1) problems.push(`${where}: \`save.dc\` must be a positive integer`);
+  return problems;
+}
+
+/** Structural check of a fumble's `special` outcome. */
+export function validateFumbleSpecial(special, where) {
+  if (special == null) return [];
+  if (!isPlainObject(special)) return [`${where}: \`special\` must be an object`];
+  if (!FUMBLE_SPECIALS.includes(special.kind)) {
+    return [`${where}: \`special.kind\` must be one of ${FUMBLE_SPECIALS.join(", ")}`];
+  }
+  if (special.kind === "reattack" && !REATTACK_TARGETS.includes(special.targets)) {
+    return [`${where}: a reattack needs \`targets\`: ${REATTACK_TARGETS.join(" or ")}`];
+  }
+  return [];
+}
+
+/** The fumble-only scalar fields: `faces`, `recipient`, `buffTarget`. */
+export function validateFumbleExtras(entry, where) {
+  const problems = [];
+  if (entry.faces != null && (!Number.isInteger(entry.faces) || entry.faces < 1)) {
+    problems.push(`${where}: \`faces\` must be a positive integer`);
+  }
+  if (entry.recipient != null && !FUMBLE_RECIPIENTS.includes(entry.recipient)) {
+    problems.push(`${where}: \`recipient\` must be one of ${FUMBLE_RECIPIENTS.join(", ")}`);
+  }
+  if (entry.buffTarget != null && !FUMBLE_BUFF_TARGETS.includes(entry.buffTarget)) {
+    problems.push(`${where}: \`buffTarget\` must be one of ${FUMBLE_BUFF_TARGETS.join(", ")}`);
+  }
+  if (entry.buffTarget != null && !entry.buffs?.length) {
+    problems.push(`${where}: \`buffTarget\` has no buff to point`);
+  }
+  return problems;
+}
+
+/**
  * Structural validation of data/fumbles.json.
  * @returns {{ errors: string[], warnings: string[], tables: object, entries: object[] }}
  */
@@ -1061,7 +1138,7 @@ export function validateFumbles(data) {
   const tables = {};
 
   if (!isPlainObject(data)) return { errors: ["fumbles.json: root is not an object"], warnings, tables, entries };
-  if (data.version !== 5) warnings.push(`fumbles.json: version is ${data.version}, expected 5`);
+  if (data.version !== 6) warnings.push(`fumbles.json: version is ${data.version}, expected 6`);
   if (!Array.isArray(data.entries)) return { errors: ["fumbles.json: `entries` is not an array"], warnings, tables, entries };
   if (!isPlainObject(data.tables)) return { errors: ["fumbles.json: `tables` is not an object"], warnings, tables, entries };
 
@@ -1080,17 +1157,21 @@ export function validateFumbles(data) {
      * dropped, never a reason to lose the row the d20 has to land on. */
     let usable = entry;
     const mechanicalProblems = [
+      ...validateBuffs(entry.buffs, where),
       ...validateConditions(entry.conditions, where),
       ...validateDamage(entry.damage, where),
       ...validateSetHP(entry.setHP, where),
       ...validateNegativeLevels(entry.negativeLevels, where),
-      ...validateSave(entry.save, where),
+      ...validateFumbleSave(entry.save, where),
       ...validateOnFail(entry.onFail, where),
+      ...validateFumbleSpecial(entry.special, where),
+      ...validateFumbleExtras(entry, where),
     ];
     if (mechanicalProblems.length) {
       warnings.push(...mechanicalProblems);
       usable = keepMechanics(entry);
-      if (validateSave(entry.save, where).length) usable.save = null;
+      if (validateFumbleSave(entry.save, where).length) usable.save = null;
+      if (validateFumbleSpecial(entry.special, where).length) usable.special = null;
       if (entry.onFail != null) {
         usable.onFail = isPlainObject(entry.onFail) ? keepMechanics(entry.onFail) : null;
       }
@@ -1120,7 +1201,7 @@ export function validateFumbles(data) {
         errors.push(`fumbles.json: table "${key}" row ${min}-${max} references unknown entry "${row.id}"`);
         ok = false;
       }
-      // A hole here means a d12 roll that resolves to nothing at the table.
+      // A hole here means a roll that resolves to nothing at the table.
       if (min !== expected) warnings.push(`fumbles.json: table "${key}" expected coverage to resume at ${expected}, found ${min}`);
       expected = max + 1;
     }

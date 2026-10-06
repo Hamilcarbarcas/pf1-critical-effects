@@ -8,6 +8,7 @@
  */
 
 import { MODULE_ID } from "../const.mjs";
+import { FUMBLE_ROWS } from "../catalog/schema.mjs";
 import { gmRequest } from "../integrations/socket.mjs";
 import { criticalTotal } from "../integrations/pf1-pipeline.mjs";
 import { describeConditions } from "../resolve/conditions.mjs";
@@ -25,13 +26,21 @@ export const FUMBLE_RESULT_CLASS = "ce-fumble-result";
 
 /**
  * Record a fumble result on the attack card.
+ *
+ * A luck reroll writes over an existing result, and Foundry merges an object into the one already
+ * stored — so a key the new result lacks would survive from the old one. The old record is removed
+ * first, so the card holds exactly the new result.
+ *
  * @param {ChatMessage} message
- * @param {object} result  { tableKey, total, entryId, name, text, note, conditions }
+ * @param {object} result  { tableKey, total, rerolledFrom, entryId, name, text, note, conditions,
+ *                           execution, context }
  */
 export async function setFumbleResult(message, result) {
   const key = `flags.${MODULE_ID}.${RESULT_FLAG}`;
-  if (game.user.isGM) await message.update({ [key]: result });
-  else await gmRequest("updateDocument", { uuid: message.uuid, updates: { [key]: result } });
+  const write = (updates) =>
+    game.user.isGM ? message.update(updates) : gmRequest("updateDocument", { uuid: message.uuid, updates });
+  if (getFumbleResult(message)) await write({ [`flags.${MODULE_ID}.-=${RESULT_FLAG}`]: null });
+  await write({ [key]: result });
 }
 
 export const getFumbleResult = (message) => message.getFlag(MODULE_ID, RESULT_FLAG) ?? null;
@@ -579,14 +588,21 @@ export function registerCardMutation() {
     label.textContent = game.i18n.localize("CRITICAL_EFFECTS.Fumble.ResultLabel");
     const total = document.createElement("span");
     total.className = "ce-fumble-total";
-    total.textContent = `${result.tableKey} d12: ${result.total}`;
+    const table = game.i18n.localize(`CRITICAL_EFFECTS.Fumble.Table.${result.tableKey}`);
+    // A luck reroll shows both dice: the one that was spent away and the one that stands.
+    const rolled = result.rerolledFrom != null ? `${result.rerolledFrom} → ${result.total} (luck)` : `${result.total}`;
+    total.textContent = `${table} d${FUMBLE_ROWS}: ${rolled}`;
     header.append(label, total);
 
     const name = document.createElement("div");
     name.className = "ce-fumble-name";
     name.textContent = result.name;
 
-    block.append(header, name);
+    // The luck reroll's mount: emitted always, empty and invisible unless the offer stands.
+    const luck = document.createElement("div");
+    luck.className = "ce-fumble-luck";
+
+    block.append(header, luck, name);
     if (!result.execution) appendConditions(block, result.conditions);
     appendProse(block, result.text);
 

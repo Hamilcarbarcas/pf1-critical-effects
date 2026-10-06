@@ -225,7 +225,7 @@ Candidates per band, per table. `3` is saturated; `.` is empty.
 
 ## Fumbles
 
-Pool: **19 fumbles** across 6 attack types,
+Pool: **34 fumbles** across 6 attack types,
 d20 each — 120 slots.
 
 Fumble rows are **unordered peers**: the die picks which fumble, not how bad it is, so there is
@@ -234,12 +234,12 @@ silently double that outcome's odds — a decision nobody made.
 
 | Attack type | Have | Need | Short by |
 |-------------|-----:|-----:|---------:|
-| melee       |   12 |   20 |        8 |
-| thrown      |   11 |   20 |        9 |
-| bows        |   11 |   20 |        9 |
-| crossbows   |   11 |   20 |        9 |
-| unarmed     |    0 |   20 |       20 |
-| natural     |   10 |   20 |       10 |
+| melee       |   20 |   20 |        — |
+| thrown      |   20 |   20 |        — |
+| bows        |   20 |   20 |        — |
+| crossbows   |   20 |   20 |        — |
+| unarmed     |   20 |   20 |        — |
+| natural     |   20 |   20 |        — |
 
 ---
 

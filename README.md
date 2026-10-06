@@ -18,7 +18,8 @@ you always get a named result with its description on the card.
 | **Required** | `lib-wrapper` | The module does not function. |
 | **Required** | `pf1-roll-requests` | Resolutions cannot post their dice. Its *embedded requests* API is what puts a save on a result card; an older copy still works, and the save shows as a printed DC to be rolled by hand. |
 | **Recommended** | `pf1-bleed-effects` | Everything runs; the bleed an effect describes ("2d6 bleed") stays prose and has to be tracked and rolled by hand. |
-| **Recommended** | `astora-mod` | Everything runs; effects that use its buff automation can't offer their apply-buff button. |
+| **Recommended** | `astora-mod` | Everything runs; effects that use its buff automation can't offer their apply-buff button, and luck can't be spent on a fumble. |
+| **Optional** | `ckl-roll-bonuses` | Two fumble buffs need their roll-bonuses target set by hand. |
 
 ## Astora Homebrew rules
 
@@ -51,10 +52,11 @@ removes the buff, or forces the bleed with `pf1BleedEffects.clear(token, { force
    not interpreted — whether it saved you is the GM's call, so the button is always available on
    a natural 1 and simply goes unused when the confirmation was good.
 3. Clicking it asks which table to draw from. The attack type is pre-selected from the weapon:
-   natural attacks use the natural table, bows and crossbows the bow table, other ranged attacks
-   the thrown table, everything else melee.
+   natural attacks use the natural table, thrown attacks the thrown table, crossbows the crossbow
+   table, other ranged weapons the bow table, unarmed strikes the unarmed table, everything else
+   melee.
 4. A `1d20` roll request is posted for the fumbling token. **The player clicks to roll it** — the
-   card shows the flavor line and the button only, not the table, so the eleven fumbles that
+   card shows the flavor line and the button only, not the table, so the nineteen fumbles that
    didn't happen stay unspoiled. The result still arrives as the entry's name rather than a
    number.
 5. Whenever that roll comes in, the result is written back onto the original attack card — its
@@ -63,6 +65,42 @@ removes the buff, or forces the bleed with `pf1BleedEffects.clear(token, { force
 
 The button offers, it never decides. Every natural 1 gets one, and ignoring it is a normal
 outcome rather than a missed step.
+
+**One fumble per attack card.** A full attack with two natural 1s gets one button and one draw.
+
+#### What a fumble result can do
+
+Most results are a condition (Prone, Off Balance, Reeling Attack…) with an **Apply** button, or
+prose for the GM to run (Overextended, Riposte, Snapped String…). A few act on the attack itself,
+each with a GM-only button on the result:
+
+- **Ally Struck / Wrong Target** — opens a list of creatures to mark as eligible, and one of them is
+  attacked at random with the same weapon: a real attack, with a fresh roll, that can crit but
+  cannot fumble, and spends no ammunition. Melee, unarmed and natural attacks pre-check whoever is
+  in reach; for bows, crossbows and thrown weapons, mark whoever you judge is in the line of fire.
+- **Damage Self / Like Hitting a Wall** — the attack's damage (or its minimum) is rolled onto the
+  result and applies to the fumbler as **nonlethal**.
+- **Weapon Takes Damage / Weapon Broken** — the weapon loses the attack's damage less its hardness,
+  or drops to half its hit points; PF1 treats a weapon at half or less as broken.
+- **Weapon Stuck** — the fumbler gets *Weapon Lodged* and the usual free pull / let go buttons.
+
+These need the attack card behind them. A fumble drawn by hand only says what should happen.
+
+#### Spending luck on a fumble
+
+With astora-mod, a player whose character has luck points gets a **Spend Luck: Reroll** button on
+their fumble result. It spends a point, rolls the d20 again, and replaces the result — and the new
+result has to be kept. The offer disappears once anything on the result has been used.
+
+#### Buffs the fumble tables deliver
+
+Four results deliver a buff by name from the *Critical Effect Buffs* compendium, and those buffs
+have to exist there: **Strained Shoulder**, **Bruising Attack**, **Telegraphed Moves** and
+**Horrific Facial Scar**. Until they do, the GM gets an error naming the missing buff when such a
+result lands. With
+[ckl-roll-bonuses](https://github.com/dmrickey/fvtt-ckl-roll-bonuses), Telegraphed Moves (delivered
+to the *defender*) gets its token target set to the fumbler, and Bruising Attack gets its item
+target set to the natural attack that fumbled; without it, you're told to set them by hand.
 
 #### Drawing a fumble by hand
 

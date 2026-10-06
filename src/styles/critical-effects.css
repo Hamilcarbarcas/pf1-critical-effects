@@ -274,6 +274,20 @@
   width: 100%;
 }
 
+/* Ally Struck / Wrong Target: one creature per line, scrolling past a dozen or so. */
+.ce-dialog .ce-eligible-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15em;
+  max-height: 20em;
+  overflow-y: auto;
+}
+
+/* The luck reroll's mount on a fumble result; collapses when the offer is gone. */
+.ce-fumble-result .ce-fumble-luck:empty {
+  display: none;
+}
+
 /* --- module window theme --------------------------------------------------
  *
  * Dark panels and an amber accent, matching the scheme the other astora-family windows use

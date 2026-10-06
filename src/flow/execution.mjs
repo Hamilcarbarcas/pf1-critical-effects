@@ -16,10 +16,12 @@
 
 import { MODULE_ID } from "../const.mjs";
 import { resolveBranches } from "../resolve/branches.mjs";
+import { rollActionDamage } from "../resolve/damage.mjs";
+import { showDice } from "../resolve/dice.mjs";
 import { normalDamageTotal } from "../integrations/pf1-pipeline.mjs";
 import { offerApplyButtons } from "./effect-apply.mjs";
 import { blowDamage } from "./weapon-stuck.mjs";
-import { postSave, promptForDC, saveDC } from "./save-request.mjs";
+import { postSave, promptForDC, saveDC, saveSlotFor } from "./save-request.mjs";
 
 /**
  * Everything an entry's mechanics need decided, decided.
@@ -32,9 +34,10 @@ import { postSave, promptForDC, saveDC } from "./save-request.mjs";
  * @param {ChatMessage|null} opts.sourceMessage  the attack card, when there is one
  * @param {number} [opts.attackIndex]
  * @param {object} [opts.rollData]  the attacker's, for `@` references in a damage formula
+ * @param {ItemAction|null} [opts.fumbleAction]  the action that fumbled, for a fumble's `special`
  * @returns {Promise<object|null>} the execution record, ready to store on the card
  */
-export async function resolveExecution(entry, { sourceMessage = null, attackIndex = 0, rollData = {} } = {}) {
+export async function resolveExecution(entry, { sourceMessage = null, attackIndex = 0, rollData = {}, fumbleAction = null } = {}) {
   if (!hasMechanics(entry)) return null;
 
   const branches = await resolveBranches(entry, { rollData });
@@ -46,7 +49,10 @@ export async function resolveExecution(entry, { sourceMessage = null, attackInde
   const damage = sourceMessage ? normalDamageTotal(sourceMessage, attackIndex) : null;
 
   let save = null;
-  if (branches.save) {
+  if (branches.save && typeof branches.save === "object") {
+    // A fumble's save is authored outright (§4): there was no blow to derive it from.
+    save = { type: branches.save.type, dc: branches.save.dc };
+  } else if (branches.save) {
     let dc = saveDC(sourceMessage, attackIndex, branches.save);
     // No attack behind this resolution — §7.5's hand-driven case. Ask rather than invent: a DC
     // fabricated from the Critical Power total would look derived and be wrong.
@@ -54,8 +60,24 @@ export async function resolveExecution(entry, { sourceMessage = null, attackInde
     if (dc != null) save = { type: "fort", dc, multiplier: branches.save };
   }
 
+  const special = await resolveSpecial(entry.special, fumbleAction);
+
+  /* Damage Self and Like Hitting a Wall are the attack's own damage, landing on the fumbler as
+   * nonlethal. They ride the ordinary damage table — same anchors, same breakdown — with the flag
+   * that makes the apply nonlethal. */
+  let nonlethal = false;
+  if (special?.kind === "selfDamage" && special.damage && branches.saved) {
+    branches.saved.damage = special.damage;
+    branches.sharedDamage = true;
+    nonlethal = true;
+  }
+
   return {
     save,
+    special,
+    nonlethal,
+    recipient: entry.recipient ?? null,
+    buffTarget: entry.buffTarget ?? null,
     /* The fallback stamp for entries with no save of their own. A buff's own recovery check should
      * be as hard as the critical that caused it, so where this critical DID set a DC the buff gets
      * that one (including a doubled one) and otherwise it gets the raw damage. */
@@ -76,8 +98,29 @@ export function hasMechanics(entry) {
   return !!(
     entry.buffs?.length || entry.conditions?.length || entry.damage?.length ||
     entry.setHP != null || entry.negativeLevels != null ||
-    entry.save || entry.onFail
+    entry.save || entry.onFail || entry.special
   );
+}
+
+/**
+ * A fumble's `special`, with anything it needs rolled now rather than at the click (§4, "Specials").
+ *
+ * The two damage specials roll here for the same reason an entry's damage does: the card shows one
+ * set of numbers to everyone, forever. With no action — a hand-drawn fumble — there is nothing to
+ * roll, and the special is still recorded so the card can say what should have happened.
+ */
+async function resolveSpecial(special, action) {
+  if (!special) return null;
+  const record = { ...special, itemName: action?.item?.name ?? null };
+
+  if (special.kind === "selfDamage" || special.kind === "weaponDamage") {
+    const rolled = await rollActionDamage(action, { minimize: !!special.minimize });
+    if (rolled) {
+      await showDice(rolled.rolls);
+      record.damage = { parts: rolled.parts, total: rolled.total };
+    }
+  }
+  return record;
 }
 
 /**
@@ -94,19 +137,25 @@ export function hasMechanics(entry) {
  * @param {object} opts.target          { actorId, tokenId }
  * @param {string|null} [opts.sourceActorId]
  * @param {string|null} [opts.actionType]  PF1's action type, for §8.1's held/unheld split
+ * @param {object|null} [opts.fumble]  the fumble's context — see fumble-flow's `drawContext`
  */
 export async function attachExecution(
   message,
   execution,
-  { scope, target = {}, sourceActorId = null, actionType = null } = {}
+  { scope, target = {}, sourceActorId = null, actionType = null, fumble = null } = {}
 ) {
   if (!message || !execution) return;
 
   if (execution.save?.dc) {
-    await postSave(message, { dc: execution.save.dc, token: tokenOf(target) });
+    await postSave(message, {
+      dc: execution.save.dc,
+      token: tokenOf(target),
+      type: execution.save.type ?? "fort",
+      slot: saveSlotFor(scope),
+    });
   }
 
-  await offerApplyButtons(message, { execution, scope, target, sourceActorId, actionType });
+  await offerApplyButtons(message, { execution, scope, target, sourceActorId, actionType, fumble });
 }
 
 /** The victim's token, if it is still on the scene — the save is addressed to a token, not an actor. */

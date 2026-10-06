@@ -1,234 +1,241 @@
 {
-  "version": 2,
+  "version": 3,
   "_source": "THE source for fumble content. data/fumbles.json is generated from this file by tools/fumbles-to-tables.mjs and must not be hand-edited.",
-  "_tags": "`attackTypes` selects which of the six fumble tables an entry can appear in. There is no rank: the twenty rows of a fumble table are unordered peers, so the die picks flavour rather than severity.",
-  "_content": "An entry is COMPLETE with `id` and `name`. `text` is its prose (HTML, enriched on the card, PF1 enrichers work in it), `note` the terse GM line, `buff` a buff name, `conditions` an array of PF1 conditions — same shape as data/pool.json, see its `_conditions` note. There is no `journal`.",
+  "_tags": "`attackTypes` selects which of the six fumble tables an entry can appear in. There is no rank: the twenty rows of a fumble table are unordered peers, so the die picks flavour rather than severity. `faces` (default 1) gives an entry several faces of every table it is on.",
+  "_content": "An entry is COMPLETE with `id` and `name`. `text` is its prose (HTML, enriched on the card, PF1 enrichers work in it), `note` the terse GM line. Mechanics: `buffs` (buff names), `conditions` (same shape as data/pool.json), `damage`, `save` as { type: fort|ref|will, dc } with `onFail` for the failed branch, and `special` for the automated outcomes (reattack, selfDamage, weaponDamage, weaponBroken, weaponStuck). `recipient: defender` sends the buffs and conditions to the attack's target instead of the fumbler; `buffTarget` points a delivered buff's roll-bonuses target at the fumbler's token or the fumbling attack.",
   "entries": [
     {
-      "id": "broken-arrow",
-      "name": "Broken Arrow",
-      "attackTypes": [
-        "bows",
-        "crossbows"
-      ],
-      "text": null,
-      "note": null,
-      "buff": null
+      "id": "lucky-miss",
+      "name": "Lucky Miss",
+      "attackTypes": ["melee", "thrown", "bows", "crossbows", "unarmed", "natural"],
+      "faces": 3,
+      "text": "<p>It goes badly wrong, and somehow nothing comes of it.</p>"
     },
     {
-      "id": "broken-string",
-      "name": "Broken String",
-      "attackTypes": [
-        "bows",
-        "crossbows"
-      ],
-      "text": null,
-      "note": null,
-      "buff": null
+      "id": "prone",
+      "name": "Prone",
+      "attackTypes": ["melee", "thrown", "bows", "crossbows", "unarmed", "natural"],
+      "text": "<p>Your footing goes out from under you and you hit the ground.</p>",
+      "conditions": [{ "id": "prone" }]
     },
     {
-      "id": "broken-weapon",
-      "name": "Broken Weapon",
-      "attackTypes": [
-        "thrown"
-      ],
-      "text": null,
-      "note": null,
-      "buff": null
+      "id": "off-balance",
+      "name": "Off Balance",
+      "attackTypes": ["melee", "thrown", "bows", "crossbows", "unarmed", "natural"],
+      "text": "<p>The miss pulls you off your stance, and you are slow to recover it.</p>",
+      "conditions": [{ "id": "flatFooted", "duration": { "value": 1, "units": "round" } }]
     },
     {
-      "id": "dislocated-elbow",
-      "name": "Dislocated Elbow",
-      "attackTypes": [
-        "bows",
-        "crossbows",
-        "melee",
-        "natural",
-        "thrown"
-      ],
-      "text": null,
-      "note": null,
-      "buff": null
+      "id": "overextended",
+      "name": "Overextended",
+      "attackTypes": ["melee", "thrown", "bows", "crossbows", "unarmed", "natural"],
+      "text": "<p>You commit everything to the attack and have nothing left. You lose the rest of this turn's attacks, and cannot make attacks of opportunity until your next turn.</p>"
     },
     {
-      "id": "dislocated-shoulder",
-      "name": "Dislocated Shoulder",
-      "attackTypes": [
-        "bows",
-        "crossbows",
-        "natural",
-        "thrown"
-      ],
-      "text": null,
-      "note": null,
-      "buff": null
-    },
-    {
-      "id": "dropped-arrow",
-      "name": "Dropped Arrow",
-      "attackTypes": [
-        "bows",
-        "crossbows"
-      ],
-      "text": null,
-      "note": null,
-      "buff": null
-    },
-    {
-      "id": "dropped-bow",
-      "name": "Dropped Bow",
-      "attackTypes": [
-        "bows",
-        "crossbows"
-      ],
-      "text": null,
-      "note": null,
-      "buff": null
-    },
-    {
-      "id": "dropped-weapon",
-      "name": "Dropped Weapon",
-      "attackTypes": [
-        "melee",
-        "thrown"
-      ],
-      "text": null,
-      "note": null,
-      "buff": null
-    },
-    {
-      "id": "fall-down",
-      "name": "Fall Down",
-      "attackTypes": [
-        "bows",
-        "crossbows"
-      ],
-      "text": null,
-      "note": null,
-      "buff": null
-    },
-    {
-      "id": "fell-down",
-      "name": "Fell Down",
-      "attackTypes": [
-        "melee",
-        "natural",
-        "thrown"
-      ],
-      "text": null,
-      "note": null,
-      "buff": null
-    },
-    {
-      "id": "flung-weapon",
-      "name": "Flung Weapon",
-      "attackTypes": [
-        "melee",
-        "thrown"
-      ],
-      "text": null,
-      "note": null,
-      "buff": null
-    },
-    {
-      "id": "horrific-facial-scar",
-      "name": "Horrific Facial Scar",
-      "attackTypes": [
-        "melee",
-        "natural"
-      ],
-      "text": null,
-      "note": null,
-      "buff": null
-    },
-    {
-      "id": "juggled-weapon",
-      "name": "Juggled Weapon",
-      "attackTypes": [
-        "melee",
-        "thrown"
-      ],
-      "text": null,
-      "note": null,
-      "buff": null
-    },
-    {
-      "id": "slipped-vertebrae",
-      "name": "Slipped Vertebrae",
-      "attackTypes": [
-        "bows",
-        "crossbows",
-        "melee",
-        "natural",
-        "thrown"
-      ],
-      "text": null,
-      "note": null,
-      "buff": null
-    },
-    {
-      "id": "sprained-ankle",
-      "name": "Sprained Ankle",
-      "attackTypes": [
-        "melee",
-        "natural"
-      ],
-      "text": null,
-      "note": null,
-      "buff": null
-    },
-    {
-      "id": "sprained-wrist",
-      "name": "Sprained Wrist",
-      "attackTypes": [
-        "bows",
-        "crossbows",
-        "melee",
-        "natural",
-        "thrown"
-      ],
-      "text": null,
-      "note": null,
-      "buff": null
+      "id": "reeling-attack",
+      "name": "Reeling Attack",
+      "attackTypes": ["thrown", "bows", "crossbows", "unarmed", "natural"],
+      "text": "<p>The attack leaves you reeling.</p>",
+      "conditions": [{ "id": "staggered", "duration": { "value": 1, "units": "round" } }]
     },
     {
       "id": "stumble",
       "name": "Stumble",
-      "attackTypes": [
-        "bows",
-        "crossbows",
-        "melee",
-        "natural",
-        "thrown"
-      ],
-      "text": null,
-      "note": null,
-      "buff": null
+      "attackTypes": ["melee", "thrown", "bows", "crossbows", "unarmed", "natural"],
+      "text": "<p>You stumble into a random open adjacent square. The movement does not provoke attacks of opportunity.</p>"
     },
     {
-      "id": "twisted-knee",
-      "name": "Twisted Knee",
-      "attackTypes": [
-        "melee",
-        "natural"
-      ],
-      "text": null,
-      "note": null,
-      "buff": null
+      "id": "ally-struck",
+      "name": "Ally Struck",
+      "attackTypes": ["melee", "thrown", "bows", "crossbows", "unarmed", "natural"],
+      "text": "<p>The attack carries on into a friend. Make a fresh attack against a random ally within reach, or in the line of fire. If there is none, nothing comes of it.</p>",
+      "special": { "kind": "reattack", "targets": "ally" }
     },
     {
       "id": "wrong-target",
       "name": "Wrong Target",
-      "attackTypes": [
-        "bows",
-        "crossbows",
-        "melee",
-        "natural",
-        "thrown"
-      ],
-      "text": null,
-      "note": null,
-      "buff": null
+      "attackTypes": ["melee", "thrown", "bows", "crossbows", "unarmed", "natural"],
+      "text": "<p>The attack finds someone else entirely. Make a fresh attack against a random different creature within reach, or in the line of fire, friend or foe.</p>",
+      "special": { "kind": "reattack", "targets": "any" }
+    },
+    {
+      "id": "damage-self",
+      "name": "Damage Self",
+      "attackTypes": ["melee", "thrown", "bows", "crossbows", "unarmed", "natural"],
+      "text": "<p>The attack comes back on you. You take its damage as nonlethal damage.</p>",
+      "special": { "kind": "selfDamage" }
+    },
+    {
+      "id": "opened-defenses",
+      "name": "Opened Defenses",
+      "attackTypes": ["melee", "unarmed", "natural"],
+      "text": "<p>The miss leaves you wide open. The creature you attacked may make an attack of opportunity against you.</p>"
+    },
+    {
+      "id": "dropped-defenses",
+      "name": "Dropped Defenses",
+      "attackTypes": ["melee", "unarmed", "natural"],
+      "text": "<p>Your guard drops completely. Every enemy threatening you may make an attack of opportunity against you.</p>"
+    },
+    {
+      "id": "weapon-dropped",
+      "name": "Weapon Dropped",
+      "attackTypes": ["melee", "thrown", "bows", "crossbows"],
+      "text": "<p>Your grip fails and the weapon falls at your feet.</p>",
+      "note": "Weak on the thrown table: the weapon was leaving the hand anyway. To be replaced there."
+    },
+    {
+      "id": "flung-weapon",
+      "name": "Flung Weapon",
+      "attackTypes": ["melee", "thrown"],
+      "text": "<p>The weapon flies out of your hand and lands 1d4 squares away in a random direction.</p>",
+      "note": "Weak on the thrown table: the weapon was leaving the hand anyway. To be replaced there."
+    },
+    {
+      "id": "weapon-broken",
+      "name": "Weapon Broken",
+      "attackTypes": ["melee", "thrown", "bows", "crossbows"],
+      "text": "<p>Something gives with a crack. The weapon is broken.</p>",
+      "note": "Weak on the thrown table unless the weapon is magic or returning. To be replaced there.",
+      "special": { "kind": "weaponBroken" }
+    },
+    {
+      "id": "weapon-takes-damage",
+      "name": "Weapon Takes Damage",
+      "attackTypes": ["melee", "bows", "crossbows"],
+      "text": "<p>The full force of the attack goes into your own weapon. It takes the attack's damage, less its hardness.</p>",
+      "special": { "kind": "weaponDamage" }
+    },
+    {
+      "id": "weapon-stuck",
+      "name": "Weapon Stuck",
+      "attackTypes": ["melee"],
+      "text": "<p>The weapon bites into something nearby and sticks there: the floor, a wall, a beam, the target's armor or shield.</p>",
+      "special": { "kind": "weaponStuck" }
+    },
+    {
+      "id": "riposte",
+      "name": "Riposte",
+      "attackTypes": ["melee"],
+      "text": "<p>Your opponent sees the opening. They may make a free disarm attempt against you, with no penalty if it fails. On a success, they may take the weapon if they have a hand free.</p>"
+    },
+    {
+      "id": "horrific-facial-scar",
+      "name": "Horrific Facial Scar",
+      "attackTypes": ["melee"],
+      "text": "<p>The weapon comes back and opens your face. It will heal into something memorable.</p>",
+      "buffs": ["Horrific Facial Scar"],
+      "conditions": [{ "id": "bleed", "bleed": { "formula": "1d4" } }]
+    },
+    {
+      "id": "slipped-string",
+      "name": "Slipped String",
+      "attackTypes": ["bows", "crossbows"],
+      "text": "<p>The string slips its notch. Restringing the weapon takes a full-round action.</p>"
+    },
+    {
+      "id": "snapped-string",
+      "name": "Snapped String",
+      "attackTypes": ["bows", "crossbows"],
+      "text": "<p>The string snaps. The weapon is useless until the string is replaced.</p>"
+    },
+    {
+      "id": "string-slap",
+      "name": "String Slap",
+      "attackTypes": ["bows"],
+      "text": "<p>The string whips across your forearm and face.</p>",
+      "conditions": [{ "id": "dazzled", "duration": { "value": 1, "units": "round" } }]
+    },
+    {
+      "id": "jammed-mechanism",
+      "name": "Jammed Mechanism",
+      "attackTypes": ["crossbows"],
+      "text": "<p>The mechanism catches. Your next reload takes an extra move action.</p>"
+    },
+    {
+      "id": "spilled-quiver",
+      "name": "Spilled Quiver",
+      "attackTypes": ["bows", "crossbows"],
+      "text": "<p>Your ammunition spills across the ground. Gathering it back up takes a move action.</p>"
+    },
+    {
+      "id": "strained-shoulder",
+      "name": "Strained Shoulder",
+      "attackTypes": ["thrown", "bows", "crossbows", "unarmed"],
+      "text": "<p>Something in your shoulder tears. It lasts until it is healed, or until a successful DC 15 Heal check treats it.</p>",
+      "buffs": ["Strained Shoulder"]
+    },
+    {
+      "id": "like-hitting-a-wall",
+      "name": "Like Hitting a Wall",
+      "attackTypes": ["unarmed", "natural"],
+      "text": "<p>You hit something much harder than you meant to. You take the attack's minimum damage as nonlethal damage.</p>",
+      "special": { "kind": "selfDamage", "minimize": true }
+    },
+    {
+      "id": "caught-attack",
+      "name": "Caught Attack",
+      "attackTypes": ["unarmed", "natural"],
+      "text": "<p>Your opponent catches the limb as it comes in. They may make a free grapple attempt against you.</p>"
+    },
+    {
+      "id": "tangled-up",
+      "name": "Tangled Up",
+      "attackTypes": ["natural"],
+      "text": "<p>Your own limbs get in each other's way.</p>",
+      "conditions": [{ "id": "entangled", "duration": { "value": 1, "units": "round" } }]
+    },
+    {
+      "id": "bruising-attack",
+      "name": "Bruising Attack",
+      "attackTypes": ["natural"],
+      "text": "<p>The blow lands on you harder than on anything else. That natural attack is bruised and weaker for a while.</p>",
+      "buffs": ["Bruising Attack"],
+      "buffTarget": "fumblingItem"
+    },
+    {
+      "id": "demoralizing-attack",
+      "name": "Demoralizing Attack",
+      "attackTypes": ["thrown", "unarmed", "natural"],
+      "text": "<p>That went badly enough to shake your confidence.</p>",
+      "conditions": [{ "id": "shaken", "duration": { "value": "1d4", "units": "round" } }]
+    },
+    {
+      "id": "telegraphed-moves",
+      "name": "Telegraphed Moves",
+      "attackTypes": ["unarmed"],
+      "text": "<p>Your opponent has read your style. They gain a bonus on attacks against you for the rest of the fight.</p>",
+      "buffs": ["Telegraphed Moves"],
+      "recipient": "defender",
+      "buffTarget": "fumbler"
+    },
+    {
+      "id": "weapon-snag",
+      "name": "Weapon Snag",
+      "attackTypes": ["thrown"],
+      "text": "<p>The next weapon catches as you reach for it. You lose the rest of this turn's attacks.</p>"
+    },
+    {
+      "id": "overcommitted-throw",
+      "name": "Overcommitted Throw",
+      "attackTypes": ["thrown"],
+      "text": "<p>You put your whole body into the throw and keep going.</p>",
+      "save": { "type": "ref", "dc": 10 },
+      "onFail": { "conditions": [{ "id": "prone" }] }
+    },
+    {
+      "id": "grit-in-the-eyes",
+      "name": "Grit in the Eyes",
+      "attackTypes": ["thrown", "bows", "crossbows", "unarmed", "natural"],
+      "text": "<p>Dust, sweat or grit gets into your eyes. A move action clears them early.</p>",
+      "conditions": [{ "id": "blind", "duration": { "value": 1, "units": "round" } }]
+    },
+    {
+      "id": "winded",
+      "name": "Winded",
+      "attackTypes": ["melee", "thrown", "unarmed", "natural"],
+      "text": "<p>The effort takes the wind out of you. A short rest clears it.</p>",
+      "conditions": [{ "id": "fatigued" }]
     }
   ]
 }

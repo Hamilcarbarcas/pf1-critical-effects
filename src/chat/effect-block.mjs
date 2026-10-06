@@ -24,7 +24,7 @@
 import { MODULE_ID } from "../const.mjs";
 import { bleedLabel, conditionIcon, conditionLabel, durationLabel } from "../resolve/conditions.mjs";
 import { damageTypeModel, rollOf } from "../resolve/damage.mjs";
-import { renderSaveSlot } from "../flow/save-request.mjs";
+import { renderSaveSlot, saveSlotFor } from "../flow/save-request.mjs";
 
 /** Mount selectors, built here so the renderer and the button descriptors cannot disagree. */
 export const branchMount = (scope, branch) => `.${scope} .ce-branch[data-branch="${branch}"] .ce-branch-buttons`;
@@ -67,7 +67,7 @@ export function renderExecution(block, execution, { scope, message } = {}) {
     root.append(saveBlock);
     // Async, and allowed to fail: a save widget that cannot draw must not cost the card its
     // branches, its buttons or its damage.
-    renderSaveSlot(saveBlock.querySelector(".ce-save-slot"), { message, save }).catch((err) => {
+    renderSaveSlot(saveBlock.querySelector(".ce-save-slot"), { message, save, slot: saveSlotFor(scope) }).catch((err) => {
       console.error(`${MODULE_ID} | could not draw the save request:`, err);
     });
   }

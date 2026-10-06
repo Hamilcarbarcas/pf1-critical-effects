@@ -40,7 +40,7 @@
  */
 
 import { MODULE_ID } from "../const.mjs";
-import { registerButtonType, addButtons } from "../chat/card-buttons.mjs";
+import { registerButtonType, addButtons, BUTTON_USED_HOOK } from "../chat/card-buttons.mjs";
 import { mountFor } from "../chat/effect-block.mjs";
 import { applyConditions, describeConditions } from "../resolve/conditions.mjs";
 import { damageInstances, halfOf } from "../resolve/damage.mjs";
@@ -85,7 +85,7 @@ function deliverable(branch) {
  */
 export async function offerApplyButtons(
   message,
-  { execution, scope, target = {}, sourceActorId = null, actionType = null } = {}
+  { execution, scope, target = {}, sourceActorId = null, actionType = null, fumble = null } = {}
 ) {
   if (!message || !execution) return;
 
@@ -108,7 +108,8 @@ export async function offerApplyButtons(
     const what = buffs.length
       ? `Apply ${buffs[0]}${buffs.length > 1 ? ` +${buffs.length - 1}` : ""}`
       : `Apply ${describeConditions(conditions)}`;
-    const label = branched ? `${key === "saved" ? "Saved" : "Failed"} · ${what}` : what;
+    const aimed = execution.recipient === "defender" ? `${what} to Defender` : what;
+    const label = branched ? `${key === "saved" ? "Saved" : "Failed"} · ${aimed}` : aimed;
 
     descriptors.push({
       type: BUTTON_TYPE,
@@ -137,6 +138,13 @@ export async function offerApplyButtons(
         held: heldFrom(actionType),
         blow: execution.blow ?? [],
         messageId: message.id,
+        /* Fumble-only (§4). Who the effect lands on — the fumbler unless the entry names the
+         * defender — and what a delivered buff's roll-bonuses target points at. */
+        recipient: execution.recipient ?? null,
+        buffTarget: execution.buffTarget ?? null,
+        fumblerTokenUuid: fumble?.tokenUuid ?? null,
+        fumblingItemId: fumble?.itemId ?? null,
+        defenderTokenUuid: fumble?.defenderTokenUuid ?? null,
       },
     });
   }
@@ -150,11 +158,25 @@ function resolveTarget({ targetTokenId, targetActorId }) {
   return token?.actor ?? (targetActorId ? game.actors.get(targetActorId) : null);
 }
 
+/**
+ * The defender of a fumbled attack: the attack's own target when it had one, else whatever the GM
+ * has targeted now. A hand-drawn fumble has no attack card and so no recorded defender.
+ */
+function resolveDefender({ defenderTokenUuid }) {
+  const recorded = defenderTokenUuid ? fromUuidSync(defenderTokenUuid) : null;
+  return recorded?.actor ?? game.user.targets.first()?.actor ?? null;
+}
+
 async function applyEffect(descriptor) {
   const data = descriptor?.data ?? {};
-  const actor = resolveTarget(data);
+  const toDefender = data.recipient === "defender";
+  const actor = toDefender ? resolveDefender(data) : resolveTarget(data);
   if (!actor) {
-    ui.notifications.warn(`${MODULE_ID}: the target of that critical is no longer available.`);
+    ui.notifications.warn(
+      toDefender
+        ? `${MODULE_ID}: no defender recorded for that fumble — target one and click again.`
+        : `${MODULE_ID}: the target of that critical is no longer available.`
+    );
     return;
   }
 
@@ -201,6 +223,7 @@ async function applyEffect(descriptor) {
         if (buff) {
           applied.push(buff.name);
           if (buff.name?.trim().toLowerCase() === STUCK_BUFF.toLowerCase()) stuck = buff;
+          if (data.buffTarget) await pointRollBonusesTarget(buff, data);
         }
       }
     }
@@ -234,6 +257,35 @@ async function applyEffect(descriptor) {
   if (applied.length) ui.notifications.info(`${MODULE_ID}: ${actor.name} — ${applied.join("; ")}.`);
 }
 
+/**
+ * Point a delivered buff's roll-bonuses target at the thing it is about (§4, `buffTarget`).
+ *
+ * Telegraphed Moves is a bonus on the defender's attacks *against the fumbler*, which is a Token
+ * target; Bruising Attack is a penalty on *the attack that fumbled*, which is a Specific Item target.
+ * Both are set through roll-bonuses' own `configure`, the same call its item sheet makes.
+ *
+ * Optional by design: without roll-bonuses, or without what to point at, the buff is delivered
+ * as authored and the GM is told what to set by hand.
+ */
+async function pointRollBonusesTarget(buff, { buffTarget, fumblerTokenUuid, fumblingItemId }) {
+  const targets = game.modules.get("ckl-roll-bonuses")?.active ? globalThis.RollBonuses?.targetTypeMap : null;
+  const manual = buffTarget === "fumbler" ? "its token target to the fumbler" : "its item target to the attack that fumbled";
+
+  try {
+    if (buffTarget === "fumbler" && targets?.target_token && fumblerTokenUuid) {
+      await targets.target_token.configure(buff, { tokenUuids: [fumblerTokenUuid] });
+      return;
+    }
+    if (buffTarget === "fumblingItem" && targets?.target_item && fumblingItemId) {
+      await targets.target_item.configure(buff, [fumblingItemId]);
+      return;
+    }
+  } catch (err) {
+    console.error(`${MODULE_ID} | could not set ${buff.name}'s roll-bonuses target:`, err);
+  }
+  ui.notifications.warn(`${MODULE_ID}: set ${buff.name}'s roll-bonuses target by hand — ${manual}.`);
+}
+
 /* --- effect damage ----------------------------------------------------------
  *
  * The click behind the two hammer anchors the execution block draws. Ours rather than PF1's for
@@ -257,7 +309,8 @@ async function applyEffectDamage(event, message, getExecution) {
   const branch = anchor.dataset.branch ?? "saved";
   const ratio = Number(anchor.dataset.ratio) || 1;
 
-  const damage = getExecution(message)?.[branch]?.damage;
+  const execution = getExecution(message);
+  const damage = execution?.[branch]?.damage;
   if (!damage?.parts?.length) {
     ui.notifications.warn(`${MODULE_ID}: that damage is no longer on this card.`);
     return;
@@ -277,6 +330,8 @@ async function applyEffectDamage(event, message, getExecution) {
       // would multiply something that was never multiplied in the first place.
       isCritical: false,
       critMult: 0,
+      // A fumble that turns the attack on its wielder deals it as nonlethal (§4, "Specials").
+      asNonlethal: !!execution?.nonlethal,
       interactive: true,
     });
   } catch (err) {
@@ -284,7 +339,11 @@ async function applyEffectDamage(event, message, getExecution) {
     if (String(err?.message).includes("No valid targets")) return;
     console.error(`${MODULE_ID} | applying effect damage failed:`, err);
     ui.notifications.error(`${MODULE_ID}: that damage could not be applied — see the console.`);
+    return;
   }
+  // The damage anchors are as much "using the result" as a card button is.
+  const block = anchor.closest(".ce-fumble-result, .ce-crit-result");
+  Hooks.callAll(BUTTON_USED_HOOK, { type: "apply-damage", mount: block ? `.${block.classList[0]}` : null }, message);
 }
 
 /**
