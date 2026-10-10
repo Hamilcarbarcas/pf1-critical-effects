@@ -1,5 +1,5 @@
-_id: CEWpnTether0001
-_key: '!items!CEWpnTether0001'
+_id: CEWpnTether00001
+_key: '!items!CEWpnTether00001'
 effects: []
 flags:
   astora-mod:
@@ -35,7 +35,7 @@ system:
   contextNotes: []
   description:
     instructions: ''
-    value: <p><em>Someone still has hold of the weapon in you.</em></p><p>You are <strong>entangled</strong> while your attacker keeps hold of the embedded weapon, and your movement is limited to the weapon's reach of them. If they let go, or the weapon comes free, this ends — though a weapon they have let go of is still in you.</p><p>This is delivered and removed by the critical-effects module alongside <em>Weapon Stuck</em>; it is linked as a child of that buff, so it leaves with it.</p>
+    value: <p><em>Someone still has hold of the weapon in you.</em></p><p>You are <strong>entangled</strong> while your attacker keeps hold of the embedded weapon, and your movement is limited to the weapon's reach of them. If they let go, or the weapon comes free, this ends â€” though a weapon they have let go of is still in you.</p><p>This is delivered and removed by the critical-effects module alongside <em>Weapon Stuck</em>; it is linked as a child of that buff, so it leaves with it.</p>
   duration:
     end: ''
     units: ''
