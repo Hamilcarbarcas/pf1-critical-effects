@@ -55,6 +55,7 @@ import {
 import { registerPipeline, registerPipelineSettings, suppressionEnabled, rollDeferredCritDamage } from "./integrations/pf1-pipeline.mjs";
 import { registerHomebrewSetting, homebrewEnabled, registerBuffLookupSetting } from "./settings.mjs";
 import { registerCritTrigger } from "./flow/crit-trigger.mjs";
+import { offerAttackButton, withdrawAttackButton } from "./flow/attack-offer.mjs";
 
 export { MODULE_ID };
 
@@ -197,6 +198,9 @@ Hooks.once("ready", async () => {
 
     // chat cards
     cards: { addButtons, removeButton, registerButtonType },
+
+    // the crit / fumble button on an attack card whose d20 changed after it posted (§7.8)
+    attacks: { offer: offerAttackButton, withdraw: withdrawAttackButton },
 
     // fumbles
     fumbles: {

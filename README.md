@@ -143,6 +143,11 @@ never interpreted: deciding whether it landed means reading a target's AC, which
 ambiguous often enough that a wrong automatic answer costs more than a button you ignore. A natural
 1 is explicitly *not* a threat, so a fumble and a critical are never both offered on one attack.
 
+If the attack's d20 is rerolled after the card posted (astora-mod's Good Fortune, for instance), the
+buttons follow the new roll: a reroll into a threat or a natural 1 adds the **Critical Effect** or
+**Resolve Fumble** button, and a reroll out of one takes it away. Critical damage for a threat that
+only appeared on the reroll isn't drawn on the card, since the card has no critical column.
+
 The dialog is yours alone. What the table sees is the dice — Location and Power go out as roll
 requests for the **attacking player** to click, each carrying its table so they can read what their
 result bought:

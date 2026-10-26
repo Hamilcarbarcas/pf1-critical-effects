@@ -10,6 +10,12 @@
 ## [Unreleased]
 
 ### Added
+- **Buttons follow a rerolled attack.** `game.criticalEffects.attacks.offer(message, { kind,
+  attackIndex })` and `.withdraw(...)` add or take back the Critical Effect / Resolve Fumble button
+  on an attack card after it posted, built from the card's stored metadata. astora-mod's roll
+  amendments call them when a reroll creates or removes a threat or a natural 1. Button writes go
+  through the new queued `cards.updateButtons`, which asks the GM when the caller can't write the
+  card.
 - **The fumble tables are written.** All six tables — melee, thrown, bows, crossbows, unarmed and
   natural — are full: 34 results, from Prone and Off Balance to Snapped String and Ally Struck.
   Every one is moderate at worst. Lucky Miss takes three faces of every table, so 15% of fumbles

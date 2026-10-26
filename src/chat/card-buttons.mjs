@@ -6,6 +6,7 @@
  */
 
 import { MODULE_ID } from "../const.mjs";
+import { gmRequest } from "../integrations/socket.mjs";
 
 const BUTTONS_FLAG = "cardButtons";
 const DEFAULT_ICON = "fa-solid fa-burst";
@@ -74,6 +75,25 @@ export async function addButtons(message, descriptors) {
   return enqueue(message, async () => {
     const existing = message.getFlag(MODULE_ID, BUTTONS_FLAG) ?? [];
     await message.setFlag(MODULE_ID, BUTTONS_FLAG, [...existing, ...stamped]);
+  });
+}
+
+/**
+ * Rewrite a message's whole button list, queued like addButtons. `mutate` gets a copy of the
+ * current list and returns the new one (or nothing, to leave it as it is). A client that can't
+ * write the card asks the GM, which is what lets a player's after-the-fact reroll change the
+ * buttons on a card they don't own.
+ * @param {ChatMessage} message
+ * @param {(descriptors: object[]) => object[]|void} mutate
+ */
+export async function updateButtons(message, mutate) {
+  if (!message) return;
+  return enqueue(message, async () => {
+    const existing = message.getFlag(MODULE_ID, BUTTONS_FLAG) ?? [];
+    const next = mutate(existing.map((d) => foundry.utils.deepClone(d)));
+    if (!Array.isArray(next)) return;
+    if (message.isOwner) await message.setFlag(MODULE_ID, BUTTONS_FLAG, next);
+    else await gmRequest("updateDocument", { uuid: message.uuid, updates: { [`flags.${MODULE_ID}.${BUTTONS_FLAG}`]: next } });
   });
 }
 
