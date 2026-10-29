@@ -133,6 +133,7 @@ function wire(app, item, el, configured) {
       : cfg.clearOnHeal
         ? game.i18n.localize("CRITICAL_EFFECTS.DedicatedHealing.Field.OnHealBadge")
         : `${cfg.received}/${cfg.required}`,
+    niche: true,
   });
 }
 

@@ -478,7 +478,8 @@ it will absorb any (0 = no check), and — once it's configured — a read-out o
 far with a reset control. The *Treated* mark appears only when a DC is set, since that is the only
 thing it gates. With homebrew off the section is hidden on unconfigured buffs, so no new
 condition can be given a threshold; a buff that already has one keeps its section, since those
-numbers are still live and a GM needs to see and be able to reset what's outstanding.
+numbers are still live and a GM needs to see and be able to reset what's outstanding. With homebrew
+on, an unconfigured buff hides the section behind **Show N more sections** at the foot of the tab.
 
 #### Clears on any healing
 
