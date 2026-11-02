@@ -1,5 +1,15 @@
 _id: CEWpnTether00001
 _key: '!items!CEWpnTether00001'
+_stats:
+  compendiumSource: null
+  coreVersion: '13.351'
+  createdTime: null
+  duplicateSource: null
+  exportSource: null
+  lastModifiedBy: null
+  modifiedTime: null
+  systemId: null
+  systemVersion: null
 effects: []
 flags:
   astora-mod:

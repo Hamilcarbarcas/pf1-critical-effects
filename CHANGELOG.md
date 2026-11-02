@@ -277,7 +277,7 @@
   rows say *weapon stuck* in as many words — silently did not.
 - ***Severed Finger* is *Severed Fingers***, following the pack rename. *Cleaved Finger*'s failed
   branch was the only reference and now points at the surviving buff.
-- The **Dedicated Healing** section is hidden on buffs that don't use it. A **Show N more sections** line at the foot of the Advanced tab reveals it (shared sheet kit 1.7.0).
+- The **Dedicated Healing** section is hidden on buffs that don't use it. Tick it under **Optional Sections** on the Advanced tab to show it (shared sheet kit 1.8.0).
 
 ### Added
 - **Effects execute on the card.** A resolved critical (or fumble) now shows what it did and offers
