@@ -20,6 +20,7 @@ import { displayName } from "../integrations/token-randomizer.mjs";
 import { startCritResolution } from "./crit-dialog.mjs";
 import { offerLethalButton } from "./lethal.mjs";
 import { onAttackCard } from "../integrations/sequential-attacks.mjs";
+import { isDeferred } from "./confirm-deferral.mjs";
 
 const BUTTON_TYPE = "resolve-crit";
 
@@ -35,7 +36,9 @@ function threats(actionUse) {
   // `system.rolls.attacks`, which is where deferred critical damage has to be written back (§9).
   return (actionUse?.shared?.attacks ?? [])
     .map((atk, index) => ({ atk, index }))
-    .filter(({ atk }) => atk.chatAttack?.hasCritConfirm && !atk.chatAttack?.attack?.isNat1);
+    .filter(({ atk }) => atk.chatAttack?.hasCritConfirm && !atk.chatAttack?.attack?.isNat1)
+    // A deferred confirmation offers the button once it is rolled (§9.2).
+    .filter(({ atk }) => !isDeferred(atk.chatAttack));
 }
 
 async function attachCritButton(actionUse, message) {
@@ -59,6 +62,7 @@ async function attachCritButton(actionUse, message) {
       targetTokenId: targets[0]?.id ?? null,
       critMult: first.chatAttack?.rollData?.critMult ?? actionUse.shared?.action?.data?.ability?.critMult ?? 2,
       attackIndex: index,
+      indices: found.map((f) => f.index), // §7.8: withdraw takes attacks off one at a time
       threatCount: found.length,
       /* Carried so the immunity marking can tell "the one target" from "the first of several".
        * The descriptor only ever keeps `targets[0]`, so with two targets a marker on the button

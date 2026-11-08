@@ -8,6 +8,7 @@
 
 import { updateButtons } from "../chat/card-buttons.mjs";
 import { inferAttackType } from "./fumble-flow.mjs";
+import { dropPendingConfirmation } from "./confirm-deferral.mjs";
 
 const TYPES = { crit: "resolve-crit", fumble: "resolve-fumble" };
 
@@ -35,13 +36,14 @@ function critDescriptor(message, attackIndex) {
       targetTokenId: targets[0]?.id ?? null,
       critMult: message?.system?.config?.critMult ?? action?.data?.ability?.critMult ?? 2,
       attackIndex,
+      indices: [attackIndex],
       threatCount: 1,
       targetCount: targets.length,
     },
   };
 }
 
-function fumbleDescriptor(message) {
+function fumbleDescriptor(message, attackIndex) {
   const { item, action } = cardAction(message);
   return {
     type: TYPES.fumble,
@@ -51,6 +53,7 @@ function fumbleDescriptor(message) {
     data: {
       attackType: inferAttackType(item, action),
       tokenId: message?.speaker?.token ?? null,
+      indices: [attackIndex],
       count: 1,
       itemId: item?.id ?? null,
       actionId: action?.id ?? null,
@@ -59,28 +62,46 @@ function fumbleDescriptor(message) {
   };
 }
 
+/* §7.8: one button per kind, covering the attacks in `data.indices`. The crit button resolves the
+ * first of them; `count` / `threatCount` mirror the list's length. */
+function setIndices(descriptor, indices) {
+  descriptor.data.indices = indices;
+  if (descriptor.type === TYPES.crit) {
+    descriptor.data.attackIndex = indices[0];
+    descriptor.data.threatCount = indices.length;
+  } else {
+    descriptor.data.count = indices.length;
+  }
+}
+
 /**
- * Add the crit or fumble button to an attack card that didn't get one. A card already carrying
- * that button keeps it as it is: one per card, as at action time.
+ * Add the crit or fumble button to an attack card, or add this attack to the one already there.
  *
  * @param {ChatMessage} message  the attack card
  * @param {object} opts
  * @param {"crit"|"fumble"} opts.kind
- * @param {number} [opts.attackIndex=0]  the attack that now threatens (crit only)
+ * @param {number} [opts.attackIndex=0]  the attack that now threatens or fumbles
  */
 export function offerAttackButton(message, { kind, attackIndex = 0 } = {}) {
   const type = TYPES[kind];
   if (!message || !type) return;
   return updateButtons(message, (list) => {
-    if (list.some((d) => d.type === type)) return;
-    const descriptor = kind === "crit" ? critDescriptor(message, attackIndex) : fumbleDescriptor(message);
+    const existing = list.find((d) => d.type === type);
+    if (existing) {
+      // Buttons from before `indices` existed carry no list; they keep their old behavior.
+      const indices = existing.data?.indices;
+      if (!Array.isArray(indices) || indices.includes(attackIndex)) return;
+      setIndices(existing, [...indices, attackIndex].sort((a, b) => a - b));
+      return list;
+    }
+    const descriptor = kind === "crit" ? critDescriptor(message, attackIndex) : fumbleDescriptor(message, attackIndex);
     return [...list, { id: foundry.utils.randomID(), ...descriptor }];
   });
 }
 
 /**
- * Take the button back when the attack no longer threatens or fumbles. The crit button goes only
- * if it was seeded by that attack; the fumble button counts its natural 1s and goes with the last.
+ * Take this attack off the crit or fumble button when it no longer threatens or fumbles; the
+ * button goes with its last attack. Also drops the attack's confirmation if it was never rolled.
  *
  * @param {ChatMessage} message
  * @param {object} opts
@@ -90,18 +111,30 @@ export function offerAttackButton(message, { kind, attackIndex = 0 } = {}) {
 export function withdrawAttackButton(message, { kind, attackIndex = 0 } = {}) {
   const type = TYPES[kind];
   if (!message || !type) return;
+  dropPendingConfirmation(message, attackIndex, { fumble: kind === "fumble" });
   return updateButtons(message, (list) => {
-    if (kind === "crit") {
-      const next = list.filter((d) => !(d.type === type && (d.data?.attackIndex ?? 0) === attackIndex));
-      return next.length === list.length ? undefined : next;
-    }
-    const fumble = list.find((d) => d.type === type);
-    if (!fumble) return;
-    const count = Number(fumble.data?.count) || 1;
-    if (count > 1) {
-      fumble.data.count = count - 1;
+    const button = list.find((d) => d.type === type);
+    if (!button) return;
+
+    const indices = button.data?.indices;
+    if (Array.isArray(indices)) {
+      if (!indices.includes(attackIndex)) return;
+      const rest = indices.filter((i) => i !== attackIndex);
+      if (!rest.length) return list.filter((d) => d !== button);
+      setIndices(button, rest);
       return list;
     }
-    return list.filter((d) => d !== fumble);
+
+    // Legacy buttons: crit seeded by one attack, fumble by a count.
+    if (kind === "crit") {
+      if ((button.data?.attackIndex ?? 0) !== attackIndex) return;
+      return list.filter((d) => d !== button);
+    }
+    const count = Number(button.data?.count) || 1;
+    if (count > 1) {
+      button.data.count = count - 1;
+      return list;
+    }
+    return list.filter((d) => d !== button);
   });
 }

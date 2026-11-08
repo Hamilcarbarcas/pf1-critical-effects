@@ -30,6 +30,44 @@
   opacity: 0.85;
 }
 
+/* Deferred confirmation (§9.2): sits in PF1's confirmation cell, so sized like the roll it replaces. */
+.chat-attack td.roll.critical > button.ce-confirm-btn {
+  display: inline-block;
+  width: auto;
+  min-width: 4em;
+  margin: 0;
+  padding: 0 6px;
+  line-height: 1.5;
+  font-size: inherit;
+  border: 1px solid var(--color-border-light-tertiary, #7a7971);
+  border-radius: 3px;
+  background: rgba(0, 0, 0, 0.05);
+  cursor: pointer;
+}
+
+.chat-attack td.roll.critical > button.ce-confirm-btn:hover {
+  background: rgba(0, 0, 0, 0.12);
+}
+
+.chat-attack td.roll.critical > button.ce-confirm-btn > i {
+  margin-right: 0.2em;
+}
+
+.chat-attack td.roll.critical > span.ce-confirm-label {
+  font-size: var(--font-size-11, 11px);
+  opacity: 0.75;
+}
+
+/* Little Helper's enriched roll is display:flex, which would push it below the label. */
+.chat-attack td.roll.critical.ce-confirm-made > a.inline-roll.lil-enhanced-roll {
+  display: inline-flex;
+}
+
+.chat-attack td.roll.critical > span.ce-confirm-waiting {
+  font-style: italic;
+  opacity: 0.6;
+}
+
 /* The target is designated immune to critical hits (pf1-defense-manager). Deliberately NOT
    `disabled` and not dimmed: the button does exactly what it always did, and overruling the
    immunity is a GM call this module has no business taking. So it reads as a warning — red edge,
@@ -510,7 +548,56 @@
   letter-spacing: 0.05em;
 }
 
-.ce-explosion-count > i { margin-right: 0.25em; }
+.ce-explosion-count > i,
+.ce-explosion-count > summary > i.fa-burst { margin-right: 0.25em; }
+
+/* With its re-rolls kept, the bar opens to list them (§7.2). */
+details.ce-explosion-count > summary {
+  display: flex;
+  align-items: center;
+  list-style: none;
+  cursor: pointer;
+}
+
+details.ce-explosion-count > summary::-webkit-details-marker { display: none; }
+
+details.ce-explosion-count > summary > i.ce-explosion-toggle {
+  margin-left: auto;
+  font-size: 0.85em;
+  transition: transform 0.15s ease;
+}
+
+details.ce-explosion-count[open] > summary > i.ce-explosion-toggle { transform: rotate(180deg); }
+
+details.ce-explosion-count > ol.ce-explosion-rolls {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin: 3px 0 2px;
+  padding: 0;
+  list-style: none;
+  text-transform: none;
+  letter-spacing: normal;
+}
+
+details.ce-explosion-count > ol.ce-explosion-rolls > li {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+}
+
+details.ce-explosion-count > ol.ce-explosion-rolls > li > .ce-explosion-label {
+  flex: 0 0 auto;
+  min-width: 6em;
+  opacity: 0.8;
+}
+
+details.ce-explosion-count > ol.ce-explosion-rolls > li > a.inline-roll {
+  flex: 1 1 auto;
+  text-align: center;
+  font-size: var(--font-size-13, 13px);
+}
 
 /* Stage body + controls */
 .ce-window .ce-stage-body {

@@ -10,6 +10,18 @@
 ## [Unreleased]
 
 ### Added
+- **Roll the confirmation yourself.** New world setting **Defer critical confirmation**, on by
+  default: a critical threat or a natural 1 puts a **Roll** button in the attack card's
+  confirmation cell for the attacker's owner or the GM, instead of rolling at once. The roll
+  dialog follows PF1's *Skip Action Prompts* setting, and Shift-click reverses it. Every
+  confirmation bonus from the attack still applies, each explosion opens its own roll prefilled
+  with the last one's settings, and the Critical Effect / Resolve Fumble buttons appear once the
+  confirmation is on the card. An attack rerolled into a threat or natural 1 (astora-mod's roll
+  amendments) gets the same Roll button, through the new `confirmations.defer`. Once rolled, the
+  confirmation is drawn the same as the attack roll beside it, Little Helper's style included.
+- **See every explosion roll.** Click the **Critical Explosion ×N** bar on an attack card to open a
+  list of each re-roll after the first confirmation, threats marked. Cards rolled before this
+  update keep the plain bar.
 - **Buttons follow a rerolled attack.** `game.criticalEffects.attacks.offer(message, { kind,
   attackIndex })` and `.withdraw(...)` add or take back the Critical Effect / Resolve Fumble button
   on an attack card after it posted, built from the card's stored metadata. astora-mod's roll
@@ -153,6 +165,10 @@
   (One Eye)*, which is a different buff from *Permanently Blinded*.
 
 ### Fixed
+- **Rerolling one of two natural 1s no longer takes away the Resolve Fumble button.** The crit and
+  fumble buttons now track which attacks they cover and go only when the last one does.
+- **The Critical Explosion bar sits under the attack it belongs to**, as intended, instead of
+  above the attack's table.
 - **Adding or changing an entry in a sheet section no longer jumps the sheet back to the top of
   the tab.** Sections from the shared sheet kit now restore the scroll position once they have
   drawn.

@@ -30,7 +30,8 @@ import { setExplosions } from "../chat/card-mutate.mjs";
 import { onAttackCard } from "../integrations/sequential-attacks.mjs";
 
 /** A keen weapon with a wide threat range can chain for a while; a runaway loop is a bug. */
-const CAP = 10;
+export const EXPLOSION_CAP = 10;
+const CAP = EXPLOSION_CAP;
 
 /**
  * Roll the explosion chain for one attack.
@@ -50,6 +51,20 @@ export async function explodeFor(chatAttack, critRange) {
   if (chatAttack.attack?.isNat1) return { count: 0, rolls: [] };
 
   const first = chatAttack.critConfirm;
+  return explodeChain(first, first?.formula, chatAttack.rollData, critRange);
+}
+
+/**
+ * The chain from an evaluated confirmation, rolled without prompts. The deferred confirmation
+ * (§9.2) runs its own loop, one prompt per re-roll, against the same cap.
+ *
+ * @param {Roll} first        the confirmation, evaluated
+ * @param {string} formula    what each re-roll rolls
+ * @param {object} rollData
+ * @param {number} critRange
+ * @returns {Promise<{ count: number, rolls: Roll[] }>}
+ */
+export async function explodeChain(first, formula, rollData, critRange) {
   if (!first?.isCrit) return { count: 0, rolls: [] };
 
   const rolls = [];
@@ -63,7 +78,7 @@ export async function explodeFor(chatAttack, critRange) {
   while (previous?.isCrit && count < CAP) {
     count++;
 
-    const roll = new pf1.dice.D20RollPF(first.formula, chatAttack.rollData, { critical: critRange });
+    const roll = new pf1.dice.D20RollPF(formula, rollData, { critical: critRange });
     await roll.evaluate();
     roll.options.flavor = game.i18n.localize("PF1.CriticalConfirmation");
     rolls.push(roll);
@@ -77,12 +92,16 @@ export async function explodeFor(chatAttack, critRange) {
   return { count, rolls };
 }
 
-/** Show the extra dice, as one throw, the same way PF1 shows its own pools. */
-async function animate(rolls) {
-  if (!game.dice3d || !rolls.length) return;
+/**
+ * Show the extra dice, as one throw, the same way PF1 shows its own pools.
+ * @param {Roll[]} rolls
+ * @param {object} [visibility]  the card's `whisper` (null = public) and `blind`
+ */
+export async function animateRolls(rolls, { whisper = null, blind = false } = {}) {
+  if (!game.dice3d || !rolls?.length) return;
   const pool = new foundry.dice.terms.PoolTerm();
   pool.rolls.push(...rolls);
-  await game.dice3d.showForRoll(pool, game.user, true);
+  await game.dice3d.showForRoll(pool, game.user, true, whisper, blind);
 }
 
 async function onActionUse(actionUse, message) {
@@ -90,16 +109,18 @@ async function onActionUse(actionUse, message) {
 
   const critRange = actionUse?.shared?.action?.critRange ?? 20;
   const counts = {};
+  const chains = {};
 
   for (const [index, atk] of (actionUse?.shared?.attacks ?? []).entries()) {
     const { count, rolls } = await explodeFor(atk.chatAttack, critRange);
     if (!count) continue;
 
-    await animate(rolls);
+    await animateRolls(rolls);
     counts[index] = count;
+    chains[index] = rolls;
   }
 
-  if (Object.keys(counts).length) await setExplosions(message, counts);
+  if (Object.keys(counts).length) await setExplosions(message, counts, chains);
 }
 
 export function registerExplosion() {

@@ -46,9 +46,10 @@ removes the buff, or forces the bleed with `pf1BleedEffects.clear(token, { force
 
 ### Fumble resolution
 
-1. Rolling a **natural 1** on an attack automatically rolls a confirmation die, shown on the
-   attack card.
-2. A GM-only **Resolve Fumble** button appears on the card. The confirmation roll is shown but
+1. Rolling a **natural 1** on an attack gives it a confirmation roll on the attack card. With
+   **Defer critical confirmation** on (the default), that's a **Roll** button for the attacker to
+   click; see [Rolling the confirmation](#rolling-the-confirmation).
+2. Once the confirmation is rolled, a GM-only **Resolve Fumble** button appears on the card. The confirmation roll is shown but
    not interpreted — whether it saved you is the GM's call, so the button is always available on
    a natural 1 and simply goes unused when the confirmation was good.
 3. Clicking it asks which table to draw from. The attack type is pre-selected from the weapon:
@@ -132,11 +133,44 @@ Otherwise a manual `20` would confirm every critical automatically and `2d20kh` 
 advantage — one override paying for two rolls. This is unconditional; say so if you'd rather it
 were a setting.
 
+### Rolling the confirmation
+
+With **Defer critical confirmation** on (the default), a critical threat or a natural 1 doesn't
+roll its confirmation straight away. The confirmation cell on the attack card holds a **Roll**
+button instead, for the attacker's owner or the GM; everyone else sees *Pending*.
+
+- **The dialog follows PF1's own rule.** If your *Skip Action Prompts* setting is on, the click
+  rolls at once; if it's off, you get the usual roll dialog for a situational bonus or a d20
+  override. **Shift-click** does the opposite of your setting.
+- **Every confirmation bonus still applies**, because the confirmation is built when the attack is
+  made, just rolled later. Conditionals ticked in the attack dialog, flanking, roll-bonuses
+  targets, and so on all carry over.
+- **Each explosion gets its own roll.** A confirmation that threatens again explodes right then:
+  the next confirmation's dialog opens straight away, filled in with whatever you used last time
+  (situational bonus, d20 override). Change it or not, and roll. If you skipped the first dialog,
+  the explosions skip theirs too. Closing an explosion's dialog ends the chain there. Explosions
+  still need **Defer critical damage**, as described under
+  [Critical explosion](#critical-explosion).
+- **The GM's Critical Effect and Resolve Fumble buttons wait for it.** They appear once the
+  confirmation is on the card, so a resolution always sees the explosion count.
+- **Once rolled, it looks like any confirmation.** The button gives way to the result, drawn the
+  same as the attack roll beside it (Little Helper's enriched style included, if you use it).
+
+A bonus to confirmations only needs nothing from this module: give a buff or feat a change with
+target **Critical Confirmation**, fill in the action's **Critical Confirmation Bonus**, or add a
+conditional modifier on **Attack → Critical Confirmation**. With ckl-roll-bonuses, its Conditional
+Modifiers bonus can do the same with a target attached.
+
+Turn the setting off to have confirmations roll with the attack as PF1 does. Requires a reload.
+It does nothing when PF1's *Critical Confirmation Rolls* setting is off (armor as DR), since
+there's no confirmation roll then.
+
 ### Critical hits
 
-Threatening a critical puts a GM-only **Critical Effect** button on the attack card. It opens a
-resolution dialog built from the live action — target, size, anatomy, damage type and multiplier
-all read for you — and from there it works exactly like the manual resolver.
+Threatening a critical puts a GM-only **Critical Effect** button on the attack card, once its
+confirmation has been rolled. It opens a resolution dialog built from the live action — target,
+size, anatomy, damage type and multiplier all read for you — and from there it works exactly like
+the manual resolver.
 
 The button appears on a **threat**, not a confirmed hit. The confirmation is rolled and shown but
 never interpreted: deciding whether it landed means reading a target's AC, which is unavailable or
@@ -144,9 +178,12 @@ ambiguous often enough that a wrong automatic answer costs more than a button yo
 1 is explicitly *not* a threat, so a fumble and a critical are never both offered on one attack.
 
 If the attack's d20 is rerolled after the card posted (astora-mod's Good Fortune, for instance), the
-buttons follow the new roll: a reroll into a threat or a natural 1 adds the **Critical Effect** or
-**Resolve Fumble** button, and a reroll out of one takes it away. Critical damage for a threat that
-only appeared on the reroll isn't drawn on the card, since the card has no critical column.
+buttons follow the new roll. A reroll into a threat or a natural 1 gets a confirmation **Roll**
+button, the same as a fresh attack, and the **Critical Effect** or **Resolve Fumble** button once
+it's rolled (at once, with **Defer critical confirmation** off). A reroll out of one takes that
+attack's button away; when one button covers several attacks, say two natural 1s in a full attack,
+it stays until the last of them is gone. Critical damage for a threat that only appeared on the
+reroll isn't drawn on the card, since the card has no critical column.
 
 The dialog is yours alone. What the table sees is the dice — Location and Power go out as roll
 requests for the **attacking player** to click, each carrying its table so they can read what their
@@ -179,7 +216,8 @@ mortal result per damage type, shared across all three creature types.
 
 When a critical confirmation is *itself* a threat, Critical Power goes up a grade and the
 confirmation is rolled again — repeating until one doesn't threaten. Those dice roll with the
-attack, not in the dialog, and the attack card reports **Critical Explosion ×N**.
+confirmation (with the attack, or when its **Roll** button is clicked), not in the dialog, and the
+attack card reports **Critical Explosion ×N** under the attack. Click that bar to see each re-roll.
 
 It only ever fires on attacks: it reads the confirmation roll, which only exists in PF1's attack
 pipeline, so skill checks and saves can't reach it. Combat maneuvers don't confirm crits and so

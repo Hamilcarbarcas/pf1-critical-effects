@@ -39,6 +39,7 @@ import { isFumbleAttack, trimFumbleAttack, offerSpecialButtons } from "./fumble-
 import { showDice } from "../resolve/dice.mjs";
 import { displayName } from "../integrations/token-randomizer.mjs";
 import { onAttackCard } from "../integrations/sequential-attacks.mjs";
+import { isDeferred } from "./confirm-deferral.mjs";
 
 const BUTTON_TYPE = "resolve-fumble";
 const LUCK_TYPE = "fumble-luck-reroll";
@@ -150,7 +151,10 @@ async function attachFumbleButton(actionUse, message) {
   const action = actionUse.shared?.action ?? actionUse.action;
 
   // One button however many natural 1s the card holds: one fumble per attack card.
-  const fumbles = (actionUse.shared?.attacks ?? []).filter((atk) => atk.chatAttack?.attack?.isNat1);
+  // A deferred confirmation offers the button once it is rolled (§9.2).
+  const fumbles = (actionUse.shared?.attacks ?? [])
+    .map((atk, index) => ({ atk, index }))
+    .filter(({ atk }) => atk.chatAttack?.attack?.isNat1 && !isDeferred(atk.chatAttack));
   if (!fumbles.length) return;
 
   await addButtons(message, [{
@@ -161,6 +165,7 @@ async function attachFumbleButton(actionUse, message) {
     data: {
       attackType: inferAttackType(item, action),
       tokenId: actionUse.shared?.token?.id ?? message.speaker?.token ?? null,
+      indices: fumbles.map((f) => f.index), // §7.8: withdraw takes attacks off one at a time
       count: fumbles.length,
       itemId: item?.id ?? null,
       actionId: action?.id ?? null,

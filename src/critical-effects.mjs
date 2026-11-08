@@ -56,6 +56,7 @@ import { registerPipeline, registerPipelineSettings, suppressionEnabled, rollDef
 import { registerHomebrewSetting, homebrewEnabled, registerBuffLookupSetting } from "./settings.mjs";
 import { registerCritTrigger } from "./flow/crit-trigger.mjs";
 import { offerAttackButton, withdrawAttackButton } from "./flow/attack-offer.mjs";
+import { registerConfirmSettings, registerConfirmDeferral, rollConfirmation, deferConfirmation, deferralEnabled } from "./flow/confirm-deferral.mjs";
 
 export { MODULE_ID };
 
@@ -64,6 +65,7 @@ Hooks.once("init", () => {
   registerHomebrewSetting();
   registerBuffLookupSetting();
   registerPipelineSettings();
+  registerConfirmSettings();
   registerPipeline();
 
   // Hooks that must exist before any action is used. The catalog is not loaded yet — every
@@ -76,6 +78,8 @@ Hooks.once("init", () => {
   registerCardMutation();
   registerCardButtons();
   registerFumbleFlow();
+  // After the fumble flow: its forced confirmation must exist before it can be deferred (§9.2).
+  registerConfirmDeferral();
   registerFumbleSpecials();
   registerLethal();
   registerEffectApply();
@@ -173,6 +177,9 @@ Hooks.once("ready", async () => {
 
     // PF1 pipeline (§9) — deferring critical damage until it is chosen
     pipeline: { suppressionEnabled, rollDeferredCritDamage },
+
+    // deferred confirmations (§9.2) – the card's Roll button, callable by message and attack index
+    confirmations: { roll: rollConfirmation, defer: deferConfirmation, enabled: deferralEnabled },
 
     // dedicated healing (§8), migrated from astora-mod. The injury buffs' `use` script call
     // invokes requestHealCheck through this. Same object as `module.api.dedicatedHealing`,

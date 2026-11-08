@@ -14,6 +14,7 @@ import { criticalTotal } from "../integrations/pf1-pipeline.mjs";
 import { describeConditions } from "../resolve/conditions.mjs";
 import { renderExecution } from "./effect-block.mjs";
 import { bindDamageAnchors } from "../flow/effect-apply.mjs";
+import { confirmAnchor, matchLittleHelper } from "./inline-roll.mjs";
 
 const RESULT_FLAG = "fumbleResult";
 
@@ -147,6 +148,7 @@ export async function createCritResultCard({
 }
 
 const EXPLOSION_FLAG = "explosions";
+const EXPLOSION_ROLLS_FLAG = "explosionRolls";
 
 /**
  * Record how many times each attack's confirmation came up a threat.
@@ -156,14 +158,35 @@ const EXPLOSION_FLAG = "explosions";
  *
  * @param {ChatMessage} message
  * @param {Record<number, number>} counts  attack index -> explosion count
+ * @param {Record<number, Roll[]>} [rolls] attack index -> the re-rolls, for the bar's list
  */
-export async function setExplosions(message, counts) {
-  const key = `flags.${MODULE_ID}.${EXPLOSION_FLAG}`;
-  if (game.user.isGM) await message.update({ [key]: counts });
-  else await gmRequest("updateDocument", { uuid: message.uuid, updates: { [key]: counts } });
+export async function setExplosions(message, counts, rolls = {}) {
+  const updates = { [`flags.${MODULE_ID}.${EXPLOSION_FLAG}`]: counts };
+  for (const [index, list] of Object.entries(rolls)) {
+    if (list?.length) updates[`flags.${MODULE_ID}.${EXPLOSION_ROLLS_FLAG}.${index}`] = list.map((r) => r.toJSON());
+  }
+  if (game.user.isGM) await message.update(updates);
+  else await gmRequest("updateDocument", { uuid: message.uuid, updates });
 }
 
 export const getExplosions = (message) => message?.getFlag(MODULE_ID, EXPLOSION_FLAG) ?? null;
+
+/** The re-rolls behind an attack's count, oldest first; empty on cards from before they were kept. */
+function explosionRolls(message, attackIndex) {
+  const list = message?.getFlag(MODULE_ID, EXPLOSION_ROLLS_FLAG)?.[attackIndex];
+  if (!Array.isArray(list)) return [];
+  return list.flatMap((data) => {
+    try {
+      return [Roll.fromData(data)];
+    } catch (err) {
+      console.error(`${MODULE_ID} | an explosion roll on ${message.id} could not be read:`, err);
+      return [];
+    }
+  });
+}
+
+/** Explosion lists left open, so a re-render (an update to the card) keeps them open. */
+const OPEN_LISTS = new Set();
 
 /** How many times THIS attack's confirmation threatened. */
 export const explosionCount = (message, attackIndex = 0) =>
@@ -461,15 +484,45 @@ function decorateExplosions(message, root) {
     const attack = root.querySelector(`.chat-attack[data-index="${index}"]`);
     if (!attack || attack.querySelector(".ce-explosion-count")) continue;
 
-    const block = document.createElement("div");
-    block.className = "ce-explosion-count";
-    block.append(
+    const label = [
       Object.assign(document.createElement("i"), { className: "fa-solid fa-burst" }),
-      document.createTextNode(` Critical Explosion ×${count}`)
-    );
+      document.createTextNode(` Critical Explosion ×${count}`),
+    ];
 
-    // After the attack's own table, before its buttons and notes.
-    attack.querySelector("table")?.after(block) ?? attack.prepend(block);
+    // §7.2: the re-rolls, behind a click. Not for a viewer who cannot see the card's dice.
+    const rolls = message.isContentVisible ? explosionRolls(message, index) : [];
+    let block;
+    if (rolls.length) {
+      block = document.createElement("details");
+      const key = `${message.id}:${index}`;
+      block.open = OPEN_LISTS.has(key);
+      block.addEventListener("toggle", () => (block.open ? OPEN_LISTS.add(key) : OPEN_LISTS.delete(key)));
+
+      const summary = document.createElement("summary");
+      summary.append(...label, Object.assign(document.createElement("i"), { className: "fa-solid fa-chevron-down ce-explosion-toggle" }));
+
+      const list = document.createElement("ol");
+      list.className = "ce-explosion-rolls";
+      for (const [i, roll] of rolls.entries()) {
+        const item = document.createElement("li");
+        item.append(
+          Object.assign(document.createElement("span"), { className: "ce-explosion-label", textContent: `Explosion ${i + 1}` }),
+          matchLittleHelper(confirmAnchor(roll, { threat: true }), roll, attack)
+        );
+        list.append(item);
+      }
+      block.append(summary, list);
+    } else {
+      block = document.createElement("div");
+      block.append(...label);
+    }
+    block.classList.add("ce-explosion-count");
+
+    // After the attack's own table, before its buttons and notes. (`after` returns undefined, so
+    // it cannot be the left side of a `??`.)
+    const table = attack.querySelector("table");
+    if (table) table.after(block);
+    else attack.prepend(block);
   }
 }
 
