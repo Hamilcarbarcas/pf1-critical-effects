@@ -10,6 +10,11 @@
 ## [Unreleased]
 
 ### Added
+- **On Use for buff actions.** A new **On Use** section on a buff action's **Misc** tab says what
+  the action does after it is used: ask for the buff's Dedicated Healing **Heal Check**, or roll a
+  **Saving Throw** (Fortitude, Reflex, or Will; DC from a formula or the DC the buff was delivered
+  at) that can end the buff or replace it with another buff on a success or a failure. Replacing
+  asks first. Actors nobody plays roll without the save dialog.
 - **Roll the confirmation yourself.** New world setting **Defer critical confirmation**, on by
   default: a critical threat or a natural 1 puts a **Roll** button in the attack card's
   confirmation cell for the attacker's owner or the GM, instead of rolling at once. The roll
@@ -165,6 +170,16 @@
   (One Eye)*, which is a different buff from *Permanently Blinded*.
 
 ### Fixed
+- **The bone buffs' actions work again.** *Set Bone* asks for the Heal check, and *Use Arm*, *Use
+  Foot*, *Use Hand* and *Use Leg* roll the Fortitude save that turns the break into its Shattered
+  buff on a failure. Both had been calling compendium macros that were no longer in the pack; they
+  are now On Use settings on the actions. The bone buffs also skip the action dialog again
+  (astora-mod's Attack Dialog, *Always skip*), and the escalation now finds the **Shattered** buff
+  by its link instead of looking for a "Fractured" one that never existed. Bone buffs already on
+  an actor keep the dead script calls and gain nothing: re-apply them from the *Critical Effect
+  Buffs* pack.
+- ***Shattered Neck* and *Shattered Skull* apply their effects when switched on.** Their toggle
+  macro still checked for the old "Fractured" names.
 - **Rerolling one of two natural 1s no longer takes away the Resolve Fumble button.** The crit and
   fumble buttons now track which attacks they cover and go only when the last one does.
 - **The Critical Explosion bar sits under the attack it belongs to**, as intended, instead of

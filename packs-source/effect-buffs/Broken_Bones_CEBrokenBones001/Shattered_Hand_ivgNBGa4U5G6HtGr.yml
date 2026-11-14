@@ -22,13 +22,16 @@ flags:
       keen: false
       rollOverride: ''
       rollmodeOverride: ''
-      skipDialog: 0
+      skipDialog: -1
   pf1-critical-effects:
     dedicatedHealing:
       dc: 15
       received: 0
       required: 20
       treated: false
+    onUse:
+      KRYUYq05iuulGBDH:
+        effect: healCheck
   scene-packer:
     hash: 88a37aa4cf435b741048a5460a211bdbb39f2e2d
     sourceId: Scene.FQ5mCt4L7UKYb3rs.Token.m4rvzr5RDEP5sZNz.Actor.aiYrAq6pSoQd8m4O.Item.dvtWBfC5wZJAxl2P
@@ -94,28 +97,7 @@ system:
   level: 0
   links:
     children: []
-  scriptCalls:
-    - _id: RBBM7aHN
-      category: use
-      hidden: false
-      img: null
-      name: ''
-      type: macro
-      value: Compendium.pf1-critical-effects.macros.Macro.2KJDXE3liCDaKEWO
-    - _id: QdH2K5gx
-      category: toggle
-      hidden: false
-      img: null
-      name: ''
-      type: macro
-      value: Compendium.pf1-critical-effects.macros.Macro.DSmUMLDLIt9z26p0
-    - _id: PZ7d0Ebz
-      category: preActivate
-      hidden: false
-      img: null
-      name: ''
-      type: macro
-      value: Compendium.pf1-critical-effects.macros.Macro.PEtshlwi0AEvwNJ6
+  scriptCalls: []
   showInQuickbar: false
   subType: perm
   tag: ''

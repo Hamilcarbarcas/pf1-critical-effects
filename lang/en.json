@@ -43,6 +43,29 @@
         "AwaitingCheck": "Awaiting Heal check",
         "ResetTooltip": "Clear the healing received and any treated mark."
       }
+    },
+    "OnUse": {
+      "Title": "On Use",
+      "Hint": "Runs after this action is used.",
+      "Effect": "Effect",
+      "EffectNone": "Nothing",
+      "EffectHealCheck": "Heal Check",
+      "EffectSave": "Saving Throw",
+      "HealCheckHint": "Asks for the Dedicated Healing Heal check.",
+      "Save": "Save",
+      "DC": "DC",
+      "DCPlaceholder": "Blank = DC it was delivered at",
+      "OnSuccess": "On Success",
+      "OnFailure": "On Failure",
+      "OutcomeNone": "Nothing",
+      "OutcomeEnd": "End this buff",
+      "OutcomeReplace": "Replace with buff",
+      "ReplaceWith": "Replace With",
+      "DropHint": "Drop a buff here",
+      "DropNotBuff": "Only a buff can be the replacement.",
+      "Clear": "Clear",
+      "ReplaceTitle": "Replace Buff",
+      "ReplacePrompt": "Switch off <strong>{from}</strong> and apply <strong>{to}</strong>?"
     }
   }
 }

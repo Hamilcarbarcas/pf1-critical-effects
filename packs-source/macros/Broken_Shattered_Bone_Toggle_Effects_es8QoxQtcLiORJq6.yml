@@ -13,7 +13,7 @@ _stats:
 author: mLW1zeZBsSCEsXlw
 command: |-
   if (state) {
-    if (item.name === "Fractured Neck") {
+    if (item.name === "Shattered Neck") {
       await actor.update({ "system.attributes.hp.value": 0 });
       actor.rollSavingThrow("fort", { skipDialog: false, dc: 20 });
 
@@ -32,7 +32,7 @@ command: |-
       await wisRoll.toMessage({ flavor: "Broken Skull — Wisdom Damage" });
       await actor.update({ "system.abilities.wis.damage": actor.system.abilities.wis.damage + wisRoll.total });
 
-    } else if (item.name === "Fractured Skull") {
+    } else if (item.name === "Shattered Skull") {
       actor.rollSavingThrow("fort", { skipDialog: false, dc: 20 }).then(async (saveResult) => {
         if (!saveResult) return;
 
@@ -44,11 +44,11 @@ command: |-
         await actor.update({ "system.attributes.hp.value": 0 });
 
         const intRoll = await new Roll("4d4").evaluate();
-        await intRoll.toMessage({ flavor: "Fractured Skull — Intelligence Damage" });
+        await intRoll.toMessage({ flavor: "Shattered Skull — Intelligence Damage" });
         await actor.update({ "system.abilities.int.damage": actor.system.abilities.int.damage + intRoll.total });
 
         const wisRoll = await new Roll("4d4").evaluate();
-        await wisRoll.toMessage({ flavor: "Fractured Skull — Wisdom Damage" });
+        await wisRoll.toMessage({ flavor: "Shattered Skull — Wisdom Damage" });
         await actor.update({ "system.abilities.wis.damage": actor.system.abilities.wis.damage + wisRoll.total });
       });
     }

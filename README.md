@@ -518,6 +518,8 @@ thing it gates. With homebrew off the section is hidden on unconfigured buffs, s
 condition can be given a threshold; a buff that already has one keeps its section, since those
 numbers are still live and a GM needs to see and be able to reset what's outstanding. With homebrew
 on, an unconfigured buff hides the section until it's ticked under **Optional Sections** on the same tab.
+The Heal check itself is asked for by using one of the buff's actions whose [On Use](#on-use-buff-actions)
+is set to **Heal Check**, like the bone buffs' *Set Bone*.
 
 #### Clears on any healing
 
@@ -579,6 +581,29 @@ pf1-bleed-effects' **Deep Bleed** rule is the reference consumer: a bleed lives 
 rather than an item, and lands in the same allocation dialog as a broken arm without either
 module knowing anything about the other's storage. Its healing-blocked wounds — an arrow still in
 the body, gated on the buff representing it — are the reference consumer for `blocked`.
+
+### On Use: buff actions
+
+A buff's actions can do something once they've been used. Set it per action, in the **On Use**
+section on the action sheet's **Misc** tab (an optional section: tick it under **Optional
+Sections** to show it on an action that doesn't use it yet).
+
+| Effect | What it does |
+|---|---|
+| **Heal Check** | Asks for the buff's [Dedicated Healing](#dedicated-healing) Heal check, at the DC set there. |
+| **Saving Throw** | The buff's bearer rolls a Fortitude, Reflex, or Will save, then the buff reacts to the result. |
+
+A saving throw has:
+
+- **DC**: a number or a formula against the buff's roll data. Leave it blank to use the DC the buff
+  was delivered at (astora-mod's buff delivery stamps it); with neither, no save is rolled.
+- **On Success** / **On Failure**: *Nothing*, *End this buff*, or *Replace with buff*. Replacing
+  asks first, then puts the buff dropped into **Replace With** on the bearer (switching on a copy
+  it already has), and switches this one off.
+
+Actors nobody plays roll without the save dialog. The bone buffs use both: *Set Bone* is a Heal
+Check, and *Use Arm*, *Use Foot*, *Use Hand* and *Use Leg* are a Fortitude save that replaces the
+Broken buff with its Shattered one on a failure.
 
 ### Healing suppression
 

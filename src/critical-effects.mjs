@@ -42,6 +42,8 @@ import {
   setConfig as setDedicatedHealingConfig,
 } from "./integrations/dedicated-healing.mjs";
 import { registerDedicatedHealingConfig } from "./apps/dedicated-healing-config.mjs";
+import { registerOnUse } from "./integrations/on-use.mjs";
+import { registerOnUseSection } from "./apps/on-use-section.mjs";
 import {
   registerHealingBlock,
   wouldBlock,
@@ -90,6 +92,8 @@ Hooks.once("init", () => {
   registerHealingBlock();
   registerDedicatedHealing();
   registerDedicatedHealingConfig();
+  registerOnUse();
+  registerOnUseSection();
   registerCritTrigger();
   registerExplosion();
 

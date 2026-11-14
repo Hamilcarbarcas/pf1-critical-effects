@@ -22,13 +22,16 @@ flags:
       keen: false
       rollOverride: ''
       rollmodeOverride: ''
-      skipDialog: 0
+      skipDialog: -1
   pf1-critical-effects:
     dedicatedHealing:
       dc: 10
       received: 0
       required: 5
       treated: false
+    onUse:
+      xcMsrkdzzy18mDkM:
+        effect: healCheck
   scene-packer:
     hash: ddbfc12ef7a75343c7e11518ab501098aa4822be
 folder: CEBrokenBones001
@@ -91,28 +94,7 @@ system:
   level: 0
   links:
     children: []
-  scriptCalls:
-    - _id: RBBM7aHN
-      category: use
-      hidden: false
-      img: null
-      name: ''
-      type: macro
-      value: Compendium.pf1-critical-effects.macros.Macro.2KJDXE3liCDaKEWO
-    - _id: QdH2K5gx
-      category: toggle
-      hidden: false
-      img: null
-      name: ''
-      type: macro
-      value: Compendium.pf1-critical-effects.macros.Macro.DSmUMLDLIt9z26p0
-    - _id: POndNrHa
-      category: preActivate
-      hidden: false
-      img: null
-      name: ''
-      type: macro
-      value: Compendium.pf1-critical-effects.macros.Macro.PEtshlwi0AEvwNJ6
+  scriptCalls: []
   showInQuickbar: false
   subType: perm
   tag: ''

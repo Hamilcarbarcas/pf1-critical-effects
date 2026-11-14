@@ -52,13 +52,16 @@ flags:
       keen: false
       rollOverride: ''
       rollmodeOverride: ''
-      skipDialog: 0
+      skipDialog: -1
   pf1-critical-effects:
     dedicatedHealing:
       dc: 10
       received: 0
       required: 10
       treated: false
+    onUse:
+      KRYUYq05iuulGBDH:
+        effect: healCheck
   pf1-improved-energy-drain:
     staticEnabled: false
     staticLevels: 0

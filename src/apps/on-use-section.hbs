@@ -1,0 +1,80 @@
+{{!-- Critical Effects: On Use (buff action sheet → Misc tab) --}}
+<div class="ce-ou-section">
+  <h3 class="form-header ce-ou-header">
+    <i class="fa-solid fa-hand-pointer"></i>
+    {{localize "CRITICAL_EFFECTS.OnUse.Title"}}
+  </h3>
+
+  <div class="ce-ou-body">
+    <p class="notes">{{localize "CRITICAL_EFFECTS.OnUse.Hint"}}</p>
+
+    <div class="form-group">
+      <label>{{localize "CRITICAL_EFFECTS.OnUse.Effect"}}</label>
+      <div class="form-fields">
+        <select class="ce-ou-input" data-field="effect">
+          {{selectOptions effects selected=cfg.effect}}
+        </select>
+      </div>
+    </div>
+
+    {{#if isHealCheck}}
+    <p class="notes">{{localize "CRITICAL_EFFECTS.OnUse.HealCheckHint"}}</p>
+    {{/if}}
+
+    {{#if isSave}}
+    <div class="form-group">
+      <label>{{localize "CRITICAL_EFFECTS.OnUse.Save"}}</label>
+      <div class="form-fields">
+        <select class="ce-ou-input" data-field="save">
+          {{selectOptions saves selected=cfg.save}}
+        </select>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>{{localize "CRITICAL_EFFECTS.OnUse.DC"}}</label>
+      <div class="form-fields">
+        <input type="text" class="ce-ou-input" data-field="dc" value="{{cfg.dc}}"
+               placeholder="{{localize 'CRITICAL_EFFECTS.OnUse.DCPlaceholder'}}" />
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>{{localize "CRITICAL_EFFECTS.OnUse.OnSuccess"}}</label>
+      <div class="form-fields">
+        <select class="ce-ou-input" data-field="onSuccess">
+          {{selectOptions outcomes selected=cfg.onSuccess}}
+        </select>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>{{localize "CRITICAL_EFFECTS.OnUse.OnFailure"}}</label>
+      <div class="form-fields">
+        <select class="ce-ou-input" data-field="onFailure">
+          {{selectOptions outcomes selected=cfg.onFailure}}
+        </select>
+      </div>
+    </div>
+
+    {{#if needsReplacement}}
+    <div class="form-group ce-ou-replace" data-ce-ou-drop>
+      <label>{{localize "CRITICAL_EFFECTS.OnUse.ReplaceWith"}}</label>
+      <div class="form-fields">
+        {{#if replaceWith}}
+        <a class="ce-ou-replace-link" data-uuid="{{replaceWith.uuid}}">
+          {{#if replaceWith.img}}<img src="{{replaceWith.img}}" alt="" />{{/if}}
+          <span class="{{#if replaceWith.missing}}ce-ou-missing{{/if}}">{{replaceWith.name}}</span>
+        </a>
+        <a class="ce-ou-clear" data-tooltip="{{localize 'CRITICAL_EFFECTS.OnUse.Clear'}}">
+          <i class="fa-solid fa-xmark"></i>
+        </a>
+        {{else}}
+        <span class="ce-ou-drop-hint">{{localize "CRITICAL_EFFECTS.OnUse.DropHint"}}</span>
+        {{/if}}
+      </div>
+    </div>
+    {{/if}}
+    {{/if}}
+  </div>
+</div>

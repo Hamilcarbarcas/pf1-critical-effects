@@ -1073,6 +1073,52 @@ details.ce-explosion-count > ol.ce-explosion-rolls > li > a.inline-roll {
   opacity: 1;
 }
 
+/* --- On Use section (buff action sheet → Misc tab) ------------------------ */
+
+.ce-ou-section .notes {
+  color: var(--color-text-dark-secondary, #4b4a44);
+}
+
+.ce-ou-section .ce-ou-replace .form-fields {
+  align-items: center;
+  gap: 6px;
+}
+
+.ce-ou-section .ce-ou-replace-link {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.ce-ou-section .ce-ou-replace-link img {
+  width: 20px;
+  height: 20px;
+  border: none;
+  flex: 0 0 auto;
+}
+
+.ce-ou-section .ce-ou-missing {
+  text-decoration: line-through;
+  opacity: 0.6;
+}
+
+.ce-ou-section .ce-ou-drop-hint {
+  flex: 1 1 auto;
+  font-style: italic;
+  color: var(--color-text-dark-secondary, #4b4a44);
+}
+
+.ce-ou-section .ce-ou-clear {
+  flex: 0 0 auto;
+  opacity: 0.6;
+}
+
+.ce-ou-section .ce-ou-clear:hover {
+  opacity: 1;
+}
+
 /* --- standalone result cards ----------------------------------------------
  *
  * The container for a resolution with no attack card behind it — a hand-driven crit, or a fumble
